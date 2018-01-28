@@ -1,0 +1,28 @@
+<?php
+/** Http request timeout, unit is second. */
+define('MOHA__TIME_OUT__HTTP_REQUEST', '120');
+
+/**
+ * Helper that generates a machine name using a provided human readable name.
+ *
+ * @param string $human_name
+ *   Human readable name.
+ *
+ * @return string
+ *   Machine name cleaned-up of any special chars.
+ */
+function moha_h2m($human_name) {
+
+  $string_mapping = &drupal_static(__FUNCTION__);
+
+  if(empty($string_mapping) || !isset($string_mapping[$human_name])){
+    $machine_name = strtolower($human_name);
+    $machine_name = preg_replace('@[^a-z0-9_]+@', '_', $machine_name);
+    $string_mapping[$human_name] = $machine_name;
+  }
+  else {
+    $machine_name = $string_mapping[$human_name];
+  }
+
+  return $machine_name;
+}

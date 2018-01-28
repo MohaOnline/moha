@@ -1,0 +1,38 @@
+<?php
+/**
+ * @file
+ */
+
+define('WEB_DEMO__HUMAN_NAME', 'Web Demo');
+define('WEB_DEMO__MACHINE_NAME', 'web_demo');
+
+define('WEB_DEMO__VARIABLES', 'web_demo__variables');
+
+/**
+ * Implements hook_menu().
+ */
+function web_demo_menu() {
+
+  $items['web_demo/css/input'] = [
+    'title' => t('CSS Demo: Input Box'),
+    'description' => t('Style input box'),
+    'page callback' => '__web_demo_css_input',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'pages/css_demo/input.inc',
+  ];
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function web_demo_theme($existing, $type, $theme, $path) {
+  return array(
+    'web_demo_css_input' => array(
+      'render element' => 'page',
+      'template' => 'templates/css_demo/input',
+    ),
+  );
+}

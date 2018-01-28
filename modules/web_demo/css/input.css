@@ -1,0 +1,29 @@
+
+div.input_box_wrapper input[type='text'], div.input_box_wrapper_round input[type='text'] {
+  /* Overwrite highlight effect when focus. */
+  outline: none;
+}
+
+/* Gradient input box wrapper. */
+div.input_box_wrapper {
+  display: inline-block;
+  background: linear-gradient(to right bottom, lightblue, darkblue);
+}
+
+div.input_box_wrapper input[type='text'] {
+  margin: 2px;
+  border: none;
+}
+
+div.input_box_wrapper_round {
+  display: inline-block;
+  background: linear-gradient(to right, lightblue, darkblue);
+  border-radius: 10px;
+}
+
+div.input_box_wrapper_round input[type='text'] {
+  margin: 2px;
+  border: none;
+  border-radius: 8px;
+  padding: auto 8px;
+}

@@ -1,0 +1,40 @@
+<?php
+/**
+ * @file
+ * @Created: 25/01/2018 11:22 PM
+ */
+
+function moha_clip_install() {
+  // Create a vocabulary named "IT Technology", enabled for the 'moha_clip' content type.
+  $vocabulary = (object) array(
+    'name' => t('IT Technologies'),
+    'description' => t('Use IT Technologies to group moha_clip on similar topics into categories.'),
+    'machine_name' => 'it_technologies',
+  );
+  taxonomy_vocabulary_save($vocabulary);
+
+  $technologies = array(
+    'Java',
+    'Javascript',
+    'C',
+    'C++',
+    'C#',
+    'Python',
+  );
+
+  foreach ($technologies as $technology) {
+    $term = new stdClass();
+
+    $term->vid = $vocabulary->vid;
+    $term->name = $technology;
+
+    taxonomy_term_save($term);
+  }
+
+  $vocabulary = (object) array(
+    'name' => t('Categories'),
+    'description' => t('Use categories to group moha_clip on similar topics into categories.'),
+    'machine_name' => 'categories',
+  );
+  taxonomy_vocabulary_save($vocabulary);
+}

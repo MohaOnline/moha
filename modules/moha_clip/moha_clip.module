@@ -1,0 +1,257 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_CLIP__HN', 'Moha Clip');
+
+/**
+ * Machine name.
+ */
+define('MOHA_CLIP__MN', 'moha_clip');
+
+define('MOHA_CLIP__VARIABLES', MOHA_CLIP__MN . '__variables');
+
+/**
+ * Implements hook_image_default_styles().
+ */
+function moha_clip_image_default_styles() {
+  $styles = array();
+  $styles['moha_clip_thumbnail'] = array(
+    'label' => 'Thumbnail Moha clip',
+    'effects' => array(
+      array(
+        'name' => 'image_scale_and_crop',
+        'data' => array('width' => 720, 'height' => 405),
+        'weight' => 0,
+      ),
+    ),
+  );
+  return $styles;
+}
+
+/**
+ * Implements hook_node_info().
+ */
+function moha_clip_node_info() {
+
+  $items = array(
+    MOHA_CLIP__MN => array(
+      'name' => t(MOHA_CLIP__HN),
+      'base' => MOHA_CLIP__MN, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
+      'description' => t('Use <i>Moha Clip</i> to share your knowledge, such as a \'Technology Share\' page.'),
+      'title_label' => t('Title'),
+      'has_title' => TRUE,
+      'locked' => FALSE,
+    ),
+
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Drupal needs for us to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/moha-clip.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
+ */
+function moha_clip_form($node, $form_state) {
+  global $theme_key;
+  if ($theme_key == 'seven') {
+    // Fix admin style issue when admin theme is seven.
+    drupal_add_css(drupal_get_path('module', 'moha_clip') . '/css/moha_clip_admin.css');
+  }
+
+  return node_content_form($node, $form_state);
+}
+
+/**
+ * Implements hook_node_type_insert().
+ */
+function moha_clip_node_type_insert($info) {
+
+  if ($info->type == MOHA_CLIP__MN) {
+
+    $body_instance = node_add_body_field($info, t('Contents'));
+    // Save our changes to the body field instance.
+    field_update_instance($body_instance);
+
+    foreach (_moha_clip_fields_and_instances() as $field) {
+      field_create_field($field);
+      field_create_instance($field);
+    }
+  }
+}
+
+function _moha_clip_fields_and_instances() {
+  $fields_and_instances = array();
+
+  $fields_and_instances['image'] = array(
+    'label'       => t('Feature Image'),
+    'field_name'  => 'image',
+    'type'        => 'image',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'description' => t('Upload images to go with this clip.'),
+    'entity_type' => 'node',
+    'bundle'      => MOHA_CLIP__MN,
+    'settings' => array(
+    ),
+    'widget' => array(
+      'weight' => -90,
+      'type' => 'image_image',
+    ),
+    'display' => array(
+      'default' => array(
+        'weight' => -90,
+        'label' => 'hidden',
+      ),
+      'teaser' => array(
+        'weight' => -90,
+        'label' => 'hidden',
+      ),
+    ),
+  );
+
+  $fields_and_instances['video'] = array(
+    'label'       => t('Feature Video'),
+    'field_name'  => 'video',
+    'type'        => 'video',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'description' => t('Upload videos to go with this clip.'),
+    'entity_type' => 'node',
+    'bundle'      => MOHA_CLIP__MN,
+    'settings' => array(
+      'autoconversion' => 0,
+      'autothumbnail' => 'manual_upload',
+      'preview_video_thumb_style' => 'moha_clip_thumbnail',
+      'uri_scheme' => 'private',
+      'uri_scheme_converted' => 'private',
+      'uri_scheme_thumbnails' => 'public',
+    ),
+    'widget' => array(
+      'type' => 'video_upload',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+      ),
+    ),
+  );
+
+  $fields_and_instances['technology_stacks'] = array(
+    'type' => 'field_collection',
+    'field_name' => 'technology_stacks',
+    'label' => t('Technology stacks'),
+    'entity_type' => 'node',
+    'bundle' => MOHA_CLIP__MN,
+    'description' => t('Stores related technology stacks information.'),
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_collection',
+        'settings' => array(
+        ),
+        // No Delete / Edit / Add link
+        'type' => 'field_collection_fields',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'field_collection',
+      'settings' => array(),
+      'type' => 'field_collection_embed',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['technology'] = array(
+    'label' => t('Technology'),
+    'field_name' => 'technology',
+    'description' => t('Input technology used in this Moha Clip.'),
+    'type' => 'taxonomy_term_reference',
+    'cardinality' => 1,
+    'entity_type' => 'field_collection_item',
+    'bundle' => 'technology_stacks',
+    'settings' => array(
+      'max_length' => 260,
+      'allowed_values' => array(
+        array(
+          'vocabulary' => 'it_technologies',
+        ),
+      ),
+    ),
+    'widget' => array(
+      'type' => 'taxonomy_autocomplete',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+    ),
+  );
+
+  $fields_and_instances['versions'] = array(
+    'label'       => t('Versions'),
+    'field_name'  => 'versions',
+    'description' => t('Input related version number.'),
+    'type'        => 'text',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'entity_type' => 'field_collection_item',
+    'bundle' => 'technology_stacks',
+    'settings' => array(
+      'max_length' => 60,
+    ),
+    'widget' => array(
+      'type' => 'text_textfield',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+      ),
+    ),
+  );
+
+  return $fields_and_instances;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function moha_clip_menu() {
+  $items = array();
+
+  $items['admin/moha/moha_clip'] = array(
+    'title' => t('Moha Clip Manager'),
+    'description' => t('Manage Moha Clip configurations.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_moha_clip_manager_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'inc/moha_clip.admin.inc',
+  );
+
+  return $items;
+}

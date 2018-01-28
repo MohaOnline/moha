@@ -1,0 +1,62 @@
+<?php
+/**
+ * @file
+ */
+
+define('MOHA_CA__HUMAN_NAME', 'Moha CA');
+define('MOHA_CA___FEED_FETCHING_INTERVAL', 1);
+
+define('MOHA_CA__VARIABLES', 'moha_ca_variables');
+define('MOHA_CA__PLURALSIGHT_DATA_FEED_URL_PREFIX', 'https://app.pluralsight.com/search/proxy?i=1&q1=course&x1=categories&m_Sort=updated_date&page=');
+
+/**
+ *
+ */
+function moha_ca_menu() {
+
+  $items['moha/test'] = [
+    'title' => 'wechat',
+    'description' => 'wechat_lite callback',
+    'page callback' => '_moha_ca_process_pluralsight',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_ca.pluralsight.inc',
+  ];
+
+  return $items;
+}
+
+function moha_ca_cron() {
+
+  watchdog(
+    MOHA_CA__HUMAN_NAME,
+    __FUNCTION__ . " Start"
+  );
+  module_load_include('inc', 'moha_ca', 'moha_ca.pluralsight');
+  _moha_ca_monitor_pluralsight();
+  _moha_ca_process_pluralsight();
+  watchdog(
+    MOHA_CA__HUMAN_NAME,
+    __FUNCTION__ . " End"
+  );
+}
+
+
+/**
+ * @return string http response
+ * @throws \Exception
+ */
+function moha_get_feed($call_url) {
+
+  $res = drupal_http_request($call_url, ['timeout' => 180.0]);
+
+  if (isset($res->error)) {
+    throw new Exception($res->error);
+  }
+  elseif (isset($res->data)) {
+    return $res->data;
+  }
+  else {
+    throw new Exception(__FUNCTION__ . "Unknown error");
+  }
+}

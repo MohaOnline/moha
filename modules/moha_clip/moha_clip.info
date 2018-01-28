@@ -1,0 +1,12 @@
+name = Moha Clip
+description = Basic piece of Moha Online.
+core = 7.x
+package = Moha Online
+
+dependencies[] = taxonomy
+dependencies[] = text
+dependencies[] = image
+dependencies[] = video
+dependencies[] = media
+dependencies[] = field_collection
+

@@ -1,0 +1,6 @@
+name = Moha Courses Analysis
+description = Analysis courses data from different online training sites.
+core = 7.x
+package = Big Data
+
+dependencies[] = block
