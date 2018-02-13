@@ -10,8 +10,14 @@
 
 /* Adjust font size in both edit and view mode. */
 /* Paragraph title of article. */
+.cke_editable_themed h1, .node-type-moha-clip h1 {
+  font-size: 1.9em;
+}
 .cke_editable_themed h2, .node-type-moha-clip h2 {
   font-size: 1.5em;
+}
+.cke_editable_themed h3, .node-type-moha-clip h3 {
+  font-size: 1.2em;
 }
 
 /* Background of code area. */
