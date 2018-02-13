@@ -8,7 +8,7 @@ function moha_clip_install() {
   // Create a vocabulary named "IT Technology", enabled for the 'moha_clip' content type.
   $vocabulary = (object) array(
     'name' => t('IT Technologies'),
-    'description' => t('Use IT Technologies to group moha_clip on similar topics into categories.'),
+    'description' => t('Use IT Technologies to group moha_clip by technologies.'),
     'machine_name' => 'it_technologies',
   );
   taxonomy_vocabulary_save($vocabulary);
@@ -31,10 +31,12 @@ function moha_clip_install() {
     taxonomy_term_save($term);
   }
 
-  $vocabulary = (object) array(
-    'name' => t('Categories'),
-    'description' => t('Use categories to group moha_clip on similar topics into categories.'),
-    'machine_name' => 'categories',
-  );
-  taxonomy_vocabulary_save($vocabulary);
+  // Create Roles.
+  _moha_clip_prepare_roles_and_permissions();
+
+  // Create IMCE profile.
+  _moha_clip_prepare_imce_profile();
+
+  // Create Text Format & CKEditor profile.
+  _moha_clip_prepare_text_format_and_ckeditor_profile();
 }

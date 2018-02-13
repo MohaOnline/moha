@@ -34,24 +34,14 @@ function _moha_clip_manager_form($form, &$form_state) {
     '#collapsible' => TRUE,
   );
 
-  $form['disable']['disable_comment_new_moha_clip'] = array(
+  $form['disable']['disable_comment_moha_clip'] = array(
     '#type' => 'submit',
-    '#value' => t('Disable comment for new Moha Clip'),
-  );
-
-  $form['disable']['disable_comment_existing_moha_clips'] = array(
-    '#type' => 'submit',
-    '#value' => t('Disable comment of existing Moha Clips'),
+    '#value' => t('Disable comment for Moha Clip'),
   );
 
   $form['disable']['disable_promote_new_moha_clip'] = array(
     '#type' => 'submit',
-    '#value' => t('Disable promotion for new Moha Clip'),
-  );
-
-  $form['disable']['disable_promote_existing_moha_clips'] = array(
-    '#type' => 'submit',
-    '#value' => t('Disable promotion of existing Moha Clips'),
+    '#value' => t('Disable promotion for Moha Clip'),
   );
 
   return $form;
@@ -61,17 +51,11 @@ function _moha_clip_manager_form_submit($form, &$form_state) {
   switch ($form_state['values']['op']) {
     default:
       break;
-    case t('Disable comment for new Moha Clip');
-      _moha_clip_disable_comment_new_moha_clip();
+    case t('Disable comment for Moha Clip');
+      _moha_clip_disable_moha_clip_comment();
       break;
-    case t('Disable comment of existing Moha Clips');
-      _moha_clip_disable_comment_existing_moha_clip();
-      break;
-    case t('Disable promotion for new Moha Clip');
-      _moha_clip_disable_promote_new_moha_clip();
-      break;
-    case t('Disable promotion of existing Moha Clips');
-      _moha_clip_disable_promote_existing_moha_clip();
+    case t('Disable promotion for Moha Clip');
+      _moha_clip_disable_moha_clip_promote();
       break;
   }
 
@@ -80,44 +64,39 @@ function _moha_clip_manager_form_submit($form, &$form_state) {
 /**
  * Disable comment function for new Moha Clip.
  */
-function _moha_clip_disable_comment_new_moha_clip() {
+function _moha_clip_disable_moha_clip_comment() {
 
-  $num_updated = db_update('node')
-    ->fields(array('comment' => '1',))
+  $num_master_updated = db_update('node')
+    ->fields(array('comment' => COMMENT_NODE_HIDDEN))  // Hide comment for Moha Clip.
     ->condition ('node.type', MOHA_CLIP__MN)
     ->execute();
-
-  drupal_set_message(t('New Moha Clip is not discussable.'));
-  watchdog(MOHA_CLIP__MN, 'New Moha Clip is not discussable. %num_updated record(s) updated.', array('%num_updated' => $num_updated));
-}
-
-function _moha_clip_disable_comment_existing_moha_clip() {
 
   $sub_query = db_select('node');
   $sub_query->addField('node', 'nid');
   $sub_query->condition('node.type', MOHA_CLIP__MN, '=');
 
-  $num_updated = db_update('node_revision')
-    ->fields(array('comment' => '1',))
+  $num_revision_updated = db_update('node_revision')
+    ->fields(array('comment' => COMMENT_NODE_HIDDEN))
     ->condition ('node_revision.nid', $sub_query, 'IN')
     ->execute();
 
-  drupal_set_message(t('All Moha Clip are not discussable now.'));
-  watchdog(MOHA_CLIP__MN, 'All Moha Clip are not discussable now. %num_updated record(s) updated.', array('%num_updated' => $num_updated));
+  drupal_set_message(t('All Moha Clips are not discussable now.'));
+  watchdog(MOHA_CLIP__MN, 'All Moha Clips are not discussable now. %num_master master and %num_revision revision record(s) updated.',
+    array(
+      '%num_master' => $num_master_updated,
+      '%num_revision' => $num_revision_updated,
+    ));
 }
 
-function _moha_clip_disable_promote_new_moha_clip() {
+function _moha_clip_disable_moha_clip_promote() {
 
   $num_updated = db_update('node')
-    ->fields(array('promote' => '0',))
+    ->fields(array('promote' => FALSE))
     ->condition ('node.type', MOHA_CLIP__MN)
     ->execute();
 
   drupal_set_message(t('New Moha Clip will not be promoted.'));
   watchdog(MOHA_CLIP__MN, 'New Moha Clip will not be promoted. %num_updated record(s) updated.', array('%num_updated' => $num_updated));
-}
-
-function _moha_clip_disable_promote_existing_moha_clip() {
 
   $sub_query = db_select('node');
   $sub_query->addField('node', 'nid');

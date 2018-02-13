@@ -3,6 +3,36 @@
 define('MOHA__TIME_OUT__HTTP_REQUEST', '120');
 
 /**
+ *
+ *
+ * @return array
+ */
+function _moha_admin_common_permissions() {
+  $admin_common_permissions = array(
+    'view the administration theme',
+    'access administration menu',
+    'access administration pages',
+    'flush caches',
+    'access toolbar',
+    'administer menu',
+    'administer blocks',
+    'edit own page content',
+    'edit any page content',
+    'access content',
+  );
+
+  return $admin_common_permissions;
+}
+
+/**
+ * Create necessary roles and permissions.
+ */
+function _moha_prepare_roles_and_permissions() {
+  $manager_permission = array();
+
+}
+
+/**
  * Helper that generates a machine name using a provided human readable name.
  *
  * @param string $human_name
@@ -25,4 +55,60 @@ function moha_h2m($human_name) {
   }
 
   return $machine_name;
+}
+
+/**
+ * Grant permissions to specified role, if role doesn't exist, it will be created.
+ *
+ * @param string $role_name
+ * @param array $permissions
+ *
+ * @return object $role
+ */
+function moha_grant_permissions_2_role($role_name, $permissions = array()) {
+  $role = user_role_load_by_name($role_name);
+
+  if (!$role) {
+    $role = new stdClass();
+    $role->name = $role_name;
+    user_role_save($role);
+    $role = user_role_load_by_name($role_name);
+  }
+
+  $all_permissions = user_permission_get_modules();
+
+  if (!empty($all_permissions) && is_array($permissions)) {
+    foreach ($permissions as $key => $permission) {
+      if (empty($all_permissions[$permission])) {
+        unset($permissions[$key]);
+      }
+    }
+
+    if (!empty($permissions)) {
+      user_role_grant_permissions($role->rid, $permissions);
+    }
+  }
+
+  return $role;
+}
+
+/**
+ * Grant IMCE profile to specified role.
+ *
+ * @param string $role_name
+ * @param int $profile_id
+ */
+function moha_grant_imce_profile_2_role($role_name, $profile_id = 0) {
+  $roles_profiles = variable_get('imce_roles_profiles', array());
+
+  $role = user_role_load_by_name($role_name);
+
+  if ($role) {
+    $roles_profiles[$role->rid] = array(
+      'private_pid' => $profile_id,
+      'public_pid' => $profile_id,
+    );
+
+    variable_set('imce_roles_profiles', $roles_profiles);
+  }
 }

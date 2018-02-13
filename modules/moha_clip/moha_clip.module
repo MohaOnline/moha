@@ -13,7 +13,289 @@ define('MOHA_CLIP__HN', 'Moha Clip');
  */
 define('MOHA_CLIP__MN', 'moha_clip');
 
+/**
+ * moha_clip__variables.
+ */
 define('MOHA_CLIP__VARIABLES', MOHA_CLIP__MN . '__variables');
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_clip
+ */
+define('MOHA_CLIP__PATH', '/' . drupal_get_path('module', MOHA_CLIP__MN));
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_clip
+ */
+define('MOHA_CLIP__RELATIVE_PATH', drupal_get_path('module', MOHA_CLIP__MN));
+
+/**
+ * Permission: view moha_clip content.
+ */
+define('MOHA_CLIP__PERMISSION__VIEW', 'view ' . MOHA_CLIP__MN . ' content');
+
+/**
+ * Permission: create moha_clip content.
+ */
+define('MOHA_CLIP__PERMISSION__CREATE', 'create ' . MOHA_CLIP__MN . ' content');
+
+/**
+ * Permission: edit own moha_clip content.
+ */
+define('MOHA_CLIP__PERMISSION__EDIT_OWN', 'edit own ' . MOHA_CLIP__MN . ' content');
+
+/**
+ * Permission: edit any moha_clip content.
+ */
+define('MOHA_CLIP__PERMISSION__EDIT_ANY', 'edit any ' . MOHA_CLIP__MN . ' content');
+
+/**
+ * Permission: delete own moha_clip content.
+ */
+define('MOHA_CLIP__PERMISSION__DELETE_OWN', 'delete own ' . MOHA_CLIP__MN . ' content');
+
+/**
+ * Permission: delete any moha_clip content.
+ */
+define('MOHA_CLIP__PERMISSION__DELETE_ANY', 'delete any ' . MOHA_CLIP__MN . ' content');
+
+/**
+ * moha_clip__role__manager.
+ */
+define('MOHA_CLIP__ROLE__MANAGER', MOHA_CLIP__MN . '__role__manager');
+
+/**
+ * moha_clip__role__admin.
+ */
+define('MOHA_CLIP__ROLE__ADMIN', MOHA_CLIP__MN . '__role__admin');
+
+/**
+ * moha_clip__text_format.
+ */
+define('MOHA_CLIP__TEXT_FORMAT', MOHA_CLIP__MN . '__text_format');
+
+/**
+ * moha_clip__ck_profile.
+ */
+define('MOHA_CLIP__CK_PROFILE', MOHA_CLIP__MN . '__ck_profile');
+
+/**
+ * Create necessary roles and permissions.
+ */
+function _moha_clip_prepare_roles_and_permissions() {
+  $admin_permissions = array();
+  $admin_permissions[] = MOHA_CLIP__PERMISSION__CREATE;
+  $admin_permissions[] = MOHA_CLIP__PERMISSION__EDIT_ANY;
+  $admin_permissions[] = MOHA_CLIP__PERMISSION__DELETE_ANY;
+
+  $manager_permissions = array();
+  $manager_permissions[] = MOHA_CLIP__PERMISSION__CREATE;
+  $manager_permissions[] = MOHA_CLIP__PERMISSION__EDIT_OWN;
+  $manager_permissions[] = MOHA_CLIP__PERMISSION__EDIT_ANY;
+
+  $user_permissions = array();
+  $user_permissions[] = MOHA_CLIP__PERMISSION__VIEW;
+
+  moha_grant_permissions_2_role(MOHA_CLIP__ROLE__ADMIN, $admin_permissions);
+  moha_grant_permissions_2_role(MOHA_CLIP__ROLE__MANAGER, $manager_permissions);
+}
+
+/**
+ * Create IMCE profile for Moha Clip Manager and Moha Clip Admin.
+ */
+function _moha_clip_prepare_imce_profile() {
+
+  $profile = array(
+    'name' => 'Moha Clip Manager Profile',
+    'usertab' => 1,
+    'filesize' => 0,
+    'quota' => 0,
+    'tuquota' => 0, // Total quotation.
+    'extensions' => 'gif png jpg jpeg',
+    'dimensions' => '1200x1200',
+    'filenum' => 0,
+    'mkdirnum' => 0,
+    'directories' => array(),
+    'thumbnails' => array()
+  );
+
+  // File upload destination folder.
+  $profile['directories'][] = array(
+    'name' => '%uid',
+    'subnav' => TRUE,
+    'browse' => TRUE,
+    'upload' => TRUE,
+    'thumb' => TRUE,
+    'delete' => TRUE,
+    'resize' => TRUE,
+    'mkdir' => TRUE,
+    'rmdir' => TRUE,
+  );
+
+  $profiles = variable_get('imce_profiles', array());
+  $profiles[] = $profile;
+  end($profiles);
+  $profile_id = key($profiles);
+  variable_set('imce_profiles', $profiles);
+
+  moha_grant_imce_profile_2_role(MOHA_CLIP__ROLE__ADMIN, $profile_id);
+  moha_grant_imce_profile_2_role(MOHA_CLIP__ROLE__MANAGER, $profile_id);
+}
+
+/**
+ * Create Moha Clip Text Format.
+ */
+function _moha_clip_prepare_text_format_and_ckeditor_profile() {
+  $format = array(
+    'format' => MOHA_CLIP__TEXT_FORMAT,
+    'name' => 'Moha Clip Format',
+    'weight' => -10,
+    'filters' => array(
+      // URL filter.
+      'filter_url' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      // Line break filter.
+      'filter_autop' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      // HTML corrector filter.
+      'filter_htmlcorrector' => array(
+        'weight' => 10,
+        'status' => 1,
+      ),
+    ),
+  );
+
+  $format = (object) $format;
+  filter_format_save($format);
+
+  // Grant text format permission to related roles.
+  $role_names = array(
+    MOHA_CLIP__ROLE__ADMIN,
+    MOHA_CLIP__ROLE__MANAGER
+  );
+
+  if ($permission = filter_permission_name($format)) {
+    foreach ($role_names as $role_name) {
+      $role = user_role_load_by_name($role_name);
+      if ($role) {
+        user_role_grant_permissions($role->rid, array($permission));
+      }
+    }
+  }
+
+  _moha_clip_prepare_ckeditor_profile(MOHA_CLIP__CK_PROFILE, MOHA_CLIP__TEXT_FORMAT);
+}
+
+/**
+ * Create CKEditor profile for Moha Clip
+ *
+ * @param $ck_profile
+ * @param $text_format
+ */
+function _moha_clip_prepare_ckeditor_profile($ck_profile, $text_format) {
+  global $base_url;
+
+  // Prepare CKEditor profile.
+  // Enable HTML source highlight by default.
+  $config_js = '
+config.startupOutlineBlocks = true;
+config.extraPlugins = \'codesnippet\';
+config.extraPlugins = \'codemirror\';
+config.codeSnippet_theme = \'monokai_sublime\';
+config.templates_files = [ "' . $base_url . MOHA_CLIP__PATH . '/ckeditor/templates.js" ];
+config.templates_replaceContent = false;
+';
+
+  $file_browser = 'imce';
+
+  $profile_data = array(
+    'ss' => 2,
+    'toolbar' => "[
+    ['CodeSnippet', 'Templates', 'Styles'], ['PasteFromWord', '-', 'Image', 'HorizontalRule', 'Link', 'Unlink', 'Anchor'],
+    ['Bold', 'Italic', 'Underline', 'NumberedList', 'BulletedList', 'TextColor'], ['Maximize', 'Source']
+]",
+    'expand' => 't',
+    'default' => 't',
+    'show_toggle' => 'f',
+    'uicolor' => 'default',
+    'uicolor_user' => 'default',
+    'width' => '100%',
+    'lang' => 'en',
+    'auto_lang' => 't',
+    'language_direction' => 'default',
+    'allowed_content' => 'f',
+    'extraAllowedContent' => '',
+    'enter_mode' => 'p',
+    'shift_enter_mode' => 'br',
+    'font_format' => 'p;div;pre;address;h1;h2;h3;h4;h5;h6',
+    'custom_formatting' => 'f',
+    'formatting' => array(
+      'custom_formatting_options' => array(
+        'indent' => 'indent',
+        'breakBeforeOpen' => 'breakBeforeOpen',
+        'breakAfterOpen' => 'breakAfterOpen',
+        'breakAfterClose' => 'breakAfterClose',
+        'breakBeforeClose' => 0,
+        'pre_indent' => 0,
+      ),
+    ),
+    'css_mode' => 'self',
+    'css_path' => $base_url . MOHA_CLIP__PATH . '/ckeditor/styles.css',
+    'css_style' => 'self',
+    'styles_path' => $base_url . MOHA_CLIP__PATH . '/ckeditor/styles.js',
+    'filebrowser' => $file_browser,
+    'filebrowser_image' => $file_browser,
+    'filebrowser_flash' => $file_browser,
+    'UserFilesPath' => '%b%f%u/',
+    'UserFilesAbsolutePath' => '%d%b%f%u/',
+    'forcePasteAsPlainText' => 't',
+    'html_entities' => 'f',
+    'scayt_autoStartup' => 'f',
+    'theme_config_js' => 't',
+    'js_conf' => $config_js,
+    'loadPlugins' => array(
+      'codesnippet' => array(
+        'name' => 'codesnippet',
+        'desc' => 'Plugin file: codesnippet',
+        'path' => '%plugin_dir_extra%codesnippet/',
+        'buttons' => array(
+          'CodeSnippet' => array(
+            'label' => 'CodeSnippet',
+            'icon' => 'icons/codesnippet.png',
+          ),
+        ),
+        'default' => 't',
+      ),
+      'drupalbreaks' => array(
+        'name' => 'drupalbreaks',
+        'desc' => t('Plugin for inserting Drupal teaser and page breaks.'),
+        'path' => '%plugin_dir%drupalbreaks/',
+        'buttons' => array(
+          'DrupalBreak' => array(
+            'label' => 'DrupalBreak',
+            'icon' => 'images/drupalbreak.png',
+          ),
+        ),
+        'default' => 't',
+      ),
+    ),
+  );
+
+  db_query('INSERT INTO {ckeditor_settings} (name, settings) VALUES(:name, :settings)',
+    array(
+      ':name' => $ck_profile,
+      ':settings' => serialize($profile_data),
+    )
+  );
+
+  db_query("INSERT INTO {ckeditor_input_format} (name, format) VALUES(:name, :format)", array(
+    ':name' => $ck_profile,
+    ':format' => $text_format,
+  ));
+}
 
 /**
  * Implements hook_image_default_styles().
@@ -42,12 +324,11 @@ function moha_clip_node_info() {
     MOHA_CLIP__MN => array(
       'name' => t(MOHA_CLIP__HN),
       'base' => MOHA_CLIP__MN, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
-      'description' => t('Use <i>Moha Clip</i> to share your knowledge, such as a \'Technology Share\' page.'),
+      'description' => t('Use <i>Moha Clip</i> to share your knowledge, such as a \'Technology Sharing\' page.'),
       'title_label' => t('Title'),
       'has_title' => TRUE,
       'locked' => FALSE,
     ),
-
   );
 
   return $items;
@@ -55,6 +336,8 @@ function moha_clip_node_info() {
 
 /**
  * Implements hook_form().
+ *
+ * Moha Clip node add / edit form.
  *
  * Drupal needs for us to provide a form that lets the user
  * add content. This is the form that the user will see if
@@ -65,32 +348,86 @@ function moha_clip_node_info() {
  */
 function moha_clip_form($node, $form_state) {
   global $theme_key;
+  global $base_url;
+
   if ($theme_key == 'seven') {
     // Fix admin style issue when admin theme is seven.
-    drupal_add_css(drupal_get_path('module', 'moha_clip') . '/css/moha_clip_admin.css');
+    drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/css/moha_clip.admin.css');
   }
+
+  // Add collapsible effect to image and video fields.
+  drupal_add_js(MOHA_CLIP__PATH . '/js/moha_clip.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
+
+  // Pass settings to JS.
+  drupal_add_js(array(
+    MOHA_CLIP__MN => array(
+      'template_image_path' => '', // Usage. Drupal.settings.moha_clip.template_image_path.
+      'speaker' => ''
+    )
+  ), 'setting');
 
   return node_content_form($node, $form_state);
 }
 
 /**
- * Implements hook_node_type_insert().
+ * Implements hook_form_FORM_ID_alter().
+ * add additional functions to moha_clip node form:
+ *  - Ajax Save.
  */
-function moha_clip_node_type_insert($info) {
+function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id) {
 
-  if ($info->type == MOHA_CLIP__MN) {
+  $form['#prefix'] = '<div id="moha-clip-node-form-wrapper">';
+  $form['#suffix'] = '</div>';
 
-    $body_instance = node_add_body_field($info, t('Contents'));
-    // Save our changes to the body field instance.
-    field_update_instance($body_instance);
-
-    foreach (_moha_clip_fields_and_instances() as $field) {
-      field_create_field($field);
-      field_create_instance($field);
-    }
-  }
+  $form['actions']['save'] = array(
+    '#type' => 'submit',  /* Must use submit to trigger form save, otherwise field value can't be proceed correctly. */
+    '#executes_submit_callback' => TRUE, /* If need form save when use other elements, set this value to prepare fields for submitting. */
+    '#value' => t('Save & Stay'),
+    '#ajax' => array(
+      // #ajax has two required keys: callback and wrapper.
+      // 'callback' is a function that will be called when this element changes.
+      'callback' => '_moha_clip_ajax_save_callback',
+      // 'wrapper' is the HTML id of the page element that will be replaced.
+      // Can't use form ID as after ajax process, ID will suffixed by '--2'.
+      'wrapper' => 'moha-clip-node-form-wrapper',
+    ),
+  );
 }
 
+/**
+ * Save node from ajax call.
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return mixed
+ */
+function _moha_clip_ajax_save_callback($form, &$form_state){
+
+  // @See ajax_form_callback()
+  // valid will be proceed
+  // If error, directly returns.
+  if (form_get_errors()) {
+    return $form;
+  }
+
+  /*
+   * As ajax button doesn't have #submit function, so
+   * form_execute_handlers('submit', $form, $form_state);
+   * will not be invoked, node submit function need be manually executed
+   */
+  node_form_submit($form, $form_state);
+  // need write update time back to form to avoid node was changed by others issue.
+  $form['changed']['#value'] = $form_state['node']->changed;
+
+  return $form;
+}
+
+/**
+ * Moha Clip Fields.
+ *
+ * @return array fields & instance parameter array.
+ */
 function _moha_clip_fields_and_instances() {
   $fields_and_instances = array();
 
@@ -130,21 +467,24 @@ function _moha_clip_fields_and_instances() {
     'bundle'      => MOHA_CLIP__MN,
     'settings' => array(
       'autoconversion' => 0,
-      'autothumbnail' => 'manual_upload',
+      'autothumbnail'  => 'manual_upload',
       'preview_video_thumb_style' => 'moha_clip_thumbnail',
       'uri_scheme' => 'private',
-      'uri_scheme_converted' => 'private',
+      'uri_scheme_converted'  => 'private',
       'uri_scheme_thumbnails' => 'public',
     ),
-    'widget' => array(
-      'type' => 'video_upload',
+    'widget'   => array(
+      'type'   => 'video_upload',
+      'weight' => -80,
     ),
     'display' => array(
-      'default' => array(
-        'label' => 'hidden',
+      'default'  => array(
+        'label'  => 'hidden',
+        'weight' => -80,
       ),
       'teaser' => array(
-        'label' => 'hidden',
+        'label'  => 'hidden',
+        'weight' => -80,
       ),
     ),
   );
@@ -165,7 +505,7 @@ function _moha_clip_fields_and_instances() {
         ),
         // No Delete / Edit / Add link
         'type' => 'field_collection_fields',
-        'weight' => 0,
+        'weight' => 90,
       ),
     ),
     'required' => FALSE,
@@ -239,6 +579,29 @@ function _moha_clip_fields_and_instances() {
 }
 
 /**
+ * Implements hook_node_type_insert().
+ *
+ * Bind moha_clip fields.
+ */
+function moha_clip_node_type_insert($info) {
+
+  if ($info->type == MOHA_CLIP__MN) {
+
+    $body_instance = node_add_body_field($info, t('Contents'));
+    // Save our changes to the body field instance.
+    field_update_instance($body_instance);
+
+    foreach (_moha_clip_fields_and_instances() as $field) {
+      field_create_field($field);
+      field_create_instance($field);
+    }
+
+    variable_set('comment_' . MOHA_CLIP__MN, COMMENT_NODE_HIDDEN);
+    variable_set('node_options_' . MOHA_CLIP__MN, array('status'));
+  }
+}
+
+/**
  * Implements hook_menu().
  */
 function moha_clip_menu() {
@@ -254,4 +617,20 @@ function moha_clip_menu() {
   );
 
   return $items;
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function moha_clip_theme($existing, $type, $theme, $path) {
+  $themes = array();
+
+  // Declare theme for moha_clip through naming convention, one place configuration.
+  $themes['node__moha_clip'] = array(
+    'render element' => 'elements',
+    'template' => 'templates/node--moha_clip',
+  );
+
+  return $themes;
 }
