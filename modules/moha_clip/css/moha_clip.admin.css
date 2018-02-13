@@ -1,4 +1,4 @@
-/* Fix head style */
+/* Fix field head style. */
 form .field-multiple-table th.field-label label {
   padding-left: 3px;
 }
@@ -21,3 +21,37 @@ fieldset .fieldset-legend {
 div.cke_combopanel {
    width: 300px;
 }
+
+/** Fix media widget style for feature images field, this should also work for other fields which is using media widget. */
+/* Eliminate browse button indent, and add top margin. */
+.media-widget.form-media .preview {
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Decrease bottom margin of browse button. */
+.form-item.form-type-media {
+  margin-bottom: 0;
+}
+/***/
+
+/** Move action buttons to right bottom cornet of page. */
+.form-actions.form-wrapper {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.7);
+  padding-top: 1em;
+  padding-left: 1em;
+}
+
+/* Style ajax progress message. */
+.form-actions.form-wrapper .ajax-progress.ajax-progress-throbber {
+  margin-right: 1em;
+}
+
+.form-actions.form-wrapper .ajax-progress.ajax-progress-throbber .message {
+  color: white;
+}
+/***/
+
