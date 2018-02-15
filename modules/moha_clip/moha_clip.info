@@ -8,6 +8,7 @@ dependencies[] = taxonomy
 dependencies[] = text
 dependencies[] = image
 dependencies[] = video
+dependencies[] = video_ui
 dependencies[] = media
 dependencies[] = field_collection
 

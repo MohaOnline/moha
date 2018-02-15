@@ -19,6 +19,9 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Heading 1'		, element : 'h1' },
       { name : 'Heading 2'		, element : 'h2' },
       { name : 'Heading 3'		, element : 'h3' },
+
+      { name : 'Reference'    , element : 'div' , attributes: {'class': 'reference'} },
+
       /*
       { name : 'Heading 4'		, element : 'h4' },
       { name : 'Heading 5'		, element : 'h5' },
@@ -43,6 +46,8 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Superscript'		, element : 'sup' },
       */
 
+      { name : 'Computer Code'	, element : 'code' },
+
       { name : 'Marker: Yellow'	, element : 'span', styles : { 'background-color' : 'Yellow' } },
       { name : 'Marker: Green'	, element : 'span', styles : { 'background-color' : 'Lime' } },
 
@@ -50,7 +55,6 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Small'			, element : 'small' },
       { name : 'Typewriter'		, element : 'tt' },
 
-      { name : 'Computer Code'	, element : 'code' },
       { name : 'Keyboard Phrase'	, element : 'kbd' },
       { name : 'Sample Text'		, element : 'samp' },
       { name : 'Variable'			, element : 'var' },

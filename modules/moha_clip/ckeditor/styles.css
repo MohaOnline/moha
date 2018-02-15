@@ -1,15 +1,29 @@
+@import "/sites/all/libraries/fontawesome/css/font-awesome.min.css";
 /* Adjust font in CKEditor WYSIWYG edit mode. */
 *:lang(zh-CN) {
-  font-family: 'microsoft yahei','PingFang SC',serif;
+  font-family: 'microsoft yahei','PingFang SC','hiragino sans gb',serif;
 }
 
 * {
-  font: 14px/1.5 -apple-system,'microsoft yahei','PingFang SC',system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",tahoma,arial,'helvetica neue','hiragino sans gb',sans-serif;
+  font: 14px/1.5 'microsoft yahei','PingFang SC',system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",tahoma,arial,'helvetica neue','hiragino sans gb',sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Adjust font size in both edit and view mode. */
-/* Paragraph title of article. */
+/** Adjust edit mode style to match bootstrap style. */
+.cke_editable_themed a {
+  color: #337ab7;
+  text-decoration: none;
+}
+.cke_editable_themed p {
+  margin: 0 0 10px;
+}
+.cke_editable_themed p:last-child {
+  margin-bottom: 0;
+}
+/***/
+
+/* Adjust font style in both edit and view mode. */
+/** Paragraph & article title. */
 .cke_editable_themed h1, .node-type-moha-clip h1 {
   font-size: 1.9em;
 }
@@ -19,6 +33,14 @@
 .cke_editable_themed h3, .node-type-moha-clip h3 {
   font-size: 1.2em;
 }
+.cke_editable_themed code { /* Add style for code in edit mode. */
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+}
+/***/
 
 /* Background of code area. */
 .cke_editable_themed .cke_widget_codeSnippet pre, .node-type-moha-clip .field-name-body pre {
@@ -46,3 +68,38 @@ code, code span {
 code.hljs {
   color: #80DA80;
 }
+
+/** Add styles for references. */
+.cke_editable_themed .reference-area, .node-type-moha-clip .reference-area {
+  position: relative;
+  background-color: lightgrey;
+  min-height: 6.5rem;
+  border-radius: 4px;
+}
+
+.cke_editable_themed  div.reference-area div.reference-icon,
+.cke_editable_themed  div.reference-area div.reference-icon:not([contenteditable=false]):not(.cke_show_blocks_off),
+.node-type-moha-clip .reference-icon {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  vertical-align: top;
+  background-color: grey;
+  max-width: 200px;
+  padding: 2rem;
+  border-radius: 5px 0 0 5px;
+}
+
+.cke_editable_themed .reference-icon span, .node-type-moha-clip .reference-icon span {
+  display: none;
+}
+
+.cke_editable_themed .reference-details, .node-type-moha-clip .reference-details {
+  display: inline-block;
+  vertical-align: top;
+  padding: 1rem 2rem;
+  margin-left: 6rem;
+}
+/***/

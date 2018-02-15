@@ -358,10 +358,10 @@ function moha_clip_form($node, $form_state) {
   // Add collapsible effect to image and video fields.
   drupal_add_js(MOHA_CLIP__PATH . '/js/moha_clip.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
 
-  // Pass settings to JS.
+  // Pass setting values from PHP to JS.
   drupal_add_js(array(
     MOHA_CLIP__MN => array(
-      'template_image_path' => '', // Usage. Drupal.settings.moha_clip.template_image_path.
+      'ckeditor_template_image_path' => MOHA_CLIP__PATH . '/ckeditor/', // Usage: Drupal.settings.moha_clip.ckeditor_template_image_path.
       'speaker' => ''
     )
   ), 'setting');

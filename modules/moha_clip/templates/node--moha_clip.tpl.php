@@ -83,10 +83,12 @@
 
 <link rel="stylesheet" href="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css">
 <link rel="stylesheet" href="<?php echo MOHA_CLIP__PATH;?>/ckeditor/styles.css">
+<link rel="stylesheet" href="<?php echo MOHA_CLIP__PATH;?>/css/moha_clip.css">
 
 <script src="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 <article id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
+
   <?php if ((!$page && !empty($title)) || !empty($title_prefix) || !empty($title_suffix) || $display_submitted): ?>
   <header>
     <?php print render($title_prefix); ?>
@@ -94,14 +96,9 @@
     <h2<?php print $title_attributes; ?>><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
     <?php endif; ?>
     <?php print render($title_suffix); ?>
-    <?php if ($display_submitted): ?>
-    <span class="submitted">
-      <?php print $user_picture; ?>
-      <?php print $submitted; ?>
-    </span>
-    <?php endif; ?>
   </header>
   <?php endif; ?>
+
   <?php
     // Hide comments, tags, and links now so that we can render them later.
     hide($content['comments']);
@@ -109,6 +106,12 @@
     hide($content['field_tags']);
     print render($content);
   ?>
+  <?php if ($display_submitted): ?>
+    <span class="submitted">
+      <?php print $user_picture; ?>
+      <?php print $submitted; ?>
+    </span>
+  <?php endif; ?>
   <?php
     // Only display the wrapper div if there are tags or links.
     $field_tags = render($content['field_tags']);
