@@ -1,15 +1,27 @@
 @import "/sites/all/libraries/fontawesome/css/font-awesome.min.css";
-/* Adjust font in CKEditor WYSIWYG edit mode. */
-*:lang(zh-CN) {
-  font-family: 'PingFang SC','microsoft yahei','hiragino sans gb',serif;
-}
+@import "../../../css/ckeditor-styles.css";
 
+/* Adjust font in CKEditor WYSIWYG edit mode. */
 * {
+  /* font-size/line-height */
   font: 14px/1.5 'PingFang SC','microsoft yahei',system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",tahoma,arial,'helvetica neue','hiragino sans gb',sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
+*:lang(zh-cn),*:lang(zh-CN),*:lang(zh-Hans)  {
+  font-family: 'PingFang SC','microsoft yahei','hiragino sans gb',serif;
+}
+
+*:lang(en) {
+
+}
+
 /** Adjust edit mode style to match bootstrap style. */
+/* Adopt font-size of root element. */
+html {
+  font-size: 10px;
+}
+
 /* Adopt link style. */
 .cke_editable_themed a {
   color: #337ab7;
@@ -64,51 +76,3 @@ code.hljs {
   color: #80DA80;
 }
 
-/** Add styles for references. */
-.cke_editable_themed .reference-area, .node-type-moha-clip .reference-area {
-  position: relative;
-  background-color: lightgrey;
-  min-height: 6.5rem;
-  border-radius: 4px;
-}
-
-.cke_editable_themed  div.reference-area div.reference-icon,
-.cke_editable_themed  div.reference-area div.reference-icon:not([contenteditable=false]):not(.cke_show_blocks_off),
-.node-type-moha-clip .reference-icon {
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  vertical-align: top;
-  background-color: grey;
-  max-width: 200px;
-  padding: 2rem;
-  border-radius: 5px 0 0 5px;
-}
-
-.cke_editable_themed .reference-icon span, .node-type-moha-clip .reference-icon span {
-  display: none;
-}
-
-.cke_editable_themed .reference-details, .node-type-moha-clip .reference-details {
-  display: inline-block;
-  vertical-align: top;
-  padding: 1rem 2rem;
-  margin-left: 6rem;
-}
-
-/* Adjust reference block to show more really in editor mode. */
-.cke_editable_themed.cke_show_blocks div.reference-area:not([contenteditable=false]):not(.cke_show_blocks_off) {
-  padding-top: 0;
-  padding-left: 0;
-}
-
-.cke_editable_themed .reference-details p:first-child {
-  margin-top: 0;
-}
-
-.cke_editable_themed .reference-details p:last-child {
-  margin-bottom: 0;
-}
-/***/

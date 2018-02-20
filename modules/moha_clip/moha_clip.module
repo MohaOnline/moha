@@ -196,7 +196,6 @@ function _moha_clip_prepare_text_format_and_ckeditor_profile() {
  * @param $text_format
  */
 function _moha_clip_prepare_ckeditor_profile($ck_profile, $text_format) {
-  global $base_url;
 
   // Prepare CKEditor profile.
   // Enable HTML source highlight by default.
@@ -205,7 +204,7 @@ config.startupOutlineBlocks = true;
 config.extraPlugins = \'codesnippet\';
 config.extraPlugins = \'codemirror\';
 config.codeSnippet_theme = \'monokai_sublime\';
-config.templates_files = [ "' . $base_url . MOHA_CLIP__PATH . '/ckeditor/templates.js" ];
+config.templates_files = [ "' . MOHA_CLIP__PATH . '/ckeditor/templates.js" ];
 config.templates_replaceContent = false;
 ';
 
@@ -243,9 +242,9 @@ config.templates_replaceContent = false;
       ),
     ),
     'css_mode' => 'self',
-    'css_path' => $base_url . MOHA_CLIP__PATH . '/ckeditor/styles.css',
+    'css_path' => MOHA_CLIP__PATH . '/ckeditor/styles.css',
     'css_style' => 'self',
-    'styles_path' => $base_url . MOHA_CLIP__PATH . '/ckeditor/styles.js',
+    'styles_path' => MOHA_CLIP__PATH . '/ckeditor/styles.js',
     'filebrowser' => $file_browser,
     'filebrowser_image' => $file_browser,
     'filebrowser_flash' => $file_browser,

@@ -1,0 +1,136 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/** Common layout styles for spotlight  */
+div.moha-spotlight {
+  position: relative;
+  vertical-align: middle;
+  border-radius: 4px;
+}
+
+/* Remove padding in edit mode */
+.cke_editable_themed.cke_show_blocks div.moha-spotlight:not([contenteditable=false]):not(.cke_show_blocks_off) {
+  padding-top: 0;
+  padding-left: 0;
+}
+
+.cke_editable_themed  div.moha-spotlight div.moha-spotlight-icon,
+.cke_editable_themed  div.moha-spotlight div.moha-spotlight-icon:not([contenteditable=false]):not(.cke_show_blocks_off),
+div.moha-spotlight div.moha-spotlight-icon {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  text-align: center;
+  width: 5rem;
+  min-height: 5rem;
+  padding: 1.5rem;
+  font-size: 2rem;
+  border-radius: 5px 0 0 5px;
+}
+
+/* Adjust icon size. */
+div.moha-spotlight div.moha-spotlight-icon:before {
+  font-size: 2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+div.moha-spotlight div.moha-spotlight-icon span {
+  display: none;
+}
+
+div.moha-spotlight-details {
+  display: inline-block;
+  padding: 1.5rem 1rem;
+  margin-left: 5rem;
+}
+
+.cke_editable_themed div.moha-spotlight-details p:last-child {
+  margin-bottom: 0;
+}
+
+.cke_editable_themed div.moha-spotlight-details p:first-child {
+  margin-top: 0;
+}
+/***/
+
+/** Add color for hint spotlight. */
+div.moha-spotlight.hint-area {
+  background-color: #dff0d8;
+  color: #3c763d;
+}
+
+div.moha-spotlight.hint-area div.moha-spotlight-icon {
+  background-color: #3c763d;
+  color: white;
+}
+/***/
+
+/** Add styles for references. */
+.cke_editable_themed .reference-area,
+.node-type-moha-clip .reference-area {
+  position: relative;
+  background-color: lightgrey;
+  border-radius: 4px;
+}
+
+.cke_editable_themed  div.reference-area div.reference-icon,
+.cke_editable_themed  div.reference-area div.reference-icon:not([contenteditable=false]):not(.cke_show_blocks_off),
+.node-type-moha-clip .reference-icon {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  vertical-align: top;
+  background-color: grey;
+  width: 5rem;
+  min-height: 5rem;
+  padding: 1.5rem;
+  border-radius: 5px 0 0 5px;
+  font-size: 2rem;
+  color: black;
+}
+
+/* Adjust icon size. */
+.cke_editable_themed  div.reference-area div.reference-icon:before,
+.node-type-moha-clip .reference-icon:before {
+  font-size: 2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cke_editable_themed .reference-icon span, .node-type-moha-clip .reference-icon span {
+  display: none;
+}
+
+.cke_editable_themed .reference-details, .node-type-moha-clip .reference-details {
+  display: inline-block;
+  vertical-align: top;
+  padding: 1.5rem 1rem;
+  margin-left: 5rem;
+}
+
+/* Adjust reference block to show more really in editor mode. */
+.cke_editable_themed.cke_show_blocks div.reference-area:not([contenteditable=false]):not(.cke_show_blocks_off) {
+  padding-top: 0;
+  padding-left: 0;
+}
+
+.cke_editable_themed .reference-details p:first-child {
+  margin-top: 0;
+}
+
+.cke_editable_themed .reference-details p:last-child {
+  margin-bottom: 0;
+}
+/***/
