@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+p {
+  margin: 1rem 1rem;
+}
+
 /** Common layout styles for spotlight  */
 div.moha-spotlight {
   position: relative;
@@ -52,11 +56,11 @@ div.moha-spotlight-details {
   margin-left: 5rem;
 }
 
-.cke_editable_themed div.moha-spotlight-details p:last-child {
+div.moha-spotlight-details p:last-child {
   margin-bottom: 0;
 }
 
-.cke_editable_themed div.moha-spotlight-details p:first-child {
+div.moha-spotlight-details p:first-child {
   margin-top: 0;
 }
 /***/
