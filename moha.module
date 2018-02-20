@@ -112,3 +112,19 @@ function moha_grant_imce_profile_2_role($role_name, $profile_id = 0) {
     variable_set('imce_roles_profiles', $roles_profiles);
   }
 }
+
+/**
+ * Implements hook_admin_paths().
+ */
+function moha_admin_paths() {
+  $paths = array();
+
+  /* Let imce use admin theme. */
+  $paths['imce'] = TRUE;
+  $paths['*/imce'] = TRUE;
+
+  $paths['moha/*/add'] = TRUE;
+
+  return $paths;
+}
+

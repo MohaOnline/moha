@@ -1,24 +1,19 @@
 @import "/sites/all/libraries/fontawesome/css/font-awesome.min.css";
 /* Adjust font in CKEditor WYSIWYG edit mode. */
 *:lang(zh-CN) {
-  font-family: 'microsoft yahei','PingFang SC','hiragino sans gb',serif;
+  font-family: 'PingFang SC','microsoft yahei','hiragino sans gb',serif;
 }
 
 * {
-  font: 14px/1.5 'microsoft yahei','PingFang SC',system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",tahoma,arial,'helvetica neue','hiragino sans gb',sans-serif;
+  font: 14px/1.5 'PingFang SC','microsoft yahei',system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",tahoma,arial,'helvetica neue','hiragino sans gb',sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 /** Adjust edit mode style to match bootstrap style. */
+/* Adopt link style. */
 .cke_editable_themed a {
   color: #337ab7;
   text-decoration: none;
-}
-.cke_editable_themed p {
-  margin: 0 0 10px;
-}
-.cke_editable_themed p:last-child {
-  margin-bottom: 0;
 }
 /***/
 
@@ -101,5 +96,19 @@ code.hljs {
   vertical-align: top;
   padding: 1rem 2rem;
   margin-left: 6rem;
+}
+
+/* Adjust reference block to show more really in editor mode. */
+.cke_editable_themed.cke_show_blocks div.reference-area:not([contenteditable=false]):not(.cke_show_blocks_off) {
+  padding-top: 0;
+  padding-left: 0;
+}
+
+.cke_editable_themed .reference-details p:first-child {
+  margin-top: 0;
+}
+
+.cke_editable_themed .reference-details p:last-child {
+  margin-bottom: 0;
 }
 /***/
