@@ -22,6 +22,15 @@ div.cke_combopanel {
    width: 300px;
 }
 
+
+/** CKEditor Styles. */
+/* Template dialog height. */
+.cke_tpl_list {
+  height: 460px;
+  min-height: 460px;
+}
+/***/
+
 /** Fix media widget style for feature images field, this should also work for other fields which is using media widget. */
 /* Eliminate browse button indent, and add top margin. */
 .media-widget.form-media .preview {

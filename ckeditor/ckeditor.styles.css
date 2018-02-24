@@ -1,7 +1,34 @@
+/**
+ *
+ */
+@import "/sites/all/libraries/fontawesome/css/font-awesome.min.css";
+
+/* Adjust font in CKEditor WYSIWYG edit mode. */
 * {
+  /* font-size/line-height */
+  font: 14px/1.5 'PingFang SC','microsoft yahei',system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",tahoma,arial,'helvetica neue','hiragino sans gb',sans-serif;
+  -webkit-font-smoothing: antialiased;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+}
+
+*:lang(zh-cn),*:lang(zh-CN),*:lang(zh-Hans)  {
+  font-family: 'PingFang SC','microsoft yahei','hiragino sans gb',serif;
+}
+
+*:lang(en) {
+
+}
+
+code, code span {
+  font-family: Menlo,Monaco,Consolas,"Liberation Mono",monospace,Inconsolata,Courier,'Courier New';
+}
+
+/** Adjust edit mode style to match bootstrap style. */
+/* Adopt font-size of root element. */
+html {
+  font-size: 10px;
 }
 
 p {
@@ -9,14 +36,69 @@ p {
   text-align: justify;
 }
 
+/* Adopt bootstrap link style. */
+.cke_editable_themed a {
+  color: #337ab7;
+  text-decoration: none;
+}
+
+/* Adopt bootstrap code style. */
+.cke_editable_themed code { /* Add style for code in edit mode. */
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+}
+/***/
+
+/* Adjust font style in both edit and view mode. */
+
+/** Styles of code area. */
+.cke_editable_themed .cke_widget_codeSnippet pre, .node-type-moha-clip .field-name-body pre {
+  padding: 0;
+  border: none;
+}
+
+.node-type-moha-clip .field-name-body pre {
+  background-color: #292b2c;
+}
+
+.cke_editable_themed .cke_widget_codeSnippet pre code, .node-type-moha-clip .field-name-body pre code {
+  white-space: pre;
+  border-left: 4px solid #2c8ebb;
+  border-radius: 4px;
+  padding: 0.5em;
+  background-color: #292b2c;
+  -webkit-font-smoothing: antialiased;
+}
+
+code.hljs {
+  color: #80DA80;
+}
+/***/
+
+/** Paragraph & article title. */
+.cke_editable_themed h1, .node-type-moha-clip h1 {
+  font-size: 2em;
+}
+.cke_editable_themed h2, .node-type-moha-clip h2 {
+  font-size: 1.6em;
+}
+.cke_editable_themed h3, .node-type-moha-clip h3 {
+  font-size: 1.2em;
+}
+/***/
+
 /** Common layout styles for spotlight  */
 div.moha-spotlight {
+  margin: 1rem 0;
   position: relative;
   vertical-align: middle;
   border-radius: 4px;
 }
 
-/* Remove padding in edit mode */
+/* Remove div.moha-spotlight padding in edit mode */
 .cke_editable_themed.cke_show_blocks div.moha-spotlight:not([contenteditable=false]):not(.cke_show_blocks_off) {
   padding-top: 0;
   padding-left: 0;
@@ -35,18 +117,18 @@ div.moha-spotlight div.moha-spotlight-icon {
   min-height: 5rem;
   padding: 1.5rem;
   font-size: 2rem;
-  border-radius: 5px 0 0 5px;
+  border-radius: 4px 0 0 4px;
 }
 
-/* Adjust icon size. */
+/* Adjust icon position to middle center. */
 div.moha-spotlight div.moha-spotlight-icon:before {
-  font-size: 2rem;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
+/* Hides icon placeholder. */
 div.moha-spotlight div.moha-spotlight-icon span {
   display: none;
 }
@@ -57,6 +139,7 @@ div.moha-spotlight-details {
   margin-left: 5rem;
 }
 
+/*  */
 div.moha-spotlight-details p:last-child {
   margin-bottom: 0;
 }
@@ -66,15 +149,51 @@ div.moha-spotlight-details p:first-child {
 }
 /***/
 
-/** Add color for hint spotlight. */
-div.moha-spotlight.hint-area {
+/** Add color for info spotlight. */
+div.moha-spotlight.info-area {
   background-color: #dff0d8;
   color: #3c763d;
 }
 
-div.moha-spotlight.hint-area div.moha-spotlight-icon {
+div.moha-spotlight.info-area div.moha-spotlight-icon {
   background-color: #3c763d;
   color: white;
+}
+/***/
+
+/** Add color for warning spotlight. */
+div.moha-spotlight.warning-area {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+div.moha-spotlight.warning-area div.moha-spotlight-icon {
+  background-color: #856404;
+  color: #ffeeba;
+}
+/***/
+
+/** Add color for danger spotlight. */
+div.moha-spotlight.danger-area {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+div.moha-spotlight.danger-area div.moha-spotlight-icon {
+  background-color: #721c24;
+  color: #f5c6cb;
+}
+/***/
+
+/** Add color for primary spotlight. */
+div.moha-spotlight.primary-area {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+div.moha-spotlight.primary-area div.moha-spotlight-icon {
+  background-color: #004085;
+  color: #b8daff;
 }
 /***/
 

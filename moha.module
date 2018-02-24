@@ -3,6 +3,31 @@
 define('MOHA__TIME_OUT__HTTP_REQUEST', '120');
 
 /**
+ * Human name.
+ */
+define('MOHA', 'Moha');
+
+/**
+ * Machine name.
+ */
+define('__MOHA', 'moha');
+
+/**
+ * moha__variables.
+ */
+define('MOHA__VARIABLES', __MOHA . '__variables');
+
+/**
+ * sites/all/modules/custom/moha
+ */
+define('MOHA__RELATIVE_PATH', drupal_get_path('module', __MOHA));
+
+/**
+ * /sites/all/modules/custom/moha
+ */
+define('MOHA__PATH', base_path() . MOHA__RELATIVE_PATH);
+
+/**
  *
  *
  * @return array
@@ -30,6 +55,23 @@ function _moha_admin_common_permissions() {
 function _moha_prepare_roles_and_permissions() {
   $manager_permission = array();
 
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Mount configurations which need be passed to templates.js of CKEditor.
+ * TODO: Should only mount when CKEditor enable.
+ */
+function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
+  // Pass path of CKEditor templates icons from PHP to JS.
+  drupal_add_js(array(
+    __MOHA => array(
+      'ckeditor_template_image_path' => MOHA__PATH . '/ckeditor/', // Usage: Drupal.settings.moha.ckeditor_template_image_path.
+    )
+  ), 'setting');
+
+  return;
 }
 
 /**
@@ -128,3 +170,5 @@ function moha_admin_paths() {
   return $paths;
 }
 
+// include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
+ctools_include('moha.ckeditor', __MOHA, 'ckeditor');

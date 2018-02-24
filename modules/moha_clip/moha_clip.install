@@ -37,6 +37,9 @@ function moha_clip_install() {
   // Create IMCE profile.
   _moha_clip_prepare_imce_profile();
 
-  // Create Text Format & CKEditor profile.
-  _moha_clip_prepare_text_format_and_ckeditor_profile();
+  // Create Text Format.
+  _moha_clip_prepare_text_format();
+
+  // Create CKEditor profile.
+  _moha_clip_prepare_ckeditor_profile();
 }
