@@ -159,6 +159,10 @@ div.moha-spotlight.info-area div.moha-spotlight-icon {
   background-color: #3c763d;
   color: white;
 }
+
+div.moha-spotlight.info-area div.moha-spotlight-icon:before {
+  content: "\f129"; /* Awosome font: info.*/
+}
 /***/
 
 /** Add color for warning spotlight. */
@@ -170,6 +174,10 @@ div.moha-spotlight.warning-area {
 div.moha-spotlight.warning-area div.moha-spotlight-icon {
   background-color: #856404;
   color: #ffeeba;
+}
+
+div.moha-spotlight.warning-area div.moha-spotlight-icon:before {
+  content: "\f12a"; /* Awosome font: exclamation.*/
 }
 /***/
 
@@ -183,6 +191,10 @@ div.moha-spotlight.danger-area div.moha-spotlight-icon {
   background-color: #721c24;
   color: #f5c6cb;
 }
+
+div.moha-spotlight.danger-area div.moha-spotlight-icon:before {
+  content: "\f00d"; /* Awosome font: times.*/
+}
 /***/
 
 /** Add color for primary spotlight. */
@@ -195,9 +207,22 @@ div.moha-spotlight.primary-area div.moha-spotlight-icon {
   background-color: #004085;
   color: #b8daff;
 }
+
+div.moha-spotlight.primary-area div.moha-spotlight-icon:before {
+  content: "\f02d"; /* Awosome font: book.*/
+}
 /***/
 
 /** Add styles for references. */
+div.moha-spotlight.reference-area div.moha-spotlight-icon {
+  background-color: grey;
+  color: black;
+}
+
+div.moha-spotlight.reference-area div.moha-spotlight-icon:before {
+  content: "\f08e"; /* Awosome font: external-link.*/
+}
+
 .cke_editable_themed .reference-area,
 .node-type-moha-clip .reference-area {
   position: relative;

@@ -16,13 +16,13 @@ info_area_template += '</div>';
 
 var reference_links_template = '';
 reference_links_template += '<div class="moha-spotlight reference-area">';
-reference_links_template += '<div class="moha-spotlight-icon reference-icon fa fa-external-link"><span>&nbsp;</span></div>';
+reference_links_template += '<div class="moha-spotlight-icon fa fa-external-link"><span>&nbsp;</span></div>';
 reference_links_template += '<div class="moha-spotlight-details reference-details"><p>&nbsp;</p></div>';
 reference_links_template += '</div>';
 
 var warning_area_template = '';
 warning_area_template += '<div class="moha-spotlight warning-area">';
-warning_area_template += '<div class="moha-spotlight-icon warning-icon fa fa-warning"><span>&nbsp;</span></div>';
+warning_area_template += '<div class="moha-spotlight-icon fa fa-warning"><span>&nbsp;</span></div>';
 warning_area_template += '<div class="moha-spotlight-details warning-details"><p>&nbsp;</p></div>';
 warning_area_template += '</div>';
 
