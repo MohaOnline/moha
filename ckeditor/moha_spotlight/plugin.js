@@ -33,7 +33,9 @@ CKEDITOR.plugins.add( 'moha_spotlight', {
         return element.name == 'div' && element.hasClass( 'moha-spotlight' );
       },
 
+      // Read widget DOM status, then set to Widget data structure.
       init: function () {
+        // set widget.data.type values per class of DOM.
         if ( this.element.hasClass( 'primary-area' ) ){
           this.setData( 'type', 'primary-area' );
         }
@@ -54,13 +56,16 @@ CKEDITOR.plugins.add( 'moha_spotlight', {
       // executed every time the widget data is changed, @See commit function in dialog.
       // https://docs.ckeditor.com/ckeditor4/latest/guide/widget_sdk_tutorial_2.html.
       data: function () {
-        this.element.removeClass( 'primary-area' );
-        this.element.removeClass( 'info-area' );
-        this.element.removeClass( 'reference-area' );
-        this.element.removeClass( 'warning-area' );
-        this.element.removeClass( 'danger-area' );
-        if ( this.data.type )
-          this.element.addClass( this.data.type );
+
+        if ( this.data.type ) {
+          // @See: https://docs.ckeditor.com/ckeditor4/latest/api/CKEDITOR_dom_element.html#method-removeClass
+          this.element.removeClass('primary-area');
+          this.element.removeClass('info-area');
+          this.element.removeClass('reference-area');
+          this.element.removeClass('warning-area');
+          this.element.removeClass('danger-area');
+          this.element.addClass(this.data.type);
+        }
       }
 
     } );

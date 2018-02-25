@@ -19,15 +19,18 @@ CKEDITOR.dialog.add( 'moha_spotlight', function( editor ) {
               [ 'warning-area', 'warning-area' ],
               [ 'danger-area', 'danger-area' ]
             ],
+            // Get values from widget data.
             setup: function( widget ) {
               this.setValue( widget.data.type );
             },
+            // Save values to widget data.
             commit: function( widget ) {
               widget.setData( 'type', this.getValue() );
             }
           }
         ]
-      }
+      } /// Tab 1.
     ]
+    /// contents.
   };
 } );
