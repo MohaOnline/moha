@@ -4,5 +4,24 @@
  */
 
 function moha_newsletter_install() {
+  // Create a vocabulary named "Newsletter Category", enabled for the 'moha_newsletter' content type.
+  $vocabulary = (object) array(
+    'name' => t('Newsletter Category'),
+    'description' => t('Use <em>Newsletter Category</em> to group moha_newsletter by categories.'),
+    'machine_name' => 'newsletter_category',
+  );
 
+  taxonomy_vocabulary_save($vocabulary);
+
+  // Create Roles.
+  _moha_newsletter_prepare_roles_and_permissions();
+
+  // Create IMCE profile.
+  _moha_newsletter_prepare_imce_profile();
+
+  // Create Text Format.
+  _moha_newsletter_prepare_text_format();
+
+  // Create CKEditor profile.
+  _moha_newsletter_prepare_ckeditor_profile();
 }
