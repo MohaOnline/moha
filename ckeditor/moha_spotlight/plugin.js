@@ -5,7 +5,7 @@ info_area_template += '<div class="moha-spotlight-icon fa fa-info"><span>&nbsp;<
 info_area_template += '<div class="moha-spotlight-details"><p>&nbsp;</p></div>';
 info_area_template += '</div>';
 
-var allowedContents = 'p br ul ol li strong em a[*] div span i img[*]';
+var allowedContents = 'p; br; ul; ol; li; strong; em; a[*]; div; span; i; img[*]';
 
 CKEDITOR.plugins.add( 'moha_spotlight', {
   requires: 'widget',
