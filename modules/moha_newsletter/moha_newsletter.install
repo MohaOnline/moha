@@ -1,0 +1,8 @@
+<?php
+/**
+ * @file
+ */
+
+function moha_newsletter_install() {
+
+}

@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_NEWSLETTER', 'Moha Newsletter');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_NEWSLETTER', 'moha_newsletter');
+
+/**
+ * moha_newsletter__variables.
+ */
+define('MOHA_NEWSLETTER__VARIABLES', __MOHA_NEWSLETTER . '__variables');
+
+

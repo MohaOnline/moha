@@ -1,0 +1,10 @@
+name = Moha Newsletter
+description = Newsletter support of Moha Online.
+core = 7.x
+package = Moha Online
+
+dependencies[] = moha
+dependencies[] = taxonomy
+dependencies[] = text
+dependencies[] = image
+dependencies[] = media
