@@ -231,6 +231,7 @@ config.extraPlugins = \'codesnippet\';
 config.extraPlugins = \'codemirror\';
 config.codeSnippet_theme = \'monokai_sublime\';
 config.templates_files = [ "' . MOHA_CLIP__PATH . '/ckeditor/templates.js" ];
+config.templates = \'moha\';
 config.templates_replaceContent = false;
 ';
 

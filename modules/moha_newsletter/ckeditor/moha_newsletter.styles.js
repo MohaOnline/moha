@@ -15,10 +15,10 @@ if(typeof(CKEDITOR) !== 'undefined') {
       // These styles are already available in the "Format" drop-down list, so they are
       // not needed here by default. You may enable them to avoid placing the
       // "Format" drop-down list in the toolbar, maintaining the same features.
-      { name : 'Paragraph'		, element : 'p' },
-      { name : 'Heading 1'		, element : 'h1' },
-      { name : 'Heading 2'		, element : 'h2' },
-      { name : 'Heading 3'		, element : 'h3' },
+      { name : 'Paragraph', element : 'p' },
+      { name : 'Heading 1', element : 'h1' },
+      { name : 'Heading 2', element : 'h2' },
+      { name : 'Heading 3', element : 'h3' },
 
       /*
       { name : 'Heading 4'		, element : 'h4' },
@@ -28,8 +28,10 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Address'			, element : 'address' },
       */
 
+      /*
       { name : 'Blue Title'		, element : 'h3', styles : { 'color' : 'Blue' } },
       { name : 'Red Title'		, element : 'h3', styles : { 'color' : 'Red' } },
+      */
 
       /* Inline Styles */
 
@@ -44,8 +46,8 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Superscript'		, element : 'sup' },
       */
 
-      { name : 'Computer Code'	, element : 'code' },
-      { name : 'Keyboard'	, element : 'kbd' },
+      { name : 'Computer Code'      , element : 'code' },
+      { name : 'Keyboard Phrase'	, element : 'kbd' },
 
       { name : 'Marker: Yellow'	, element : 'span', styles : { 'background-color' : 'Yellow' } },
       { name : 'Marker: Green'	, element : 'span', styles : { 'background-color' : 'Lime' } },
@@ -54,7 +56,6 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Small'			, element : 'small' },
       { name : 'Typewriter'		, element : 'tt' },
 
-      { name : 'Keyboard Phrase'	, element : 'kbd' },
       { name : 'Sample Text'		, element : 'samp' },
       { name : 'Variable'			, element : 'var' },
 

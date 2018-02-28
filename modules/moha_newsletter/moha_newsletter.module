@@ -18,4 +18,456 @@ define('__MOHA_NEWSLETTER', 'moha_newsletter');
  */
 define('MOHA_NEWSLETTER__VARIABLES', __MOHA_NEWSLETTER . '__variables');
 
+/**
+ * /sites/all/modules/custom/moha/modules/moha_newsletter.
+ */
+define('MOHA_NEWSLETTER__PATH', base_path() . drupal_get_path('module', __MOHA_NEWSLETTER));
 
+/**
+ * sites/all/modules/custom/moha/modules/moha_newsletter.
+ */
+define('MOHA_NEWSLETTER__RELATIVE_PATH', drupal_get_path('module', __MOHA_NEWSLETTER));
+
+/**
+ * Permission: view moha_newsletter content.
+ */
+define('MOHA_NEWSLETTER__PERMISSION__VIEW', 'view ' . __MOHA_NEWSLETTER . ' content');
+
+/**
+ * Permission: create moha_newsletter content.
+ */
+define('MOHA_NEWSLETTER__PERMISSION__CREATE', 'create ' . __MOHA_NEWSLETTER . ' content');
+
+/**
+ * Permission: edit own moha_newsletter content.
+ */
+define('MOHA_NEWSLETTER__PERMISSION__EDIT_OWN', 'edit own ' . __MOHA_NEWSLETTER . ' content');
+
+/**
+ * Permission: edit any moha_newsletter content.
+ */
+define('MOHA_NEWSLETTER__PERMISSION__EDIT_ANY', 'edit any ' . __MOHA_NEWSLETTER . ' content');
+
+/**
+ * Permission: delete own moha_newsletter content.
+ */
+define('MOHA_NEWSLETTER__PERMISSION__DELETE_OWN', 'delete own ' . __MOHA_NEWSLETTER . ' content');
+
+/**
+ * Permission: delete any moha_newsletter content.
+ */
+define('MOHA_NEWSLETTER__PERMISSION__DELETE_ANY', 'delete any ' . __MOHA_NEWSLETTER . ' content');
+
+/**
+ * moha_newsletter__role__manager.
+ */
+define('MOHA_NEWSLETTER__ROLE__MANAGER', __MOHA_NEWSLETTER . '__role__manager');
+
+/**
+ * moha_newsletter__role__admin.
+ */
+define('MOHA_NEWSLETTER__ROLE__ADMIN', __MOHA_NEWSLETTER . '__role__admin');
+
+/**
+ * moha_newsletter__text_format.
+ */
+define('MOHA_NEWSLETTER__TEXT_FORMAT', __MOHA_NEWSLETTER . '__text_format');
+
+/**
+ * moha_newsletter__ck_profile.
+ */
+define('MOHA_NEWSLETTER__CK_PROFILE', __MOHA_NEWSLETTER . '__ck_profile');
+
+/**
+ * Create necessary roles and permissions.
+ */
+function _moha_newsletter_prepare_roles_and_permissions() {
+  $admin_permissions = array();
+  $admin_permissions[] = MOHA_NEWSLETTER__PERMISSION__CREATE;
+  $admin_permissions[] = MOHA_NEWSLETTER__PERMISSION__EDIT_ANY;
+  $admin_permissions[] = MOHA_NEWSLETTER__PERMISSION__DELETE_ANY;
+
+  $manager_permissions = array();
+  $manager_permissions[] = MOHA_NEWSLETTER__PERMISSION__CREATE;
+  $manager_permissions[] = MOHA_NEWSLETTER__PERMISSION__EDIT_OWN;
+  $manager_permissions[] = MOHA_NEWSLETTER__PERMISSION__EDIT_ANY;
+
+  $user_permissions = array();
+  $user_permissions[] = MOHA_NEWSLETTER__PERMISSION__VIEW;
+
+  moha_grant_permissions_2_role(MOHA_NEWSLETTER__ROLE__ADMIN, $admin_permissions);
+  moha_grant_permissions_2_role(MOHA_NEWSLETTER__ROLE__MANAGER, $manager_permissions);
+}
+
+
+/**
+ * Create IMCE profile for Moha Clip Manager and Moha Clip Admin.
+ */
+function _moha_newsletter_prepare_imce_profile() {
+
+  $profile = array(
+    'name' => MOHA_NEWSLETTER . ' Manager Profile',
+    'usertab' => 1,
+    'filesize' => 0,
+    'quota' => 0,
+    'tuquota' => 0, // Total quotation.
+    'extensions' => 'gif png jpg jpeg',
+    'dimensions' => '1200x1200',
+    'filenum' => 0,
+    'mkdirnum' => 0,
+    'directories' => array(),
+    'thumbnails' => array()
+  );
+
+  // File upload destination folder.
+  $profile['directories'][] = array(
+    'name' => '%uid',
+    'subnav' => TRUE,
+    'browse' => TRUE,
+    'upload' => TRUE,
+    'thumb' => TRUE,
+    'delete' => TRUE,
+    'resize' => TRUE,
+    'mkdir' => TRUE,
+    'rmdir' => TRUE,
+  );
+
+  $profiles = variable_get('imce_profiles', array());
+  $profiles[] = $profile;
+  end($profiles);
+  $profile_id = key($profiles);
+  variable_set('imce_profiles', $profiles);
+
+  moha_grant_imce_profile_2_role(MOHA_NEWSLETTER__ROLE__ADMIN, $profile_id);
+  moha_grant_imce_profile_2_role(MOHA_NEWSLETTER__ROLE__MANAGER, $profile_id);
+}
+
+/**
+ * Create Moha Newsletter Text Format.
+ */
+function _moha_newsletter_prepare_text_format() {
+  $format = array(
+    'format' => MOHA_NEWSLETTER__TEXT_FORMAT,
+    'name' => MOHA_NEWSLETTER. ' Clip Format',
+    'weight' => -8,
+    'filters' => array(
+      // URL filter.
+      'filter_url' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      // Line break filter.
+      'filter_autop' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      // HTML corrector filter.
+      'filter_htmlcorrector' => array(
+        'weight' => 10,
+        'status' => 1,
+      ),
+    ),
+  );
+
+  $format = (object) $format;
+  filter_format_save($format);
+
+  // Grant text format permission to related roles.
+  $role_names = array(
+    MOHA_NEWSLETTER__ROLE__ADMIN,
+    MOHA_NEWSLETTER__ROLE__MANAGER
+  );
+
+  if ($permission = filter_permission_name($format)) {
+    foreach ($role_names as $role_name) {
+      $role = user_role_load_by_name($role_name);
+      if ($role) {
+        user_role_grant_permissions($role->rid, array($permission));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function moha_newsletter_element_info_alter(&$type) {
+  // Change text format processing on elements to clean UI.
+  if (isset($type['text_format'])) {
+    // Default function: filter_process_format
+    // Add process function: _moha_newsletter__text_format_process
+    $type['text_format']['#process'][] = '_'. MOHA_NEWSLETTER__TEXT_FORMAT . '_process';
+  }
+}
+
+/**
+ * Hides help link, hides guidelines, hides text format select drop-down menu.
+ */
+function _moha_newsletter__text_format_process($element) {
+  // TODO don't check format, check node bundle.
+  if ($element['#format'] != MOHA_NEWSLETTER__TEXT_FORMAT) {
+    return $element;
+  }
+  else {
+    // Pass setting values from PHP to JS.
+    drupal_add_js(array(
+      __MOHA_NEWSLETTER => array(
+        'ckeditor_template_image_path' => MOHA_NEWSLETTER__PATH . '/ckeditor/', // Usage: Drupal.settings.moha_newsletter.ckeditor_template_image_path.
+      )
+    ), 'setting');
+  }
+
+  if ( $element['#entity_type'] == "node" && ( $element['#bundle'] == 'simplenews' || $element['#bundle'] == __MOHA_NEWSLETTER ) ) {
+
+  // Remove type: fieldset, which causes 1px grey border.
+  unset($element['format']['#type']);
+  unset($element['format']['format']['#title']);
+//  $element['format']['format']['#access'] = FALSE;
+  $element['format']['help']['#access'] = FALSE;
+  $element['format']['guidelines']['#access'] = FALSE;
+
+  }
+  return $element;
+}
+
+/**
+ * Create CKEditor profile for Moha Clip.
+ */
+function _moha_newsletter_prepare_ckeditor_profile() {
+
+  // Prepare CKEditor profile.
+  // Enable HTML source highlight by default.
+  $config_js = '
+config.startupOutlineBlocks = true;
+config.extraPlugins = \'codemirror\';
+config.templates_files = [ "' . MOHA_NEWSLETTER__PATH . '/ckeditor/moha_newsletter.templates.js" ];
+config.templates = \'moha_newsletter\';
+config.templates_replaceContent = false;
+';
+
+  $file_browser = 'imce';
+
+  $profile_data = array(
+    'ss' => 2,
+    'toolbar' => "[
+    ['Templates'],
+    ['Styles', 'TextColor', 'Bold', 'Italic', 'Underline', 'NumberedList', 'BulletedList', 'Blockquote', '-','RemoveFormat'],
+    ['Image', 'HorizontalRule', 'Link', 'Unlink'], ['Maximize', 'Source']
+]",
+    'expand' => 't',
+    'default' => 't',
+    'show_toggle' => 'f',
+    'uicolor' => 'default',
+    'uicolor_user' => 'default',
+    'width' => '100%',
+    'lang' => 'en',
+    'auto_lang' => 't',
+    'language_direction' => 'default',
+    'allowed_content' => 'f',
+    'extraAllowedContent' => '',
+    'enter_mode' => 'p',
+    'shift_enter_mode' => 'br',
+    'font_format' => 'p;div;pre;address;h1;h2;h3;h4;h5;h6',
+    'custom_formatting' => 'f',
+    'formatting' => array(
+      'custom_formatting_options' => array(
+        'indent' => 'indent',
+        'breakBeforeOpen' => 'breakBeforeOpen',
+        'breakAfterOpen' => 'breakAfterOpen',
+        'breakAfterClose' => 'breakAfterClose',
+        'breakBeforeClose' => 0,
+        'pre_indent' => 0,
+      ),
+    ),
+    'css_mode' => 'self',
+    'css_path' => MOHA_NEWSLETTER__PATH . '/ckeditor/moha_newsletter.styles.css',
+    'css_style' => 'self',
+    'styles_path' => MOHA_NEWSLETTER__PATH . '/ckeditor/moha_newsletter.styles.js',
+    'filebrowser' => $file_browser,
+    'filebrowser_image' => $file_browser,
+    'filebrowser_flash' => $file_browser,
+    'UserFilesPath' => '%b%f%u/',
+    'UserFilesAbsolutePath' => '%d%b%f%u/',
+    'forcePasteAsPlainText' => 't',
+    'html_entities' => 'f',
+    'scayt_autoStartup' => 'f',
+    'theme_config_js' => 't',
+    'js_conf' => $config_js,
+    'loadPlugins' => array(
+      'drupalbreaks' => array(
+        'name' => 'drupalbreaks',
+        'desc' => t('Plugin for inserting Drupal teaser and page breaks.'),
+        'path' => '%plugin_dir%drupalbreaks/',
+        'buttons' => array(
+          'DrupalBreak' => array(
+            'label' => 'DrupalBreak',
+            'icon' => 'images/drupalbreak.png',
+          ),
+        ),
+        'default' => 't',
+      ),
+    ),
+  );
+
+  db_query('INSERT INTO {ckeditor_settings} (name, settings) VALUES(:name, :settings)',
+    array(
+      ':name' => MOHA_NEWSLETTER__CK_PROFILE,
+      ':settings' => serialize($profile_data),
+    )
+  );
+
+  db_query("INSERT INTO {ckeditor_input_format} (name, format) VALUES(:name, :format)",
+    array(
+      ':name' => MOHA_NEWSLETTER__CK_PROFILE,
+      ':format' => MOHA_NEWSLETTER__TEXT_FORMAT,
+    ));
+}
+
+
+
+/**
+ * Implements hook_node_info().
+ */
+function moha_newsletter_node_info() {
+
+  $items = array(
+    __MOHA_NEWSLETTER => array(
+      'name' => t(MOHA_NEWSLETTER),
+      'base' => __MOHA_NEWSLETTER, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
+      'description' => t('Use <i>Moha Newsletter</i> to store your email notificaitons.'),
+      'title_label' => t('Title'),
+      'has_title' => TRUE,
+      'locked' => FALSE,
+    ),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Moha Clip node add / edit form.
+ *
+ * Drupal needs for us to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/moha-clip.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
+ */
+function moha_newsletter_form($node, $form_state) {
+  global $theme_key;
+
+  if ($theme_key == 'seven') {
+    // Fix admin style issue when admin theme is seven.
+    drupal_add_css(MOHA__RELATIVE_PATH . '/css/moha.admin.css');
+  }
+
+  // Add collapsible effect to image and video fields.
+  drupal_add_js(MOHA__PATH . '/js/moha.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
+
+  return node_content_form($node, $form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ * add additional functions to moha_newsletter node form:
+ *  - Save & Stay: Ajax saving function for edit form.
+ */
+function moha_newsletter_form_moha_newsletter_node_form_alter(&$form, &$form_state, $form_id) {
+
+  // Ajax saving function hasn't supported node-adding form.
+  if ($form['nid']['#value'] != null) {
+    $form['#prefix'] = '<div id="moha-ajax-node-form-wrapper">';
+    $form['#suffix'] = '</div>';
+    $form['actions']['save'] = [
+      /* Must use 'submit' to trigger form save, otherwise field value can't be proceed correctly. */
+      '#type' => 'submit',
+      /* If need form save with other form elements, set this value to prepare fields for submitting. */
+      '#executes_submit_callback' => TRUE,
+      '#value' => t('Save & Stay'),
+      '#ajax'  => [
+        // #ajax has two required keys: callback and wrapper.
+        // 'callback' is a function that will be called when this element changes.
+        'callback' => '_moha_node_ajax_save_callback',
+        // 'wrapper' is the HTML id of the page element that will be replaced.
+        // Can't use form ID as after ajax process, ID will suffixed by '--2'.
+        'wrapper'  => 'moha-ajax-node-form-wrapper',
+      ],
+    ];
+  }
+}
+
+/**
+ * Moha Letter Fields.
+ *
+ * @return array fields & instance parameter array.
+ */
+function _moha_newsletter_fields_and_instances() {
+  $fields_and_instances = array();
+
+  $fields_and_instances['category'] = array(
+    'label' => t('Category'),
+    'field_name' => 'technology',
+    'description' => t('Input category this Moha Newsletter belonged.'),
+    'type' => 'taxonomy_term_reference',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'entity_type' => 'node',
+    'bundle' => __MOHA_NEWSLETTER,
+    'settings' => array(
+      'max_length' => 260,
+      'allowed_values' => array(
+        array(
+          'vocabulary' => 'newsletter_categories',
+        ),
+      ),
+    ),
+    'widget' => array(
+      'type' => 'taxonomy_autocomplete',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+    ),
+  );
+
+  return $fields_and_instances;
+}
+
+/**
+ * Implements hook_node_type_insert().
+ *
+ * Bind moha_newsletter fields.
+ */
+function moha_newsletter_node_type_insert($info) {
+
+  if ($info->type == __MOHA_NEWSLETTER) {
+
+    $body_instance = node_add_body_field($info, t('Contents'));
+    // Save our changes to the body field instance.
+    field_update_instance($body_instance);
+
+    foreach (_moha_newsletter_fields_and_instances() as $field) {
+      // Only if field is not created, create it.
+      $prior_field = field_read_field($field['field_name'], array('include_inactive' => TRUE));
+      if (empty($prior_field)) {
+        field_create_field($field);
+      }
+
+      field_create_instance($field);
+    }
+
+    // Hide comments function.
+    variable_set('comment_' . __MOHA_NEWSLETTER, COMMENT_NODE_HIDDEN);
+
+    // Don't prompt to front.
+    variable_set('node_options_' . __MOHA_NEWSLETTER, array('status'));
+  }
+}

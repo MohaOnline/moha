@@ -6,9 +6,9 @@
 function moha_newsletter_install() {
   // Create a vocabulary named "Newsletter Category", enabled for the 'moha_newsletter' content type.
   $vocabulary = (object) array(
-    'name' => t('Newsletter Category'),
+    'name' => t('Newsletter Categories'),
     'description' => t('Use <em>Newsletter Category</em> to group moha_newsletter by categories.'),
-    'machine_name' => 'newsletter_category',
+    'machine_name' => 'newsletter_categories',
   );
 
   taxonomy_vocabulary_save($vocabulary);

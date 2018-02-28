@@ -79,13 +79,13 @@ code.hljs {
 /***/
 
 /** Paragraph & article title. */
-.cke_editable_themed h1, .node-type-moha-clip h1 {
+.cke_editable_themed h1, .node-type-moha-clip h1, .cke_panel_listItem h1 {
   font-size: 2em;
 }
-.cke_editable_themed h2, .node-type-moha-clip h2 {
+.cke_editable_themed h2, .node-type-moha-clip h2, .cke_panel_listItem h2 {
   font-size: 1.6em;
 }
-.cke_editable_themed h3, .node-type-moha-clip h3 {
+.cke_editable_themed h3, .node-type-moha-clip h3, .cke_panel_listItem h3 {
   font-size: 1.2em;
 }
 /***/

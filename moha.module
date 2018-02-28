@@ -58,6 +58,24 @@ function _moha_prepare_roles_and_permissions() {
 }
 
 /**
+ * Implements hook_image_default_styles().
+ */
+function moha_image_default_styles() {
+  $styles = array();
+  $styles['moha_feature'] = array(
+    'label' => 'Moha Feature Image',
+    'effects' => array(
+      array(
+        'name' => 'image_scale_and_crop',
+        'data' => array('width' => 720, 'height' => 405),
+        'weight' => 0,
+      ),
+    ),
+  );
+  return $styles;
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  *
  * Mount configurations which need be passed to templates.js of CKEditor.
@@ -72,6 +90,38 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
   ), 'setting');
 
   return;
+}
+
+
+
+/**
+ * Save node from ajax call.
+ * don't call when create node.
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return mixed
+ */
+function _moha_node_ajax_save_callback($form, &$form_state){
+
+  // @See ajax_form_callback()
+  // valid will be proceed
+  // If error, directly returns.
+  if (form_get_errors()) {
+    return $form;
+  }
+
+  /*
+   * As ajax button doesn't have #submit function, so
+   * form_execute_handlers('submit', $form, $form_state);
+   * will not be invoked, node submit function need be manually executed
+   */
+  node_form_submit($form, $form_state);
+  // need write update time back to form to avoid node was changed by others issue.
+  $form['changed']['#value'] = $form_state['node']->changed;
+
+  return $form;
 }
 
 /**
