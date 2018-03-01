@@ -78,6 +78,14 @@ code.hljs {
 }
 /***/
 
+/** Image */
+.cke_editable_themed img, .field-name-body img {
+  box-shadow: 0 0 8px 2px #bbb;
+  border-radius: 5px;
+  display: block;
+  margin: auto;
+}
+
 /** Paragraph & article title. */
 .cke_editable_themed h1, .node-type-moha-clip h1, .cke_panel_listItem h1 {
   font-size: 2em;
