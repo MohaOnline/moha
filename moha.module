@@ -66,8 +66,11 @@ function moha_image_default_styles() {
     'label' => 'Moha Feature Image',
     'effects' => array(
       array(
-        'name' => 'image_scale_and_crop',
-        'data' => array('width' => 720, 'height' => 405),
+        'name' => 'image_scale',
+        'data' => array(
+          'width' => 720,
+          'upscale' => 0,
+          ),
         'weight' => 0,
       ),
     ),
