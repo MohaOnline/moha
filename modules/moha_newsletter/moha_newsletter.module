@@ -148,7 +148,7 @@ function _moha_newsletter_prepare_imce_profile() {
 function _moha_newsletter_prepare_text_format() {
   $format = array(
     'format' => MOHA_NEWSLETTER__TEXT_FORMAT,
-    'name' => MOHA_NEWSLETTER. ' Clip Format',
+    'name' => MOHA_NEWSLETTER. ' Format',
     'weight' => -8,
     'filters' => array(
       // URL filter.
@@ -470,4 +470,48 @@ function moha_newsletter_node_type_insert($info) {
     // Don't prompt to front.
     variable_set('node_options_' . __MOHA_NEWSLETTER, array('status'));
   }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function moha_newsletter_theme($existing, $type, $theme, $path) {
+  $themes = array();
+
+  // Declare theme for moha_clip through naming convention, one place configuration.
+  $themes['node__moha_newsletter'] = array(
+      'render element' => 'elements',
+      'template' => 'templates/node--moha_newsletter',
+  );
+//  $themes['mimemail_message__simplenews'] = array(
+//      'render element' => 'elements',
+//      'template' => 'templates/mimemail-message--simplenews',
+//  );
+  $themes['simplenews_newsletter_body__email_html'] = array(
+      'render element' => 'elements',
+      'template' => 'templates/simplenews-newsletter-body--email-html',
+  );
+  $themes['simplenews_newsletter_footer__email_html'] = array(
+      'render element' => 'elements',
+      'template' => 'templates/simplenews-newsletter-footer--email-html',
+  );
+
+  return $themes;
+}
+
+
+function template_process_mimemail_message(&$variables) {
+
+  $css = '';
+  $css .= drupal_load_stylesheet(MOHA_NEWSLETTER__RELATIVE_PATH . '/ckeditor/moha_newsletter.styles.css', TRUE);
+#  $css .= drupal_load_stylesheet(MOHA__RELATIVE_PATH . '/ckeditor/moha.ckeditor.styles.css', TRUE);
+
+  // Wordwrap to adhere to RFC821
+  $css = wordwrap($css, 700);
+
+  // Set styles for the message.
+  $variables['css'] .=  $css;
+
+  // Skip theme style.
+  $variables['css'] = $css;
 }

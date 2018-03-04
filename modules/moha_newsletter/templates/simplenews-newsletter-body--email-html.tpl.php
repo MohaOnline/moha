@@ -27,5 +27,4 @@
  * @see template_preprocess_simplenews_newsletter_body()
  */
 ?>
-<h2><?php print $title; ?></h2>
 <?php print render($build); ?>

@@ -19,6 +19,7 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Heading 1', element : 'h1' },
       { name : 'Heading 2', element : 'h2' },
       { name : 'Heading 3', element : 'h3' },
+      { name : 'Block', element : 'div' },
 
       /*
       { name : 'Heading 4'		, element : 'h4' },
@@ -48,6 +49,8 @@ if(typeof(CKEDITOR) !== 'undefined') {
 
       { name : 'Computer Code'      , element : 'code' },
       { name : 'Keyboard Phrase'	, element : 'kbd' },
+
+      { name : 'Strong'	    , element : 'b' },
 
       { name : 'Marker: Yellow'	, element : 'span', styles : { 'background-color' : 'Yellow' } },
       { name : 'Marker: Green'	, element : 'span', styles : { 'background-color' : 'Lime' } },

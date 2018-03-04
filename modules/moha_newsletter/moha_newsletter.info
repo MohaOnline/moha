@@ -9,3 +9,4 @@ dependencies[] = text
 dependencies[] = media
 dependencies[] = mimemail
 dependencies[] = simplenews
+dependencies[] = pathologic

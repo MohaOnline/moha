@@ -1,1 +1,28 @@
+/*
 @import "../../../ckeditor/moha.ckeditor.styles.css";
+*/
+
+body#mimemail-body {
+  margin: 0;
+}
+
+body#mimemail-body div#center div#main, /* Mail Template */
+article.node-moha-newsletter div.field-name-body div.field-item {
+
+}
+
+body.cke_editable_themed {
+
+}
+
+body#mimemail-body div#center div#main p,
+article.node-moha-newsletter div.field-name-body div.field-item p,
+.cke_editable_themed p {
+  margin: 0;
+}
+
+/* Hide table layout. */
+body#mimemail-body div#center div#main table {
+  border: none;
+}
+
