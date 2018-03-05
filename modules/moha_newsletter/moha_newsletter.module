@@ -483,10 +483,10 @@ function moha_newsletter_theme($existing, $type, $theme, $path) {
       'render element' => 'elements',
       'template' => 'templates/node--moha_newsletter',
   );
-//  $themes['mimemail_message__simplenews'] = array(
-//      'render element' => 'elements',
-//      'template' => 'templates/mimemail-message--simplenews',
-//  );
+  $themes['mimemail_message__simplenews'] = array(
+      'render element' => 'elements',
+      'template' => 'templates/mimemail-message--simplenews',
+  );
   $themes['simplenews_newsletter_body__email_html'] = array(
       'render element' => 'elements',
       'template' => 'templates/simplenews-newsletter-body--email-html',
@@ -499,8 +499,22 @@ function moha_newsletter_theme($existing, $type, $theme, $path) {
   return $themes;
 }
 
+/**
+ * A preprocess function for theme('mimemail_message__simplenews').
+ *
+ * The $variables array initially contains the following arguments:
+ * - $recipient: The recipient of the message
+ * - $key:  The mailkey associated with the message
+ * - $subject: The message subject
+ * - $body:  The message body
+ *
+ * @see mimemail-message--simplenews.tpl.php
+ */
+function template_preprocess_mimemail_message__simplenews(&$variables) {
 
-function template_process_mimemail_message(&$variables) {
+  ctools_include("mimemail.theme", "mimemail", "theme");
+
+  template_preprocess_mimemail_message($variables);
 
   $css = '';
   $css .= drupal_load_stylesheet(MOHA_NEWSLETTER__RELATIVE_PATH . '/ckeditor/moha_newsletter.styles.css', TRUE);
