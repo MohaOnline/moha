@@ -1,0 +1,5 @@
+#dashboard div#moha_dashboard_region_first,
+#dashboard div#moha_dashboard_region_second,
+#dashboard div#moha_dashboard_region_third {
+  width: 100%;
+}

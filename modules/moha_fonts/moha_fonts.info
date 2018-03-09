@@ -1,0 +1,6 @@
+name = Moha Fonts
+description = Loads Google fonts from site hosting server(s).
+core = 7.x
+package = Moha Online
+
+

@@ -1,0 +1,64 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_FONTS', 'Moha Fonts');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_FONTS', 'moha_fonts');
+
+/**
+ * moha_fonts__variables.
+ */
+define('MOHA_FONTS__VARIABLES', __MOHA_FONTS . '__variables');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_fonts
+ */
+define('MOHA_FONTS__RELATIVE_PATH', drupal_get_path('module', __MOHA_FONTS));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_fonts
+ */
+define('MOHA_FONTS__PATH', base_path() . MOHA_FONTS__RELATIVE_PATH);
+
+/**
+ * Implements hook_preprocess().
+ */
+function moha_fonts_preprocess(&$variables, $hook) {
+
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function moha_fonts_preprocess_page(&$variables) {
+  drupal_add_css(MOHA_FONTS__RELATIVE_PATH . '/fonts/inconsolata.css', array(
+    'group' => CSS_SYSTEM,
+  ));
+
+  drupal_add_css(MOHA_FONTS__RELATIVE_PATH . '/fonts/opensans.css', array(
+    'group' => CSS_SYSTEM,
+  ));
+
+}
+
+/**
+ * Implements hook_process().
+ */
+function moha_fonts_process(&$variables, $hook) {
+
+}
+
+/**
+ * Implements hook_process_HOOK().
+ */
+function moha_fonts_process_html(&$variables) {
+
+}
