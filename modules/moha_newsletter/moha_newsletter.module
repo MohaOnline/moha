@@ -240,6 +240,9 @@ function _moha_newsletter_prepare_ckeditor_profile() {
   $config_js = '
 config.startupOutlineBlocks = true;
 config.extraPlugins = \'codemirror\';
+config.extraPlugins = \'autogrow\';
+config.autoGrow_maxHeight = 0;
+config.autoGrow_onStartup = true;
 config.templates_files = [ "' . MOHA_NEWSLETTER__PATH . '/ckeditor/moha_newsletter.templates.js" ];
 config.templates = \'moha_newsletter\';
 config.templates_replaceContent = false;
