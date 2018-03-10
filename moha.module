@@ -142,7 +142,7 @@ function _moha_node_ajax_silently_save_callback($form, &$form_state){
   // valid will be proceed
   // If error, directly returns.
   if (form_get_errors()) {
-    return $form;
+    return ['changed'];
   }
 
   /*
