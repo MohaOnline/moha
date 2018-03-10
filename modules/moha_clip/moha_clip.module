@@ -425,6 +425,25 @@ function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id
         'wrapper'  => 'moha-clip-node-form-wrapper',
       ],
     ];
+
+    $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
+    $form['changed']['#suffix'] = '</div>';
+
+    $form['actions']['silent_save'] = [
+      /* Must use 'submit' to trigger form save, otherwise field value can't be proceed correctly. */
+      '#type' => 'submit',
+      /* If need form save with other form elements, set this value to prepare fields for submitting. */
+      '#executes_submit_callback' => TRUE,
+      '#value' => t('Silently Save'),
+      '#ajax'  => [
+        // #ajax has two required keys: callback and wrapper.
+        // 'callback' is a function that will be called when this element changes.
+        'callback' => '_moha_clip_ajax_silent_save_callback',
+        // 'wrapper' is the HTML id of the page element that will be replaced.
+        // Can't use form ID as after ajax process, ID will suffixed by '--2'.
+        'wrapper'  => 'moha-node-changed-form-wrapper',
+      ],
+    ];
   }
 }
 
@@ -455,6 +474,35 @@ function _moha_clip_ajax_save_callback($form, &$form_state){
   $form['changed']['#value'] = $form_state['node']->changed;
 
   return $form;
+}
+
+/**
+ * Silently save node with ajax call.
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return mixed
+ */
+function _moha_clip_ajax_silent_save_callback($form, &$form_state){
+
+  // @See ajax_form_callback()
+  // valid will be proceed
+  // If error, directly returns.
+  if (form_get_errors()) {
+    return $form;
+  }
+
+  /*
+   * As ajax button doesn't have #submit function, so
+   * form_execute_handlers('submit', $form, $form_state);
+   * will not be invoked, node submit function need be manually executed
+   */
+  node_form_submit($form, $form_state);
+  // need write update time back to form to avoid node was changed by others issue.
+  $form['changed']['#value'] = $form_state['node']->changed;
+
+  return $form['changed'];
 }
 
 /**

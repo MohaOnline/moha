@@ -129,6 +129,35 @@ function _moha_node_ajax_save_callback($form, &$form_state){
 }
 
 /**
+ * Silently save node with ajax call.
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return mixed
+ */
+function _moha_node_ajax_silently_save_callback($form, &$form_state){
+
+  // @See ajax_form_callback()
+  // valid will be proceed
+  // If error, directly returns.
+  if (form_get_errors()) {
+    return $form;
+  }
+
+  /*
+   * As ajax button doesn't have #submit function, so
+   * form_execute_handlers('submit', $form, $form_state);
+   * will not be invoked, node submit function need be manually executed
+   */
+  node_form_submit($form, $form_state);
+  // need write update time back to form to avoid node was changed by others issue.
+  $form['changed']['#value'] = $form_state['node']->changed;
+
+  return $form['changed'];
+}
+
+/**
  * Helper that generates a machine name using a provided human readable name.
  *
  * @param string $human_name

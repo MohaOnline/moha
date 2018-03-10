@@ -382,21 +382,22 @@ function moha_newsletter_form_moha_newsletter_node_form_alter(&$form, &$form_sta
 
   // Ajax saving function hasn't supported node-adding form.
   if ($form['nid']['#value'] != null) {
-    $form['#prefix'] = '<div id="moha-ajax-node-form-wrapper">';
-    $form['#suffix'] = '</div>';
-    $form['actions']['save'] = [
+    $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
+    $form['changed']['#suffix'] = '</div>';
+
+    $form['actions']['silent_save'] = [
       /* Must use 'submit' to trigger form save, otherwise field value can't be proceed correctly. */
       '#type' => 'submit',
       /* If need form save with other form elements, set this value to prepare fields for submitting. */
       '#executes_submit_callback' => TRUE,
-      '#value' => t('Save & Stay'),
+      '#value' => t('Silently Save'),
       '#ajax'  => [
         // #ajax has two required keys: callback and wrapper.
         // 'callback' is a function that will be called when this element changes.
-        'callback' => '_moha_node_ajax_save_callback',
+        'callback' => '_moha_node_ajax_silently_save_callback',
         // 'wrapper' is the HTML id of the page element that will be replaced.
         // Can't use form ID as after ajax process, ID will suffixed by '--2'.
-        'wrapper'  => 'moha-ajax-node-form-wrapper',
+        'wrapper'  => 'moha-node-changed-form-wrapper',
       ],
     ];
   }
