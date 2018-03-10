@@ -79,7 +79,7 @@ code.hljs {
 /***/
 
 /** Image */
-.cke_editable_themed img, .field-name-body img {
+.cke_editable_themed img:not(.cke_reset), .field-name-body img {
   box-shadow: 0 0 8px 2px #bbb;
   border-radius: 5px;
   display: block;
