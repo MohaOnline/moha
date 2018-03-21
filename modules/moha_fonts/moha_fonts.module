@@ -46,7 +46,6 @@ function moha_fonts_preprocess_page(&$variables) {
   drupal_add_css(MOHA_FONTS__RELATIVE_PATH . '/fonts/opensans.css', array(
     'group' => CSS_SYSTEM,
   ));
-
 }
 
 /**

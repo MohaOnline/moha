@@ -1,0 +1,9 @@
+name = Moha WeChat Module
+description = WeChat support
+core = 7.x
+package = Moha Online
+
+dependencies[] = moha
+dependencies[] = taxonomy
+dependencies[] = text
+dependencies[] = media

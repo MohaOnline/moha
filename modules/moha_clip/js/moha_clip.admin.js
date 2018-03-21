@@ -15,6 +15,7 @@
 
         $fieldset.addClass('collapsible');
       });
+
     }
   };
 })(jQuery);

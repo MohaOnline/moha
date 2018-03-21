@@ -1,4 +1,8 @@
 /* Fix field head style. */
+#page {
+  max-width: 1140px;
+}
+
 form .field-multiple-table th.field-label label {
   padding-left: 3px;
 }
@@ -52,6 +56,7 @@ div.cke_combopanel {
   background-color: rgba(0,0,0,0.7);
   padding-top: 1em;
   padding-left: 1em;
+  z-index: 9999;
 }
 
 /* Style ajax progress message. */

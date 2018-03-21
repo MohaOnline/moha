@@ -86,7 +86,10 @@
 <link rel="stylesheet" href="<?php echo MOHA_CLIP__PATH;?>/css/moha_clip.css">
 
 <script src="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js"></script>
+<script src="<?php echo MOHA__PATH;?>/js/toc.js"></script>
+<script src="<?php echo MOHA_CLIP__PATH;?>/js/moha_clip.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
+
 <article id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
 
   <?php if ((!$page && !empty($title)) || !empty($title_prefix) || !empty($title_suffix) || $display_submitted): ?>
@@ -99,19 +102,33 @@
   </header>
   <?php endif; ?>
 
-  <?php
-    // Hide comments, tags, and links now so that we can render them later.
-    hide($content['comments']);
-    hide($content['links']);
-    hide($content['field_tags']);
-    print render($content);
-  ?>
-  <?php if ($display_submitted): ?>
-    <span class="submitted">
-      <?php print $user_picture; ?>
-      <?php print $submitted; ?>
-    </span>
-  <?php endif; ?>
+
+
+  <div class="row">
+    <div class="col-md-9 col-xs-12">
+    <?php
+      // Hide comments, tags, and links now so that we can render them later.
+      hide($content['comments']);
+      hide($content['links']);
+      hide($content['field_tags']);
+      print render($content);
+    ?>
+    </div>
+    <div class="col-md-3 col-xs-12">
+      <div class="author-block">
+        <?php if ($display_submitted): ?>
+          <?php print $user_picture; ?>
+          <div><?php print t("Author: ") . $name; ?></div>
+          <div><?php print t("Date: ") . $date; ?></div>
+        <?php endif; ?>
+      </div>
+
+      <div class="toc-block">
+        <div class="toc" data-toc="h2, h3">
+        </div>
+      </div>
+    </div>
+  </div>
   <?php
     // Only display the wrapper div if there are tags or links.
     $field_tags = render($content['field_tags']);

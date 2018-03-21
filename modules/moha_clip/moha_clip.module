@@ -21,7 +21,7 @@ define('MOHA_CLIP__VARIABLES', __MOHA_CLIP . '__variables');
 /**
  * /sites/all/modules/custom/moha/modules/moha_clip.
  */
-define('MOHA_CLIP__PATH', '/' . drupal_get_path('module', __MOHA_CLIP));
+define('MOHA_CLIP__PATH', base_path() . drupal_get_path('module', __MOHA_CLIP));
 
 /**
  * sites/all/modules/custom/moha/modules/moha_clip.
@@ -405,26 +405,8 @@ function moha_clip_form($node, $form_state) {
  */
 function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id) {
 
-  $form['#prefix'] = '<div id="moha-clip-node-form-wrapper">';
-  $form['#suffix'] = '</div>';
-
   // Ajax saving function hasn't supported node-adding form.
   if ($form['nid']['#value'] != null) {
-    $form['actions']['save'] = [
-      /* Must use 'submit' to trigger form save, otherwise field value can't be proceed correctly. */
-      '#type' => 'submit',
-      /* If need form save with other form elements, set this value to prepare fields for submitting. */
-      '#executes_submit_callback' => TRUE,
-      '#value' => t('Save & Stay'),
-      '#ajax'  => [
-        // #ajax has two required keys: callback and wrapper.
-        // 'callback' is a function that will be called when this element changes.
-        'callback' => '_moha_clip_ajax_save_callback',
-        // 'wrapper' is the HTML id of the page element that will be replaced.
-        // Can't use form ID as after ajax process, ID will suffixed by '--2'.
-        'wrapper'  => 'moha-clip-node-form-wrapper',
-      ],
-    ];
 
     $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
     $form['changed']['#suffix'] = '</div>';
@@ -649,6 +631,7 @@ function moha_clip_node_type_insert($info) {
       field_create_instance($field);
     }
 
+    // Hide comment for Moha Clip by default.
     variable_set('comment_' . __MOHA_CLIP, COMMENT_NODE_HIDDEN);
     variable_set('node_options_' . __MOHA_CLIP, array('status'));
   }

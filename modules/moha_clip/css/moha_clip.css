@@ -2,3 +2,42 @@ h1.page-header {
   display: none;
 }
 
+/* Sidebar height */
+article div.row {
+  position: relative;
+}
+
+article div.row div.col-md-3.col-xs-12 {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+div.toc-block {
+  position: relative;
+}
+
+.author-block {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+/*  */
+.user-picture img {
+  margin: auto;
+  border-radius: 50%;
+}
+
+.toc-block {
+  margin-top: 20px;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.toc-block .toc-h3 {
+  padding-left: 20px;
+}
+

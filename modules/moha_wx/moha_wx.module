@@ -1,0 +1,101 @@
+<?php
+
+/**
+ * Human name.
+ */
+define('MOHA_WX', 'Moha WX');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_WX', 'moha_wx');
+
+/**
+ * moha_wx__variables.
+ */
+define('MOHA_WX__VARIABLES', __MOHA_WX . '__variables');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_wx.
+ */
+define('MOHA_WX__RELATIVE_PATH', drupal_get_path('module', __MOHA_WX));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_wx.
+ */
+define('MOHA_WX__PATH', base_path() . MOHA_WX__RELATIVE_PATH);
+
+/**
+ * Error message: 503 Service is not available.
+ */
+define('MOHA_WX__MSG__NO_SERVICE', 'Service is not available.');
+
+/**
+ * Implements hook_menu().
+ */
+function moha_wx_menu() {
+
+  //
+  $items['moha/wx/%'] = array(
+    'title' => 'wechat',
+    'description' => 'moha callback',
+    'page callback' => '_moha_wx_callback',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_wx.callback.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Check passed signature parameter($_GET['signature']).
+ *
+ * @param $token
+ * @param $query  array  all passed parameters $_GET
+ *
+ * @return bool
+ */
+function moha_wx_check_signature($token, $query) {
+
+  try {
+    if (empty($query["signature"]) || empty($query["timestamp"]) || empty($query["nonce"])) {
+      throw new Exception("miss query parameter.");
+    }
+
+    $signature = $query["signature"];
+    $timestamp = $query["timestamp"];
+    $nonce = $query["nonce"];
+
+    // Sort, combine, sha1.
+    $tmpArr = [$token, $timestamp, $nonce];
+    sort($tmpArr, SORT_STRING); // use SORT_STRING rule.
+    $tmpStr = implode($tmpArr);
+    $tmpStr = sha1($tmpStr);
+
+    if ($tmpStr == $signature) {
+      return TRUE;
+    }
+    else {
+      throw new Exception("Signature doesn't match.");
+    }
+  }
+  catch (Exception $e) {
+    //
+    watchdog( MOHA_WX,
+      __FUNCTION__ . " catch: %msg ",
+      array(
+        "%msg" => $e->getMessage(),
+      ),
+      WATCHDOG_ERROR
+    );
+
+    return FALSE;
+  }
+}
+
+
+
+
+
