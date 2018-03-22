@@ -69,10 +69,10 @@ function _moha_wx_callback ($account_name) {
     // Return welcome message.
     if ($msg['MsgType'] == 'event' && $msg['Event'] == 'subscribe'){
       $welcome['das'] = array(
-        'picurl' => 'http://mmbiz.qpic.cn/mmbiz_jpg/s6bWmmoF06jbPjmribJlLzRxsicSv8bxlLTtmt2KKW6Gc0P4ZbgINSqEIYNe6gTW7zAzZLffwO3xX1AJAk3wImRg/0?wx_fmt=jpeg',
+        'picurl' => 'https://mmbiz.qlogo.cn/mmbiz_jpg/s6bWmmoF06jbPjmribJlLzRxsicSv8bxlLTtmt2KKW6Gc0P4ZbgINSqEIYNe6gTW7zAzZLffwO3xX1AJAk3wImRg/640?wx_fmt=jpeg',
         'title' => '欢迎关注DAS戴思环保',
         'description' => '戴思环保设备贸易 (上海) 有限公司专为特定客户生产废气处理设施。',
-        'url' => 'https://mp.weixin.qq.com/s/CQJT9Q8syA-VWudWXXLXQw',
+        'url' => 'https://mp.weixin.qq.com/s/WMl8UkAd_CpL-19kXdQURw',
       );
 
       $welcome_response_template = <<<EOF
