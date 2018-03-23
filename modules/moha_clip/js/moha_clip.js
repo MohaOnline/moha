@@ -1,42 +1,43 @@
 jQuery( document ).ready(function() {
 
-      function pageScroll(){
-        var currentY = Number(jQuery(window).scrollTop());
+  function tocFloat() {
+    //
+    const scopeArea = jQuery('div.col-md-3.col-xs-12');
+    const scopeStartPoint = scopeArea.offset().top;
+    const scopeHeight = scopeArea.height();
 
-        if (console) {
-          console.log('currentY: ' + currentY);
-        }
+    const occupiedHeight = jQuery('div.author-block').outerHeight();
 
-        // Related Product Area
-        var occupiedY = Number(jQuery('div.author-block').css('height').replace('px', ''));
+    const tocBlock = jQuery("div.toc-block");
+    const tocHeight = tocBlock.outerHeight();
 
-        var scopeY = Number(jQuery('div.col-md-3.col-xs-12').css('height').replace('px',''));
+    if (console) {
+      console.log('scopeStartPoint: ' + scopeStartPoint);
+      console.log('occupiedHeight: ' + occupiedHeight);
+    }
 
-        var floatTop = Number(jQuery('div.toc-block').css('top').replace('px',''));
+    // Height between top of page and top of window.
+    let scrolledHeight = jQuery(window).scrollTop();
 
-        if (console) {
-          console.log('floatTop: ' + floatTop);
-        }
+    if (console) {
+      console.log('pageOffsetY: ' + scrolledHeight);
+    }
 
-        var excludeScroll = Number(jQuery('div.author-block').css('height').replace('px', ''));
+    if ( scrolledHeight > (scopeStartPoint + occupiedHeight) ) {
+      let tocTop = scrolledHeight - ( scopeStartPoint + occupiedHeight );
 
-        if (currentY > ( excludeScroll + occupiedY ) && ((floatTop+0)<(scopeY-occupiedY))){
-
-          var newTop = currentY- ( excludeScroll + occupiedY ) + 0;
-
-          if (newTop>(Number(scopeY)-occupiedY - 0)){
-            newTop = Number(scopeY)-occupiedY - 0-1;
-          }
-
-          jQuery('div.toc-block').stop().animate({ top:newTop }, 800, 'swing');
-        }
-        else if (currentY <= ( excludeScroll + occupiedY )){
-          if (floatTop != 0){
-            jQuery('div.toc-block').stop().animate({ top:0 }, 800, 'swing');
-          }
-        }
+      if (tocTop > scopeHeight - occupiedHeight - tocHeight) {
+        tocTop = scopeHeight - occupiedHeight - tocHeight;
       }
 
-        jQuery(window).scroll(pageScroll);
+      tocBlock.stop().animate({ top:tocTop }, 800, 'swing');
+    }
+    else if (scrolledHeight <= (scopeStartPoint + occupiedHeight)) {
+      tocBlock.stop().animate({ top:0 }, 800, 'swing');
+    }
+
+  }
+
+  jQuery(window).scroll(tocFloat);
 
 });
