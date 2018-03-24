@@ -105,21 +105,24 @@
 
 
   <div class="row">
-    <div class="col-md-9 col-xs-12">
+    <div class="white-back-2018 col-md-9 col-xs-12">
     <?php
-      // Hide comments, tags, and links now so that we can render them later.
+      // Hide comments, tags, and links fields from default render.
       hide($content['comments']);
       hide($content['links']);
       hide($content['field_tags']);
+      hide($content['technology_stacks']);
       print render($content);
     ?>
     </div>
+
+    <!---- sidebar -->
     <div class="col-md-3 col-xs-12">
-      <div class="author-block">
+      <div class="white-back-2018 author-block">
         <?php if ($display_submitted): ?>
+          <div class="author-name"><?php print t("Author: ") . $name; ?></div>
           <?php print $user_picture; ?>
-          <div><?php print t("Author: ") . $name; ?></div>
-          <div><?php print t("Date: ") . $date; ?></div>
+          <div class="article-created"><?php print t("Date: ") . $date; ?></div>
         <?php endif; ?>
       </div>
 
@@ -128,6 +131,8 @@
         </div>
       </div>
     </div>
+    <!-- sidebar ---->
+
   </div>
   <?php
     // Only display the wrapper div if there are tags or links.

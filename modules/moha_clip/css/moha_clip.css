@@ -2,7 +2,7 @@ h1.page-header {
   display: none;
 }
 
-/* Sidebar height */
+/** Sidebar definition. */
 article div.row {
   position: relative;
 }
@@ -13,15 +13,41 @@ article div.row div.col-md-3.col-xs-12 {
   top: 0;
   bottom: 0;
 }
+/** Sidebar definition. */
+
+
+/** Author block. */
+.author-block {
+  border-radius: 3px;
+}
+
+.author-block .author-name,
+.author-block .article-created {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.author-block .user-picture {
+  padding: 10px 0 0;
+}
+
+/* Theme: white-back-2018. */
+.white-back-2018.author-block {
+  border: 1px solid #e0e0e0;
+}
+
+.white-back-2018.author-block .author-name {
+
+  border-bottom: 1px solid #f0f0f0;
+}
+
+
+/* Author block. **/
+
+
 
 div.toc-block {
   position: relative;
-}
-
-.author-block {
-  background-color: #f0f0f0;
-  padding: 20px;
-  border-radius: 5px;
 }
 
 /*  */
