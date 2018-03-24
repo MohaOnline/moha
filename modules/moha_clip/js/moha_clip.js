@@ -1,43 +1,56 @@
-jQuery( document ).ready(function() {
+jQuery(document).ready(function () {
 
-  function tocFloat() {
-    //
-    const scopeArea = jQuery('div.col-md-3.col-xs-12');
-    const scopeStartPoint = scopeArea.offset().top;
-    const scopeHeight = scopeArea.height();
+  function blockFloat() {
+    // Revise for fixed top admin menu.
+    const adminMenu = jQuery("#admin-menu");
+    const adminMenuHeight = Number(adminMenu.height());
+    const needFixAdminMenuHeight = adminMenu.css("position") === "fixed";
 
+    // Float area information.
+    const floatArea = jQuery('div.col-md-3.col-xs-12');
+    const floatAreaTopY = floatArea.offset().top;
+    const floatAreaHeight = floatArea.height();
+
+    // Blocks above floating block.
     const occupiedHeight = jQuery('div.author-block').outerHeight();
 
-    const tocBlock = jQuery("div.toc-block");
-    const tocHeight = tocBlock.outerHeight();
+    const floatBlock = jQuery("div.toc-block");
+    const floatBlockHeight = floatBlock.outerHeight();
 
     if (console) {
-      console.log('scopeStartPoint: ' + scopeStartPoint);
+      console.log('floatAreaTopY: ' + floatAreaTopY);
       console.log('occupiedHeight: ' + occupiedHeight);
     }
 
     // Height between top of page and top of window.
+    // Distance mouse has scrolled on page.
     let scrolledHeight = jQuery(window).scrollTop();
 
     if (console) {
-      console.log('pageOffsetY: ' + scrolledHeight);
+      console.log('scrolledHeight: ' + scrolledHeight);
     }
 
-    if ( scrolledHeight > (scopeStartPoint + occupiedHeight) ) {
-      let tocTop = scrolledHeight - ( scopeStartPoint + occupiedHeight );
+    // Start point of page scroll is bottom of admin menu when admin menu is fixed.
+    if (needFixAdminMenuHeight) {
+      scrolledHeight += adminMenuHeight;
+    }
 
-      if (tocTop > scopeHeight - occupiedHeight - tocHeight) {
-        tocTop = scopeHeight - occupiedHeight - tocHeight;
+    // Basing on scrolled distance to calculate need revised top Y coordinate.
+    if (scrolledHeight > (floatAreaTopY + occupiedHeight)) {
+      let blockTopRevised = scrolledHeight - (floatAreaTopY + occupiedHeight);
+
+      // Float block must be within float area, if exceed, need set to maximum value.
+      if (blockTopRevised > floatAreaHeight - occupiedHeight - floatBlockHeight) {
+        blockTopRevised = floatAreaHeight - occupiedHeight - floatBlockHeight;
       }
 
-      tocBlock.stop().animate({ top:tocTop }, 800, 'swing');
+      floatBlock.stop().animate({top: blockTopRevised}, 800, 'swing');
     }
-    else if (scrolledHeight <= (scopeStartPoint + occupiedHeight)) {
-      tocBlock.stop().animate({ top:0 }, 800, 'swing');
+    else if (scrolledHeight <= (floatAreaTopY + occupiedHeight)) {
+      floatBlock.stop().animate({top: 0}, 800, 'swing');
     }
-
   }
 
-  jQuery(window).scroll(tocFloat);
+  jQuery(window).scroll(blockFloat);
 
 });
