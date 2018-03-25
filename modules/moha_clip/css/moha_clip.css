@@ -48,7 +48,6 @@ article div.row div.col-md-3.col-xs-12 {
 }
 
 .white-back-2018.author-block .author-name {
-
   border-bottom: 1px solid #f0f0f0;
 }
 /* Author block. **/
@@ -63,11 +62,23 @@ div.toc-block {
 }
 
 .toc-block ul ul {
-  padding-left: 15px;
+  text-indent: 20px;
 }
 
 .white-back-2018 .toc-block {
   border-color: #e0e0e0;
+}
+
+.white-back-2018 #tocify li.active {
+  background-color: inherit;
+}
+
+.white-back-2018 .toc-block a {
+  color: dimgray;
+}
+
+.white-back-2018 .toc-block .active a {
+  color: #337ab7;
 }
 /** TOC block. */
 

@@ -87,7 +87,7 @@ drupal_add_js(array(
     //   '<CONFIG NAME>' => <CONFIG VALUE>,.
     'showAndHide' => false,
     'scrollTo' => 30,
-    'highlightOffset' => 0,
+    'highlightOffset' => 30,
 
   )
 ), 'setting');
