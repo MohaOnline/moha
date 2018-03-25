@@ -2,6 +2,10 @@ h1.page-header {
   display: none;
 }
 
+.nav-tabs {
+  border-bottom: none;
+}
+
 /** Sidebar definition. */
 article div.row {
   position: relative;
@@ -31,6 +35,13 @@ article div.row div.col-md-3.col-xs-12 {
   padding: 10px 0 0;
 }
 
+.user-picture img {
+  margin: auto;
+  border-radius: 50%;
+  border: 1px solid #abb;
+  padding: 2px;
+}
+
 /* Theme: white-back-2018. */
 .white-back-2018.author-block {
   border: 1px solid #e0e0e0;
@@ -40,30 +51,23 @@ article div.row div.col-md-3.col-xs-12 {
 
   border-bottom: 1px solid #f0f0f0;
 }
-
-
 /* Author block. **/
 
-
-
+/** TOC block. */
 div.toc-block {
   position: relative;
-}
-
-/*  */
-.user-picture img {
-  margin: auto;
-  border-radius: 50%;
-}
-
-.toc-block {
   margin-top: 20px;
-  background-color: #f0f0f0;
   padding: 20px;
-  border-radius: 5px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
 }
 
-.toc-block .toc-h3 {
-  padding-left: 20px;
+.toc-block ul ul {
+  padding-left: 15px;
 }
+
+.white-back-2018 .toc-block {
+  border-color: #e0e0e0;
+}
+/** TOC block. */
 

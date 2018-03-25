@@ -79,6 +79,18 @@
  *
  * @ingroup templates
  */
+
+// Additional configuration for tocify.
+drupal_add_js(array(
+  'tocify' => array(
+    // Usage: Drupal.settings.tocify.<CONFIG NAME>.
+    //   '<CONFIG NAME>' => <CONFIG VALUE>,.
+    'showAndHide' => false,
+    'scrollTo' => 30,
+    'highlightOffset' => 0,
+
+  )
+), 'setting');
 ?>
 
 <link rel="stylesheet" href="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css">
@@ -86,7 +98,10 @@
 <link rel="stylesheet" href="<?php echo MOHA_CLIP__PATH;?>/css/moha_clip.css">
 
 <script src="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js"></script>
+
+<!--
 <script src="<?php echo MOHA__PATH;?>/js/toc.js"></script>
+-->
 <script src="<?php echo MOHA_CLIP__PATH;?>/js/moha_clip.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
@@ -105,6 +120,7 @@
 
 
   <div class="row">
+    <!---- Main Content -->
     <div class="white-back-2018 col-md-9 col-xs-12">
     <?php
       // Hide comments, tags, and links fields from default render.
@@ -115,9 +131,10 @@
       print render($content);
     ?>
     </div>
+    <!-- Main Content ---->
 
-    <!---- sidebar -->
-    <div class="col-md-3 col-xs-12">
+    <!---- Sidebar -->
+    <div class="white-back-2018 col-md-3 col-xs-12">
       <div class="white-back-2018 author-block">
         <?php if ($display_submitted): ?>
           <div class="author-name"><?php print t("Author: ") . $name; ?></div>
@@ -127,11 +144,18 @@
       </div>
 
       <div class="toc-block">
+        <!--
         <div class="toc" data-toc="h2, h3">
         </div>
+        -->
+        <?php
+        $block = module_invoke('tocify', 'block_view', 'tocify');
+        print render($block['content']);
+        ?>
+
       </div>
     </div>
-    <!-- sidebar ---->
+    <!-- Sidebar ---->
 
   </div>
   <?php

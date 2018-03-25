@@ -11,4 +11,5 @@ dependencies[] = video
 dependencies[] = video_ui
 dependencies[] = media
 dependencies[] = field_collection
+dependencies[] = tocify
 
