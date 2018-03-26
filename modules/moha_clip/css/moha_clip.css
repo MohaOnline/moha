@@ -6,6 +6,16 @@ h1.page-header {
   border-bottom: none;
 }
 
+/** Feature Image. */
+.field-name-image {
+  background: #b2b2b2 url(../../../img/diagonal-stripes.svg) repeat fixed;
+}
+
+.field-name-image .field-items .field-item img {
+  margin: auto;
+}
+/* Feature Image. **/
+
 /** Sidebar definition. */
 article div.row {
   position: relative;
@@ -17,7 +27,7 @@ article div.row div.col-md-3.col-xs-12 {
   top: 0;
   bottom: 0;
 }
-/** Sidebar definition. */
+/* Sidebar definition. **/
 
 
 /** Author block. */
