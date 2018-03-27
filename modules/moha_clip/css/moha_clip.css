@@ -14,7 +14,7 @@ h1.page-header {
 .field-name-image .field-items .field-item img {
   margin: auto;
 }
-/* Feature Image. **/
+/***/
 
 /** Sidebar definition. */
 article div.row {
@@ -27,7 +27,7 @@ article div.row div.col-md-3.col-xs-12 {
   top: 0;
   bottom: 0;
 }
-/* Sidebar definition. **/
+/***/
 
 
 /** Author block. */
@@ -60,7 +60,7 @@ article div.row div.col-md-3.col-xs-12 {
 .white-back-2018.author-block .author-name {
   border-bottom: 1px solid #f0f0f0;
 }
-/* Author block. **/
+/***/
 
 /** TOC block. */
 div.toc-block {
@@ -90,5 +90,5 @@ div.toc-block {
 .white-back-2018 .toc-block .active a {
   color: #337ab7;
 }
-/** TOC block. */
+/***/
 

@@ -33,7 +33,23 @@ html {
 
 p {
   margin: 1rem 0;
+  line-height: 2em;
   text-align: justify;
+}
+
+kbd {
+  display: inline-block;
+  margin: 0 .1rem;
+  padding: .1rem .6rem;
+  font-size: 1rem;
+  color: #242729;
+  text-shadow: 0 1px 0 #FFF;
+  background-color: #e1e3e5;
+  border: 1px solid #adb3b9;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(12,13,14,0.2), 0 0 0 2px #FFF inset;
+  white-space: nowrap;
+  vertical-align: text-top;
 }
 
 /* Adopt bootstrap link style. */
@@ -87,17 +103,23 @@ code.hljs {
 }
 
 /** Paragraph & article title. */
-.cke_editable_themed h1, .node-type-moha-clip h1, .cke_panel_listItem h1 {
+.cke_editable_themed h1, .node-type-moha-clip h1 {
   font-size: 2.4em;
   text-align: center;
 }
-.cke_editable_themed h2, .node-type-moha-clip h2, .cke_panel_listItem h2 {
+
+.cke_editable_themed h2, .node-type-moha-clip h2{
   font-size: 1.6em;
   margin: 1em auto;
 }
-.cke_editable_themed h3, .node-type-moha-clip h3, .cke_panel_listItem h3 {
+
+.cke_editable_themed h3, .node-type-moha-clip h3{
   font-size: 1.1em;
   margin: 1em auto;
+}
+
+.cke_panel_listItem h3 {
+
 }
 /***/
 
