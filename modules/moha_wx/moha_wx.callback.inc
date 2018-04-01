@@ -11,37 +11,31 @@ ctools_include('WXBizMsgCrypt', __MOHA_WX);
  */
 function _moha_wx_callback ($account_name) {
 
-  $accounts['tanan'] = array(
-    'AppID' => 'wx3404eff047f7b59f',
-    'AppSecret' => '5f44ae3f11d27ba8df627c28bfb3bc20',
-    'Token' => 'ware13(spend',
-    'EncodingAESKey' => 'RyIQoohwGjH3dJZxqj5H887U88pArANPUBO0yT8Z0FT',
-  );
-
-  $accounts['das'] = array(
-    'AppID' => 'wx9cf625046378ca9c',
-    'AppSecret' => '3c21ee4891ace6a878e6525fd292703b',
-    'Token' => 'pleonastically300824_demanders',
-    'EncodingAESKey' => '4G146PjmOBpQs8JCThZa6NevghiVEO4xDAWfmi18o8j',
-  );
-
   try {
-    if ($account_name != 'das' && $account_name != 'tanan') {
+
+    $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
+      array(
+        ':wechat_name' => $account_name,
+      )
+    )->fetchAssoc();
+
+    if (!$account) {
       throw new Exception("Invalid WeChat account name.");
     }
 
     // Get $_GET contents to decide next logic
     $query = drupal_get_query_parameters();
 
-    if(!moha_wx_check_signature($accounts[$account_name]['Token'], $query)){
+    // Only verify token when verifying customized server.
+    if(!moha_wx_check_signature($account['token'], $query)){
       throw new Exception("Wrong signature.");
     }
 
     // Open development mode.
     if (isset($query['echostr'])) {
 
-      watchdog( MOHA_WX,
-        __FUNCTION__ . " echostr: %echostr",
+      watchdog( __FUNCTION__,
+        "echostr: %echostr",
         array('%echostr' => $query['echostr'])
       );
 
@@ -57,8 +51,8 @@ function _moha_wx_callback ($account_name) {
       throw new Exception("No post data.");
     }
     else {
-      watchdog( MOHA_WX,
-        __FUNCTION__ . " Post Data = %postData",
+      watchdog( __FUNCTION__,
+        "receive = %postData",
         array('%postData' => $postData)
       );
     }
@@ -68,12 +62,6 @@ function _moha_wx_callback ($account_name) {
 
     // Return welcome message.
     if ($msg['MsgType'] == 'event' && $msg['Event'] == 'subscribe'){
-      $welcome['das'] = array(
-        'picurl' => 'https://mmbiz.qlogo.cn/mmbiz_jpg/s6bWmmoF06jbPjmribJlLzRxsicSv8bxlLTtmt2KKW6Gc0P4ZbgINSqEIYNe6gTW7zAzZLffwO3xX1AJAk3wImRg/640?wx_fmt=jpeg',
-        'title' => '欢迎关注DAS戴思环保',
-        'description' => '戴思环保设备贸易 (上海) 有限公司专为特定客户生产废气处理设施。',
-        'url' => 'https://mp.weixin.qq.com/s/WMl8UkAd_CpL-19kXdQURw',
-      );
 
       $welcome_response_template = <<<EOF
 <xml><ToUserName><![CDATA[@toUser]]></ToUserName><FromUserName><![CDATA[@fromUser]]></FromUserName><CreateTime>@createTime</CreateTime><MsgType><![CDATA[news]]></MsgType><ArticleCount>1</ArticleCount><Articles><item><Title><![CDATA[@title]]></Title><Description><![CDATA[@description]]></Description><PicUrl><![CDATA[@picurl]]></PicUrl><Url><![CDATA[@url]]></Url></item></Articles></xml>
@@ -83,16 +71,16 @@ EOF;
         '@toUser' => $msg['FromUserName'],
         '@fromUser' => $msg['ToUserName'],
         '@createTime' => time(),
-        '@title' => $welcome[$account_name]['title'],
-        '@description' => $welcome[$account_name]['description'],
-        '@picurl' => $welcome[$account_name]['picurl'],
-        '@url' => $welcome[$account_name]['url'],
+        '@title' => $account['news_title'],
+        '@description' => $account['news_digest'],
+        '@picurl' => $account['news_cover'],
+        '@url' => $account['news_link'],
       ));
 
       echo $response;
 
-      watchdog( MOHA_WX,
-        __FUNCTION__ . " res = %response",
+      watchdog( __FUNCTION__,
+        "return = %response",
         array('%response' => $response)
       );
     }

@@ -1,0 +1,176 @@
+<?php
+/**
+ * @file
+ * @Created: 27/03/2018 11:33 PM
+ */
+
+/**
+ * Move account information into Table moha_wx_accounts.
+ */
+function moha_wx_update_0700 () {
+  // @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
+  $schema['moha_wx_accounts'] = array(
+    'description' => 'Stores WeChat account information.',
+    'fields' => array(
+      'aid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique Account ID.',
+      ),
+      'uid' => array(
+        'description' => 'User ID who sent message.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'account_name' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'wechat_name' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'app_id' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'app_secret' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'token' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'encoding_aes_key' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'access_token' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'access_token_updated' => array(
+        'description' => 'The Unix timestamp when the access token was refreshed.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('aid'),
+    'indexes' => array(
+      'moha_wx_accounts__account_name' => array(array('account_name', 32)),
+      'moha_wx_accounts__wechat_name' => array(array('wechat_name', 32)),
+    ),
+  );
+
+  db_create_table('moha_wx_accounts', $schema['moha_wx_accounts']);
+}
+
+/**
+ * Update moha_wx_accounts table: update token length to 512; add access token expire field.
+ */
+function moha_wx_update_0701 () {
+  // @see https://api.drupal.org/api/drupal/includes%21database%21database.inc/function/db_change_field/7.x
+  $access_token = array(
+    'type' => 'varchar',
+    'length' => 512,
+    'not null' => TRUE,
+    'description' => '',
+  );
+  db_change_field('moha_wx_accounts', 'access_token', 'access_token', $access_token);
+
+  // @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
+  $access_token_expires_in = array(
+    'type' => 'int',
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'How long seconds access token will be valid after access_token_updated',
+  );
+  db_add_field('moha_wx_accounts', 'access_token_expires_in', $access_token_expires_in);
+
+  cache_clear_all();
+}
+
+/**
+ * Update moha_wx_accounts table: add welcome message related fields.
+ */
+function moha_wx_update_0702 () {
+  // @see https://api.drupal.org/api/drupal/includes%21database%21database.inc/function/db_change_field/7.x
+  $fields = array (
+    array(
+      'name' => 'news_title',
+      'type' => 'varchar',
+      'length' => 256,
+      'not null' => TRUE,
+      'default' => '',
+      'description' => '',
+    ),
+    array(
+      'name' => 'news_cover',
+      'type' => 'varchar',
+      'length' => 256,
+      'not null' => TRUE,
+      'default' => '',
+      'description' => '',
+    ),
+    array(
+      'name' => 'news_digest',
+      'type' => 'varchar',
+      'length' => 256,
+      'not null' => TRUE,
+      'default' => '',
+      'description' => '',
+    ),
+    array(
+      'name' => 'news_link',
+      'type' => 'varchar',
+      'length' => 256,
+      'not null' => TRUE,
+      'default' => '',
+      'description' => '',
+    ),
+    array(
+      'name' => 'text',
+      'type' => 'varchar',
+      'length' => 2000,
+      'not null' => TRUE,
+      'default' => '',
+      'description' => '',
+    ),
+  );
+
+  foreach ($fields as $field) {
+    db_add_field('moha_wx_accounts', $field['name'], $field);
+  }
+
+
+  cache_clear_all();
+}

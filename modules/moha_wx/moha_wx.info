@@ -7,3 +7,5 @@ dependencies[] = moha
 dependencies[] = taxonomy
 dependencies[] = text
 dependencies[] = media
+
+files[] = libs/MohaWeChat.class.php

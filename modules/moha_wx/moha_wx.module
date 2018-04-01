@@ -31,6 +31,16 @@ define('MOHA_WX__PATH', base_path() . MOHA_WX__RELATIVE_PATH);
 define('MOHA_WX__MSG__NO_SERVICE', 'Service is not available.');
 
 /**
+ * WeChat Api: Access Token.
+ */
+define('MOHA_WX__API__ACCESS_TOKEN', 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=@APPID&secret=@APPSECRET');
+
+/**
+ * WeChat Api: Materials.
+ */
+define('MOHA_WX__API__MATERIALS', 'https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=@ACCESS_TOKEN');
+
+/**
  * Implements hook_menu().
  */
 function moha_wx_menu() {
@@ -44,6 +54,15 @@ function moha_wx_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'file' => 'moha_wx.callback.inc',
+  );
+
+  $items['admin/moha/wx/config/%'] = array(
+    'title' => t('Configure WeChat Account'),
+    'description' => t('Manage Moha Clip configurations.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_moha_wx_account_form', 4),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'inc/moha_wx.admin.inc',
   );
 
   return $items;
@@ -95,7 +114,178 @@ function moha_wx_check_signature($token, $query) {
   }
 }
 
+/**
+ * Call WeChat official API, and return analysed basing on JSON response.
+ *
+ * @param $wechat_api_url
+ * @return array converted from wechat json response.
+ *   return empty array when no http response, no or error json response.
+ */
+function moha_wx_get_official($wechat_api_url) {
+  return moha_wx_post_official($wechat_api_url);
+}
+
+/**
+ * Call WeChat official API, and return analysed basing on JSON response.
+ *
+ * @param $wechat_api_url string
+ * @param $data string
+ * @param $request_type string
+ *
+ * @return array converted from wechat json response.
+ *   return empty array when no http response, no or error json response.
+ */
+function moha_wx_post_official($wechat_api_url, $data = '', $request_type = "POST") {
+
+  if (!empty($data)) {
+    $options['data'] = $data;
+    $options['method'] = $request_type;
+    $res = drupal_http_request($wechat_api_url, $options);
+  }
+  else {
+    $res = drupal_http_request($wechat_api_url);
+  }
+
+  try {
+    if (isset($res->data)) {
+      watchdog( MOHA_WX,
+        __FUNCTION__ . " respond data: @data",
+        array('@data' => $res->data),
+        WATCHDOG_INFO
+      );
+
+      $json = json_decode($res->data, TRUE);
+
+      if (!$json) {
+        throw new Exception('no response JSON.');
+      }
+      else if (!empty($json['errcode'])) {
+        throw new Exception(format_string('errcode: %error_code, %errmsg', array(
+          '%error_code' => (isset($json['errcode']))?$json['errcode']:t('no error code'),
+          '%errmsg' => (isset($json['errmsg']))?$json['errmsg']:t('no error message'),
+        )));
+      }
+      else { // Normal case.
+        return $json;
+      }
+    }
+    // No response data, network error.
+    else {
+      throw new Exception('no response data. ' . $res->error);
+    }
+  }
+  catch (Exception $e) {
+    // Output error log with related failed API.
+    watchdog( __FUNCTION__,
+      " %msg [%wechat_api_url]",
+      array(
+        "%wechat_api_url" => $wechat_api_url,
+        "%msg" => $e->getMessage(),
+      ),
+      WATCHDOG_ERROR
+    );
+
+    return array();
+  }
+
+}
 
 
+/**
+ * If access token isn't existed or expired, update access token from wechat server,
+ * otherwise return stored access token.
+ *
+ * @param $account array
+ *    account information array.
+ *
+ * @return string: access token.
+ *
+ * @throws \Exception: no access token.
+ */
+function _moha_wx_get_access_token(&$account) {
 
+  if (!empty($account['access_token']) && ($account['access_token_updated'] + $account['access_token_expires_in']) > time() ){
+    return $account['access_token'];
+  }
 
+  $json = moha_wx_get_official(format_string(MOHA_WX__API__ACCESS_TOKEN, array(
+    '@APPID' => $account['app_id'],
+    '@APPSECRET' => $account['app_secret'],
+  )));
+
+  if (empty($json)) {
+    throw new Exception('no access token: ' . __FUNCTION__);
+  }
+
+  $access_token = $account['access_token'] = $json['access_token'];
+  $account['access_token_expires_in'] = $json['expires_in'];
+  $account['access_token_updated'] = time();
+
+  db_update('moha_wx_accounts')
+    ->fields(array(
+      'access_token' => $account['access_token'],
+      'access_token_updated' => $account['access_token_updated'],
+      'access_token_expires_in' => $account['access_token_expires_in'],
+    ))
+    ->condition('wechat_name', $account['wechat_name'])
+    ->execute();
+
+  return $access_token;
+
+}
+
+/**
+ * @param $account array
+ *    account information array.
+ * @throws \Exception
+ */
+function _moha_wx_update_welcome_news($account) {
+
+  $post_data['type'] = 'news';
+  $post_data['offset'] = 0;
+  $post_data['count'] = 20;
+
+  do {
+    $materials = moha_wx_post_official(
+      format_string(MOHA_WX__API__MATERIALS, ['@ACCESS_TOKEN' => $account['access_token']]), json_encode($post_data));
+
+    if (empty($materials)) {
+      throw new Exception(format_string("no materials [@FUNCTION].", ['@FUNCTION' => __FUNCTION__]));
+    }
+
+    foreach ($materials['item'] as $item) {
+      $content = $item['content'];
+
+      foreach ($content['news_item'] as $news) {
+
+        if ($news['title']  == $account['news_title']) {
+          $account['news_cover'] = $news['thumb_url'];
+          $account['news_link'] = $news['url'];
+          $account['news_digest'] = $news['digest'];
+
+          $affacted_row_number = db_update('moha_wx_accounts')
+            ->fields(array(
+              'news_title' => $account['news_title'],
+              'news_cover' => $account['news_cover'],
+              'news_link' => $account['news_link'],
+              'news_digest' => $account['news_digest'],
+              'updated' => time(),
+            ))
+            ->condition('wechat_name', $account['wechat_name'])
+            ->execute();
+          break 3;
+        }
+      }
+    }
+    $post_data['offset'] += $post_data['count'];
+  }
+  while ($materials['item_count'] != 0);
+
+  if (isset($affacted_row_number) && $affacted_row_number == 1) {
+    drupal_set_message(t("Welcome message information synced."));
+  }
+  else {
+    drupal_set_message(t("Can't find welcome message."), 'warning');
+  }
+
+}
