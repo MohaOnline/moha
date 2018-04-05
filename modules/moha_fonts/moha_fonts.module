@@ -29,6 +29,14 @@ define('MOHA_FONTS__RELATIVE_PATH', drupal_get_path('module', __MOHA_FONTS));
 define('MOHA_FONTS__PATH', base_path() . MOHA_FONTS__RELATIVE_PATH);
 
 /**
+ * Patch CSS files loading parameters.
+ */
+define('MOHA_FONTS__PATCH_CSS_LOADING_OPTIONS', array(
+  'group' => CSS_THEME,
+  'weight' => 999,
+));
+
+/**
  * Implements hook_preprocess().
  */
 function moha_fonts_preprocess(&$variables, $hook) {
@@ -39,13 +47,10 @@ function moha_fonts_preprocess(&$variables, $hook) {
  * Implements hook_preprocess_HOOK().
  */
 function moha_fonts_preprocess_page(&$variables) {
-  drupal_add_css(MOHA_FONTS__RELATIVE_PATH . '/fonts/inconsolata.css', array(
-    'group' => CSS_SYSTEM,
-  ));
 
-  drupal_add_css(MOHA_FONTS__RELATIVE_PATH . '/fonts/opensans.css', array(
-    'group' => CSS_SYSTEM,
-  ));
+  // Google fonts local hosting.
+  drupal_add_css(MOHA_FONTS__RELATIVE_PATH . '/fonts/inconsolata.css', MOHA_FONTS__PATCH_CSS_LOADING_OPTIONS);
+  drupal_add_css(MOHA_FONTS__RELATIVE_PATH . '/fonts/opensans.css', MOHA_FONTS__PATCH_CSS_LOADING_OPTIONS);
 }
 
 /**
