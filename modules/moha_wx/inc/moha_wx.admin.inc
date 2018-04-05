@@ -100,13 +100,14 @@ TAG
 
   $form['news_title'] = array(
     '#type' => 'textfield',
-    '#title' => t('News Title'),
+    '#title' => t('Welcome news: title'),
+    '#description' => t("Specify the title of the news which will be used as welcome message."),
     '#default_value' => $account->news_title,
   );
 
   $form['news_cover'] = array(
     '#type' => 'textfield',
-    '#title' => t('News Cover'),
+    '#title' => t('Welcome news: URL of cover image'),
     '#maxlength' => 256,
     '#size' => 160,
     '#default_value' => $account->news_cover,
@@ -114,7 +115,8 @@ TAG
 
   $form['news_link'] = array(
     '#type' => 'textfield',
-    '#title' => t('News Link'),
+    '#title' => t('Welcome news: URL of news itself'),
+    '#description' => t("Leave blank to fetch news URL from WeChat backend"),
     '#maxlength' => 256,
     '#size' => 160,
     '#default_value' => $account->news_link,
@@ -139,6 +141,9 @@ TAG
 }
 
 /**
+ * Save WeChat Account information.
+ * Welcome message related process.
+ *
  * @param $form
  * @param $form_state
  */
