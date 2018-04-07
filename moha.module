@@ -253,5 +253,13 @@ function moha_admin_paths() {
   return $paths;
 }
 
+/**
+ * Implements hook_preprocess().
+ */
+function moha_preprocess(&$variables, $hook) {
+
+  return 0;
+}
+
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
 ctools_include('moha.ckeditor', __MOHA, 'ckeditor');

@@ -5,6 +5,15 @@
  */
 
 /**
+ * Implements hook_install().
+ */
+function moha_wx_install (){
+  moha_wx_update_0700();
+  moha_wx_update_0701();
+  moha_wx_update_0702();
+}
+
+/**
  * Move account information into Table moha_wx_accounts.
  */
 function moha_wx_update_0700 () {
@@ -170,7 +179,6 @@ function moha_wx_update_0702 () {
   foreach ($fields as $field) {
     db_add_field('moha_wx_accounts', $field['name'], $field);
   }
-
 
   cache_clear_all();
 }

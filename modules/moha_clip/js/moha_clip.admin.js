@@ -16,6 +16,18 @@
         $fieldset.addClass('collapsible');
       });
 
+      $('#edit-silent-save', context).once('edit-silent-save', function () {
+        document.addEventListener("keydown", function(e) {
+          // Overwrite Cmd + S on Mac or Ctrl + S on Win.
+          if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)  && e.keyCode == 83) {
+            e.preventDefault();
+            // Save node silently.
+            $('#edit-silent-save').trigger('mousedown');
+
+          }
+        }, false);
+      });
+
     }
   };
 })(jQuery);

@@ -236,6 +236,9 @@ config.autoGrow_onStartup = true;
 config.templates_files = [ "' . MOHA_CLIP__PATH . '/ckeditor/templates.js" ];
 config.templates = \'moha\';
 config.templates_replaceContent = false;
+config.keystrokes = [
+  [ CKEDITOR.CTRL + 83, \'moha_save\' ]
+];
 ';
 
   $file_browser = 'imce';

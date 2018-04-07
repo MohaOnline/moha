@@ -29,7 +29,7 @@ function moha_demo_menu() {
     'page callback' => '__moha_demo_web_input',
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'pages/demo_web/input.inc',
+    'file' => 'controllers/demo_web/input.inc',
   ];
 
   $items[__MOHA_DEMO. '/web/flex'] = [
@@ -38,7 +38,7 @@ function moha_demo_menu() {
     'page callback' => '__moha_demo_web_flex',
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'pages/demo_web/flex.inc',
+    'file' => 'controllers/demo_web/flex.inc',
   ];
 
   return $items;
