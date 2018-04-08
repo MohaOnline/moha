@@ -67,13 +67,12 @@ article div.row div.col-md-3.col-xs-12 {
 div.toc-block {
   position: relative;
   margin-top: 20px;
-  padding: 20px;
   border: 1px solid #aaa;
   border-radius: 3px;
 }
 
 .toc-block ul ul {
-  text-indent: 20px;
+  text-indent: 16px;
 }
 
 .white-back-2018 .toc-block {
@@ -86,10 +85,12 @@ div.toc-block {
 
 .white-back-2018 .toc-block a {
   color: dimgray;
+  padding: 3px 8px;
 }
 
 .white-back-2018 .toc-block .active a {
   color: #337ab7;
+  border-bottom: 1px solid;
 }
 /***/
 

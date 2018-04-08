@@ -110,12 +110,14 @@ code.hljs {
 }
 
 .cke_editable_themed h2, .node-type-moha-clip h2{
-  font-size: 1.6em;
+  font-size: 1.65em;
   margin: 1em auto;
+  border-bottom: 1px dotted silver;
+  padding-bottom: 1rem;
 }
 
 .cke_editable_themed h3, .node-type-moha-clip h3{
-  font-size: 1.1em;
+  font-size: 1.25em;
   margin: 1em auto;
 }
 
