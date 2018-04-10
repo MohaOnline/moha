@@ -31,14 +31,24 @@ define('MOHA_WX__PATH', base_path() . MOHA_WX__RELATIVE_PATH);
 define('MOHA_WX__MSG__NO_SERVICE', 'Service is not available.');
 
 /**
- * WeChat Api: Access Token.
+ * WeChat API: Access Token.
  */
 define('MOHA_WX__API__ACCESS_TOKEN', 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=@APPID&secret=@APPSECRET');
 
 /**
- * WeChat Api: Materials.
+ * WeChat API: Materials.
  */
 define('MOHA_WX__API__MATERIALS', 'https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=@ACCESS_TOKEN');
+
+/**
+ * WeChat API: Get Current Menu JSON.
+ */
+define('MOHA_WX__API__GET_MENU', 'https://api.weixin.qq.com/cgi-bin/menu/get?access_token=@ACCESS_TOKEN');
+
+/**
+ * WeChat API: Create WeChat Menu.
+ */
+define('MOHA_WX__API__CREATE_MENU', 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=@ACCESS_TOKEN');
 
 /**
  * Implements hook_menu().
@@ -58,9 +68,18 @@ function moha_wx_menu() {
 
   $items['admin/moha/wx/config/%'] = array(
     'title' => t('Configure WeChat Account'),
-    'description' => t('Manage Moha Clip configurations.'),
+    'description' => t('Manage WeChat Account configurations.'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('_moha_wx_account_form', 4),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'inc/moha_wx.admin.inc',
+  );
+
+  $items['admin/moha/wx/menu/%'] = array(
+    'title' => t('Configure WeChat Menu'),
+    'description' => t('Manage configurations of WeChat menus.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_moha_wx_menu_form', 4),
     'access arguments' => array('administer site configuration'),
     'file' => 'inc/moha_wx.admin.inc',
   );
@@ -122,7 +141,7 @@ function moha_wx_check_signature($token, $query) {
  *   return empty array when no http response, no or error json response.
  */
 function moha_wx_get_official($wechat_api_url) {
-  return moha_wx_post_official($wechat_api_url);
+  return moha_wx_post_official($wechat_api_url, '', 'GET');
 }
 
 /**
@@ -175,15 +194,21 @@ function moha_wx_post_official($wechat_api_url, $data = '', $request_type = "POS
     }
   }
   catch (Exception $e) {
-    // Output error log with related failed API.
-    watchdog( __FUNCTION__,
-      " %msg [%wechat_api_url]",
+    $error_message = format_string(" %msg [%wechat_api_url]",
       array(
         "%wechat_api_url" => $wechat_api_url,
         "%msg" => $e->getMessage(),
-      ),
+      )
+    );
+
+    // Output error log with related failed API.
+    watchdog( __FUNCTION__,
+      $error_message,
+      array(),
       WATCHDOG_ERROR
     );
+
+    drupal_set_message($error_message, 'error');
 
     return array();
   }
@@ -231,7 +256,6 @@ function _moha_wx_get_access_token(&$account) {
     ->execute();
 
   return $access_token;
-
 }
 
 /**
@@ -287,5 +311,55 @@ function _moha_wx_update_welcome_news($account) {
   else {
     drupal_set_message(t("Can't find welcome message."), 'warning');
   }
+}
 
+/**
+ * Fetch JSON configuration of WeChat menu.
+ *
+ * @param $account
+ */
+function _moha_wx_get_menu(&$account) {
+  $menu = moha_wx_get_official(
+    format_string(MOHA_WX__API__GET_MENU, array('@ACCESS_TOKEN' => $account['access_token']))
+  );
+
+  if (empty($menu)){
+   $wx_menu = '';
+  }
+  else {
+    $wx_menu = json_encode($menu);
+  }
+
+  $account['wx_menu'] = $wx_menu;
+
+  $affacted_row_number = db_update('moha_wx_accounts')
+    ->fields(array(
+      'wx_menu' => $account['wx_menu'],
+      'updated' => time(),
+    ))
+    ->condition('wechat_name', $account['wechat_name'])
+    ->execute();
+
+  if (isset($affacted_row_number) && $affacted_row_number == 1) {
+    drupal_set_message(t("JSON configuration of WeChat menu is fetched."));
+  }
+  else {
+    drupal_set_message(t("Can't fetch JSON configuration of WeChat menu."), 'error');
+  }
+}
+
+/**
+ * Create WeChat Menu.
+ *
+ * @param $account
+ * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141013
+ */
+function _moha_wx_create_menu(&$account){
+  $result = moha_wx_post_official(
+    format_string(MOHA_WX__API__CREATE_MENU, ['@ACCESS_TOKEN' => $account['access_token']]), $account['wx_menu']
+  );
+
+  if ($result['errcode'] == 0 ) {
+    drupal_set_message('WeChat Menu has been uploaded.');
+  }
 }

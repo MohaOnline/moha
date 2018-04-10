@@ -24,7 +24,7 @@ function _wechat_lite_service_accounts_segment_exists($wechat_name) {
  * @param array $form_state
  * @param string $account_name
  */
-function _moha_wx_account_form($form, &$form_state, $account_name = NULL){
+function _moha_wx_account_form($form, &$form_state, $account_name = ''){
 
   $account = (object) array(
     'account_name' => '',
@@ -192,7 +192,101 @@ function _moha_wx_account_form_submit($form, &$form_state){
           WATCHDOG_ERROR
         );
       }
-    } // specified news_title.
+    } // news_title is specified.
 
+  }
+}
+
+/**
+ * @param $form
+ * @param $form_state
+ * @param string $wechat_name
+ *
+ * @return array
+ */
+function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
+
+  drupal_add_css(MOHA_WX__RELATIVE_PATH . '/css/moha_wx.admin.css');
+
+  $account = (object) array(
+    'wechat_name' => '',
+    'wx_menu' => '',
+  );
+
+  $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
+    array(
+      ':wechat_name' => $wechat_name,
+    )
+  )->fetchAssoc();
+
+  if (empty($account['wx_menu'])) {
+    try {
+      _moha_wx_get_access_token($account);
+      _moha_wx_get_menu($account);
+    } catch (Exception $e) {
+      // Output error log with related failed API.
+      watchdog(__FUNCTION__,
+        "%msg",
+        array(
+          "%msg" => $e->getMessage(),
+        ),
+        WATCHDOG_ERROR
+      );
+    }
+  }
+
+  $form['wechat_name'] = array(
+    '#type' => 'hidden',
+    '#value' => $account['wechat_name'],
+  );
+
+  $form['wx_menu'] = array(
+    '#type' => 'textarea',
+    '#rows' => 20,
+    '#title' => t('WeChat Menu'),
+    '#default_value' => $account['wx_menu'],
+    '#description' => t("Put JSON configuration of WeChat menu here."),
+    '#format' => 'plain_text',
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save Menu'),
+  );
+
+  return $form;
+
+}
+
+function _moha_wx_menu_form_submit($form, &$form_state) {
+  $account = $form_state['values'];
+
+  $affacted_row_number = db_update('moha_wx_accounts')
+    ->fields(array(
+      'wx_menu' => $account['wx_menu'],
+      'updated' => time(),
+    ))
+    ->condition('wechat_name', $account['wechat_name'])
+    ->execute();
+
+  $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
+    array(
+      ':wechat_name' => $account['wechat_name'],
+    )
+  )->fetchAssoc();
+
+  try {
+    _moha_wx_get_access_token($account);
+    _moha_wx_create_menu($account);
+  } catch (Exception $e) {
+    // Output error log with related failed API.
+    watchdog(__FUNCTION__,
+      "%msg",
+      array(
+        "%msg" => $e->getMessage(),
+      ),
+      WATCHDOG_ERROR
+    );
   }
 }

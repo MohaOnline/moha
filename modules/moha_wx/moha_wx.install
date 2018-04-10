@@ -11,6 +11,7 @@ function moha_wx_install (){
   moha_wx_update_0700();
   moha_wx_update_0701();
   moha_wx_update_0702();
+  moha_wx_update_0703();
 }
 
 /**
@@ -179,6 +180,22 @@ function moha_wx_update_0702 () {
   foreach ($fields as $field) {
     db_add_field('moha_wx_accounts', $field['name'], $field);
   }
+
+  cache_clear_all();
+}
+
+/**
+ * Add WeChat menu JSON storage column.
+ */
+function moha_wx_update_0703(){
+
+  // @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
+  $wx_menu = array(
+    'type' => 'text',
+    'not null' => FALSE,
+    'description' => 'WeChat menu JSON configurations',
+  );
+  db_add_field('moha_wx_accounts', 'wx_menu', $wx_menu);
 
   cache_clear_all();
 }

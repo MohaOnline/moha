@@ -84,6 +84,24 @@ EOF;
         array('%response' => $response)
       );
     }
+    else if ($msg['MsgType'] == 'event' && $msg['EventKey'] == 'MENU_CONTACT') {
+      $text_template = <<<EOF
+<xml><ToUserName><![CDATA[@toUser]]></ToUserName><FromUserName><![CDATA[@fromUser]]></FromUserName><CreateTime>@createTime</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[@content]]></Content></xml>
+EOF;
+      $response = format_string($text_template, array(
+        '@toUser' => $msg['FromUserName'],
+        '@fromUser' => $msg['ToUserName'],
+        '@createTime' => time(),
+        '@content' => $account['text'],
+      ));
+
+      echo $response;
+
+      watchdog( __FUNCTION__,
+        "return = %response",
+        array('%response' => $response)
+      );
+    }
 
   }
   catch (Exception $e) {
