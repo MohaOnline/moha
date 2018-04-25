@@ -80,6 +80,16 @@ function moha_image_default_styles() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ *
+ * Hide menu add link.
+ */
+function moha_menu_alter(&$items) {
+  // Upgrade add menu link permission.
+  $items['admin/structure/menu/manage/%menu/add']['access arguments'][0] = 'administer site configuration';
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  *
  * Mount configurations which need be passed to templates.js of CKEditor.
@@ -97,6 +107,23 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
 }
 
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide menu link edit & delete button.
+ */
+function moha_form_menu_overview_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+
+  if ($user->uid != 1 && !user_access('administer site configuration')) {
+    foreach ($form as $key => $value) {
+      if (strpos($key, "mlid") !== FALSE) {
+        unset($form[$key]["operations"]["edit"]);
+        unset($form[$key]["operations"]["delete"]);
+      }
+    }
+  }
+}
 
 /**
  * Save node from ajax call.
@@ -258,7 +285,23 @@ function moha_admin_paths() {
  */
 function moha_preprocess(&$variables, $hook) {
 
-  return 0;
+}
+
+
+/**
+ * @param $term_name
+ * @param null $vocabulary
+ *
+ * @return bool
+ */
+function moha_get_tid_from_name($term_name, $vocabulary = NULL){
+  $terms = taxonomy_get_term_by_name($term_name, $vocabulary);
+  if (empty($terms)){
+    return FALSE;
+  }
+
+  $term = array_shift($terms);
+  return $term->tid;
 }
 
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.

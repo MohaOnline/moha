@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * Implements hook_install().
+ *
+ * Install Moha Message Walls taxonomy.
+ */
+function moha_message_install() {
+  // Create a vocabulary named "Moha Message Walls", enabled for the 'moha_message' content type.
+  $vocabulary = (object) [
+    'name' => t(MOHA_MESSAGE_WALLS),
+    'description' => t('Use Moha Message Walls to group moha_message by different message walls.'),
+    'machine_name' => __MOHA_MESSAGE_WALLS,
+  ];
+  taxonomy_vocabulary_save($vocabulary);
+
+  $message_walls = [
+    'SayThankYou',
+  ];
+
+  foreach ($message_walls as $message_wall) {
+    $term = new stdClass();
+
+    $term->vid = $vocabulary->vid;
+    $term->name = $message_wall;
+
+    taxonomy_term_save($term);
+  }
+  ///
+
+
+}

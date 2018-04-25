@@ -623,7 +623,6 @@ function _moha_clip_fields_and_instances() {
  * Bind moha_clip fields.
  */
 function moha_clip_node_type_insert($info) {
-
   if ($info->type == __MOHA_CLIP) {
 
     $body_instance = node_add_body_field($info, t('Contents'));
@@ -631,7 +630,10 @@ function moha_clip_node_type_insert($info) {
     field_update_instance($body_instance);
 
     foreach (_moha_clip_fields_and_instances() as $field) {
-      field_create_field($field);
+      if (!field_info_field($field['field_name'])) {
+        field_create_field($field);
+      }
+
       field_create_instance($field);
     }
 

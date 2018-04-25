@@ -1,0 +1,26 @@
+{
+  "button": [
+    {
+      "type": "view",
+      "name": "News & Events",
+      "url": "https:\/\/www.das-ee.com\/en\/about-the-company\/press-events\/"
+    },
+    {
+      "name":"About Us",
+      "sub_button":[
+        {
+          "type":"view",
+          "name":"DAS WebSite",
+          "url":"https:\/\/www.das-ee.com\/en\/"
+        },
+        {
+          "type":"click",
+          "name":"Contact Us",
+          "key":"MENU_CONTACT"
+        }]
+    }
+  ]
+}
+
+
+

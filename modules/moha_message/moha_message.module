@@ -1,0 +1,250 @@
+<?php
+/**
+ * Human name.
+ */
+define('MOHA_MESSAGE', 'Moha Message');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_MESSAGE', 'moha_message');
+
+/**
+ * Human name.
+ * Can be treated as message type, message category.
+ * Specify different value, which will caused messages are on different walls.
+ */
+define('MOHA_MESSAGE_WALLS', 'Moha Message Walls');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_MESSAGE_WALLS', 'moha_message_walls');
+
+/**
+ * moha_message__variables.
+ */
+define('MOHA_MESSAGE__VARIABLES', __MOHA_MESSAGE . '__variables');
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_message.
+ */
+define('MOHA_MESSAGE__PATH', base_path() . drupal_get_path('module', __MOHA_MESSAGE));
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_message.
+ */
+define('MOHA_MESSAGE__RELATIVE_PATH', drupal_get_path('module', __MOHA_MESSAGE));
+
+/**
+ * Permission: view moha_message content.
+ */
+define('MOHA_MESSAGE__PERMISSION__VIEW', 'view ' . __MOHA_MESSAGE . ' content');
+
+/**
+ * Permission: create moha_message content.
+ */
+define('MOHA_MESSAGE__PERMISSION__CREATE', 'create ' . __MOHA_MESSAGE . ' content');
+
+/**
+ * Permission: edit own moha_message content.
+ */
+define('MOHA_MESSAGE__PERMISSION__EDIT_OWN', 'edit own ' . __MOHA_MESSAGE . ' content');
+
+/**
+ * Permission: edit any moha_message content.
+ */
+define('MOHA_MESSAGE__PERMISSION__EDIT_ANY', 'edit any ' . __MOHA_MESSAGE . ' content');
+
+/**
+ * Permission: delete own moha_message content.
+ */
+define('MOHA_MESSAGE__PERMISSION__DELETE_OWN', 'delete own ' . __MOHA_MESSAGE . ' content');
+
+/**
+ * Permission: delete any moha_message content.
+ */
+define('MOHA_MESSAGE__PERMISSION__DELETE_ANY', 'delete any ' . __MOHA_MESSAGE . ' content');
+
+/**
+ * moha_message__role__manager.
+ */
+define('MOHA_MESSAGE__ROLE__MANAGER', __MOHA_MESSAGE . '__role__manager');
+
+/**
+ * moha_message__role__admin.
+ */
+define('MOHA_MESSAGE__ROLE__ADMIN', __MOHA_MESSAGE . '__role__admin');
+
+/**
+ * Implements hook_menu().
+ */
+function moha_message_menu() {
+  $menu['moha/message_wall/%'] = array(
+    'description' => t('Moha Message Wall'),
+    'page callback' => '_moha_message_wall',
+    'page arguments' => array(2),
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $menu;
+}
+
+/**
+ * Implements hook_node_info().
+ */
+function moha_message_node_info() {
+
+  $items = array(
+    __MOHA_MESSAGE => array(
+      'name' => t(MOHA_MESSAGE),
+      'base' => __MOHA_MESSAGE, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
+      'description' => t('Use <i>Moha Message</i> to leave your on message wall.'),
+      'title_label' => t('Title'),
+      'has_title' => TRUE,
+      'locked' => FALSE,
+    ),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Moha Message node add / edit form.
+ *
+ * Drupal needs for us to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/moha-clip.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
+ */
+function moha_message_form($node, $form_state) {
+  return node_content_form($node, $form_state);
+}
+
+/**
+ * Implements hook_node_type_insert().
+ *
+ * Bind moha_message fields.
+ */
+function moha_message_node_type_insert($info) {
+  if ($info->type == __MOHA_MESSAGE) {
+
+    /* No need to prepare body field.
+    $body_instance = node_add_body_field($info, t('Contents'));
+    // Save our changes to the body field instance.
+    field_update_instance($body_instance);
+    */
+
+    foreach (_moha_message_fields_and_instances() as $field) {
+      if (!field_info_field($field['field_name'])) {
+        field_create_field($field);
+      }
+
+      field_create_instance($field);
+    }
+
+    // Hide comment for Moha Clip by default.
+    variable_set('comment_' . __MOHA_MESSAGE, COMMENT_NODE_HIDDEN);
+
+    // Unpublished status by default.
+    variable_set('node_options_' . __MOHA_MESSAGE, array(''));
+  }
+}
+
+/**
+ * Moha Message Fields.
+ *
+ * @return array fields & instance parameter array.
+ */
+function _moha_message_fields_and_instances() {
+  $fields_and_instances = array();
+
+  $fields_and_instances[__MOHA_MESSAGE_WALLS] = array(
+    'label' => t('Message Wall'),
+    'field_name' => __MOHA_MESSAGE_WALLS,
+    'description' => t('Specify on which message wall, this message should appears.'),
+    'type' => 'taxonomy_term_reference',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'entity_type' => 'node',
+    'bundle' => __MOHA_MESSAGE,
+    'settings' => array(
+      'max_length' => 260,
+      'allowed_values' => array(
+        array(
+          'vocabulary' => __MOHA_MESSAGE_WALLS,
+        ),
+      ),
+    ),
+    'widget' => array(
+      'type' => 'taxonomy_autocomplete',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+    ),
+  );
+
+  return $fields_and_instances;
+}
+
+/**
+ * Load messages per $term to render as message wall.
+ */
+function _moha_message_wall($term) {
+
+  // Return nothing when $term is invalid.
+  if (!$tid = moha_get_tid_from_name($term)){
+    return array();
+  }
+
+  $query = new EntityFieldQuery();
+  $result = $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', __MOHA_MESSAGE)
+    ->propertyCondition('status', NODE_PUBLISHED)
+    ->propertyOrderBy('created', 'DESC')
+    ->fieldCondition(__MOHA_MESSAGE_WALLS, 'tid', $tid, 'CONTAINS')
+    ->range(0, 50)
+    ->execute();
+
+  $contents[] = array();
+
+  if (isset($result['node'])) {
+    $messages = $result['node'];
+    foreach ($messages as $message) {
+      $node = node_load($message->nid);
+      $node->title;
+
+      $contents['messages'][] = array(
+        'nid' => $node->nid,
+        'message' => $node->title,
+      );
+    }
+  }
+
+  return theme('moha_message_wall_say_thank_you', array('contents' => $contents));
+}
+
+/**
+ * Implements hook_theme().
+ */
+function moha_message_theme($existing, $type, $theme, $path) {
+  return array(
+    // moha_demo_web_input
+    'moha_message_wall_say_thank_you' => array(
+      'render element' => 'page',
+      'template' => 'templates/moha_message_wall_say_thank_you',
+    ),
+  );
+}

@@ -1,5 +1,5 @@
-name = Moha WeChat Module
-description = WeChat support
+name = Moha WeChat
+description = WeChat support for Moha modules.
 core = 7.x
 package = Moha Online
 

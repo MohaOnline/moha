@@ -1,0 +1,6 @@
+name = Moha Message
+description = Provides Moha Message Wall, etc, functions.
+core = 7.x
+package = Moha Online
+
+
