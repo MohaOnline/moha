@@ -656,6 +656,7 @@ function moha_clip_menu() {
     'page arguments' => array('_moha_clip_manager_form'),
     'access arguments' => array('administer site configuration'),
     'file' => 'inc/moha_clip.admin.inc',
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
