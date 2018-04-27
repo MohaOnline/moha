@@ -84,6 +84,7 @@ EOF;
         array('%response' => $response)
       );
     }
+    // Return contact message.
     else if ($msg['MsgType'] == 'event' && $msg['EventKey'] == 'MENU_CONTACT') {
       $text_template = <<<EOF
 <xml><ToUserName><![CDATA[@toUser]]></ToUserName><FromUserName><![CDATA[@fromUser]]></FromUserName><CreateTime>@createTime</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[@content]]></Content></xml>
@@ -102,6 +103,7 @@ EOF;
         array('%response' => $response)
       );
     }
+    ///
 
   }
   catch (Exception $e) {

@@ -53,7 +53,7 @@ function _moha_wx_account_form($form, &$form_state, $account_name = ''){
   $form['account_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Account Name'),
-    '#description' => t('Give a name to identify each WeChat Service Account.'),
+    '#description' => t('Give a name to identify this WeChat Service Account.'),
     '#size' => 40,
     '#default_value' => $account->account_name,
     '#required' => TRUE,
@@ -100,14 +100,14 @@ TAG
 
   $form['news_title'] = array(
     '#type' => 'textfield',
-    '#title' => t('Welcome news: title'),
+    '#title' => t('Welcome message: title'),
     '#description' => t("Specify the title of the news which will be used as welcome message."),
     '#default_value' => $account->news_title,
   );
 
   $form['news_cover'] = array(
     '#type' => 'textfield',
-    '#title' => t('Welcome news: URL of cover image'),
+    '#title' => t('Welcome message: URL of cover image'),
     '#maxlength' => 256,
     '#size' => 160,
     '#default_value' => $account->news_cover,
@@ -115,7 +115,7 @@ TAG
 
   $form['news_link'] = array(
     '#type' => 'textfield',
-    '#title' => t('Welcome news: URL of news itself'),
+    '#title' => t('Welcome message: URL of article itself'),
     '#description' => t("Leave blank to fetch news URL from WeChat backend"),
     '#maxlength' => 256,
     '#size' => 160,
@@ -125,9 +125,9 @@ TAG
   $form['text'] = array(
     '#type' => 'text_format',
     '#base_type' => 'textarea',
-    '#title' => t('Text'),
+    '#title' => t('Contact us text'),
     '#default_value' => $account->text,
-    '#description' => t("Put text welcome message here."),
+    '#description' => t("Put text contact us message here."),
     '#format' => 'plain_text',
   );
 
