@@ -17,7 +17,7 @@ define('__MOHA_MESSAGE', 'moha_message');
 define('MOHA_MESSAGE_WALLS', 'Moha Message Walls');
 
 /**
- * Machine name.
+ * Machine name: field name.
  */
 define('__MOHA_MESSAGE_WALLS', 'moha_message_walls');
 
@@ -80,7 +80,7 @@ define('MOHA_MESSAGE__ROLE__ADMIN', __MOHA_MESSAGE . '__role__admin');
  * Implements hook_menu().
  */
 function moha_message_menu() {
-  $menu['moha/message_wall/%'] = array(
+  $menu['moha/message-wall/%'] = array(
     'description' => t('Moha Message Wall'),
     'page callback' => '_moha_message_wall',
     'page arguments' => array(2),
@@ -89,7 +89,96 @@ function moha_message_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $menu['moha/message-wall-submit/%'] = array(
+    'description' => t('Submit Moha Message'),
+    'page callback' => 'drupal_get_form',
+    'page arguments'   => array('moha_message_submit_form', 2),
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $menu['moha/message-wall-success'] = array(
+    'description' => t('Moha Message is submitted for reviewing.'),
+    'page callback' => '_moha_message_wall_success',
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
   return $menu;
+}
+
+/**
+ * @param $form
+ * @param $form_state
+ * @param $term_name
+ *
+ * @return mixed
+ */
+function moha_message_submit_form($form, &$form_state, $term_name) {
+  $form['message'] = array(
+    '#type' => 'textarea',
+    '#rows' => 6,
+    '#title' => t('Please leave your message'),
+    '#required' => TRUE,
+  );
+
+  $form['message_wall'] = array(
+    '#type' => 'hidden',
+    '#value' => $term_name,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+
+  return $form;
+}
+
+/**
+ * @param $form
+ * @param $form_state
+ * @param $term_name
+ */
+function moha_message_submit_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+
+
+  $tid = moha_get_tid_from_name($values['message_wall']);
+
+  global $user;
+
+  $node = new stdClass();
+  $node->title = $values['message'];
+  $node->type = __MOHA_MESSAGE;
+  // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+  node_object_prepare($node);
+  // Or e.g. 'en' if locale is enabled.
+  $node->language = LANGUAGE_NONE;
+  $node->uid = $user->uid;
+  // Status is 1 or 0; published or not.
+  $node->status = 0;
+  // Promote is 1 or 0; promoted to front page or not.
+  $node->promote = 0;
+  // Comment is 0, 1, 2; 0 = disabled, 1 = read only, or 2 = read/write.
+  $node->comment = 0;
+
+  $node->moha_message_walls[$node->language][]['tid'] = $tid;
+
+  $node = node_submit($node); // Prepare node for saving
+
+  try {
+    node_save($node);
+  }
+  catch (Exception $e) {
+
+  }
+
+  $form_state['redirect'] = '/moha/message-wall-success';
+
+  drupal_set_message("Your message has been saved, please wait for approval.");
 }
 
 /**
@@ -236,15 +325,23 @@ function _moha_message_wall($term) {
   return theme('moha_message_wall_say_thank_you', array('contents' => $contents));
 }
 
+function _moha_message_wall_success () {
+  return theme('moha_message_success');
+}
+
 /**
  * Implements hook_theme().
  */
 function moha_message_theme($existing, $type, $theme, $path) {
   return array(
-    // moha_demo_web_input
+    // moha_message_wall_say_thank_you
     'moha_message_wall_say_thank_you' => array(
       'render element' => 'page',
       'template' => 'templates/moha_message_wall_say_thank_you',
+    ),
+    'moha_message_success' => array(
+      'render element' => 'page',
+      'template' => 'templates/moha_message_success',
     ),
   );
 }

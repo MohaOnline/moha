@@ -178,8 +178,6 @@ function _moha_wx_account_form_submit($form, &$form_state){
     // Get news cover and news link for welcome message.
     if (!empty($account['news_title']) && empty($account['news_link'])){
       try {
-        _moha_wx_get_access_token($account);
-
         _moha_wx_update_welcome_news($account);
       }
       catch (Exception $e) {
@@ -221,7 +219,6 @@ function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
 
   if (empty($account['wx_menu'])) {
     try {
-      _moha_wx_get_access_token($account);
       _moha_wx_get_menu($account);
     } catch (Exception $e) {
       // Output error log with related failed API.
@@ -254,31 +251,50 @@ function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
     '#type' => 'submit',
     '#value' => t('Save Menu'),
   );
+  $form['actions']['delete'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete Menu'),
+  );
 
   return $form;
 
 }
 
+/**
+ * Save or delete WeChat menu.
+ *
+ * @inheritdoc
+ */
 function _moha_wx_menu_form_submit($form, &$form_state) {
-  $account = $form_state['values'];
+
+  $values = $form_state['values'];
+
+  if ($values['op'] == 'Delete Menu') {
+    $values['wx_menu'] = '';
+  }
 
   $affacted_row_number = db_update('moha_wx_accounts')
     ->fields(array(
-      'wx_menu' => $account['wx_menu'],
+      'wx_menu' => $values['wx_menu'],
       'updated' => time(),
     ))
-    ->condition('wechat_name', $account['wechat_name'])
+    ->condition('wechat_name', $values['wechat_name'])
     ->execute();
 
   $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
     array(
-      ':wechat_name' => $account['wechat_name'],
+      ':wechat_name' => $values['wechat_name'],
     )
   )->fetchAssoc();
 
   try {
-    _moha_wx_get_access_token($account);
-    _moha_wx_create_menu($account);
+    if ($values['op'] == 'Delete Menu') {
+      _moha_wx_delete_menu($account);
+    }
+    else {
+      _moha_wx_create_menu($account);
+    }
+
   } catch (Exception $e) {
     // Output error log with related failed API.
     watchdog(__FUNCTION__,
