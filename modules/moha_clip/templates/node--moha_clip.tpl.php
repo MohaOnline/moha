@@ -139,7 +139,8 @@ drupal_add_js(array(
         <?php if ($display_submitted): ?>
           <div class="author-name"><?php print t("Author: ") . $name; ?></div>
           <?php print $user_picture; ?>
-          <div class="article-created"><?php print t("Date: ") . $date; ?></div>
+          <?php $changed_date = new \DateTime(); $changed_date->setTimestamp($node->changed); ?>
+          <div class="article-created"><?php print t('Updated: ') . $changed_date->format('Y/m/d'); ?></div>
         <?php endif; ?>
       </div>
 

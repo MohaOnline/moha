@@ -95,6 +95,13 @@ code.hljs {
 }
 /***/
 
+/** Styles of list items. */
+.cke_editable_themed ul, .node-type-moha-clip .field-name-body ul {
+  padding-left: 2rem;
+  list-style-type: square;
+}
+/***
+
 /** Image */
 .cke_editable_themed img:not(.cke_reset), .field-name-body img {
   box-shadow: 0 0 8px 2px #bbb;
