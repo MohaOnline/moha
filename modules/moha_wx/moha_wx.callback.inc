@@ -1,35 +1,26 @@
 <?php
 /**
  * @file
- * @Created: 20/03/2018 1:54 AM
+ *
  */
 
 ctools_include('WXBizMsgCrypt', __MOHA_WX);
 
 /**
- * @param $account_name WeChat account machine name
+ * @param $wechat_name string
+ *        WeChat account machine name
  */
-function _moha_wx_callback ($account_name) {
+function _moha_wx_callback ($wechat_name) {
 
   try {
 
-    $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
-      array(
-        ':wechat_name' => $account_name,
-      )
-    )->fetchAssoc();
-
-    if (!$account) {
-      throw new Exception("Invalid WeChat account name.");
-    }
+    $account = _moha_wx_moha_account($wechat_name);
 
     // Get $_GET contents to decide next logic
     $query = drupal_get_query_parameters();
 
     // Only verify token when verifying customized server.
-    if(!moha_wx_check_signature($account['token'], $query)){
-      throw new Exception("Wrong signature.");
-    }
+    moha_wx_check_signature($account['token'], $query);
 
     // Open development mode.
     if (isset($query['echostr'])) {
@@ -107,12 +98,7 @@ EOF;
 
   }
   catch (Exception $e) {
-    watchdog( MOHA_WX,
-      __FUNCTION__ . " catch: %msg.",
-      array('%msg' => $e->getMessage()),
-      WATCHDOG_ERROR
-    );
-
+    watchdog_exception(__FUNCTION__, $e);
     header(t(MOHA_WX__MSG__NO_SERVICE), TRUE, 503);
   }
 

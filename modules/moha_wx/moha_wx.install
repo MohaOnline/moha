@@ -1,16 +1,22 @@
 <?php
 /**
  * @file
+ *
+ * Prepare module level database tables: moha_wx_accounts.
  */
 
 /**
  * Implements hook_install().
+ *
+ * @throws \FieldException
+ *   Throw any exception to interrupt install, otherwise module will be installed normally with inconsistent configurations.
  */
-function moha_wx_install (){
+function moha_wx_install() {
   moha_wx_update_0700();
   moha_wx_update_0701();
   moha_wx_update_0702();
   moha_wx_update_0703();
+  moha_wx_update_0704();
 }
 
 /**
@@ -54,7 +60,7 @@ function moha_wx_update_0700 () {
         'type' => 'varchar',
         'length' => 50,
         'not null' => TRUE,
-        'description' => '',
+        'description' => 'Internal machine name of WeChat account in Moha modules.',
       ),
       'app_id' => array(
         'type' => 'varchar',
@@ -195,6 +201,32 @@ function moha_wx_update_0703(){
     'description' => 'WeChat menu JSON configurations',
   );
   db_add_field('moha_wx_accounts', 'wx_menu', $wx_menu);
+
+  cache_clear_all();
+}
+
+/**
+ * Prepare fields for profile2.
+ *
+ * @throws \FieldException
+ *   Throw any exception to interrupt update, otherwise DB version will be correctly updated.
+ */
+function moha_wx_update_0704(){
+  try {
+    foreach (_moha_wx_moha_profile2_fields_and_instances() as $field) {
+      if (!field_info_field($field['field_name'])) {
+        field_create_field($field);
+      }
+
+      if (!field_info_instance($field['entity_type'], $field['field_name'], $field['bundle'])) {
+        field_create_instance($field);
+      }
+    }
+  }
+  catch (FieldException $e){
+    watchdog_exception(__FUNCTION__, $e);
+    throw $e;
+  }
 
   cache_clear_all();
 }

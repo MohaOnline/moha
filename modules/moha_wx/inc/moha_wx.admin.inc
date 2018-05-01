@@ -151,47 +151,36 @@ function _moha_wx_account_form_submit($form, &$form_state){
 
   $account = $form_state['values'];
 
-  $affacted_row_number = db_update('moha_wx_accounts')
-    ->fields(array(
-      'account_name' => $account['account_name'],
-      'app_id' => $account['app_id'],
-      'app_secret' => $account['app_secret'],
-      'token' => $account['token'],
-      'encoding_aes_key' => $account['encoding_aes_key'],
-      'news_title' => $account['news_title'],
-      'news_cover' => $account['news_cover'],
-      'news_link' => $account['news_link'],
-      'text' => $account['text']['value'],
-      'updated' => time(),
-    ))
-    ->condition('wechat_name', $account['wechat_name'])
-    ->execute();
+  try {
+    $affacted_row_number = db_update('moha_wx_accounts')
+      ->fields(array(
+        'account_name' => $account['account_name'],
+        'app_id' => $account['app_id'],
+        'app_secret' => $account['app_secret'],
+        'token' => $account['token'],
+        'encoding_aes_key' => $account['encoding_aes_key'],
+        'news_title' => $account['news_title'],
+        'news_cover' => $account['news_cover'],
+        'news_link' => $account['news_link'],
+        'text' => $account['text']['value'],
+        'updated' => time(),
+      ))
+      ->condition('wechat_name', $account['wechat_name'])
+      ->execute();
 
-  if ($affacted_row_number == 1) {
-    // Fetch full information of account.
-    $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
-      array(
-        ':wechat_name' => $account['wechat_name'],
-      )
-    )->fetchAssoc();
+    if ($affacted_row_number == 1) {
+      // Fetch full information of account.
+      $account = _moha_wx_moha_account($account['wechat_name']);
 
-    // Get news cover and news link for welcome message.
-    if (!empty($account['news_title']) && empty($account['news_link'])){
-      try {
-        _moha_wx_update_welcome_news($account);
-      }
-      catch (Exception $e) {
-        // Output error log with related failed API.
-        watchdog( __FUNCTION__,
-          "%msg",
-          array(
-            "%msg" => $e->getMessage(),
-          ),
-          WATCHDOG_ERROR
-        );
-      }
-    } // news_title is specified.
+      // Get news cover and news link for welcome message.
+      if (!empty($account['news_title']) && (empty($account['news_link']) || empty($account['news_cover']))) {
+          _moha_wx_refresh_welcome_news_info($account);
+      } // news_title is specified.
+    }
 
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
   }
 }
 

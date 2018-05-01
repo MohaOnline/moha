@@ -1,9 +1,8 @@
 <?php
-/**
- * @file
- * @Created: 31/03/2018 4:47 PM
- */
 
+/**
+ * Class MohaWeChat
+ */
 class MohaWeChat {
   public static $errCode = array(
     '0' => '处理成功',
@@ -30,4 +29,33 @@ class MohaWeChat {
     '' => '',
   );
 
+  public static $ERROR__NO_ERROR_CODE = 930000;
+
+  public static $ERROR__WECHAT_ACCOUNT_INVALID = 930001;
+
+  public static $ERROR__OAUTH_NO_CODE = 930002;
+
+  public static $ERROR__OAUTH_NO_STATE = 930003;
+
+  public static $ERROR__OAUTH_INVALID_STATE = 930003;
+
 }
+
+/**
+ * Class MohaWXException, base exception for extendtion per different purposes.
+ */
+class MohaWXException extends Exception {}
+
+/**
+ * Class MohaWXNoUserException
+ *
+ * No user with OpenID or UnionID.
+ */
+class MohaWXNoUserException extends MohaWXException {}
+
+/**
+ * Class MohaWXNoUserException
+ *
+ * Invalid param.
+ */
+class MohaWXParamException extends MohaWXException {}

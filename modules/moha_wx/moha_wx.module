@@ -26,6 +26,16 @@ define('MOHA_WX__RELATIVE_PATH', drupal_get_path('module', __MOHA_WX));
 define('MOHA_WX__PATH', base_path() . MOHA_WX__RELATIVE_PATH);
 
 /**
+ * Module URL used in hook_menu: handles redirection from WeChat OAuth2 for getting user information.
+ */
+define('MOHA_WX__URL__OAUTH2_REDIRECT_USER_INFO', 'moha/wx/oauth2_redirect_user_info/@WECHAT_NAME');
+
+/**
+ * Module URL used in hook_menu: lets user request WeChat OAuth2 to get user information.
+ */
+define('MOHA_WX__URL__OAUTH2_REQUEST_USER_INFO', 'moha/wx/oauth2_request_user_info/@WECHAT_NAME/@STATE');
+
+/**
  * Error message: 503 Service is not available.
  */
 define('MOHA_WX__MSG__NO_SERVICE', 'Service is not available.');
@@ -56,19 +66,68 @@ define('MOHA_WX__API__CREATE_MENU', 'https://api.weixin.qq.com/cgi-bin/menu/crea
 define('MOHA_WX__API__DELETE_MENU', 'https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=@ACCESS_TOKEN');
 
 /**
+ * WeChat API: Request an OAuth2 authorization.
+ */
+define('MOHA_WX__API__OAUTH2_REQUEST', 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=@APPID&redirect_uri=@REDIRECT_URI&response_type=code&scope=snsapi_userinfo&state=@STATE#wechat_redirect');
+
+/**
+ * WeChat API: Request user information of an OAuth2 user.
+ */
+define('MOHA_WX__API__OAUTH2_REQUEST_USER_INFO', 'https://api.weixin.qq.com/sns/userinfo?access_token=@ACCESS_TOKEN&openid=@OPENID&lang=zh_CN');
+
+/**
+ * WeChat API: Get OAuth Access Token.
+ */
+define('MOHA_WX__API__OAUTH_ACCESS_TOKEN', 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=@APPID&secret=@APPSECRET&code=@CODE&grant_type=authorization_code');
+
+/**
+ * WeChat API: Refresh token valid seconds.
+ */
+define('MOHA_WX__API__REFRESH_TOKEN_EXPIRES_IN', 60*60*24*30);
+
+/**
+ * WeChat OAuth2 state: Personal Home.
+ */
+define('MOHA_WX__OAUTH2_STATE__HOME', 'MOHA_WX__OAUTH2_STATE__HOME');
+
+/**
  * Implements hook_menu().
  */
 function moha_wx_menu() {
 
-  // WeChat callback entry.
-  $items['moha/wx/%'] = array(
+  // Moha WeChat server URL, configured at Development > Basic > Server Address.
+  $items['moha/wx/server/%'] = array(
     'title' => 'wechat',
     'description' => 'moha callback',
     'page callback' => '_moha_wx_callback',
-    'page arguments' => array(2),
+    'page arguments' => array(3),
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'file' => 'moha_wx.callback.inc',
+  );
+
+  $items[format_string(MOHA_WX__URL__OAUTH2_REQUEST_USER_INFO, array(
+    '@WECHAT_NAME' => '%',
+    '@STATE' => '%'
+  ))] = array(
+    'title' => 'wechat',
+    'description' => 'Moha WX requests WeChat OAuth for User Info.',
+    'page callback' => '_moha_wx_oauth2_request_authorization',
+    'page arguments' => array(3, 4),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_wx.oauth2.inc',
+  );
+
+  // Handles redirect from WeChat oauth2 process.
+  $items[format_string(MOHA_WX__URL__OAUTH2_REDIRECT_USER_INFO, array('@WECHAT_NAME' => '%'))] = array(
+    'title' => 'wechat',
+    'description' => 'moha callback',
+    'page callback' => '_moha_wx_oauth2_redirect_user_info',
+    'page arguments' => array(3),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_wx.oauth2.inc',
   );
 
   $items['admin/moha/wx/config/%'] = array(
@@ -89,59 +148,82 @@ function moha_wx_menu() {
     'file' => 'inc/moha_wx.admin.inc',
   );
 
+  $items['moha/wx/home'] = array(
+    'title' => 'wechat',
+    'description' => 'moha landing page',
+    'page callback' => '_moha_wx_home',
+    'access arguments' => array('skip comment approval'),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
+}
+
+function _moha_wx_home() {
+  global $user;
+  $profile = profile2_load_by_user($user, __MOHA);
+
+  $moha_wx_user_info = entity_load_single('field_collection_item', $profile->moha_wx_user_info[LANGUAGE_NONE][0]['value']);
+
+  echo $moha_wx_user_info->moha_wx_nickname[LANGUAGE_NONE][0]['value'];
+  echo '<img src="' . $moha_wx_user_info->moha_wx_portrait[LANGUAGE_NONE][0]['value'] . '" />';
+
 }
 
 /**
  * Check passed signature parameter($_GET['signature']).
  *
  * @param $token
- * @param $query  array  all passed parameters $_GET
  *
- * @return bool
+ * @param $query array
+ *   All passed parameters from $_GET
+ *
+ * @throws \MohaWXParamException
+ *   Throws when parameters are invalid.
+ *
+ * @throws \Exception
+ *   Throws
+ *
+ * @return true
  */
 function moha_wx_check_signature($token, $query) {
 
-  try {
-    if (empty($query["signature"]) || empty($query["timestamp"]) || empty($query["nonce"])) {
-      throw new Exception("miss query parameter.");
-    }
-
-    $signature = $query["signature"];
-    $timestamp = $query["timestamp"];
-    $nonce = $query["nonce"];
-
-    // Sort, combine, sha1.
-    $tmpArr = [$token, $timestamp, $nonce];
-    sort($tmpArr, SORT_STRING); // use SORT_STRING rule.
-    $tmpStr = implode($tmpArr);
-    $tmpStr = sha1($tmpStr);
-
-    if ($tmpStr == $signature) {
-      return TRUE;
-    }
-    else {
-      throw new Exception("Signature doesn't match.");
-    }
+  if (empty($query["signature"])) {
+    throw new MohaWXParamException('no signature!');
   }
-  catch (Exception $e) {
-    //
-    watchdog( MOHA_WX,
-      __FUNCTION__ . " catch: %msg ",
-      array(
-        "%msg" => $e->getMessage(),
-      ),
-      WATCHDOG_ERROR
-    );
 
-    return FALSE;
+  if (empty($query["timestamp"])) {
+    throw new MohaWXParamException('no timestamp!');
   }
+
+  if (empty($query["nonce"])) {
+    throw new MohaWXParamException('no nonce!');
+  }
+
+  $signature = $query["signature"];
+  $timestamp = $query["timestamp"];
+  $nonce = $query["nonce"];
+
+  // Sort, combine, sha1.
+  $tmpArr = [$token, $timestamp, $nonce];
+  sort($tmpArr, SORT_STRING); // use SORT_STRING rule.
+  $tmpStr = implode($tmpArr);
+  $tmpStr = sha1($tmpStr);
+
+  if ($tmpStr != $signature) {
+    throw new Exception("Signature doesn't match.");
+  }
+
+  return TRUE;
 }
 
 /**
  * Call WeChat official API, and return analysed basing on JSON response.
  *
  * @param $wechat_api_url
+ *
+ * @throws \Exception
+ *
  * @return array converted from wechat json response.
  *   return array with errcode member when no http response, no or error json response.
  */
@@ -150,16 +232,29 @@ function moha_wx_get_official($wechat_api_url) {
 }
 
 /**
- * Call WeChat official API, and return analysed basing on JSON response.
+ * Call WeChat official API, and returns JSON array per response.
  *
  * @param $wechat_api_url string
  * @param $data string
  * @param $request_type string
  *
- * @return array converted from wechat json response.
- *   return array with errcode member when no http response, no or error json response.
+ * @throws \Exception
+ *   Throws exception when no response, no return JSON data, or return error JSON data.
+ *
+ * @return array
+ *   Converted from WeChat json response.
  */
 function moha_wx_post_official($wechat_api_url, $data = '', $request_type = "POST") {
+
+  // Trace Called WeChat API.
+  watchdog( __FUNCTION__,
+    '@URL[@DATA]',
+    array(
+      '@URL' => $wechat_api_url,
+      '@DATA' => $data,
+    ),
+    WATCHDOG_INFO
+  );
 
   if (!empty($data)) {
     $options['data'] = $data;
@@ -170,67 +265,36 @@ function moha_wx_post_official($wechat_api_url, $data = '', $request_type = "POS
     $res = drupal_http_request($wechat_api_url);
   }
 
-  // Return array
-  $array = array();
-
-  try {
-    if (isset($res->data)) {
-      watchdog( MOHA_WX,
-        __FUNCTION__ . " respond data: @data",
-        array('@data' => $res->data),
-        WATCHDOG_INFO
-      );
-
-      $array = json_decode($res->data, TRUE);
-
-      if (!$array) {
-        throw new Exception('no response JSON.');
-      }
-      else if (!empty($array['errcode'])) { // $json['errcode'] is set and value is not 0.
-        throw new Exception(format_string('json error: %error_code, %errmsg', array(
-          '%error_code' => (isset($array['errcode']))?$array['errcode']:t('no error code'),
-          '%errmsg' => (isset($array['errmsg']))?$array['errmsg']:t('no error message'),
-        )));
-      }
-      else { // Normal case.
-        return $array;
-      }
-    }
+  if (!isset($res->data)) {
     // No response data, network error.
-    else {
-      throw new Exception('no response data. ' . $res->error);
-    }
+    throw new Exception($res->error, $res->code);
   }
-  catch (Exception $e) {
-    $error_message = format_string(" %msg [%wechat_api_url]",
-      array(
-        "%wechat_api_url" => $wechat_api_url,
-        "%msg" => $e->getMessage(),
-      )
+  else {
+    watchdog( MOHA_WX,
+      __FUNCTION__ . " respond data: @data",
+      array('@data' => $res->data),
+      WATCHDOG_INFO
     );
 
-    // Output error log with related failed API.
-    watchdog( __FUNCTION__,
-      $error_message,
-      array(),
-      WATCHDOG_ERROR
-    );
+    $array = json_decode($res->data, TRUE);
 
-    drupal_set_message($error_message, 'error');
-
-    if (empty($array)) {
-      $array['errcode'] = -255;
-      $array['errmsg'] = 'Moha unknown failure: ' . __FUNCTION__ .':' . __LINE__;
+    if (!$array) {
+      throw new Exception('No JSON string in response!');
     }
-
-    return $array;
+    else if (!empty($array['errcode'])) { // $json['errcode'] is set and value is not 0.
+      throw new Exception(isset($array['errmsg'])?$array['errmsg']:t('no error message'), $array['errcode']);
+    }
+    else {
+      // Normal case.
+      return $array;
+    }
   }
 
 }
 
 
 /**
- * If access token isn't existed or expired, update access token from wechat server,
+ * If access token no existed or expired, fetch access token from wechat server,
  * otherwise return stored access token.
  *
  * @param $account array
@@ -240,7 +304,7 @@ function moha_wx_post_official($wechat_api_url, $data = '', $request_type = "POS
  *
  * @throws \Exception: no access token.
  */
-function _moha_wx_get_access_token(&$account) {
+function _moha_wx_refresh_access_token(&$account) {
 
   // expired time of access_token is in future.
   if (!empty($account['access_token']) && ($account['access_token_updated'] + $account['access_token_expires_in']) > time() ){
@@ -251,10 +315,6 @@ function _moha_wx_get_access_token(&$account) {
     '@APPID' => $account['app_id'],
     '@APPSECRET' => $account['app_secret'],
   )));
-
-  if (empty($json)) {
-    throw new Exception('no access token: ' . __FUNCTION__);
-  }
 
   $access_token = $account['access_token'] = $json['access_token'];
   $account['access_token_expires_in'] = $json['expires_in'];
@@ -273,14 +333,16 @@ function _moha_wx_get_access_token(&$account) {
 }
 
 /**
+ * Fetch WeChat article URL per article title from WeChat, then update in table: moha_wx_accounts.
  *
  * @param $account array
  *    account information array.
+ *
  * @throws \Exception
  */
-function _moha_wx_update_welcome_news($account) {
+function _moha_wx_refresh_welcome_news_info($account) {
 
-  _moha_wx_get_access_token($account);
+  _moha_wx_refresh_access_token($account);
 
   $post_data['type'] = 'news';
   $post_data['offset'] = 0;
@@ -289,10 +351,6 @@ function _moha_wx_update_welcome_news($account) {
   do {
     $materials = moha_wx_post_official(
       format_string(MOHA_WX__API__MATERIALS, ['@ACCESS_TOKEN' => $account['access_token']]), json_encode($post_data));
-
-    if (empty($materials)) {
-      throw new Exception(format_string("no materials [@FUNCTION].", ['@FUNCTION' => __FUNCTION__]));
-    }
 
     foreach ($materials['item'] as $item) {
       $content = $item['content'];
@@ -335,9 +393,11 @@ function _moha_wx_update_welcome_news($account) {
  * If there is no menu customized at WeChat end, save empty string to DB.
  *
  * @param $account
+ *
+ * @throws \Exception
  */
 function _moha_wx_get_menu(&$account) {
-  _moha_wx_get_access_token($account);
+  _moha_wx_refresh_access_token($account);
 
   $array = moha_wx_get_official(
     format_string(MOHA_WX__API__GET_MENU, array('@ACCESS_TOKEN' => $account['access_token']))
@@ -371,11 +431,15 @@ function _moha_wx_get_menu(&$account) {
 /**
  * Create WeChat Menu.
  *
- * @param $account
+ * @param $account array
+ *        WeChat account array from schema moha_wechat_accounts.
+ *
+ * @throws \Exception
+ *
  * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141013
  */
 function _moha_wx_create_menu(&$account){
-  _moha_wx_get_access_token($account);
+  _moha_wx_refresh_access_token($account);
 
   $result = moha_wx_post_official(
     format_string(MOHA_WX__API__CREATE_MENU, ['@ACCESS_TOKEN' => $account['access_token']]), $account['wx_menu']
@@ -387,10 +451,15 @@ function _moha_wx_create_menu(&$account){
 }
 
 /**
- * @param array $account schema moha_wx_accounts.
+ * Delete WeChat menu.
+ *
+ * @param $account array
+ *        WeChat account array from schema moha_wechat_accounts.
+ *
+ * @throws \Exception
  */
 function _moha_wx_delete_menu(&$account){
-  _moha_wx_get_access_token($account);
+  _moha_wx_refresh_access_token($account);
 
   $result = moha_wx_get_official(
     format_string(MOHA_WX__API__DELETE_MENU, ['@ACCESS_TOKEN' => $account['access_token']])
@@ -399,4 +468,613 @@ function _moha_wx_delete_menu(&$account){
   if ($result['errcode'] == 0 ) {
     drupal_set_message('WeChat Menu has been deleted.');
   }
+}
+
+/**
+ * Fetch WeChat account details from DB table: moha_wx_accounts.
+ *
+ * @param $wechat_name
+ *   WeChat account machine name.
+ *
+ * @return array
+ *   WeChat account array from schema moha_wx_accounts.
+ *
+ * @throws \Exception
+ *
+ */
+function _moha_wx_moha_account($wechat_name) {
+
+  $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
+    array(
+      ':wechat_name' => $wechat_name,
+    )
+  )->fetchAssoc();
+
+  if (!$account) {
+    throw new Exception("Invalid WeChat account name: " . check_plain($wechat_name), MohaWeChat::$ERROR__WECHAT_ACCOUNT_INVALID);
+  }
+  else {
+    return $account;
+  }
+}
+
+/**
+ * Return profile2 fields and instances array for profile2 moha.
+ *
+ * @return array
+ */
+function _moha_wx_moha_profile2_fields_and_instances() {
+  $fields_and_instances['moha_wx_user_info'] = array(
+    'type' => 'field_collection',
+    'field_name' => 'moha_wx_user_info',
+    'label' => t('User information in WeChat'),
+    'entity_type' => 'profile2',
+    'bundle' => __MOHA,
+    'default_value' => NULL,
+    'description' => t('User information in WeChat'),
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_collection',
+        'settings' => array(
+          'add' => 'Add',
+          'delete' => 'Delete',
+          'description' => TRUE,
+          'edit' => 'Edit',
+          'view_mode' => 'full',
+        ),
+        'type' => 'field_collection_view',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+      'profile2_private' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'field_collection',
+      'settings' => array(),
+      'type' => 'field_collection_embed',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_unionid'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_unionid',
+    'label' => 'UnionID',
+    'bundle' => 'moha_wx_user_info',
+    'description' => t('UnionID of this WeChat account.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_nickname'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_nickname',
+    'label' => 'Nickname',
+    'bundle' => 'moha_wx_user_info',
+    'description' => t('Nickname which is used in WeChat.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_sex'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_sex',
+    'label' => 'Sex',
+    'bundle' => 'moha_wx_user_info',
+    'description' => t('Sex which is registered in WeChat.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_province'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_province',
+    'label' => 'Province',
+    'bundle' => 'moha_wx_user_info',
+    'description' => t('Province which is registered in WeChat.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_city'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_city',
+    'label' => 'City',
+    'bundle' => 'moha_wx_user_info',
+    'description' => t('City which is registered in WeChat.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_country'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_country',
+    'label' => 'Country',
+    'bundle' => 'moha_wx_user_info',
+    'description' => t('Country which is registered in WeChat.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_portrait'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_portrait',
+    'label' => 'Portrait',
+    'bundle' => 'moha_wx_user_info',
+    'description' => t('Portrait which is registered in WeChat.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  // field container: connected WeChat account information.
+  $fields_and_instances['moha_wx_connected_accounts'] = array(
+    'type' => 'field_collection',
+    'field_name' => 'moha_wx_connected_accounts',
+    'label' => t('Connected WeChat accounts'),
+    'entity_type' => 'profile2',
+    'bundle' => __MOHA,
+    'default_value' => NULL,
+    'description' => t('Stores connected WeChat account information, like: appid, openid, etc.'),
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_collection',
+        'settings' => array(
+          'add' => 'Add',
+          'delete' => 'Delete',
+          'description' => TRUE,
+          'edit' => 'Edit',
+          'view_mode' => 'full',
+        ),
+        'type' => 'field_collection_view',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+      'profile2_private' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'field_collection',
+      'settings' => array(),
+      'type' => 'field_collection_embed',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_appid'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_appid',
+    'label' => 'AppID',
+    'bundle' => 'moha_wx_connected_accounts',
+    'description' => t('AppID of this WeChat account.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_openid'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_openid',
+    'label' => 'OpenID',
+    'bundle' => 'moha_wx_connected_accounts',
+    'description' => t('OpenID of this WeChat account.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_oauth2_access_token'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_oauth2_access_token',
+    'label' => 'OAuth2 access token',
+    'bundle' => 'moha_wx_connected_accounts',
+    'description' => t('Last access token of OAuth2'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_oauth2_token_updated'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_oauth2_token_updated',
+    'label' => 'Updated time',
+    'bundle' => 'moha_wx_connected_accounts',
+    'description' => t('By when last oauth2 access token was refreshed.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_oauth2_token_valid_time'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_oauth2_token_valid_time',
+    'label' => 'Valid time',
+    'bundle' => 'moha_wx_connected_accounts',
+    'description' => t('By when last oauth2 access token is valid, update time + expires in.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_wx_oauth2_refresh_token'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_wx_oauth2_refresh_token',
+    'label' => 'OAuth2 refresh token',
+    'bundle' => 'moha_wx_connected_accounts',
+    'description' => t('WeChat OAuth2 30-days valid refresh token.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  return $fields_and_instances;
+}
+
+/**
+ * Returns user object per opendid and appid from Drupal site.
+ *
+ * @param $appid string
+ * @param $openid string
+ *
+ * @throws \MohaWXNoUserException
+ *   User does not exist.
+ *
+ * @throws \MohaWXParamException
+ *   Invalid params are passed.
+ */
+function _moha_wx_moha_user_by_openid($openid='', $appid=''){
+  if (empty($openid)) {
+    throw new MohaWXParamException('Empty OpenID.');
+  }
+
+  if (empty($appid)) {
+    throw new MohaWXParamException('Empty AppID');
+  }
+
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'field_collection_item')
+    ->entityCondition('bundle', 'moha_wx_connected_accounts')
+    ->fieldCondition('moha_wx_appid', 'value', $appid)
+    ->fieldCondition('moha_wx_openid', 'value', $openid);
+
+  $result = $query->execute();
+
+  if (empty($result)) {
+    throw new MohaWXNoUserException(
+      format_string(
+        'New User: %OPENID(%APPID)',
+        array(
+          '%OPENID' => $openid,
+          '%APPID' => $appid,
+        )
+      )
+    );
+  }
+  else {
+    watchdog(__FUNCTION__, 'Return User: %OPENID(%APPID)',
+      array(
+        '%OPENID' => $openid,
+        '%APPID' => $appid,
+      )
+    );
+
+    // Load user.
+    $field_collection_record = array_pop($result['field_collection_item']);
+    $connected_wechat_account = entity_load_single('field_collection_item', $field_collection_record->item_id);
+    $profile = $connected_wechat_account->hostEntity();
+    $user = user_load($profile->uid);
+
+    return $user;
+
+  }
+}
+
+/**
+ * Returns user object per unionid.
+ */
+function moha_wx_moha_user_by_unionid(){
+
 }
