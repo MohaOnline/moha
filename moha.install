@@ -1,0 +1,19 @@
+<?php
+/**
+ * @file
+ *
+ */
+
+/**
+ * Implements hook_install().
+ */
+function moha_install() {
+  moha_update_0700();
+}
+
+/**
+ * Create profile2 type for Moha module.
+ */
+function moha_update_0700() {
+  _moha_create_profile2(MOHA);
+}

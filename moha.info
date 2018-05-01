@@ -5,3 +5,5 @@ package = Moha Online
 
 dependencies[] = imce
 dependencies[] = token
+dependencies[] = profile2
+dependencies[] = field_collection

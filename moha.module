@@ -287,8 +287,9 @@ function moha_preprocess(&$variables, $hook) {
 
 }
 
-
 /**
+ * Get tid from term name.
+ *
  * @param $term_name
  * @param null $vocabulary
  *
@@ -302,6 +303,25 @@ function moha_get_tid_from_name($term_name, $vocabulary = NULL){
 
   $term = array_shift($terms);
   return $term->tid;
+}
+
+
+/**
+ * Create new profile2 file type for user.
+ *
+ * @param string $profile2_name
+ *   Profile2 name.
+ */
+function _moha_create_profile2($profile2_name = MOHA) {
+  $moha_profile = entity_create('profile2_type', array(
+    'type' => moha_h2m($profile2_name),
+    'label' => $profile2_name,
+    'data' => array(
+      'registration' => FALSE,
+      'use_page' => TRUE,
+    ),
+  ));
+  $moha_profile->save();
 }
 
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
