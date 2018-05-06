@@ -128,6 +128,10 @@ code.hljs {
   margin: 2em auto 1rem;
 }
 
+.cke_editable_themed h2 + h3, .node-type-moha-clip h2 + h3{
+  margin-top: 1em;
+}
+
 .cke_panel_listItem h3 {
 
 }
