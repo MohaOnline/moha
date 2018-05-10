@@ -145,7 +145,6 @@ function moha_message_submit_form($form, &$form_state, $term_name) {
 function moha_message_submit_form_submit($form, &$form_state) {
   $values = $form_state['values'];
 
-
   $tid = moha_get_tid_from_name($values['message_wall']);
 
   global $user;
@@ -173,7 +172,7 @@ function moha_message_submit_form_submit($form, &$form_state) {
     node_save($node);
   }
   catch (Exception $e) {
-
+    watchdog_exception(__FUNCTION__, $e);
   }
 
   $form_state['redirect'] = '/moha/message-wall-success';
