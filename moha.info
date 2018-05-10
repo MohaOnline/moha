@@ -9,3 +9,4 @@ dependencies[] = entity
 dependencies[] = token
 dependencies[] = profile2
 dependencies[] = field_collection
+dependencies[] = jquery_update
