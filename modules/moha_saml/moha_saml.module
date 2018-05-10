@@ -1,0 +1,74 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: ma3310
+ * Date: 2018/5/10
+ * Time: 1:47 PM
+ */
+
+/**
+ * Implements hook_init().
+ */
+function moha_saml_init() {
+  global $user;
+
+  // No need to go through user login process with SSO.
+  if (user_is_logged_in()) {
+    return;
+  }
+
+  $sso_id = '';
+  if (isset($_SERVER['HTTP_SM_UNIVERSALID'])) {
+    $sso_id  = $_SERVER['HTTP_SM_UNIVERSALID'];
+  }
+  elseif (isset($_SERVER['HTTP_USER_SSOID'])) {
+    $sso_id = $_SERVER['HTTP_USER_SSOID'];
+  }
+  elseif (isset($_SERVER['HTTP_UID'])) {
+    $sso_id = $_SERVER['HTTP_UID'];
+  }
+
+  $mail = '';
+  if (isset($_SERVER['HTTP_EMAIL'])) {
+    $mail  = $_SERVER['HTTP_EMAIL'];
+  }
+
+  try {
+    if (empty($sso_id)){
+      throw new Exception('No SSO in SAML session!');
+    }
+
+    if (empty($mail)){
+      throw new Exception('No e-mail in SAML session!');
+    }
+
+    $user = user_load_by_name(trim($sso_id));
+
+    // If user doesn't exist, create user.
+    if (empty($user)) {
+      $password = user_password(32);
+      $user_fields = array(
+        'name' => $sso_id,
+        'pass' => $password,
+        'mail' => $mail,
+        'status' => 1,
+        'init' => __FUNCTION__,
+        'roles' => array(
+          DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+        )
+      );
+
+      $user = user_save('', $user_fields);
+    }
+
+    // User login.
+    $form_state['uid'] = $user->uid;
+    user_login_submit(array(), $form_state);
+    drupal_session_regenerate();
+  }
+  catch(Exception $e) {
+    // make sure page correctly displayed, so don't throw further.
+    watchdog_exception(__FUNCTION__, $e);
+  }
+
+}

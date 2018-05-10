@@ -1,0 +1,4 @@
+name = Moha SAML
+description = SSO integration.
+core = 7.x
+package = Moha Online

@@ -4,6 +4,8 @@ core = 7.x
 package = Moha Online
 
 dependencies[] = imce
+dependencies[] = ctools
+dependencies[] = entity
 dependencies[] = token
 dependencies[] = profile2
 dependencies[] = field_collection
