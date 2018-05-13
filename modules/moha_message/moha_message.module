@@ -296,43 +296,63 @@ function _moha_message_fields_and_instances() {
 
 /**
  * Load messages per $term to render as message wall.
+ *
+ * Page callback function.
+ *
+ * @return string
  */
 function _moha_message_wall($term) {
-
-  // Return nothing when $term is invalid.
-  if (!$tid = moha_get_tid_from_name($term)){
-    return array();
-  }
-
-  $query = new EntityFieldQuery();
-  $result = $query->entityCondition('entity_type', 'node')
-    ->entityCondition('bundle', __MOHA_MESSAGE)
-    ->propertyCondition('status', NODE_PUBLISHED)
-    ->propertyOrderBy('created', 'DESC')
-    ->fieldCondition(__MOHA_MESSAGE_WALLS, 'tid', $tid, 'CONTAINS')
-    ->range(0, 50)
-    ->execute();
-
-  $contents[] = array();
-
-  if (isset($result['node'])) {
-    $messages = $result['node'];
-    foreach ($messages as $message) {
-      $node = node_load($message->nid);
-      $node->title;
-
-      $contents['messages'][] = array(
-        'nid' => $node->nid,
-        'message' => $node->title,
-      );
+  try {
+    // Return nothing when $term is invalid.
+    if (!$tid = moha_get_tid_from_name($term)){
+      return '';
     }
-  }
 
-  return theme('moha_message_wall_say_thank_you', array('contents' => $contents));
+    $query = new EntityFieldQuery();
+    $result = $query->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', __MOHA_MESSAGE)
+      ->propertyCondition('status', NODE_PUBLISHED)
+      ->propertyOrderBy('created', 'DESC')
+      ->fieldCondition(__MOHA_MESSAGE_WALLS, 'tid', $tid, 'CONTAINS')
+      ->range(0, 50)
+      ->execute();
+
+    $contents[] = array();
+
+    if (isset($result['node'])) {
+      $messages = $result['node'];
+      foreach ($messages as $message) {
+        $node = node_load($message->nid);
+        $node->title;
+
+        $contents['messages'][] = array(
+          'nid' => $node->nid,
+          'message' => $node->title,
+        );
+      }
+    }
+
+    return theme('moha_message_wall_say_thank_you', array('contents' => $contents));
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    return '';
+  }
 }
 
+/**
+ * @return string
+ *
+ * Page callback function.
+ */
 function _moha_message_wall_success () {
-  return theme('moha_message_success');
+  try {
+    return theme('moha_message_success');
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    return '';
+  }
 }
 
 /**
