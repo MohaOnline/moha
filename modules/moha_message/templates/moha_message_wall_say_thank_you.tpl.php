@@ -70,20 +70,16 @@
             const swiper = new Swiper('.swiper-container', {
               direction: 'vertical',
               watchActiveIndex: true,
-              onSlideChangeStart: function (swiper) {
-                console.log('slide change start - before');
-                console.log(swiper);
-                console.log(swiper.activeIndex);
-                //before Event use it for your purpose
-              },
-              onSlideChangeEnd: function (swiper) {
-                console.log('slide change end - after');
-                console.log(swiper);
-                console.log(swiper.activeIndex);
-                //after Event use it for your purpose
-                if (swiper.activeIndex == 1) {
-                  //First Slide is active
-                  console.log('First slide active')
+              on: {
+                slideChangeTransitionEnd: function () {
+                  if (this.activeIndex === 2) {
+                    $('body.page-moha-message-wall div.alertify-logs').css('visibility', 'visible').css('z-index', 1);
+                    $('div#moha-button-say-thank-you').css('z-index', 1);
+                  }
+                  else {
+                    $('body.page-moha-message-wall div.alertify-logs').css('visibility', 'hidden').css('z-index', -1);
+                    $('div#moha-button-say-thank-you').css('z-index', -1);
+                  }
                 }
               }
             });
@@ -101,6 +97,17 @@
       right: 0;
       bottom: 60px;
       z-index: -1;
+      visibility: hidden;
+      background: transparent;
+    }
+
+    /* set background of message wall and placeholder in swiper. */
+    .moha-message-contents-placeholder.swiper-slide {
+      background: url(/sites/all/modules/custom/moha/modules/moha_message/img/message-background.jpg) no-repeat top center;
+      -webkit-background-size: contain;
+      -moz-background-size: contain;
+      -o-background-size: contain;
+      background-size: contain;
     }
 
     div#moha-button-say-thank-you {
@@ -177,7 +184,7 @@
 
     .moha-message-contents-placeholder {
       color: transparent;
-      background-color: transparent;
+      z-index: -10;
     }
 
   </style>
