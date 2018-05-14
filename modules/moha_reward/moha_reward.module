@@ -1,0 +1,108 @@
+<?php
+
+/**
+ * Human name.
+ */
+define('MOHA_REWARD', 'Moha Reward');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_REWARD', 'moha_reward');
+
+/**
+ * moha_clip__variables.
+ */
+define('MOHA_REWARD__VARIABLES', __MOHA_REWARD . '__variables');
+
+/**
+ * Access token - Braintree SDK Credentials: Live Account.
+ */
+define('MOHA_REWARD__VARIABLE__PAYPAL_ACCESS_TOKEN', __MOHA_REWARD . '_paypal_access_token');
+
+/**
+ * PayPal environment: sandbox or production.
+ */
+define('MOHA_REWARD__VARIABLE__PAYPAL_ENVIRONMENT', __MOHA_REWARD . '_paypal_environment');
+
+/**
+ * Template variable: braintree SDK client tokens.
+ */
+define('MOHA_REWARD__VARIABLE__PAYPAL_BRAINTREE_CLIENT_TOKEN', __MOHA_REWARD . '_paypal_braintree_client_token');
+
+/**
+ * Reward block name.
+ */
+define('MOHA_REWARD_BLOCK', 'moha_reward_block');
+
+/**
+ * Implements hook_block_info().
+ */
+function moha_reward_block_info() {
+  // This hook returns an array, each component of which is an array of block
+  // information. The array keys are the 'delta' values used in other block
+  // hooks.
+  $blocks[MOHA_REWARD_BLOCK] = array(
+    'info' => t('Moha Reward Block'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function moha_reward_block_view($delta = '') {
+  $block = array();
+
+  // The $delta parameter tells us which block is being requested.
+  switch ($delta) {
+    case MOHA_REWARD_BLOCK:
+      $block['subject'] = NULL;
+      $block['content'] = _moha_reward_block();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Returns rendered reward block contents.
+ */
+function _moha_reward_block(){
+  try {
+    $variables = variable_get(MOHA_REWARD__VARIABLES);
+
+    if (empty($access_token = $variables[MOHA_REWARD__VARIABLE__PAYPAL_ACCESS_TOKEN])) {
+      throw new Exception('PayPal Braintree access token hasn\'t been set');
+    }
+
+    $gateway = new Braintree_Gateway(array(
+      'accessToken' => $access_token,
+    ));
+
+    $contents = array();
+    $contents[MOHA_REWARD__VARIABLE__PAYPAL_BRAINTREE_CLIENT_TOKEN] = $gateway->clientToken()->generate();
+    $contents[MOHA_REWARD__VARIABLE__PAYPAL_ENVIRONMENT] = 'sandbox';
+
+    return theme(MOHA_REWARD_BLOCK, array('contents' => $contents));
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    return '';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Declares template files.
+ */
+function moha_reward_theme($existing, $type, $theme, $path) {
+  return array(
+    MOHA_REWARD_BLOCK => array(
+      'template' => 'templates/' . MOHA_REWARD_BLOCK,
+      'variables' => array('contents' => NULL),
+    ),
+  );
+}

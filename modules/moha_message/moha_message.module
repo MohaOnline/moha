@@ -77,6 +77,75 @@ define('MOHA_MESSAGE__ROLE__MANAGER', __MOHA_MESSAGE . '__role__manager');
 define('MOHA_MESSAGE__ROLE__ADMIN', __MOHA_MESSAGE . '__role__admin');
 
 /**
+ * Moha Message Fields.
+ *
+ * @return array fields & instance parameter array.
+ */
+function _moha_message_fields_and_instances() {
+  $fields_and_instances = array();
+
+  $fields_and_instances[__MOHA_MESSAGE_WALLS] = array(
+    'label' => t('Message Wall'),
+    'field_name' => __MOHA_MESSAGE_WALLS,
+    'description' => t('Specify on which message wall, this message should appears.'),
+    'type' => 'taxonomy_term_reference',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'entity_type' => 'node',
+    'bundle' => __MOHA_MESSAGE,
+    'settings' => array(
+      'max_length' => 260,
+      'allowed_values' => array(
+        array(
+          'vocabulary' => __MOHA_MESSAGE_WALLS,
+        ),
+      ),
+    ),
+    'widget' => array(
+      'type' => 'taxonomy_autocomplete',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+    ),
+  );
+
+  // Configures cover html for each message wall, multi covers are allowed.
+  $fields_and_instances['moha_message_cover_html'] = array(
+    'label'       => t('Cover HTMLs'),
+    'field_name'  => 'moha_message_cover_html',
+    'type'        => 'text_long',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'description' => t('Save cover html for this message wall.'),
+    'entity_type' => 'taxonomy_term',
+    'bundle'      => __MOHA_MESSAGE_WALLS,
+    'settings' => array(
+    ),
+    'widget' => array(
+      'weight' => 0,
+      'type' => 'text_textarea',
+    ),
+    'display' => array(
+      'default' => array(
+        'weight' => -90,
+        'label' => 'hidden',
+      ),
+      'teaser' => array(
+        'weight' => -90,
+        'label' => 'hidden',
+      ),
+    ),
+  );
+
+  return $fields_and_instances;
+}
+
+/**
  * Implements hook_menu().
  */
 function moha_message_menu() {
@@ -241,7 +310,9 @@ function moha_message_node_type_insert($info) {
         field_create_field($field);
       }
 
-      field_create_instance($field);
+      if (!field_info_instance($field['entity_type'], $field['field_name'], $field['bundle'])) {
+        field_create_instance($field);
+      }
     }
 
     // Hide comment for Moha Clip by default.
@@ -250,48 +321,6 @@ function moha_message_node_type_insert($info) {
     // Unpublished status by default.
     variable_set('node_options_' . __MOHA_MESSAGE, array(''));
   }
-}
-
-/**
- * Moha Message Fields.
- *
- * @return array fields & instance parameter array.
- */
-function _moha_message_fields_and_instances() {
-  $fields_and_instances = array();
-
-  $fields_and_instances[__MOHA_MESSAGE_WALLS] = array(
-    'label' => t('Message Wall'),
-    'field_name' => __MOHA_MESSAGE_WALLS,
-    'description' => t('Specify on which message wall, this message should appears.'),
-    'type' => 'taxonomy_term_reference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'entity_type' => 'node',
-    'bundle' => __MOHA_MESSAGE,
-    'settings' => array(
-      'max_length' => 260,
-      'allowed_values' => array(
-        array(
-          'vocabulary' => __MOHA_MESSAGE_WALLS,
-        ),
-      ),
-    ),
-    'widget' => array(
-      'type' => 'taxonomy_autocomplete',
-    ),
-    'display' => array(
-      'default' => array(
-        'label' => 'hidden',
-        'type' => 'taxonomy_term_reference_plain',
-      ),
-      'teaser' => array(
-        'label' => 'hidden',
-        'type' => 'taxonomy_term_reference_plain',
-      ),
-    ),
-  );
-
-  return $fields_and_instances;
 }
 
 /**

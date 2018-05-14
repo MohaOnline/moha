@@ -10,3 +10,5 @@ dependencies[] = token
 dependencies[] = profile2
 dependencies[] = field_collection
 dependencies[] = jquery_update
+
+files[] = includes/Braintree.php

@@ -1,6 +1,23 @@
 <?php
 
 /**
+ * Create fields and instances per last definitions.
+ *
+ * @throws \FieldException
+ */
+function _moha_message_create_fields_and_instances() {
+  foreach (_moha_message_fields_and_instances() as $field) {
+    if (!field_info_field($field['field_name'])) {
+      field_create_field($field);
+    }
+
+    if (!field_info_instance($field['entity_type'], $field['field_name'], $field['bundle'])) {
+      field_create_instance($field);
+    }
+  }
+}
+
+/**
  * Implements hook_install().
  *
  * Install Moha Message Walls taxonomy.
@@ -28,5 +45,22 @@ function moha_message_install() {
   }
   ///
 
+  moha_message_update_0701();
+}
 
+/**
+ * Prepares fields and instances per last definitions.
+ *
+ * @throws \Exception
+ */
+function moha_message_update_0701(){
+  try {
+    _moha_message_create_fields_and_instances();
+  }
+  catch (Exception $e){
+    watchdog_exception(__FUNCTION__, $e);
+    throw $e;
+  }
+
+  cache_clear_all();
 }
