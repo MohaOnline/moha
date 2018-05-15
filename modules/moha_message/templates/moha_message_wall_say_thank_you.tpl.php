@@ -76,13 +76,13 @@
                 slideChangeTransitionEnd: function () {
                   if (this.activeIndex === 2) {
                     $('body.page-moha-message-wall div.alertify-logs').css('visibility', 'visible').css('z-index', 1);
-                    $('div#moha-button-say-thank-you').css('z-index', 2);
-                    $('div#moha-message-contents-header').css('z-index', 2);
+                    $('div#moha-button-say-thank-you').css('visibility', 'visible').css('z-index', 2);
+                    $('div#moha-message-contents-header').css('visibility', 'visible').css('z-index', 2);
                   }
                   else {
                     $('body.page-moha-message-wall div.alertify-logs').css('visibility', 'hidden').css('z-index', -1);
-                    $('div#moha-button-say-thank-you').css('z-index', -1);
-                    $('div#moha-message-contents-header').css('z-index', -1);
+                    $('div#moha-button-say-thank-you').css('visibility', 'hidden').css('z-index', -1);
+                    $('div#moha-message-contents-header').css('visibility', 'hidden').css('z-index', -1);
                   }
                 }
               }
@@ -112,6 +112,8 @@
       -moz-background-size: contain;
       -o-background-size: contain;
       background-size: contain;
+      padding-left: 0;
+      padding-right: 0;
     }
 
     div#moha-message-contents-header {
@@ -122,6 +124,7 @@
       padding-left: 0;
       padding-right: 0;
       z-index: -1;
+      visibility: hidden;
     }
 
     div#moha-button-say-thank-you {
@@ -132,6 +135,7 @@
       bottom: 0;
       padding-left: 0;
       padding-right: 0;
+      visibility: hidden;
     }
 
     div#moha-button-say-thank-you a {
