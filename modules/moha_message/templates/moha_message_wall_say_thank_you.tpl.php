@@ -79,9 +79,11 @@
 
   <style>
     body.page-moha-message-wall div.alertify-logs {
+      top: 0px;
       left: 10px;
       right: 10px;
       bottom: 80px;
+      overflow: hidden;
       z-index: 0;
       background: transparent;
       position: absolute;
@@ -161,10 +163,6 @@
     div.main-container div.row section {
       padding-left: 0;
       padding-right: 0;
-    }
-
-    .moha-message-cover-html {
-      z-index: 2;
     }
 
     .moha-message-cover-html img, .swiper-container {
