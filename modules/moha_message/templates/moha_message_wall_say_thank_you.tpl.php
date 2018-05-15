@@ -1,5 +1,4 @@
-<script src="/sites/all/libraries/swiper/dist/js/swiper.min.js"></script>
-<link rel="stylesheet" href="/sites/all/libraries/swiper/dist/css/swiper.min.css">
+
 
 <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
 
@@ -19,7 +18,6 @@
 </div>
 
 <?php if (!empty($contents['messages'])): ?>
-  <link rel="stylesheet" href="<?php echo MOHA__PATH;?>/css/alertify.css">
   <script src="<?php echo MOHA__PATH;?>/js/alertify.js"></script>
 
   <script>
@@ -106,14 +104,19 @@
     }
 
     /* set background of message wall and placeholder in swiper. */
-    .moha-message-contents-placeholder.swiper-slide {
+    body {
       background: url(/sites/all/modules/custom/moha/modules/moha_message/img/message-background.jpg) no-repeat top center;
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
       background-size: cover;
+    }
+    .moha-message-contents-placeholder.swiper-slide {
+      background: transparent;
       padding-left: 0;
       padding-right: 0;
+      color: transparent;
+      z-index: -10;
     }
 
     div#moha-message-contents-header {
@@ -170,7 +173,6 @@
     }
 
     body {
-      background: #eee;
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
       font-size: 14px;
       color:#000;
@@ -206,11 +208,6 @@
       -ms-flex-align: center;
       -webkit-align-items: center;
       align-items: center;
-    }
-
-    .moha-message-contents-placeholder {
-      color: transparent;
-      z-index: -10;
     }
 
   </style>

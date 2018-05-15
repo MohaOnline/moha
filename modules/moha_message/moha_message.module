@@ -390,6 +390,13 @@ function moha_message_node_type_insert($info) {
  */
 function _moha_message_wall($term) {
   try {
+
+    drupal_add_js("/sites/all/libraries/swiper/dist/js/swiper.js");
+    drupal_add_js("/sites/all/modules/custom/moha/js/alertify.js");
+
+    drupal_add_css("sites/all/libraries/swiper/dist/css/swiper.css");
+    drupal_add_css("sites/all/modules/custom/moha/css/alertify.css");
+
     // Return nothing when $term is invalid.
     if (!$tid = moha_get_tid_from_name($term)){
       return '';
