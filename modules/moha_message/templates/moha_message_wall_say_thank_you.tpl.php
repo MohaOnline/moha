@@ -5,10 +5,14 @@
         <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-button.png">
       </div>
       <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-contents.png">
-      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
+      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-header.png"></div>
     </div>
     <div class="moha-message-cover-html swiper-slide">
-      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2.jpg">
+      <div class="moha-message-cover-next">
+        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2-next.png">
+      </div>
+      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2-contents.png">
+      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2-header.png"></div>
     </div>
     <div class="moha-message-contents-placeholder swiper-slide">
       <div class="moha-message-contents alertify-logs"></div>
@@ -18,7 +22,11 @@
       </div>
     </div>
     <div class="moha-message-cover-html swiper-slide">
-      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success.jpg">
+      <div class="moha-message-cover-next">
+        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-next.jpg">
+      </div>
+      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-contents.png">
+      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-header.png"></div>
     </div>
   </div>
   <?php if (empty($contents['messages'])): ?>
