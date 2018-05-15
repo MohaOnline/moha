@@ -34,6 +34,10 @@
   <?php endif; ?>
 </div>
 
+<audio loop>
+  <source src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/389429-Uplifting-Joyful-Funny.mp3" type="audio/mpeg">
+</audio>
+
 <?php if (!empty($contents['messages'])): ?>
   <script src="<?php echo MOHA__PATH;?>/js/alertify.js"></script>
 
