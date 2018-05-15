@@ -1,20 +1,18 @@
-
-
-<div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
-
 <div id="moha-message-wall-say-thank-you" class="swiper-container">
   <div class="swiper-wrapper">
     <div class="moha-message-cover-html swiper-slide"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1.jpg"></div>
     <div class="moha-message-cover-html swiper-slide"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2.jpg"></div>
-    <div class="moha-message-contents-placeholder swiper-slide">Message here ~~</div>
+    <div class="moha-message-contents-placeholder swiper-slide">
+      <div class="moha-message-contents alertify-logs"></div>
+      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
+      <div id="moha-button-say-thank-you">
+        <a href="/moha/message-wall-submit/SayThankYou"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-button.png"></a>
+      </div>
+    </div>
   </div>
   <?php if (empty($contents['messages'])): ?>
     <p>Still empty message wall.</p>
   <?php endif; ?>
-</div>
-
-<div id="moha-button-say-thank-you">
-  <a href="/moha/message-wall-submit/SayThankYou"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-button.png"></a>
 </div>
 
 <?php if (!empty($contents['messages'])): ?>
@@ -70,20 +68,6 @@
             const swiper = new Swiper('.swiper-container', {
               direction: 'vertical',
               watchActiveIndex: true,
-              on: {
-                slideChangeTransitionEnd: function () {
-                  if (this.activeIndex === 2) {
-                    $('body.page-moha-message-wall div.alertify-logs').css('visibility', 'visible').css('z-index', 1);
-                    $('div#moha-button-say-thank-you').css('visibility', 'visible').css('z-index', 2);
-                    $('div#moha-message-contents-header').css('visibility', 'visible').css('z-index', 2);
-                  }
-                  else {
-                    $('body.page-moha-message-wall div.alertify-logs').css('visibility', 'hidden').css('z-index', -1);
-                    $('div#moha-button-say-thank-you').css('visibility', 'hidden').css('z-index', -1);
-                    $('div#moha-message-contents-header').css('visibility', 'hidden').css('z-index', -1);
-                  }
-                }
-              }
             });
 
           });
@@ -98,47 +82,41 @@
       left: 10px;
       right: 10px;
       bottom: 80px;
-      z-index: -1;
-      visibility: hidden;
+      z-index: 0;
       background: transparent;
+      position: absolute;
     }
 
     /* set background of message wall and placeholder in swiper. */
-    body {
+    .moha-message-contents-placeholder.swiper-slide {
       background: url(/sites/all/modules/custom/moha/modules/moha_message/img/message-background.jpg) no-repeat top center;
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
       background-size: cover;
-    }
-    .moha-message-contents-placeholder.swiper-slide {
-      background: transparent;
       padding-left: 0;
       padding-right: 0;
       color: transparent;
-      z-index: -10;
+      position: relative;
     }
 
     div#moha-message-contents-header {
-      position: fixed;
+      position: absolute;
       left: 0;
       right: 0;
       top: 0;
       padding-left: 0;
       padding-right: 0;
-      z-index: -1;
-      visibility: hidden;
     }
 
     div#moha-button-say-thank-you {
-      position: fixed;
+      position: absolute;
       text-align: center;
       left: 0;
       right: 0;
       bottom: 0;
       padding-left: 0;
       padding-right: 0;
-      visibility: hidden;
     }
 
     div#moha-button-say-thank-you a {
@@ -183,6 +161,10 @@
     div.main-container div.row section {
       padding-left: 0;
       padding-right: 0;
+    }
+
+    .moha-message-cover-html {
+      z-index: 2;
     }
 
     .moha-message-cover-html img, .swiper-container {
