@@ -170,6 +170,7 @@
 
     .moha-message-cover-html {
       z-index: 2;
+      overflow: hidden;
     }
 
     .swiper-container {
