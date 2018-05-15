@@ -142,6 +142,12 @@ drupal_add_js(array(
           <?php $changed_date = new \DateTime(); $changed_date->setTimestamp($node->changed); ?>
           <div class="article-created"><?php print t('Updated: ') . $changed_date->format('Y/m/d'); ?></div>
         <?php endif; ?>
+        <?php
+        $block = module_invoke(__MOHA_REWARD, 'block_view', MOHA_REWARD_BLOCK);
+        if (!empty($block['content'])) {
+          print render($block['content']);
+        }
+        ?>
       </div>
 
       <div class="toc-block">
@@ -151,7 +157,9 @@ drupal_add_js(array(
         -->
         <?php
         $block = module_invoke('tocify', 'block_view', 'tocify');
-        print render($block['content']);
+        if (!empty($block['content'])) {
+          print render($block['content']);
+        }
         ?>
 
       </div>

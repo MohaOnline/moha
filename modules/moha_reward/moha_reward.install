@@ -1,0 +1,38 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Call all update functions.
+ *
+ * @throws \Exception
+ */
+function moha_reward_install(){
+  try {
+    moha_reward_update_0701();
+  }
+  catch (Exception $e){
+    watchdog_exception(__FUNCTION__, $e);
+    throw $e;
+  }
+}
+
+/**
+ * Prepares PayPal related fields for storing Braintree Access Token.
+ *
+ * @throws \Exception
+ */
+function moha_reward_update_0701() {
+  try {
+    moha_create_fields_and_instances('_moha_reward_moha_profile2_fields_and_instances');
+  }
+  catch (Exception $e){
+    watchdog_exception(__FUNCTION__, $e);
+    throw $e;
+  }
+
+  cache_clear_all();
+}

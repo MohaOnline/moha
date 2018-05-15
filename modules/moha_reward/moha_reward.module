@@ -28,12 +28,130 @@ define('MOHA_REWARD__VARIABLE__PAYPAL_ENVIRONMENT', __MOHA_REWARD . '_paypal_env
 /**
  * Template variable: braintree SDK client tokens.
  */
-define('MOHA_REWARD__VARIABLE__PAYPAL_BRAINTREE_CLIENT_TOKEN', __MOHA_REWARD . '_paypal_braintree_client_token');
+define('MOHA_REWARD__VARIABLE__BRAINTREE_TOKEN', __MOHA_REWARD . '_paypal_braintree_token');
+
+/**
+ * Template variable: braintree SDK client tokens.
+ */
+define('MOHA_REWARD__VARIABLE__BRAINTREE_TOKEN_SANDBOX', __MOHA_REWARD . '_braintree_token_sandbox');
 
 /**
  * Reward block name.
  */
 define('MOHA_REWARD_BLOCK', 'moha_reward_block');
+
+/**
+ * Return profile2 fields and instances array for profile2 moha.
+ *
+ * @return array
+ */
+function _moha_reward_moha_profile2_fields_and_instances() {
+  $fields_and_instances['moha_reward_paypal_merchant'] = [
+    'type' => 'field_collection',
+    'field_name' => 'moha_reward_paypal_merchant',
+    'label' => t('PayPal merchant information'),
+    'entity_type' => 'profile2',
+    'bundle' => __MOHA,
+    'default_value' => NULL,
+    'description' => t("Stores user's PayPal account information ."),
+    'cardinality' => 1,
+    'display' => [
+      'default' => [
+        'label' => 'above',
+        'module' => 'field_collection',
+        'settings' => [
+          'add' => 'Add',
+          'delete' => 'Delete',
+          'description' => TRUE,
+          'edit' => 'Edit',
+          'view_mode' => 'full',
+        ],
+        'type' => 'field_collection_view',
+        'weight' => 0,
+      ],
+    ],
+    'required' => FALSE,
+    'settings' => [
+      'user_register_form' => FALSE,
+      'profile2_private' => FALSE,
+    ],
+    'widget' => [
+      'active' => 0,
+      'module' => 'field_collection',
+      'settings' => [],
+      'type' => 'field_collection_embed',
+      'weight' => 1,
+    ],
+  ];
+
+  $fields_and_instances['moha_reward_brainsdk'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_reward_brainsdk',
+    'label' => 'BrainSDK Access Token',
+    'bundle' => 'moha_reward_paypal_merchant',
+    'description' => t('BrainSDK production access token.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  $fields_and_instances['moha_reward_brainsdk_sandbox'] = array(
+    'type' => 'text',
+    'field_name' => 'moha_reward_brainsdk_sandbox',
+    'label' => 'BrainSDK Access Token (Sandbox)',
+    'bundle' => 'moha_reward_paypal_merchant',
+    'description' => t('BrainSDK sandbox access token.'),
+    'entity_type' => 'field_collection_item',
+    'cardinality' => 1,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  return $fields_and_instances;
+}
 
 /**
  * Implements hook_block_info().
@@ -70,11 +188,19 @@ function moha_reward_block_view($delta = '') {
  * Returns rendered reward block contents.
  */
 function _moha_reward_block(){
-  try {
-    $variables = variable_get(MOHA_REWARD__VARIABLES);
+  libraries_load('braintree_php');
 
-    if (empty($access_token = $variables[MOHA_REWARD__VARIABLE__PAYPAL_ACCESS_TOKEN])) {
-      throw new Exception('PayPal Braintree access token hasn\'t been set');
+  try {
+    // Fetch author's braintree credential.
+    $node = menu_get_object();
+    $user = user_load($node->uid);
+    $profile = profile2_load_by_user($user, __MOHA);
+    $moha_reward_paypal_merchant = entity_load_single('field_collection_item', $profile->moha_reward_paypal_merchant[LANGUAGE_NONE][0]['value']);
+    $access_token = $moha_reward_paypal_merchant->moha_reward_brainsdk_sandbox[LANGUAGE_NONE][0]['value'];
+
+    // No need to show reward block.
+    if (empty($access_token)) {
+      throw new UnexpectedValueException('PayPal Braintree access token hasn\'t been set');
     }
 
     $gateway = new Braintree_Gateway(array(
@@ -82,7 +208,7 @@ function _moha_reward_block(){
     ));
 
     $contents = array();
-    $contents[MOHA_REWARD__VARIABLE__PAYPAL_BRAINTREE_CLIENT_TOKEN] = $gateway->clientToken()->generate();
+    $contents[MOHA_REWARD__VARIABLE__BRAINTREE_TOKEN] = $gateway->clientToken()->generate();
     $contents[MOHA_REWARD__VARIABLE__PAYPAL_ENVIRONMENT] = 'sandbox';
 
     return theme(MOHA_REWARD_BLOCK, array('contents' => $contents));

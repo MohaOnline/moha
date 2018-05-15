@@ -324,5 +324,30 @@ function _moha_create_profile2($profile2_name = MOHA) {
   $moha_profile->save();
 }
 
+/**
+ * Create fields and instances per returned array by passed function.
+ *
+ * @param $get_fields_and_instances
+ *   Function name which returns definition of fields and instances.
+ *
+ * @throws \FieldException
+ */
+function moha_create_fields_and_instances($get_fields_and_instances) {
+
+  if (!function_exists($get_fields_and_instances)){
+    throw new BadFunctionCallException($get_fields_and_instances . " doesn't exist.");
+  }
+
+  foreach ($get_fields_and_instances() as $field) {
+    if (!field_info_field($field['field_name'])) {
+      field_create_field($field);
+    }
+
+    if (!field_info_instance($field['entity_type'], $field['field_name'], $field['bundle'])) {
+      field_create_instance($field);
+    }
+  }
+}
+
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
 ctools_include('moha.ckeditor', __MOHA, 'ckeditor');

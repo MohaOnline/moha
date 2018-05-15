@@ -1,6 +1,8 @@
 jQuery(document).ready(function () {
 
   function blockFloat() {
+    const debug = false;
+
     // Revise for fixed top admin menu.
     const adminMenu = jQuery("#admin-menu");
     const adminMenuHeight = Number(adminMenu.height());
@@ -17,7 +19,7 @@ jQuery(document).ready(function () {
     const floatBlock = jQuery("div.toc-block");
     const floatBlockHeight = floatBlock.outerHeight();
 
-    if (console) {
+    if (debug) {
       console.log('floatAreaTopY: ' + floatAreaTopY);
       console.log('occupiedHeight: ' + occupiedHeight);
     }
@@ -26,7 +28,7 @@ jQuery(document).ready(function () {
     // Distance mouse has scrolled on page.
     let scrolledHeight = jQuery(window).scrollTop();
 
-    if (console) {
+    if (debug) {
       console.log('scrolledHeight: ' + scrolledHeight);
     }
 

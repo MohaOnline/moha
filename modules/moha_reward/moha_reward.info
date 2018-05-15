@@ -1,0 +1,6 @@
+name = Moha Reward
+description = Receive payment as reward for authors.
+core = 7.x
+package = Moha Online
+
+dependencies[] = moha
