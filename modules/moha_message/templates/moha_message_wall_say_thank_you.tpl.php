@@ -102,6 +102,14 @@
       z-index: -1;
     }
 
+    body {
+      background: url(/sites/all/modules/custom/moha/modules/moha_message/img/message-background.jpg) no-repeat top center;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+    }
+
     div#moha-message-contents-header {
       position: absolute;
       left: 0;
