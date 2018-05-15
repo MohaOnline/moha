@@ -179,6 +179,7 @@
     .moha-message-cover-html {
       z-index: 2;
       overflow: hidden;
+      background-color: transparent;
     }
 
     .swiper-container {
