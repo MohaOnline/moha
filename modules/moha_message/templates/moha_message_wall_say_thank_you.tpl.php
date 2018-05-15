@@ -179,7 +179,6 @@
     .moha-message-cover-html {
       z-index: 2;
       overflow: hidden;
-      background-color: transparent;
     }
 
     .swiper-container {
@@ -194,7 +193,6 @@
     .swiper-slide {
       text-align: center;
       font-size: 18px;
-      background: #fff;
 
       /* Center slide text vertically */
       display: -webkit-box;
