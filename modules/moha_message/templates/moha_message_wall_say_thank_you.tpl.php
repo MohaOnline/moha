@@ -1,6 +1,8 @@
 <script src="/sites/all/libraries/swiper/dist/js/swiper.min.js"></script>
 <link rel="stylesheet" href="/sites/all/libraries/swiper/dist/css/swiper.min.css">
 
+<div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
+
 <div id="moha-message-wall-say-thank-you" class="swiper-container">
   <div class="swiper-wrapper">
     <div class="moha-message-cover-html swiper-slide"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1.jpg"></div>
@@ -13,7 +15,7 @@
 </div>
 
 <div id="moha-button-say-thank-you">
-  <a class="btn btn-primary" href="/moha/message-wall-submit/SayThankYou">Say Thank You</a>
+  <a href="/moha/message-wall-submit/SayThankYou"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-button.png"></a>
 </div>
 
 <?php if (!empty($contents['messages'])): ?>
@@ -74,11 +76,13 @@
                 slideChangeTransitionEnd: function () {
                   if (this.activeIndex === 2) {
                     $('body.page-moha-message-wall div.alertify-logs').css('visibility', 'visible').css('z-index', 1);
-                    $('div#moha-button-say-thank-you').css('z-index', 1);
+                    $('div#moha-button-say-thank-you').css('z-index', 2);
+                    $('div#moha-message-contents-header').css('z-index', 2);
                   }
                   else {
                     $('body.page-moha-message-wall div.alertify-logs').css('visibility', 'hidden').css('z-index', -1);
                     $('div#moha-button-say-thank-you').css('z-index', -1);
+                    $('div#moha-message-contents-header').css('z-index', -1);
                   }
                 }
               }
@@ -93,9 +97,9 @@
 
   <style>
     body.page-moha-message-wall div.alertify-logs {
-      left: 0;
-      right: 0;
-      bottom: 60px;
+      left: 10px;
+      right: 10px;
+      bottom: 80px;
       z-index: -1;
       visibility: hidden;
       background: transparent;
@@ -110,13 +114,23 @@
       background-size: contain;
     }
 
+    div#moha-message-contents-header {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
     div#moha-button-say-thank-you {
       position: fixed;
       text-align: center;
-      height: 40px;
       left: 0;
       right: 0;
       bottom: 0;
+      padding-left: 0;
+      padding-right: 0;
     }
 
     div#moha-button-say-thank-you a {
@@ -126,9 +140,16 @@
       text-align: center;
     }
 
+    div#moha-message-contents-header img, div#moha-button-say-thank-you a img {
+      width: 100%;
+    }
+
     .alertify-logs>*, .alertify-logs>.default, .alertify-logs>.success {
-      background: rgba(0,0,0,.8);
-      border-radius: 5px;
+      background-color: #ffffff;
+      border-radius: 200px;
+      color: #004a98;
+      border: solid #00b3e3 3px;
+      padding: 20px;
     }
 
     .alertify-logs>.success {
