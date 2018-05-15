@@ -1,7 +1,15 @@
 <div id="moha-message-wall-say-thank-you" class="swiper-container">
   <div class="swiper-wrapper">
-    <div class="moha-message-cover-html swiper-slide"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1.jpg"></div>
-    <div class="moha-message-cover-html swiper-slide"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2.jpg"></div>
+    <div class="moha-message-cover-html swiper-slide">
+      <div class="moha-message-cover-next">
+        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-button.png">
+      </div>
+      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-contents.png">
+      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
+    </div>
+    <div class="moha-message-cover-html swiper-slide">
+      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2.jpg">
+    </div>
     <div class="moha-message-contents-placeholder swiper-slide">
       <div class="moha-message-contents alertify-logs"></div>
       <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
@@ -9,7 +17,9 @@
         <a href="/moha/message-wall-submit/SayThankYou"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-button.png"></a>
       </div>
     </div>
-    <div class="moha-message-cover-html swiper-slide"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success.jpg"></div>
+    <div class="moha-message-cover-html swiper-slide">
+      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success.jpg">
+    </div>
   </div>
   <?php if (empty($contents['messages'])): ?>
     <p>Still empty message wall.</p>
@@ -179,6 +189,14 @@
     .moha-message-cover-html {
       z-index: 2;
       overflow: hidden;
+      position: relative;
+    }
+
+    .moha-message-cover-next {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      z-index: -1;
     }
 
     .swiper-container {
