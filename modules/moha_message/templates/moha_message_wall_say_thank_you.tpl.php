@@ -121,6 +121,7 @@
       top: 0;
       padding-left: 0;
       padding-right: 0;
+      z-index: -1;
     }
 
     div#moha-button-say-thank-you {
