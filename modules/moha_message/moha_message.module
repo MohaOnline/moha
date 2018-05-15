@@ -289,12 +289,12 @@ function moha_message_submit_form_submit($form, &$form_state) {
   // Or e.g. 'en' if locale is enabled.
   $node->language = LANGUAGE_NONE;
   $node->uid = $user->uid;
-  // Status is 1 or 0; published or not.
-  $node->status = 0;
-  // Promote is 1 or 0; promoted to front page or not.
-  $node->promote = 0;
-  // Comment is 0, 1, 2; 0 = disabled, 1 = read only, or 2 = read/write.
-  $node->comment = 0;
+//  // Status is 1 or 0; published or not.
+//  $node->status = 1;
+//  // Promote is 1 or 0; promoted to front page or not.
+//  $node->promote = 0;
+//  // Comment is 0, 1, 2; 0 = disabled, 1 = read only, or 2 = read/write.
+//  $node->comment = 0;
 
   $node->moha_message_walls[$node->language][]['tid'] = $tid;
 
@@ -307,9 +307,9 @@ function moha_message_submit_form_submit($form, &$form_state) {
     watchdog_exception(__FUNCTION__, $e);
   }
 
-  $form_state['redirect'] = '/moha/message-wall-success';
+  $form_state['redirect'] = '/moha/message-wall/SayThankYou/2';
 
-  drupal_set_message("Your message has been saved, please wait for approval.");
+//  drupal_set_message("Your message has been saved, please wait for approval.");
 
   watchdog(__FUNCTION__, 'End.');
 }

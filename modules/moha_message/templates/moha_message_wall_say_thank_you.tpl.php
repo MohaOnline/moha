@@ -44,6 +44,12 @@
           // Add collapsible effect for image and video field.
           $('#moha-message-wall-say-thank-you', context).once('alertify-js', function () {
 
+            let page = window.location.href.substr(window.location.href.lastIndexOf('/')+1, 1);
+
+            if (page !== 2){
+              page = 0;
+            }
+
             let messages = <?php echo json_encode($contents['messages'])?>;
             const messages_count = messages.length;
             const messages_init_count = 16;
@@ -86,6 +92,7 @@
 
             const swiper = new Swiper('.swiper-container', {
               direction: 'vertical',
+              initialSlide: page,
               watchActiveIndex: true,
             });
 
