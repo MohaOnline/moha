@@ -27,7 +27,7 @@
 
             let messages = <?php echo json_encode($contents['messages'])?>;
             const messages_count = messages.length;
-            const messages_init_count = 6;
+            const messages_init_count = 16;
 
             let current_message_index = 0;
             let current_message_type = true;
@@ -82,7 +82,7 @@
       left: 10px;
       right: 10px;
       bottom: 80px;
-      z-index: 0;
+      z-index: -1;
       background: transparent;
       position: absolute;
     }
@@ -98,6 +98,7 @@
       padding-right: 0;
       color: transparent;
       position: relative;
+      z-index: -1;
     }
 
     div#moha-message-contents-header {
@@ -130,6 +131,7 @@
 
     div#moha-message-contents-header img, div#moha-button-say-thank-you a img {
       width: 100%;
+      z-index: 1;
     }
 
     .alertify-logs>*, .alertify-logs>.default, .alertify-logs>.success {
