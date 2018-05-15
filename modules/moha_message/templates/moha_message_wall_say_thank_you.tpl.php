@@ -9,6 +9,7 @@
         <a href="/moha/message-wall-submit/SayThankYou"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-button.png"></a>
       </div>
     </div>
+    <div class="moha-message-cover-html swiper-slide"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success.jpg"></div>
   </div>
   <?php if (empty($contents['messages'])): ?>
     <p>Still empty message wall.</p>
@@ -171,9 +172,13 @@
       z-index: 2;
     }
 
-    .moha-message-cover-html img, .swiper-container {
+    .swiper-container {
       width: 100%;
       height: 100%;
+    }
+
+    .moha-message-cover-html img {
+      width: 100%;
     }
 
     .swiper-slide {
