@@ -144,7 +144,7 @@ drupal_add_js(array(
         <?php endif; ?>
         <?php
         // Include Reward block if enabled.
-        if (module_exists(__MOHA_REWARD)) {
+        if (defined('__MOHA_REWARD')) {
           $block = module_invoke(__MOHA_REWARD, 'block_view', MOHA_REWARD_BLOCK);
           if (!empty($block['content'])) {
             print render($block['content']);
