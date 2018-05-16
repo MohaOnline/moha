@@ -195,13 +195,13 @@ function _moha_reward_block(){
     $node = menu_get_object();
     $user = user_load($node->uid);
     $profile = profile2_load_by_user($user, __MOHA);
+
+    if (empty($profile) || empty($profile->moha_reward_paypal_merchant) || empty($profile->moha_reward_paypal_merchant->moha_reward_brainsdk_sandbox)) {
+      throw new UnexpectedValueException('PayPal Braintree access token hasn\'t been set.');
+    }
+
     $moha_reward_paypal_merchant = entity_load_single('field_collection_item', $profile->moha_reward_paypal_merchant[LANGUAGE_NONE][0]['value']);
     $access_token = $moha_reward_paypal_merchant->moha_reward_brainsdk_sandbox[LANGUAGE_NONE][0]['value'];
-
-    // No need to show reward block.
-    if (empty($access_token)) {
-      throw new UnexpectedValueException('PayPal Braintree access token hasn\'t been set');
-    }
 
     $gateway = new Braintree_Gateway(array(
       'accessToken' => $access_token,
