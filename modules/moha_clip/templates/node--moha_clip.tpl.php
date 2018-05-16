@@ -143,9 +143,12 @@ drupal_add_js(array(
           <div class="article-created"><?php print t('Updated: ') . $changed_date->format('Y/m/d'); ?></div>
         <?php endif; ?>
         <?php
-        $block = module_invoke(__MOHA_REWARD, 'block_view', MOHA_REWARD_BLOCK);
-        if (!empty($block['content'])) {
-          print render($block['content']);
+        // Include Reward block if enabled.
+        if (module_exists(__MOHA_REWARD)) {
+          $block = module_invoke(__MOHA_REWARD, 'block_view', MOHA_REWARD_BLOCK);
+          if (!empty($block['content'])) {
+            print render($block['content']);
+          }
         }
         ?>
       </div>
