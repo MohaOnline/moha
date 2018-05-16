@@ -1,0 +1,34 @@
+body {
+  background: url("/sites/all/modules/custom/moha/modules/moha_message/img/message-background-submit.jpg") no-repeat top center;
+  background-size: cover;
+}
+
+#submit-image {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  z-index: -1;
+}
+
+label {
+  color: #004a98;
+}
+
+.form-type-textarea {
+  margin-top: 30%;
+}
+
+.alert-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+button.btn {
+  display: none;
+}
+
+#submit-image img {
+  width: 100%;
+}

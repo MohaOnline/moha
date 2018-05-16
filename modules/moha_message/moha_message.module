@@ -247,8 +247,7 @@ function moha_message_submit_form($form, &$form_state, $term_name) {
   $form['message'] = array(
     '#type' => 'textarea',
     '#rows' => 6,
-    '#title' => t('Please leave your message'),
-    '#required' => TRUE,
+    '#title' => '请输入“表白”内容（不超过60字）',
   );
 
   $form['message_wall'] = array(
@@ -261,9 +260,25 @@ function moha_message_submit_form($form, &$form_state, $term_name) {
     '#value' => t('Submit'),
   );
 
+  $form['image'] = array(
+    '#markup' => '<div id="submit-image"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-submit.jpg"></div>',
+  );
+
   $form['#submit'][] = 'moha_message_submit_form_submit';
 
+  drupal_add_css("sites/all/modules/custom/moha/modules/moha_message/css/moha_message_say_thank_you.css");
+  drupal_add_js("/sites/all/modules/custom/moha/modules/moha_message/js/moha_message_say_thank_you.js");
+
   return $form;
+}
+
+function moha_message_submit_form_validate($form, &$form_state) {
+
+  $message = trim($form_state['values']['message']);
+
+  if (mb_strlen(trim($message)) <= 0 || mb_strlen(trim($message)) > 120 ) {
+    form_set_error('context', "未输入表白或字数多于60字。");
+  }
 }
 
 /**

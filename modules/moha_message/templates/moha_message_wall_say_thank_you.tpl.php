@@ -116,6 +116,7 @@
         <a href="/moha/message-wall-submit/SayThankYou"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-button.png"></a>
       </div>
     </div>
+
     <div class="moha-message-cover-html swiper-slide">
       <div class="moha-message-cover-next">
         <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-next.jpg">
