@@ -1,19 +1,114 @@
+<style>
+  @keyframes rotating {
+    from {
+      transform: rotate(0deg)
+    }
+    to {
+      transform: rotate(360deg)
+    }
+  }
+
+  @-moz-keyframes rotating {
+    from {
+      -moz-transform: rotate(0deg)
+    }
+    to {
+      -moz-transform: rotate(360deg)
+    }
+  }
+
+  #moha-music-wrap {
+    position: absolute;
+    z-index: 200;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    background-size: contain;
+  }
+
+  #moha-music-wrap.rotate {
+    background-image: url("/sites/all/modules/custom/moha/img/music.gif");
+  }
+
+  #moha-music-button {
+    width: 30px;
+    height: 30px;
+    background: url("/sites/all/modules/custom/moha/img/music.svg") no-repeat;
+    background-size: contain;
+  }
+
+  .rotate #moha-music-button {
+    -webkit-animation: rotating 1.2s linear infinite;
+    -moz-animation: rotating 1.2s linear infinite;
+    -o-animation: rotating 1.2s linear infinite;
+    animation: rotating 1.2s linear infinite;
+  }
+
+  #logo {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 200;
+  }
+
+  #logo img {
+    width: 50px;
+  }
+
+  img.melody {
+    margin-top: -20px;
+  }
+
+  .background {
+    height: 100%;
+    width: 100%;
+  }
+
+  .background img {
+    height: 100%;
+    width: 100%;
+  }
+
+  .moha-1-arrow {
+    margin-bottom: -20px;
+  }
+
+  .moha-2-arrow {
+    margin-left: -45%;
+    margin-bottom: -20px;
+  }
+</style>
+
+<div id="moha-music-wrap">
+  <div id="moha-music-button">
+    <audio id="moha-music" autoplay preload="auto" loop="loop" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/389429-Uplifting-Joyful-Funny.mp3"></audio>
+  </div>
+</div>
+<div id="logo"><img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/common/ge-logo-blue.png"></div>
 <div id="moha-message-wall-say-thank-you" class="swiper-container">
   <div class="swiper-wrapper">
     <div class="moha-message-cover-html swiper-slide">
-      <div class="moha-message-cover-next">
-        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-button.png">
+      <div class="moha-message-cover-next background">
+        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-background.jpg">
       </div>
+      <div class="moha-message-cover-next"><img class="moha-1-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/arrow-down.gif"></div>
       <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-contents.png">
-      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-header.png"></div>
+      <div id="moha-message-contents-header"><img class="melody" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/melody.gif"></div>
     </div>
+
+
     <div class="moha-message-cover-html swiper-slide">
-      <div class="moha-message-cover-next">
-        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2-next.png">
+      <div class="moha-message-cover-next background">
+        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-background.jpg">
       </div>
+      <div class="moha-message-cover-next"><img class="moha-2-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/arrow-down.gif"></div>
+      <div class="moha-message-cover-next"><img class="moha-22-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/couple.gif"></div>
       <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2-contents.png">
       <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2-header.png"></div>
     </div>
+
+
     <div class="moha-message-contents-placeholder swiper-slide">
       <div class="moha-message-contents alertify-logs"></div>
       <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
@@ -25,6 +120,7 @@
       <div class="moha-message-cover-next">
         <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-next.jpg">
       </div>
+      <div class="moha-message-cover-next"><img class="moha-22-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/coffee.gif"></div>
       <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-contents.png">
       <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-header.png"></div>
     </div>
@@ -33,8 +129,6 @@
     <p>Still empty message wall.</p>
   <?php endif; ?>
 </div>
-
-<audio autoplay loop src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/389429-Uplifting-Joyful-Funny.mp3" controls>
 
 <?php if (!empty($contents['messages'])): ?>
   <script src="<?php echo MOHA__PATH;?>/js/alertify.js"></script>
@@ -46,6 +140,38 @@
           // Add collapsible effect for image and video field.
           $('#moha-message-wall-say-thank-you', context).once('alertify-js', function () {
 
+            // Music initial.
+            document.addEventListener("WeixinJSBridgeReady", function () {
+              WeixinJSBridge.invoke('getNetworkType', {}, function (e) {
+                document.getElementById('moha-music').play();
+              });
+            }, false);
+
+            const audio = document.getElementById('moha-music');
+
+            audio.onplay = function(){
+              $musicButton.addClass('rotate');
+            };
+
+            audio.oncanplay = function() {
+              audio.play();
+              audio.oncanplay = function() {};
+            };
+
+            const $musicButton = $('#moha-music-wrap');
+
+            $musicButton.click(function () {
+
+              if (audio.paused !== false) {
+                audio.play();
+              }
+              else {
+                audio.pause();
+                $musicButton.removeClass('rotate');
+              }
+            });
+
+            // Change start slide after sumbit.
             let page = window.location.href.substr(window.location.href.lastIndexOf('/')+1, 1);
 
             if (page !== '2'){
