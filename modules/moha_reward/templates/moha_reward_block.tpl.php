@@ -17,7 +17,7 @@
     braintree: braintree,
     client: {
       production: 'CLIENT_TOKEN_FROM_SERVER',
-      // TODO: Get value after page loaded.
+      // TODO: need optimized, Get value after page loaded.
       sandbox: '<?php echo $contents[MOHA_REWARD__VARIABLE__BRAINTREE_TOKEN]; ?>'
     },
     style: {
