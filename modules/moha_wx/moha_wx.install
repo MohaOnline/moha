@@ -17,6 +17,7 @@ function moha_wx_install() {
   moha_wx_update_0702();
   moha_wx_update_0703();
   moha_wx_update_0704();
+  moha_wx_update_0705();
 }
 
 /**
@@ -227,6 +228,40 @@ function moha_wx_update_0704(){
     watchdog_exception(__FUNCTION__, $e);
     throw $e;
   }
+
+  cache_clear_all();
+}
+
+/**
+ * Update moha_wx_accounts table: add jsapi_ticket, jsapi_ticket_updated add jsapi_ticket_expires_in field.
+ */
+function moha_wx_update_0705 () {
+  // @see https://api.drupal.org/api/drupal/includes%21database%21database.inc/function/db_change_field/7.x
+  // @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
+  $jsapi_ticket = array(
+    'type' => 'varchar',
+    'length' => 512,
+    'not null' => TRUE,
+    'description' => 'WeChat JS SDK invoke token.',
+  );
+  db_add_field('moha_wx_accounts', 'jsapi_ticket', $jsapi_ticket);
+
+  // @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
+  $jsapi_ticket_updated = array(
+    'type' => 'int',
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'jsapi_ticket updated time.',
+  );
+  db_add_field('moha_wx_accounts', 'jsapi_ticket_updated', $jsapi_ticket_updated);
+
+  $jsapi_ticket_expires_in = array(
+    'type' => 'int',
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'How long seconds jsapi_ticket will be valid after jsapi_ticket_updated',
+  );
+  db_add_field('moha_wx_accounts', 'jsapi_ticket_expires_in', $jsapi_ticket_expires_in);
 
   cache_clear_all();
 }

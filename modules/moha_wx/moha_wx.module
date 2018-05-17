@@ -46,6 +46,11 @@ define('MOHA_WX__MSG__NO_SERVICE', 'Service is not available.');
 define('MOHA_WX__API__ACCESS_TOKEN', 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=@APPID&secret=@APPSECRET');
 
 /**
+ * WeChat API: JS SDK Ticket.
+ */
+define('MOHA_WX__API__JSAPI_TICKET', 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=@ACCESS_TOKEN&type=jsapi');
+
+/**
  * WeChat API: Materials.
  */
 define('MOHA_WX__API__MATERIALS', 'https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=@ACCESS_TOKEN');
@@ -217,15 +222,8 @@ function moha_wx_check_signature($token, $query) {
   return TRUE;
 }
 
-function moha_wx_make_signature($array) {
-  sort($array, SORT_STRING); // use SORT_STRING rule.
-  $tmpStr = implode('&',$array);
-  $signature = sha1($tmpStr);
-  return $signature;
-}
-
 /**
- * Includes WeChat sharing function disable JS.
+ * Disable WeChat sharing function.
  */
 function moha_wx_sharing_disable() {
   drupal_add_js(MOHA_WX__RELATIVE_PATH . '/js/moha_wx_sharing_disable.js');
@@ -284,8 +282,8 @@ function moha_wx_post_official($wechat_api_url, $data = '', $request_type = "POS
     throw new Exception($res->error, $res->code);
   }
   else {
-    watchdog( MOHA_WX,
-      __FUNCTION__ . " respond data: @data",
+    watchdog( __FUNCTION__,
+       "respond data: @data",
       array('@data' => $res->data),
       WATCHDOG_INFO
     );
@@ -325,6 +323,8 @@ function _moha_wx_refresh_access_token(&$account) {
     return $account['access_token'];
   }
 
+  $account['access_token_updated'] = time();
+
   $json = moha_wx_get_official(format_string(MOHA_WX__API__ACCESS_TOKEN, array(
     '@APPID' => $account['app_id'],
     '@APPSECRET' => $account['app_secret'],
@@ -332,7 +332,6 @@ function _moha_wx_refresh_access_token(&$account) {
 
   $access_token = $account['access_token'] = $json['access_token'];
   $account['access_token_expires_in'] = $json['expires_in'];
-  $account['access_token_updated'] = time();
 
   db_update('moha_wx_accounts')
     ->fields(array(
@@ -344,6 +343,43 @@ function _moha_wx_refresh_access_token(&$account) {
     ->execute();
 
   return $access_token;
+}
+
+/**
+ * @param $account
+ *
+ * @throws \Exception: jsapi_ticket.
+ *
+ * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141115
+ */
+function _moha_wx_refresh_jsapi_ticket(&$account) {
+
+  _moha_wx_refresh_access_token($account);
+
+  // expired time of access_token is in future.
+  if (!empty($account['jsapi_ticket']) && ($account['jsapi_ticket_updated'] + $account['jsapi_ticket_expires_in']) > time() ){
+    return $account['jsapi_ticket'];
+  }
+
+  $account['jsapi_ticket_updated'] = time();
+
+  $json = moha_wx_get_official(format_string(MOHA_WX__API__JSAPI_TICKET, array(
+    '@ACCESS_TOKEN' => $account['access_token'],
+  )));
+
+  $jsapi_ticket = $account['jsapi_ticket'] = $json['ticket'];
+  $account['jsapi_ticket_expires_in'] = $json['expires_in'];
+
+  db_update('moha_wx_accounts')
+    ->fields(array(
+      'access_token' => $account['jsapi_ticket'],
+      'access_token_updated' => $account['jsapi_ticket_updated'],
+      'access_token_expires_in' => $account['jsapi_ticket_expires_in'],
+    ))
+    ->condition('wechat_name', $account['wechat_name'])
+    ->execute();
+
+  return $jsapi_ticket;
 }
 
 /**
@@ -1039,7 +1075,7 @@ function _moha_wx_moha_profile2_fields_and_instances() {
  * @throws \MohaWXParamException
  *   Invalid params are passed.
  */
-function _moha_wx_moha_user_by_openid($openid='', $appid=''){
+function _moha_wx_moha_user_by_openid($openid='', $appid='') {
   if (empty($openid)) {
     throw new MohaWXParamException('Empty OpenID.');
   }
@@ -1089,6 +1125,63 @@ function _moha_wx_moha_user_by_openid($openid='', $appid=''){
 /**
  * Returns user object per unionid.
  */
-function moha_wx_moha_user_by_unionid(){
+function moha_wx_moha_user_by_unionid() {
 
+}
+
+
+/**
+ * @param $array array
+ *
+ * @param $glue string
+ *   char used to concatenate array items.
+ *
+ * @return string
+ */
+function moha_wx_make_signature(array $array, $glue = '') {
+  sort($array, SORT_STRING); // use SORT_STRING rule.
+  $tmpStr = implode($glue, $array);
+  $signature = sha1($tmpStr);
+  return $signature;
+}
+
+/**
+ * @param $account array
+ *
+ * @param $url string
+ *   on which page JS SDK will be invoked.
+ */
+function moha_wx_jsapi_config($account, $url) {
+
+  try {
+    $signature_array['jsapi_ticket'] = _moha_wx_refresh_jsapi_ticket($account);
+    $signature_array['noncestr'] = $nonce = moha_nonce();
+    $signature_array['timestamp'] = $timestamp = time();
+    $signature_array['url'] = $url;
+
+    $signature = moha_wx_make_signature($signature_array, '&');
+
+    $app_id = $account['app_id'];
+
+    $jsapi_config = <<<EOF
+(function($) { $(function() {
+
+  wx.config({
+    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+    appId: '$app_id', // 必填，公众号的唯一标识
+    timestamp: $timestamp, // 必填，生成签名的时间戳
+    nonceStr: '$nonce', // 必填，生成签名的随机串
+    signature: '$signature',// 必填，签名
+    jsApiList: ['scanQRCode','onMenuShareAppMessage','onMenuShareTimeline'] // 必填，需要使用的JS接口列表
+  });
+
+}); }) (jQuery);
+EOF;
+
+    drupal_add_js('https://res.wx.qq.com/open/js/jweixin-1.2.0.js', 'external');
+    drupal_add_js($jsapi_config, 'inline');
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+  }
 }

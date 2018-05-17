@@ -239,10 +239,14 @@ function moha_message_submit_form($form, &$form_state, $term_name) {
       drupal_session_regenerate();
     }
     catch(Exception $e) {
-      // make sure page correctly displayed, so don't throw further.
       watchdog_exception(__FUNCTION__, $e);
+
+      // Show blank page when error occurs.
+      return "";
     }
   }
+
+  moha_wx_sharing_disable();
 
   $form['message'] = array(
     '#type' => 'textarea',
@@ -323,8 +327,6 @@ function moha_message_submit_form_submit($form, &$form_state) {
   }
 
   $form_state['redirect'] = '/moha/message-wall/SayThankYou/2';
-
-//  drupal_set_message("Your message has been saved, please wait for approval.");
 
   watchdog(__FUNCTION__, 'End.');
 }
@@ -440,7 +442,7 @@ function _moha_message_wall($term) {
         );
       }
     }
-    moha_wx_sharing_disable();
+
     return theme('moha_message_wall_say_thank_you', array('contents' => $contents));
   }
   catch (Exception $e) {
