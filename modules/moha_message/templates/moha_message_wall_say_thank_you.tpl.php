@@ -236,7 +236,7 @@
 <?php
       try {
         $account = _moha_wx_moha_account('default');
-        moha_wx_jsapi_config($account, 'http://message-wall.moha.online/moha/message-wall/SayThankYou');
+        moha_wx_jsapi_config($account);
       }
       catch (Exception $e) {
         watchdog_exception(__FILE__, $e);
@@ -250,7 +250,7 @@
           wx.onMenuShareTimeline({
             title: '哥家的表白墙',
             desc: '向你心中的英雄表白吧～～',
-            link: 'http://message-wall.moha.online/moha/message-wall/SayThankYou',
+            link: '<?php echo (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>',
             imgUrl: 'https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-icon.jpg',
             success: function () {
               // 用户确认分享后执行的回调函数
@@ -264,7 +264,7 @@
           wx.onMenuShareAppMessage({
             title: '哥家的表白墙',
             desc: '向你心中的英雄表白吧～～',
-            link: 'http://message-wall.moha.online/moha/message-wall/SayThankYou',
+            link: '<?php echo (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>',
             imgUrl: 'https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-icon.jpg',
             trigger: function (res) {
               // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
