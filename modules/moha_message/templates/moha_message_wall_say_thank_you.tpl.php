@@ -81,7 +81,7 @@
 </style>
 
 <?php
-drupal_set_title('哥家的表白墙');
+
 ?>
 
 <div id="moha-music-wrap">
