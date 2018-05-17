@@ -217,6 +217,20 @@ function moha_wx_check_signature($token, $query) {
   return TRUE;
 }
 
+function moha_wx_make_signature($array) {
+  sort($array, SORT_STRING); // use SORT_STRING rule.
+  $tmpStr = implode('&',$array);
+  $signature = sha1($tmpStr);
+  return $signature;
+}
+
+/**
+ * Includes WeChat sharing function disable JS.
+ */
+function moha_wx_sharing_disable() {
+  drupal_add_js(MOHA_WX__RELATIVE_PATH . '/js/moha_wx_sharing_disable.js');
+}
+
 /**
  * Call WeChat official API, and return analysed basing on JSON response.
  *

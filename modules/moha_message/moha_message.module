@@ -440,7 +440,7 @@ function _moha_message_wall($term) {
         );
       }
     }
-
+    moha_wx_sharing_disable();
     return theme('moha_message_wall_say_thank_you', array('contents' => $contents));
   }
   catch (Exception $e) {
