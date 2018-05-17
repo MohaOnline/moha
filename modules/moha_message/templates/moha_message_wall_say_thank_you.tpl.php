@@ -80,6 +80,10 @@
   }
 </style>
 
+<?php
+drupal_set_title('哥家的表白墙');
+?>
+
 <div id="moha-music-wrap">
   <div id="moha-music-button">
     <audio id="moha-music" autoplay preload="auto" loop="loop" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/389429-Uplifting-Joyful-Funny.mp3"></audio>
