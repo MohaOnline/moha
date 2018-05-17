@@ -372,9 +372,9 @@ function _moha_wx_refresh_jsapi_ticket(&$account) {
 
   db_update('moha_wx_accounts')
     ->fields(array(
-      'access_token' => $account['jsapi_ticket'],
-      'access_token_updated' => $account['jsapi_ticket_updated'],
-      'access_token_expires_in' => $account['jsapi_ticket_expires_in'],
+      'jsapi_ticket' => $account['jsapi_ticket'],
+      'jsapi_ticket_updated' => $account['jsapi_ticket_updated'],
+      'jsapi_ticket_expires_in' => $account['jsapi_ticket_expires_in'],
     ))
     ->condition('wechat_name', $account['wechat_name'])
     ->execute();
