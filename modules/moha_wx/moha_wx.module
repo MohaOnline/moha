@@ -1136,11 +1136,16 @@ function moha_wx_moha_user_by_unionid() {
  * @param $glue string
  *   char used to concatenate array items.
  *
- * @return string
+ * @return $signature_array
  */
-function moha_wx_make_signature(array $array, $glue = '') {
-  sort($array, SORT_STRING); // use SORT_STRING rule.
-  $tmpStr = implode($glue, $array);
+function moha_wx_make_jsapi_signature(array $signature_array) {
+
+  $tmpStr = format_string("jsapi_ticket=@jsapi_ticket&noncestr=@noncestr&timestamp=@timestamp&url=@url", array(
+    '@jsapi_ticket' => $signature_array['jsapi_ticket'],
+    '@noncestr' => $signature_array['noncestr'],
+    '@timestamp' => $signature_array['timestamp'],
+    '@url' => $signature_array['url'],
+  ));
   $signature = sha1($tmpStr);
   return $signature;
 }
@@ -1159,7 +1164,7 @@ function moha_wx_jsapi_config($account, $url) {
     $signature_array['timestamp'] = $timestamp = time();
     $signature_array['url'] = $url;
 
-    $signature = moha_wx_make_signature($signature_array, '&');
+    $signature = moha_wx_make_jsapi_signature($signature_array);
 
     $app_id = $account['app_id'];
 
