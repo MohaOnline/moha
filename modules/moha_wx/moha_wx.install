@@ -242,6 +242,7 @@ function moha_wx_update_0705 () {
     'type' => 'varchar',
     'length' => 512,
     'not null' => TRUE,
+    'default' => '',
     'description' => 'WeChat JS SDK invoke token.',
   );
   db_add_field('moha_wx_accounts', 'jsapi_ticket', $jsapi_ticket);
