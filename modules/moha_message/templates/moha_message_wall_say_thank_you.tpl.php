@@ -97,7 +97,7 @@
         <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-background.jpg">
       </div>
       <div class="moha-message-cover-next"><img class="moha-1-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/arrow-down.gif"></div>
-      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-contents.png">
+      <img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-cover-1-contents.png">
       <div id="moha-message-contents-header"><img class="melody" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/melody.gif"></div>
     </div>
 
