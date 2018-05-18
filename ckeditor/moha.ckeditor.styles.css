@@ -24,6 +24,7 @@
 
 code, code span {
   font-family: Menlo,Monaco,Consolas,"Liberation Mono",monospace,Inconsolata,Courier,'Courier New';
+  font-size: 1em;
 }
 
 /** Adjust edit mode style to match bootstrap style. */
