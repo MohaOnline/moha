@@ -80,10 +80,6 @@
   }
 </style>
 
-<?php
-
-?>
-
 <div id="moha-music-wrap">
   <div id="moha-music-button">
     <audio id="moha-music" autoplay preload="auto" loop="loop" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/389429-Uplifting-Joyful-Funny.mp3"></audio>
@@ -135,7 +131,6 @@
   <?php endif; ?>
 </div>
 
-<?php if (!empty($contents['messages'])): ?>
   <script src="<?php echo MOHA__PATH;?>/js/alertify.js"></script>
 
   <script>
@@ -183,7 +178,12 @@
               page = 0;
             }
 
-            let messages = <?php echo json_encode($contents['messages'])?>;
+            let messages = <?php if (!empty($contents['messages'])) { echo json_encode($contents['messages']); } else { echo 'null'; } ?>;
+
+            if (messages === null) {
+              messages = [];
+            }
+
             const messages_count = messages.length;
             const messages_init_count = 16;
 
@@ -196,6 +196,10 @@
              * Push and fetch message from message pool.
              */
             function show_message() {
+              if (messages_count === 0) {
+                return;
+              }
+
               if (current_message_type) {
                 alertify.delay(0).success(messages[current_message_index++].message, function(ev) {
                   // The click event is in the event variable, so you can use it here.
@@ -221,7 +225,9 @@
               show_message();
             }
 
-            setInterval(show_message, 3000);
+            if (messages_count !== 0) {
+              setInterval(show_message, 3000);
+            }
 
             const swiper = new Swiper('.swiper-container', {
               direction: 'vertical',
@@ -425,4 +431,3 @@
     }
 
   </style>
-<?php endif; ?>
