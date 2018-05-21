@@ -366,7 +366,7 @@
 
     .alertify-logs>.success {
       float: right;
-      text-align: right;
+      /*text-align: right;*/
     }
 
     html, body, div.main-container, div#block-system-main,
