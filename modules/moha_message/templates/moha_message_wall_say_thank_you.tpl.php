@@ -90,7 +90,7 @@
   <div class="swiper-wrapper">
     <div class="moha-message-cover-html swiper-slide">
       <div class="moha-message-cover-next background">
-        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-background.jpg">
+        <img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-cover-1-background.jpg">
       </div>
       <div class="moha-message-cover-next"><img class="moha-1-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/arrow-down.gif"></div>
       <img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-cover-1-contents.png">
@@ -100,18 +100,18 @@
 
     <div class="moha-message-cover-html swiper-slide">
       <div class="moha-message-cover-next background">
-        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-1-background.jpg">
+        <img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-cover-1-background.jpg">
       </div>
       <div class="moha-message-cover-next"><img class="moha-2-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/arrow-down.gif"></div>
       <div class="moha-message-cover-next"><img class="moha-22-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/couple.gif"></div>
-      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2-contents.png">
-      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-cover-2-header.png"></div>
+      <img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-cover-2-contents.png">
+      <div id="moha-message-contents-header"><img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-cover-2-header.png"></div>
     </div>
 
 
     <div class="moha-message-contents-placeholder swiper-slide">
       <div class="moha-message-contents alertify-logs"></div>
-      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-contents-header.png"></div>
+      <div id="moha-message-contents-header"><img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-contents-header.png"></div>
       <div id="moha-button-say-thank-you">
         <a href="/moha/message-wall-submit/SayThankYou"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-button.png"></a>
       </div>
