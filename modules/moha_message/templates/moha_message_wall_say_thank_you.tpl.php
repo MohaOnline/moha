@@ -119,11 +119,11 @@
 
     <div class="moha-message-cover-html swiper-slide">
       <div class="moha-message-cover-next">
-        <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-next.jpg">
+        <img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-success-next.jpg">
       </div>
       <div class="moha-message-cover-next"><img class="moha-22-arrow" src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/coffee.gif"></div>
-      <img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-contents.png">
-      <div id="moha-message-contents-header"><img src="/sites/all/modules/custom/moha/modules/moha_message/img/message-success-header.png"></div>
+      <img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-success-contents.png">
+      <div id="moha-message-contents-header"><img src="https://gestorage.blob.core.chinacloudapi.cn/campaign/20180515/message-success-header.png"></div>
     </div>
   </div>
   <?php if (empty($contents['messages'])): ?>
