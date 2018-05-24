@@ -1,0 +1,4 @@
+name = Moha Style
+description = Fix styles from other contribute modules.
+core = 7.x
+package = Moha Online

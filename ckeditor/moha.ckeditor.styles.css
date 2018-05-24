@@ -101,15 +101,17 @@ code.hljs {
   padding-left: 2rem;
   list-style-type: square;
 }
-/***
+/***/
 
 /** Image */
 .cke_editable_themed img:not(.cke_reset), .field-name-body img {
   box-shadow: 0 0 8px 2px #bbb;
   border-radius: 5px;
   display: block;
+  max-width: 98%;
   margin: auto;
 }
+/***/
 
 /** Paragraph & article title. */
 .cke_editable_themed h1, .node-type-moha-clip h1 {

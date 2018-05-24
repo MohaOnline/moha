@@ -1,0 +1,37 @@
+<?php
+
+
+/**
+ * Human name.
+ */
+define('MOHA_STYLE', 'Moha Newsletter');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_STYLE', 'moha_style');
+
+/**
+ * moha_style__variables.
+ */
+define('MOHA_STYLE__VARIABLES', __MOHA_STYLE . '__variables');
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_style.
+ */
+define('MOHA_STYLE__PATH', base_path() . drupal_get_path('module', __MOHA_STYLE));
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_style.
+ */
+define('MOHA_STYLE__RELATIVE_PATH', drupal_get_path('module', __MOHA_STYLE));
+
+/**
+ * Implements hook_init().
+ */
+function moha_style_init() {
+  // fix style of front page.
+  if (!path_is_admin(current_path())) {
+    drupal_add_css(MOHA_STYLE__RELATIVE_PATH . '/css/moha_style.css');
+  }
+}

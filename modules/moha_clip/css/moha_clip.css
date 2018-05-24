@@ -30,6 +30,12 @@ article div.row {
     bottom: 0;
   }
 }
+
+@media (max-width: 991px) {
+  article div.row div.col-md-3.col-xs-12 {
+    display: none;
+  }
+}
 /***/
 
 
