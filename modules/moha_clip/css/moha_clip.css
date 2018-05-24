@@ -21,11 +21,14 @@ article div.row {
   position: relative;
 }
 
-article div.row div.col-md-3.col-xs-12 {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
+/* Fix side to right on tablet or mobile. */
+@media (min-width: 992px) {
+  article div.row div.col-md-3.col-xs-12 {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
 }
 /***/
 
