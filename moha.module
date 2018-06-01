@@ -108,9 +108,9 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
 
 
 /**
- * Implements hook_form_FORM_ID_alter().
- *
  * Hide menu link edit & delete button.
+ *
+ * Implements hook_form_FORM_ID_alter().
  */
 function moha_form_menu_overview_form_alter(&$form, &$form_state, $form_id) {
   global $user;
@@ -349,7 +349,14 @@ function moha_create_fields_and_instances($get_fields_and_instances) {
   }
 }
 
+/**
+ * @param $node_type string
+ *
+ */
+function moha_hide_node_comment($node_type){
 
+  variable_set('comment_' . $node_type, COMMENT_NODE_HIDDEN);
+}
 
 /**
  * Generates and returns nonce string

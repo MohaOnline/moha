@@ -1,4 +1,4 @@
 name = Moha Demo: Web
 description = Demostrate usages of HTML and CSS.
 core = 7.x
-package = Tutorial
+package = Moha Online

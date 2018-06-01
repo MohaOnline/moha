@@ -372,7 +372,7 @@ function moha_clip_node_info() {
  *
  * Moha Clip node add / edit form.
  *
- * Drupal needs for us to provide a form that lets the user
+ * Drupal needs this to provide a form that lets the user
  * add content. This is the form that the user will see if
  * they go to node/add/moha-clip.
  *
@@ -629,13 +629,7 @@ function moha_clip_node_type_insert($info) {
     // Save our changes to the body field instance.
     field_update_instance($body_instance);
 
-    foreach (_moha_clip_fields_and_instances() as $field) {
-      if (!field_info_field($field['field_name'])) {
-        field_create_field($field);
-      }
-
-      field_create_instance($field);
-    }
+    moha_create_fields_and_instances('_moha_clip_fields_and_instances');
 
     // Hide comment for Moha Clip by default.
     variable_set('comment_' . __MOHA_CLIP, COMMENT_NODE_HIDDEN);

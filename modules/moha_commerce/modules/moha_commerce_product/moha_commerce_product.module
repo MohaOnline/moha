@@ -1,0 +1,174 @@
+<?php
+/**
+ * @file
+ * @Created: 30/05/2018 12:54 AM
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_COMMERCE_PRODUCT', 'Moha Commerce Product');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_COMMERCE_PRODUCT', 'moha_commerce_product');
+
+/**
+ * moha_commerce_product__variables.
+ */
+define('MOHA_COMMERCE_PRODUCT__VARIABLES', __MOHA_COMMERCE_PRODUCT . '__variables');
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_commerce_product.
+ */
+define('MOHA_COMMERCE_PRODUCT__PATH', base_path() . drupal_get_path('module', __MOHA_COMMERCE_PRODUCT));
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_commerce_product.
+ */
+define('MOHA_COMMERCE_PRODUCT__RELATIVE_PATH', drupal_get_path('module', __MOHA_COMMERCE_PRODUCT));
+
+/**
+ * Implements hook_menu().
+ */
+function moha_commerce_product_menu() {
+
+}
+
+/**
+ * Moha Commerce Product Fields.
+ *
+ * @return array fields & instance parameter array.
+ */
+function _moha_commerce_product_fields_and_instances() {
+  $fields_and_instances = array();
+
+  $fields_and_instances['image'] = array(
+    'label'       => t('Feature Image'),
+    'field_name'  => 'image',
+    'type'        => 'image',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'description' => t('Upload images to go with this clip.'),
+    'entity_type' => 'node',
+    'bundle'      => __MOHA_COMMERCE_PRODUCT,
+    'settings' => array(
+    ),
+    'widget' => array(
+      'weight' => -90,
+      'type' => 'image_image',
+    ),
+    'display' => array(
+      'default' => array(
+        'weight' => -90,
+        'label' => 'hidden',
+      ),
+      'teaser' => array(
+        'weight' => -90,
+        'label' => 'hidden',
+      ),
+    ),
+  );
+
+  $fields_and_instances['moha_product_category'] = array(
+    'label' => t('Product Category'),
+    'field_name' => 'moha_product_category',
+    'description' => t('Input product category.'),
+    'type' => 'taxonomy_term_reference',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'entity_type' => 'node',
+    'bundle' => __MOHA_COMMERCE_PRODUCT,
+    'settings' => array(
+      'max_length' => 260,
+      'allowed_values' => array(
+        array(
+          'vocabulary' => 'moha_product_category',
+        ),
+      ),
+    ),
+    'widget' => array(
+      'type' => 'taxonomy_autocomplete',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'taxonomy_term_reference_plain',
+      ),
+    ),
+  );
+
+  return $fields_and_instances;
+}
+
+
+/**
+ * Defines 3 - 1 of node: moha_commerce_product.
+ *
+ * Implements hook_node_info().
+ */
+function moha_commerce_product_node_info() {
+
+  $items = array(
+    __MOHA_COMMERCE_PRODUCT => array(
+      'name' => t(MOHA_COMMERCE_PRODUCT),
+      'base' => __MOHA_COMMERCE_PRODUCT, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
+      'description' => t('Use <i>Moha Commerce Product</i> to describe details of a product.'),
+      'title_label' => t('Title'),
+      'has_title' => TRUE,
+      'locked' => FALSE,
+    ),
+  );
+
+  return $items;
+}
+
+/**
+ * Defines 3 - 2 of node: moha_commerce_product.
+ *
+ * Implements hook_node_type_insert().
+ *
+ * @throws \FieldException
+ *
+ */
+function moha_commerce_product_node_type_insert($info) {
+  if ($info->type == __MOHA_COMMERCE_PRODUCT) {
+
+    moha_create_fields_and_instances('_moha_commerce_product_fields_and_instances');
+
+    // Hide comment for Moha Clip by default.
+    variable_set('comment_' . __MOHA_COMMERCE_PRODUCT, COMMENT_NODE_HIDDEN);
+    variable_set('node_options_' . __MOHA_COMMERCE_PRODUCT, array('status'));
+  }
+}
+
+/**
+ * Defines 3 - 3 of node: moha_commerce_product.
+ * Let title of node could be specified in add / edit form.
+ *
+ * Implements hook_form().
+ */
+function moha_commerce_product_form($node, &$form_state) {
+
+
+  return node_content_form($node, $form_state);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function moha_commerce_product_theme($existing, $type, $theme, $path) {
+
+  $themes = array();
+
+  // Declare theme for moha_clip through naming convention, one place configuration.
+  $themes['node__' . __MOHA_COMMERCE_PRODUCT] = array(
+    'render element' => 'elements',
+    'template' => 'templates/node--' . __MOHA_COMMERCE_PRODUCT,
+  );
+
+  return $themes;
+}
