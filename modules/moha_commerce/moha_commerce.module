@@ -1,0 +1,120 @@
+<?php
+/**
+ *
+ */
+
+
+
+/**
+ * Machine name.
+ */
+define('__MOHA_COMMERCE', 'moha_commerce');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_commerce.
+ */
+define('MOHA_COMMERCE__RELATIVE_PATH', drupal_get_path('module', __MOHA_COMMERCE));
+
+/**
+ * Implements hook_menu().
+ */
+function moha_commerce_menu() {
+
+  $items['moha/moha_commerce/order/%'] = array(
+    'title' => 'Product Ordering Page',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_moha_commerce_product_order_form', 3),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['moha/moha_commerce/order_success/%'] = array(
+    'title' => 'Product Ordering Success',
+    'page callback' => '_moha_commerce_product_order_success',
+    'page arguments' => array(3),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * @param $nid
+ */
+function _moha_commerce_product_order_form(array $form, array &$form_state, $nid) {
+  $node = node_load($nid);
+  $image_filed_array = field_view_field('node', $node, 'image');
+  $image_filed_array['#label_display'] = 'hidden';
+  $image_markup = drupal_render($image_filed_array);
+
+  $form['feature_image'] = array(
+    '#markup' => $image_markup,
+  );
+
+  $form['nid'] = array(
+    '#type' => 'hidden',
+    '#value' => $nid,
+  );
+
+  $form['product_title'] = array(
+    '#markup' => format_string('<div class="product-title">@title</div>', array('@title' => $node->title)),
+  );
+
+  $form['confirm'] = array(
+    '#type' => 'submit',
+    '#value' => t('Confirm')
+  );
+  $form['confirm']['#attributes']['class'][] = 'btn';
+  $form['confirm']['#attributes']['class'][] = 'btn-lg';
+  $form['confirm']['#attributes']['class'][] = 'btn-primary';
+
+  $form['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel')
+  );
+  $form['cancel']['#attributes']['class'][] = 'btn';
+  $form['cancel']['#attributes']['class'][] = 'btn-lg';
+  $form['cancel']['#attributes']['class'][] = 'btn-default';
+
+  // sites/all/modules/custom/moha/modules/moha_commerce/modules/moha_commerce_product/css/moha_commerce_product.css.
+  drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_PRODUCT . '.css');
+  return $form;
+
+}
+
+
+function _moha_commerce_product_order_form_submit(array $form, array &$form_state) {
+
+  $values = $form_state['values'];
+
+  if ($values['op'] == 'Confirm') {
+    drupal_goto('moha/moha_commerce/order_success/' . $values['nid']);
+  }
+
+  return;
+}
+
+function _moha_commerce_product_order_success($nid) {
+  $node = node_load($nid);
+  $image_filed_array = field_view_field('node', $node, 'image');
+  $image_filed_array['#label_display'] = 'hidden';
+  $image_markup = drupal_render($image_filed_array);
+
+  $form['feature_image'] = array(
+    '#markup' => $image_markup,
+  );
+
+  $form['product_title'] = array(
+    '#markup' => format_string('<div class="product-title">@title</div>', array('@title' => $node->title)),
+  );
+
+  $form['order_result'] = array(
+    '#markup' => '<div class="order-result"><img src="/'. MOHA_COMMERCE__RELATIVE_PATH .'/img/order-successful.png"></div>' .
+      '<div class="order-result">Your order is confirmed.</div>',
+  );
+
+  // sites/all/modules/custom/moha/modules/moha_commerce/modules/moha_commerce_product/css/moha_commerce_product.css.
+  drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_PRODUCT . '.css');
+  return $form;
+}

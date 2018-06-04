@@ -78,6 +78,9 @@
  *
  * @ingroup templates
  */
+
+// sites/all/modules/custom/moha/modules/moha_commerce/modules/moha_commerce_product/css/moha_commerce_product.css.
+drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_PRODUCT . '.css');
 ?>
 
 <article id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
@@ -92,19 +95,18 @@
   </header>
   <?php endif; ?>
 
-
-
   <div class="row">
     <!---- Main Content -->
     <div class="white-back-2018 col-md-9 col-xs-12">
-    <?php
-      // Hide comments, tags, and links fields from default render.
-      hide($content['comments']);
-      hide($content['links']);
-      hide($content['field_tags']);
-      hide($content['technology_stacks']);
-      print render($content);
-    ?>
+      <?php
+        // Hide comments, tags, and links fields from default render.
+        hide($content['comments']);
+        hide($content['links']);
+        hide($content['moha_product_category']);
+        print render($content);
+      ?>
+      <div class="product-title"><?php print $title; ?></div>
+      <a class="btn btn-primary btn-lg" href="<?php echo format_string('/moha/moha_commerce/order/!nid', array('!nid' => $node->nid)) ?>">Order</a>
     </div>
     <!-- Main Content ---->
 

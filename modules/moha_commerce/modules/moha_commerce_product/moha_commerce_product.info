@@ -2,3 +2,6 @@ name = Moha Commerce: Product
 description = Contains detailed information of product.
 core = 7.x
 package = Moha Online
+
+dependencies[] = moha
+dependencies[] = moha_commerce

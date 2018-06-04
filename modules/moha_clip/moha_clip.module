@@ -643,6 +643,14 @@ function moha_clip_node_type_insert($info) {
 function moha_clip_menu() {
   $items = array();
 
+  $items['moha/moha_clip/front'] = array(
+    'title' => t('Moha Clip Front Page'),
+    'page callback' => '_moha_clip_front',
+    'access callback' => TRUE,
+    'file' => 'inc/moha_clip.front.inc',
+    'type' => MENU_CALLBACK,
+  );
+
   $items['admin/moha/moha_clip'] = array(
     'title' => t('Moha Clip Manager'),
     'description' => t('Manage Moha Clip configurations.'),
@@ -656,7 +664,6 @@ function moha_clip_menu() {
   return $items;
 }
 
-
 /**
  * Implements hook_theme().
  */
@@ -667,6 +674,11 @@ function moha_clip_theme($existing, $type, $theme, $path) {
   $themes['node__moha_clip'] = array(
     'render element' => 'elements',
     'template' => 'templates/node--moha_clip',
+  );
+
+  $theme['front__moha_clip'] = array(
+    'render element' => 'elements',
+    'template' => 'templates/front--moha_clip',
   );
 
   return $themes;
