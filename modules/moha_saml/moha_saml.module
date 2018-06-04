@@ -4,33 +4,81 @@
  */
 
 /**
- * Implements hook_init().
+ * Human name.
  */
-function moha_saml_init() {
+define('MOHA_SAML', 'Moha SAML');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_SAML', 'moha_saml');
+
+/**
+ * moha_saml__variables.
+ */
+define('MOHA_SAML__VARIABLES', __MOHA_SAML . '__variables');
+
+/**
+ * sites/all/modules/custom/moha_saml
+ */
+define('MOHA_SAML__RELATIVE_PATH', drupal_get_path('module', __MOHA_SAML));
+
+/**
+ * /sites/all/modules/custom/moha_saml
+ */
+define('MOHA_SAML__PATH', base_path() . MOHA_SAML__RELATIVE_PATH);
+
+/**
+ * Session name of destination
+ */
+define('MOHA_SAML__SESSION__DESTINATION', __MOHA_SAML . '_session_destination');
+
+/**
+ * Implements hook_menu().
+ */
+function moha_saml_menu() {
+  $items['moha/saml/login'] = array(
+    'title' => 'Login with SAML',
+    'page callback' => '_moha_saml_login',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+
+
+/**
+ * Login with SAML information.
+ */
+function _moha_saml_login() {
   global $user;
 
-  // No need to go through user login process with SSO.
-  if (user_is_logged_in()) {
-    return;
-  }
-
-  $sso_id = '';
-  if (isset($_SERVER['HTTP_SM_UNIVERSALID'])) {
-    $sso_id  = $_SERVER['HTTP_SM_UNIVERSALID'];
-  }
-  elseif (isset($_SERVER['HTTP_USER_SSOID'])) {
-    $sso_id = $_SERVER['HTTP_USER_SSOID'];
-  }
-  elseif (isset($_SERVER['HTTP_UID'])) {
-    $sso_id = $_SERVER['HTTP_UID'];
-  }
-
-  $mail = '';
-  if (isset($_SERVER['HTTP_EMAIL'])) {
-    $mail  = $_SERVER['HTTP_EMAIL'];
-  }
-
   try {
+    $destination = '/';
+
+    // Reserve destination.
+    if (isset($_SERVER['MOHA_SAML__SESSION__DESTINATION'])) {
+      $destination = $_SESSION[MOHA_SAML__SESSION__DESTINATION];
+    }
+
+    $sso_id = '';
+    if (isset($_SERVER['HTTP_SM_UNIVERSALID'])) {
+      $sso_id  = $_SERVER['HTTP_SM_UNIVERSALID'];
+    }
+    elseif (isset($_SERVER['HTTP_USER_SSOID'])) {
+      $sso_id = $_SERVER['HTTP_USER_SSOID'];
+    }
+    elseif (isset($_SERVER['HTTP_UID'])) {
+      $sso_id = $_SERVER['HTTP_UID'];
+    }
+
+    $mail = '';
+    if (isset($_SERVER['HTTP_EMAIL'])) {
+      $mail  = $_SERVER['HTTP_EMAIL'];
+    }
+
     if (empty($sso_id)){
       throw new Exception('No SSO in SAML session!');
     }
@@ -62,10 +110,14 @@ function moha_saml_init() {
     $form_state['uid'] = $user->uid;
     user_login_submit(array(), $form_state);
     drupal_session_regenerate();
+
+    drupal_goto($destination);
   }
   catch(Exception $e) {
     // make sure page correctly displayed, so don't throw further.
     watchdog_exception(__FUNCTION__, $e);
+
+    drupal_goto('moha_saml/saml/error');
   }
 
 }
