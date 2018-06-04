@@ -1,0 +1,7 @@
+name = Moha Commerce: Order
+description = Contains product order informaiton.
+core = 7.x
+package = Moha Online
+
+dependencies[] = moha
+dependencies[] = moha_commerce
