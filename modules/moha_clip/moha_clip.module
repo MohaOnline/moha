@@ -676,7 +676,7 @@ function moha_clip_theme($existing, $type, $theme, $path) {
     'template' => 'templates/node--moha_clip',
   );
 
-  $theme['front__moha_clip'] = array(
+  $themes['front__moha_clip'] = array(
     'render element' => 'elements',
     'template' => 'templates/front--moha_clip',
   );
