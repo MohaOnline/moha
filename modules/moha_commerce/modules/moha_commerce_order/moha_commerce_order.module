@@ -1,0 +1,49 @@
+<?php
+
+
+/**
+ * Human name.
+ */
+define('MOHA_COMMERCE_ORDER', 'Moha Commerce Order');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_COMMERCE_ORDER', 'moha_commerce_order');
+
+/**
+ * moha_commerce_order__variables.
+ */
+define('MOHA_COMMERCE_ORDER__VARIABLES', __MOHA_COMMERCE_ORDER . '__variables');
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_commerce_order.
+ */
+define('MOHA_COMMERCE_ORDER__PATH', base_path() . drupal_get_path('module', __MOHA_COMMERCE_ORDER));
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_commerce_order.
+ */
+define('MOHA_COMMERCE_ORDER__RELATIVE_PATH', drupal_get_path('module', __MOHA_COMMERCE_ORDER));
+
+/**
+ * Implements hook_entity_info().
+ */
+function moha_commerce_order_entity_info() {
+  // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
+  $items[__MOHA_COMMERCE_ORDER] = array(
+    'label' => t(MOHA_COMMERCE_ORDER),
+    'plural label' => t(MOHA_COMMERCE_ORDER),
+    'entity class' => 'Entity',
+    'controller class' => 'EntityAPIController',
+    'base table' => '__MOHA_COMMERCE_ORDER',
+    'entity keys' => array(
+      'id' => 'oid',
+    ),
+    // Use the default label() and uri() functions
+    'label callback' => 'entity_class_label',
+    'uri callback' => 'entity_class_uri',
+  );
+
+  return $items;
+}
