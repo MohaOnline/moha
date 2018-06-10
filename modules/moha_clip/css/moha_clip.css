@@ -6,6 +6,11 @@ h1.page-header {
   border-bottom: none;
 }
 
+.node-unpublished {
+  background-color: transparent;
+  border: dotted gray 1px;
+}
+
 /** Feature Image. */
 .field-name-image {
   background: #b2b2b2 url(../../../img/diagonal-stripes.svg) repeat fixed;
