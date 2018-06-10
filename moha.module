@@ -80,6 +80,24 @@ function moha_image_default_styles() {
 }
 
 /**
+ * Implements hook_menu().
+ */
+function moha_menu() {
+  $items["admin/moha"] = array(
+    'title' => 'Moha',
+    'description' => t('Moha enhancement system.'),
+    'page callback' => 'system_admin_menu_block_page',
+    'weight' => -10,
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
  * Implements hook_menu_alter().
  *
  * Hide menu add link.

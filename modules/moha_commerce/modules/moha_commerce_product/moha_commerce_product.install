@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Prepares product category.
+ */
+function moha_commerce_product_install() {
+  moha_commerce_product_update_0700();
+}
+
+/**
+ * Prepare categories for moha_commerce_product.
+ */
+function moha_commerce_product_update_0700() {
+  // Create a vocabulary named "Moha Commerce Product Category", enabled for the 'moha_clip' content type.
+  $vocabulary = (object) array(
+    'name' => t('Moha Product Category'),
+    'description' => t('Group moha_commerce_product by categories.'),
+    'machine_name' => 'moha_product_category',
+  );
+  taxonomy_vocabulary_save($vocabulary);
+
+  $technologies = array(
+    'Mouse',
+    'Keyboard',
+    'Earphone',
+  );
+
+  foreach ($technologies as $technology) {
+    $term = new stdClass();
+
+    $term->vid = $vocabulary->vid;
+    $term->name = $technology;
+
+    taxonomy_term_save($term);
+  }
+}
+

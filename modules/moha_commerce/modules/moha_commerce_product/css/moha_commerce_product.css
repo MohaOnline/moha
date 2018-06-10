@@ -2,7 +2,7 @@ h1.page-header {
   display: none;
 }
 
-article, #block-system-main {
+div.messages, article, #block-system-main {
   max-width: 420px;
 }
 

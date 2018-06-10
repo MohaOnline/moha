@@ -20,6 +20,17 @@ define('MOHA_COMMERCE__RELATIVE_PATH', drupal_get_path('module', __MOHA_COMMERCE
  */
 function moha_commerce_menu() {
 
+  $items["admin/moha/commerce"] = array(
+    'title' => 'Moha Commerce',
+    'description' => t('Moha Commerce Module.'),
+    'page callback' => 'system_admin_menu_block_page',
+    'weight' => 0,
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
   $items['moha/moha_commerce/order/%'] = array(
     'title' => 'Product Ordering Page',
     'page callback' => 'drupal_get_form',
@@ -83,12 +94,85 @@ function _moha_commerce_product_order_form(array $form, array &$form_state, $nid
 
 }
 
+/**
+ * Stop order if user ordered same category product in limit duration.
+ *
+ * @param array $form
+ * @param array $form_state
+ */
+function _moha_commerce_product_order_form_validate(array $form, array &$form_state) {
 
+  $values = $form_state['values'];
+
+  // Get duration limitation.
+  $configurations = variable_get(MOHA_COMMERCE_ORDER__VARIABLES, array());
+  $repeated_order_limit = isset($configurations['repeated_order_limit'])?$configurations['repeated_order_limit']:'90';
+  if (!is_numeric($repeated_order_limit)) {$repeated_order_limit = 90;}
+
+  global $user;
+
+  try {
+    $query = new EntityFieldQuery();
+    $query
+      ->entityCondition('entity_type', __MOHA_COMMERCE_ORDER)
+      ->propertyCondition('oid', $user->uid, '=')
+      ->propertyCondition('status', 1 , '=')
+      ->propertyCondition('created', time() - $repeated_order_limit*24*60*60, '>=');
+
+    $result = $query->execute();
+
+    if (empty($result[__MOHA_COMMERCE_ORDER])) {
+      return;
+    }
+
+    $ids = array_keys($result[__MOHA_COMMERCE_ORDER]);
+
+    $orders = entity_load(__MOHA_COMMERCE_ORDER, $ids);
+
+    foreach ($orders as $order){
+        // nid equals, then needn't compare category.
+//      if ($order->nid == $values['nid']) {
+//        throw new Exception('Cannot repeat to order the product in same category within ' . $repeated_order_limit . ' days.');
+//      }
+
+      $product = node_load($order->nid);
+      $ordering = node_load($values['nid']);
+
+      if ($product->moha_product_category[LANGUAGE_NONE][0]['tid'] == $ordering->moha_product_category[LANGUAGE_NONE][0]['tid']) {
+        throw new Exception('Cannot repeat to order the product in same category within ' . $repeated_order_limit . ' days.');
+      }
+    }
+  }
+  catch (Exception $e) {
+    form_error($form, $e->getMessage());
+  }
+
+
+}
+
+/**
+ * Save order entity.
+ *
+ * @param array $form
+ * @param array $form_state
+ */
 function _moha_commerce_product_order_form_submit(array $form, array &$form_state) {
 
   $values = $form_state['values'];
 
   if ($values['op'] == 'Confirm') {
+    global $user;
+
+    $order_array['nid'] = $values['nid'];
+    $order_array['oid'] = $user->uid;
+    $order_array['uid'] = $user->uid;
+    $order_array['updated'] = $order_array['created'] = time();
+
+    $order = entity_create(__MOHA_COMMERCE_ORDER, $order_array);
+    if ($order) {
+      $order->save();
+    }
+
     drupal_goto('moha/moha_commerce/order_success/' . $values['nid']);
   }
 
@@ -96,11 +180,13 @@ function _moha_commerce_product_order_form_submit(array $form, array &$form_stat
 }
 
 function _moha_commerce_product_order_success($nid) {
+
   $node = node_load($nid);
+
+  // Load field image render array, and build html element.
   $image_filed_array = field_view_field('node', $node, 'image');
   $image_filed_array['#label_display'] = 'hidden';
   $image_markup = drupal_render($image_filed_array);
-
   $form['feature_image'] = array(
     '#markup' => $image_markup,
   );

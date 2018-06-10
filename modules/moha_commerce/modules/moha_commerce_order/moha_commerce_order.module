@@ -27,23 +27,128 @@ define('MOHA_COMMERCE_ORDER__PATH', base_path() . drupal_get_path('module', __MO
 define('MOHA_COMMERCE_ORDER__RELATIVE_PATH', drupal_get_path('module', __MOHA_COMMERCE_ORDER));
 
 /**
+ * Implements hook_menu().
+ *
+ * Declares configuration page entry, etc.
+ */
+function moha_commerce_order_menu() {
+  $item['admin/moha/commerce/order/config'] = array(
+    'title' => 'Moha Commerce Order Configuration',
+    'description' => 'Configure order properties and limitations.',
+    'type' => MENU_NORMAL_ITEM,
+    'weight' => -1,
+    'access arguments' => array('administer site configuration'),
+
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_moha_commerce_order_config_form'),
+    'file' => 'includes/moha_commerce_order.admin.inc',
+  );
+
+  return $item;
+}
+
+/**
  * Implements hook_entity_info().
  */
 function moha_commerce_order_entity_info() {
+  $items = array();
+
   // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
   $items[__MOHA_COMMERCE_ORDER] = array(
     'label' => t(MOHA_COMMERCE_ORDER),
     'plural label' => t(MOHA_COMMERCE_ORDER),
-    'entity class' => 'Entity',
-    'controller class' => 'EntityAPIController',
-    'base table' => '__MOHA_COMMERCE_ORDER',
+    'base table' => __MOHA_COMMERCE_ORDER,
     'entity keys' => array(
-      'id' => 'oid',
+      'id' => 'id',
+      'label' => 'id',
     ),
-    // Use the default label() and uri() functions
+    //
     'label callback' => 'entity_class_label',
+
+    // @see entity_crud_hook_entity_info.
+    "admin ui" => array(
+      "path" => 'admin/moha/commerce/orders',
+      "controller class" => "MohaCommerceOrderEntityAdminController",
+      "file" => "includes/moha_commerce_order.admin.inc",
+    ),
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    "module" => __MOHA_COMMERCE_ORDER,
+
+    "access callback" => "_moha_commerce_order_callback",
+
+    'entity class' => 'MohaCommerceOrderEntity',
+    'controller class' => 'MohaCommerceOrderEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
     'uri callback' => 'entity_class_uri',
   );
 
   return $items;
 }
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function moha_commerce_order_entity_property_info() {
+
+  $properties['created'] = array(
+    'label' => t('Created'),
+    'description' => t('Order created date.'),
+    'type' => 'date',
+    'schema field' => 'created',
+  );
+
+  $properties['updated'] = array(
+    'label' => t('Updated'),
+    'description' => t('Order updated date.'),
+    'type' => 'date',
+    'schema field' => 'updated',
+  );
+
+  $properties['nid'] = array(
+    'type' => 'node',
+    'bundle' => __MOHA_COMMERCE_PRODUCT,
+    'description' => t('Product node ID.'),
+    'schema field' => 'nid',
+  );
+
+  $properties['oid'] = array(
+    'type' => 'user',
+    'description' => t('User ID who requested the order.'),
+    'schema field' => 'oid',
+  );
+
+  $properties['uid'] = array(
+    'type' => 'user',
+    'description' => t('User ID who made the creation or update.'),
+    'schema field' => 'uid',
+  );
+
+  $items[__MOHA_COMMERCE_ORDER]['properties'] = $properties;
+  return $items;
+}
+
+/**
+ * @param $op
+ * @param null $entity
+ * @param null $account
+ *
+ * @return bool
+ */
+function _moha_commerce_order_callback($op, $entity = NULL, $account = NULL) {
+  return TRUE;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function moha_commerce_order_permission() {
+  return array(
+    'administer order' => array(
+      'title' => 'Administer Order',
+    ),
+    'create own order' => array(
+      'title' => 'Create Own Order',
+    ),
+  );
+}
+

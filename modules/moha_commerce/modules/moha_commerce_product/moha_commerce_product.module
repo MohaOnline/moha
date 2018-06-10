@@ -33,7 +33,14 @@ define('MOHA_COMMERCE_PRODUCT__RELATIVE_PATH', drupal_get_path('module', __MOHA_
  * Implements hook_menu().
  */
 function moha_commerce_product_menu() {
+  $items['moha/commerce/products'] = array(
+    'title' => 'Products Page',
+    'page callback' => '_moha_commerce_products',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
 
+  return $items;
 }
 
 /**
@@ -152,8 +159,6 @@ function moha_commerce_product_node_type_insert($info) {
  * Implements hook_form().
  */
 function moha_commerce_product_form($node, &$form_state) {
-
-
   return node_content_form($node, $form_state);
 }
 
@@ -171,4 +176,41 @@ function moha_commerce_product_theme($existing, $type, $theme, $path) {
   );
 
   return $themes;
+}
+
+/**
+ * Return products.
+ */
+function _moha_commerce_products() {
+
+  // https://www.drupal.org/docs/7/creating-custom-modules/howtos/how-to-use-entityfieldquery-for-drupal-7.
+  try {
+    $query = new EntityFieldQuery();
+    $query->addTag('_moha_commerce_products_debug')
+      ->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', __MOHA_COMMERCE_PRODUCT);
+      ;
+    $result = $query->execute();
+
+    $ids = array_keys($result['node']);
+
+    $nodes = entity_load('node', $ids);
+
+    dpm($nodes);
+
+    return 'hello';
+  }
+  catch (EntityFieldQueryException $e){
+    watchdog_exception(__FUNCTION__, $e);
+  }
+
+}
+
+/**
+ * Implements hook_query_alter().
+ */
+function moha_commerce_product_query_alter($query) {
+  if ($query->hasTag('_moha_commerce_products_debug')) {
+    dpm((string)$query);
+  }
 }
