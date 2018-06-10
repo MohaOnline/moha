@@ -80,7 +80,7 @@ function _moha_commerce_product_fields_and_instances() {
   $fields_and_instances['moha_product_category'] = array(
     'label' => t('Product Category'),
     'field_name' => 'moha_product_category',
-    'description' => t('Input product category.'),
+    'description' => t('Input product category, use comma to separate different categories.'),
     'type' => 'taxonomy_term_reference',
     'cardinality' => FIELD_CARDINALITY_UNLIMITED,
     'entity_type' => 'node',
@@ -110,7 +110,6 @@ function _moha_commerce_product_fields_and_instances() {
 
   return $fields_and_instances;
 }
-
 
 /**
  * Defines 3 - 1 of node: moha_commerce_product.

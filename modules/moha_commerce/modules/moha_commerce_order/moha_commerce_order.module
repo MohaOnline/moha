@@ -127,6 +127,20 @@ function moha_commerce_order_entity_property_info() {
   return $items;
 }
 
+
+
+/**
+ * @return array
+ */
+function moha_commerce_order_status_array() {
+  return array(
+    0 => 'Dropped',
+    1 => 'In-use',
+    2 => 'Returned',
+    3 => 'Transferred',
+  );
+}
+
 /**
  * @param $op
  * @param null $entity

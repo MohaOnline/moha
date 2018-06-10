@@ -56,7 +56,7 @@ function _moha_saml_login() {
   global $user;
 
   try {
-    $destination = '/';
+    $destination = drupal_get_destination();
 
     // Reserve destination.
     if (isset($_SERVER['MOHA_SAML__SESSION__DESTINATION'])) {

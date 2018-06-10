@@ -79,6 +79,14 @@
  * @ingroup templates
  */
 
+if (!user_is_logged_in()){
+  drupal_goto(url('moha/saml/login', array(
+    'query' => array(
+      'destination' => current_path(),
+    )
+  )));
+}
+
 // sites/all/modules/custom/moha/modules/moha_commerce/modules/moha_commerce_product/css/moha_commerce_product.css.
 drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_PRODUCT . '.css');
 ?>

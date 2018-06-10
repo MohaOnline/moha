@@ -118,7 +118,18 @@ function _moha_commerce_order_config_form($form, &$form_state) {
 }
 
 /**
- *
+ * Save order configurations.
+ */
+function _moha_commerce_order_config_form_validate($form, &$form_state) {
+  $values = $form_state['values'];
+
+  if (!is_integer($values['repeated_order_limit']) || $values['repeated_order_limit'] < 0) {
+    form_error($form['repeated_order_limit'], '');
+  }
+}
+
+/**
+ * Save order configurations.
  */
 function _moha_commerce_order_config_form_submit($form, &$form_state) {
   $values = $form_state['values'];
