@@ -81,6 +81,9 @@ function moha_commerce_order_form_submit($form, &$form_state) {
 
   // Build entity from submission.
   $order = entity_ui_form_submit_build_entity($form, $form_state);
+  $order->nid = $order->nid['entity_id'];
+  $order->oid = $order->oid['entity_id'];
+  
   $order->uid = $user->uid;
   if (empty($order->id)) {
     $order->created = time();

@@ -56,7 +56,6 @@ function moha_commerce_order_entity_info() {
   // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
   $items[__MOHA_COMMERCE_ORDER] = array(
     'label' => t(MOHA_COMMERCE_ORDER),
-    'plural label' => t(MOHA_COMMERCE_ORDER),
     'base table' => __MOHA_COMMERCE_ORDER,
     'entity keys' => array(
       'id' => 'id',
@@ -105,6 +104,7 @@ function moha_commerce_order_entity_property_info() {
   );
 
   $properties['nid'] = array(
+    'label' => t('Product'),
     'type' => 'node',
     'bundle' => __MOHA_COMMERCE_PRODUCT,
     'description' => t('Product node ID.'),
@@ -112,12 +112,14 @@ function moha_commerce_order_entity_property_info() {
   );
 
   $properties['oid'] = array(
+    'label' => t('Owner'),
     'type' => 'user',
     'description' => t('User ID who requested the order.'),
     'schema field' => 'oid',
   );
 
   $properties['uid'] = array(
+    'label' => t('User'),
     'type' => 'user',
     'description' => t('User ID who made the creation or update.'),
     'schema field' => 'uid',
@@ -166,3 +168,6 @@ function moha_commerce_order_permission() {
   );
 }
 
+function moha_commerce_order_entity_info_label($entity, $entity_type) {
+  return $entity->id;
+}
