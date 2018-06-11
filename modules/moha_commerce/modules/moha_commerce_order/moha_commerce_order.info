@@ -6,6 +6,7 @@ package = Moha Online
 dependencies[] = entity
 dependencies[] = moha
 dependencies[] = moha_commerce
+dependencies[] = entityreference_autocomplete
 
 files[] = includes/MohaCommerceOrderEntity.php
 files[] = includes/MohaCommerceOrderEntityAdminController.php
