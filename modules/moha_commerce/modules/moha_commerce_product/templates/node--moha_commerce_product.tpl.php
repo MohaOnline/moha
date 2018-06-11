@@ -80,11 +80,7 @@
  */
 
 if (!user_is_logged_in()){
-  drupal_goto(url('moha/saml/login', array(
-    'query' => array(
-      'destination' => current_path(),
-    )
-  )));
+  moha_saml_login();
 }
 
 // sites/all/modules/custom/moha/modules/moha_commerce/modules/moha_commerce_product/css/moha_commerce_product.css.

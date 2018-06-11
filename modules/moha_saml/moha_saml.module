@@ -39,7 +39,7 @@ define('MOHA_SAML__SESSION__DESTINATION', __MOHA_SAML . '_session_destination');
 function moha_saml_menu() {
   $items['moha/saml/login'] = array(
     'title' => 'Login with SAML',
-    'page callback' => '_moha_saml_login',
+    'page callback' => 'moha_saml_login',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
@@ -52,11 +52,10 @@ function moha_saml_menu() {
 /**
  * Login with SAML information.
  */
-function _moha_saml_login() {
+function moha_saml_login() {
   global $user;
 
   try {
-    $destination = drupal_get_destination();
 
     // Reserve destination.
     if (isset($_SERVER['MOHA_SAML__SESSION__DESTINATION'])) {
@@ -111,7 +110,6 @@ function _moha_saml_login() {
     user_login_submit(array(), $form_state);
     drupal_session_regenerate();
 
-    drupal_goto($destination);
   }
   catch(Exception $e) {
     // make sure page correctly displayed, so don't throw further.
