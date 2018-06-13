@@ -7,7 +7,9 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
 
   protected function overviewTableHeaders($conditions, $rows, $additional_header = []) {
 
-    $additional_header[] = t('User');
+    $additional_header[] = t('SSO');
+    $additional_header[] = t('Name');
+    $additional_header[] = t('BU');
     $additional_header[] = t('Product');
     $additional_header[] = t('Status');
     $additional_header[] = t('Created');
@@ -20,8 +22,12 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
 
     $owner = user_load($entity->oid);
     $product = node_load($entity->nid);
+    $profile = profile2_load_by_user($entity->oid, __MOHA_SAML);
+    $wrapper = entity_metadata_wrapper('profile2', $profile);
 
-    $additional_cols[] = $owner->name;
+    $additional_cols[] = $owner->name;  // SSO.
+    $additional_cols[] = $wrapper->moha_saml_formal_name->value();
+    $additional_cols[] = $wrapper->moha_saml_business_unit->value();
     $additional_cols[] = $product->title;
     $additional_cols[] = moha_commerce_order_status_array()[$entity->status];
     $additional_cols[] = format_date($product->created, 'short');
