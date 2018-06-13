@@ -1133,7 +1133,6 @@ function moha_wx_moha_user_by_unionid() {
 /**
  * @param $signature_array array
  *
- *
  * @return $signature_array
  */
 function moha_wx_make_jsapi_signature(array $signature_array) {

@@ -88,7 +88,7 @@ function moha_saml_login() {
 
     $user = user_load_by_name(trim($sso_id));
 
-    // If user doesn't exist, create user.
+    // If user doesn't exist, create user & profile2.
     if (empty($user)) {
       $password = user_password(32);
       $user_fields = array(
@@ -96,6 +96,7 @@ function moha_saml_login() {
         'pass' => $password,
         'mail' => $mail,
         'status' => 1,
+        'timezone' => 'Asia/Shanghai',
         'init' => __FUNCTION__,
         'roles' => array(
           DRUPAL_AUTHENTICATED_RID => 'authenticated user',
@@ -103,6 +104,22 @@ function moha_saml_login() {
       );
 
       $user = user_save('', $user_fields);
+
+      $profile = profile2_create(array(
+        'type' => __MOHA_SAML,
+        'uid' => $user->uid
+      ));
+
+      $wrapper = entity_metadata_wrapper('profile2', $profile);
+
+      $wrapper->moha_saml_first_name->set($_SERVER['HTTP_FIRST_NAME']);
+      $wrapper->moha_saml_last_name->set($_SERVER['HTTP_LAST_NAME']);
+      $wrapper->moha_saml_formal_name->set($_SERVER['HTTP_FORMAL_NAME']);
+      $wrapper->moha_saml_business_unit->set($_SERVER['HTTP_BUSINESS_UNIT']);
+      $wrapper->moha_saml_title->set($_SERVER['HTTP_TITLE']);
+      $wrapper->moha_saml_email->set($_SERVER['HTTP_EMAIL']);
+      $wrapper->moha_saml_employee_type->set($_SERVER['HTTP_EMPLOYEE_TYPE']);
+      $wrapper->save(TRUE);
     }
 
     // User login.
@@ -118,4 +135,59 @@ function moha_saml_login() {
     drupal_goto('moha_saml/saml/error');
   }
 
+}
+
+/**
+ * Return profile2 fields and instances array for profile2 moha_saml.
+ *
+ * @return array
+ */
+function _moha_saml_profile2_fields_and_instances() {
+
+  $saml_field_definitions = array(
+    [ 'field_name' => 'moha_saml_sso',           'label' => 'SSO'           ],
+    [ 'field_name' => 'moha_saml_first_name',    'label' => 'First name'    ],
+    [ 'field_name' => 'moha_saml_last_name',     'label' => 'Last name'     ],
+    [ 'field_name' => 'moha_saml_formal_name',   'label' => 'Formal name'   ],
+    [ 'field_name' => 'moha_saml_email',         'label' => 'Email'         ],
+    [ 'field_name' => 'moha_saml_business_unit', 'label' => 'Business unit' ],
+    [ 'field_name' => 'moha_saml_title',         'label' => 'Title'         ],
+    [ 'field_name' => 'moha_saml_employee_type', 'label' => 'Employee type' ],
+  );
+
+  foreach ($saml_field_definitions as $field_definition) {
+    $fields_and_instances[$field_definition['field_name']] = array(
+      'type' => 'text',
+      'field_name' => $field_definition['field_name'],
+      'label' => $field_definition['label'],
+      'bundle' => __MOHA_SAML,
+      'entity_type' => 'profile2',
+      'cardinality' => 1,
+      'display' => array(
+        'default' => array(
+          'label' => 'above',
+          'module' => 'text',
+          'settings' => array(),
+          'type' => 'text_default',
+          'weight' => 0,
+        ),
+      ),
+      'required' => FALSE,
+      'settings' => array(
+        'text_processing' => 0,
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'text',
+        'settings' => array(
+          'size' => 60,
+        ),
+        'type' => 'text_textfield',
+        'weight' => 1,
+      ),
+    );
+  }
+
+  return $fields_and_instances;
 }
