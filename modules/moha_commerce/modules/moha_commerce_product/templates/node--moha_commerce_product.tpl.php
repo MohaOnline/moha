@@ -101,7 +101,7 @@ drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_
 
   <div class="row">
     <!---- Main Content -->
-    <div class="white-back-2018 col-md-9 col-xs-12">
+    <div class="white-back-2018 col-xs-12">
       <?php
         // Hide comments, tags, and links fields from default render.
         hide($content['comments']);
@@ -110,7 +110,7 @@ drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_
         print render($content);
       ?>
       <div class="product-title"><?php print $title; ?></div>
-      <a class="btn btn-primary btn-lg" href="<?php echo format_string('/moha/moha_commerce/order/!nid', array('!nid' => $node->nid)) ?>">Order</a>
+      <button class="btn btn-primary btn-lg" id="moha-commerce-product-order">Order</button>
     </div>
     <!-- Main Content ---->
 
@@ -121,6 +121,18 @@ drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_
     <!-- Sidebar ---->
 
   </div>
+  <script>
+    (function ($) {
+      $(function() {
+
+        $('#moha-commerce-product-order').click(function (event){
+          window.open("<?php echo format_string('/moha/moha_commerce/order/!nid', array('!nid' => $node->nid)) ?>");
+        });
+
+      });
+    })(jQuery);
+
+  </script>
   <?php
     // Only display the wrapper div if there are tags or links.
     $field_tags = render($content['field_tags']);

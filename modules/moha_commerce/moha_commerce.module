@@ -14,6 +14,11 @@ define('__MOHA_COMMERCE', 'moha_commerce');
 define('MOHA_COMMERCE__RELATIVE_PATH', drupal_get_path('module', __MOHA_COMMERCE));
 
 /**
+ * /sites/all/modules/custom/moha/modules/moha_commerce.
+ */
+define('MOHA_COMMERCE__PATH', base_path() . MOHA_COMMERCE__RELATIVE_PATH);
+
+/**
  * Implements hook_menu().
  */
 function moha_commerce_menu() {
@@ -29,19 +34,19 @@ function moha_commerce_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
-  $items['moha/moha_commerce/order/%'] = array(
+  $items['moha/moha_commerce/order/%node'] = array(
     'title' => 'Product Ordering Page',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('_moha_commerce_product_order_form', 3),
-    'access callback' => TRUE,
+    'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
 
-  $items['moha/moha_commerce/order_success/%'] = array(
+  $items['moha/moha_commerce/order_success/%node'] = array(
     'title' => 'Product Ordering Success',
     'page callback' => '_moha_commerce_product_order_success',
     'page arguments' => array(3),
-    'access callback' => TRUE,
+    'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
 
@@ -51,8 +56,8 @@ function moha_commerce_menu() {
 /**
  * @param $nid
  */
-function _moha_commerce_product_order_form(array $form, array &$form_state, $nid) {
-  $node = node_load($nid);
+function _moha_commerce_product_order_form(array $form, array &$form_state, $node) {
+
   $image_filed_array = field_view_field('node', $node, 'image');
   $image_filed_array['#label_display'] = 'hidden';
   $image_markup = drupal_render($image_filed_array);
@@ -63,11 +68,15 @@ function _moha_commerce_product_order_form(array $form, array &$form_state, $nid
 
   $form['nid'] = array(
     '#type' => 'hidden',
-    '#value' => $nid,
+    '#value' => $node->nid,
   );
 
   $form['product_title'] = array(
     '#markup' => format_string('<div class="product-title">@title</div>', array('@title' => $node->title)),
+  );
+
+  $form['#attached']['js'] = array(
+    MOHA_COMMERCE__PATH . '/js/moha_commerce_product_order_form.js',
   );
 
   $form['confirm'] = array(
@@ -85,6 +94,7 @@ function _moha_commerce_product_order_form(array $form, array &$form_state, $nid
   $form['cancel']['#attributes']['class'][] = 'btn';
   $form['cancel']['#attributes']['class'][] = 'btn-lg';
   $form['cancel']['#attributes']['class'][] = 'btn-default';
+  $form['cancel']['#attributes']['id'] = 'form-cancel';
 
   // sites/all/modules/custom/moha/modules/moha_commerce/modules/moha_commerce_product/css/moha_commerce_product.css.
   drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_PRODUCT . '.css');
