@@ -56,6 +56,7 @@ function moha_commerce_order_entity_info() {
   // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
   $items[__MOHA_COMMERCE_ORDER] = array(
     'label' => t(MOHA_COMMERCE_ORDER),
+    'plural label' => t(MOHA_COMMERCE_ORDER . 's'),
     'base table' => __MOHA_COMMERCE_ORDER,
     'entity keys' => array(
       'id' => 'id',
@@ -73,12 +74,28 @@ function moha_commerce_order_entity_info() {
     // Declares which module contains related Class information, like Admin UI Class, etc.
     "module" => __MOHA_COMMERCE_ORDER,
 
-    "access callback" => "_moha_commerce_order_callback",
+    "access callback" => "_moha_commerce_order_entity_admin_access_callback",
 
     'entity class' => 'MohaCommerceOrderEntity',
     'controller class' => 'MohaCommerceOrderEntityController',
     // Uses defaultUri method of entity class to generate entity URL.
     'uri callback' => 'entity_class_uri',
+
+    // Make entity fieldable; @see field_attach_form to attach added fields.
+    'fieldable' => TRUE,
+    'bundles' => array(
+      __MOHA_COMMERCE_ORDER => array(
+        'label' => t(MOHA_COMMERCE_ORDER),
+        'plural label' => t(MOHA_COMMERCE_ORDER . 's'),
+        'admin' => array(
+          'path' => 'admin/moha/commerce/orders',
+          'access arguments' => array('administer moha commerce orders'),
+        ),
+      ),
+    ),
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
   );
 
   return $items;
@@ -145,13 +162,17 @@ function moha_commerce_order_status_array() {
 
 /**
  * @param $op
- * @param null $entity
- * @param null $account
+ * @param $entity object
+ * @param $account object
  *
  * @return bool
  */
-function _moha_commerce_order_callback($op, $entity = NULL, $account = NULL) {
-  return TRUE;
+function _moha_commerce_order_entity_admin_access_callback($op, $entity = NULL, $account = NULL) {
+  if (user_access('administer moha commerce order', $account)) {
+    return TRUE;
+  }
+
+  return FALSE;
 }
 
 /**
@@ -159,11 +180,11 @@ function _moha_commerce_order_callback($op, $entity = NULL, $account = NULL) {
  */
 function moha_commerce_order_permission() {
   return array(
-    'administer order' => array(
-      'title' => 'Administer Order',
+    'administer moha commerce orders' => array(
+      'title' => 'Administer Moha Commerce Orders',
     ),
-    'create own order' => array(
-      'title' => 'Create Own Order',
+    'create own moha commerce order' => array(
+      'title' => 'Create Own Moha Commerce Order',
     ),
   );
 }

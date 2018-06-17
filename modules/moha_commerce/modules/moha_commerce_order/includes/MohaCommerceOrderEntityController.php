@@ -11,7 +11,8 @@
 class MohaCommerceOrderEntityController extends EntityAPIController{
   /**
    * Builds a structured array representing the entity's content.
-   *
+   * Invoked by entity_view function.
+   * 
    * The content built for the entity will vary depending on the $view_mode
    * parameter.
    *

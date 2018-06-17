@@ -53,6 +53,8 @@ function moha_commerce_order_form($form, &$form_state, $order = NULL) {
     '#description' => t('Status of order.'),
   );
 
+  field_attach_form(__MOHA_COMMERCE_ORDER, $order, $form, $form_state);
+
   $form['actions'] = array(
     '#type' => 'actions',
     'submit' => array(
