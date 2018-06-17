@@ -61,3 +61,25 @@ function moha_commerce_order_schema() {
 
   return $schema;
 }
+
+/**
+ * Add comments field for moha_commerce_order to describe change reason.
+ */
+function moha_commerce_order_update_0700() {
+  // @see https://api.drupal.org/api/drupal/includes%21database%21database.inc/function/db_change_field/7.x
+  $fields = array (
+    array(
+      'name' => 'comment',
+      'type' => 'text', // Can't have default value.
+      'size' => 'big',
+      'description' => 'Update reason.',
+    ),
+  );
+
+  foreach ($fields as $field) {
+    db_add_field('moha_commerce_order', $field['name'], $field);
+  }
+
+  cache_clear_all();
+}
+

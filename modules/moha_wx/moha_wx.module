@@ -1179,7 +1179,7 @@ function moha_wx_jsapi_config($account) {
     timestamp: $timestamp, // 必填，生成签名的时间戳
     nonceStr: '$nonce', // 必填，生成签名的随机串
     signature: '$signature',// 必填，签名
-    jsApiList: ['scanQRCode','onMenuShareAppMessage','onMenuShareTimeline'] // 必填，需要使用的JS接口列表
+    jsApiList: ['scanQRCode','onMenuShareAppMessage','onMenuShareTimeline','closeWindow'] // 必填，需要使用的JS接口列表
   });
 
 }); }) (jQuery);

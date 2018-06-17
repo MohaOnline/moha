@@ -96,6 +96,14 @@ function _moha_commerce_product_order_form(array $form, array &$form_state, $nod
   $form['cancel']['#attributes']['class'][] = 'btn-default';
   $form['cancel']['#attributes']['id'] = 'form-cancel';
 
+  try {
+    $account = _moha_wx_moha_account('njun_dev');
+    moha_wx_jsapi_config($account);
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FILE__, $e);
+  }
+
   // sites/all/modules/custom/moha/modules/moha_commerce/modules/moha_commerce_product/css/moha_commerce_product.css.
   drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_PRODUCT . '.css');
   return $form;
@@ -187,9 +195,7 @@ function _moha_commerce_product_order_form_submit(array $form, array &$form_stat
   return;
 }
 
-function _moha_commerce_product_order_success($nid) {
-
-  $node = node_load($nid);
+function _moha_commerce_product_order_success($node) {
 
   // Load field image render array, and build html element.
   $image_filed_array = field_view_field('node', $node, 'image');
