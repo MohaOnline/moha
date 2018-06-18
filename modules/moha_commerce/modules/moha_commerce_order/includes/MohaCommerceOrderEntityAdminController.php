@@ -49,6 +49,8 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
     // SAML name, and BU
     $profile = profile2_load_by_user($entity->oid, __MOHA_SAML);
     if ($profile) {
+      // @see https://www.drupal.org/docs/7/api/entity-api/entity-metadata-wrappers.
+      // entity.wrapper.inc.
       $wrapper = entity_metadata_wrapper('profile2', $profile);
       $additional_cols[] = $wrapper->moha_saml_formal_name->value();
       $additional_cols[] = $wrapper->moha_saml_business_unit->value();

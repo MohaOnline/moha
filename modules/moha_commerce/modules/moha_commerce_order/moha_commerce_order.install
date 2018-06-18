@@ -3,7 +3,8 @@
  * Implements hook_install().
  */
 function moha_commerce_order_install() {
-
+  moha_commerce_order_update_0700();
+  moha_commerce_order_update_0701();
 }
 
 /**
@@ -18,6 +19,180 @@ function moha_commerce_order_schema() {
         'description' => 'Primary Key: Unique Order ID.',
         'type' => 'serial',
         'not null' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID of order.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'description' => 'Product node ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who requested the order.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Order status: 1: in-use, 0: dropped, 2: returned, 3: transferred.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+
+  $schema['moha_commerce_order_revision'] = array(
+    'description' => 'Stores revisions of product order.',
+    'fields' => array(
+      'vid' => array(
+        'description' => 'Primary Key: Unique Order Revision ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'id' => array(
+        'description' => 'Parent ID - Order ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'description' => 'Product node ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who requested the order.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Order status: 1: in-use, 0: dropped, 2: returned, 3: transferred.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      )
+    ),
+    'primary key' => array('vid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Add comments field for moha_commerce_order to describe change reason.
+ */
+function moha_commerce_order_update_0700() {
+  // @see https://api.drupal.org/api/drupal/includes%21database%21database.inc/function/db_change_field/7.x
+  $fields = array (
+    array(
+      'name' => 'comment',
+      'type' => 'text', // Can't have default value.
+      'size' => 'big',
+      'description' => 'Update reason.',
+      'not null' => FALSE,
+    ),
+  );
+
+  foreach ($fields as $field) {
+    if (!db_field_exists('moha_commerce_order', $field['name'])) {
+      db_add_field('moha_commerce_order', $field['name'], $field);
+    }
+  }
+
+  cache_clear_all();
+}
+
+/**
+ * Add version id column for moha_commerce_order table; add moha_commerce_order_revision table.
+ */
+function moha_commerce_order_update_0701() {
+  $fields = array(
+    array(
+      'name' => 'vid',
+      'description' => 'Revision ID.',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+    ),
+  );
+
+  foreach ($fields as $field) {
+    if (!db_field_exists('moha_commerce_order', $field['name'])) {
+      db_add_field('moha_commerce_order', $field['name'], $field);
+    }
+  }
+
+  $schema['moha_commerce_order_revision'] = array(
+    'description' => 'Stores revisions of product order.',
+    'fields' => array(
+      'vid' => array(
+        'description' => 'Primary Key: Unique Order Revision ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'id' => array(
+        'description' => 'Parent ID - Order ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
       ),
       'nid' => array(
         'description' => 'Product node ID.',
@@ -56,30 +231,13 @@ function moha_commerce_order_schema() {
         'default' => 0,
       ),
     ),
-    'primary key' => array('id'),
+    'primary key' => array('vid'),
   );
 
-  return $schema;
-}
 
-/**
- * Add comments field for moha_commerce_order to describe change reason.
- */
-function moha_commerce_order_update_0700() {
-  // @see https://api.drupal.org/api/drupal/includes%21database%21database.inc/function/db_change_field/7.x
-  $fields = array (
-    array(
-      'name' => 'comment',
-      'type' => 'text', // Can't have default value.
-      'size' => 'big',
-      'description' => 'Update reason.',
-    ),
-  );
-
-  foreach ($fields as $field) {
-    db_add_field('moha_commerce_order', $field['name'], $field);
+  if (!db_table_exists('moha_commerce_order_revision')) {
+    db_create_table('moha_commerce_order_revision', $schema['moha_commerce_order_revision']);
   }
 
   cache_clear_all();
 }
-

@@ -395,5 +395,20 @@ function moha_nonce($length = 16) {
   return $str;
 }
 
+/**
+ * @param $w object
+ *   Entity Wrapper which need be inspected.
+ *
+ * @return array
+ *   key-value pairs of wrapper object.
+ */
+function moha_entity_wrapper_debug($w) {
+  $values = array();
+  foreach ($w->getPropertyInfo() as $key => $val) {
+    $values[$key] = $w->$key->value();
+  }
+  return $values;
+}
+
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
 ctools_include('moha.ckeditor', __MOHA, 'ckeditor');

@@ -12,7 +12,7 @@ class MohaCommerceOrderEntityController extends EntityAPIController{
   /**
    * Builds a structured array representing the entity's content.
    * Invoked by entity_view function.
-   * 
+   *
    * The content built for the entity will vary depending on the $view_mode
    * parameter.
    *
@@ -53,39 +53,23 @@ class MohaCommerceOrderEntityController extends EntityAPIController{
    * @throws \Exception
    */
   public function delete($ids, DatabaseTransaction $transaction = NULL) {
+
+    global $user;
+
     $entities = $ids ? $this->load($ids) : FALSE;
     if (!$entities) {
       // Do nothing, in case invalid or no ids have been passed.
       return;
     }
-    $transaction = isset($transaction) ? $transaction : db_transaction();
 
-    try {
-      $ids = array_keys($entities);
+    foreach ($entities as $entity) {
 
+      $entity->is_new_revision = TRUE;
+      $entity->status = 0;
+      $entity->updated = REQUEST_TIME;
+      $entity->uid = $user->uid;
 
-      if (isset($this->revisionTable)) {
-        // Save revision.
-      }
-
-      db_update($this->entityInfo['base table'])
-        ->fields(array(
-          'status' => 0,
-          'updated' => REQUEST_TIME,
-        ))
-        ->condition($this->idKey, $ids, 'IN')
-        ->execute();
-
-      // Reset the cache as soon as the changes have been applied.
-      $this->resetCache($ids);
-
-      // Ignore slave server temporarily.
-      db_ignore_slave();
-    }
-    catch (Exception $e) {
-      $transaction->rollback();
-      watchdog_exception($this->entityType, $e);
-      throw $e;
+      parent::save($entity, $transaction);
     }
   }
 
@@ -107,12 +91,15 @@ class MohaCommerceOrderEntityController extends EntityAPIController{
    *   In case of failures.
    */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
+    global $user;
 
     if (isset($entity->is_new)){
       $entity->created = REQUEST_TIME;
     }
 
     $entity->updated = REQUEST_TIME;
+    $entity->is_new_revision = TRUE;
+    $entity->uid = $user->uid;
 
     return parent::save($entity, $transaction);
   }

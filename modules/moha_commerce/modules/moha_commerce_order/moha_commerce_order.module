@@ -58,9 +58,11 @@ function moha_commerce_order_entity_info() {
     'label' => t(MOHA_COMMERCE_ORDER),
     'plural label' => t(MOHA_COMMERCE_ORDER . 's'),
     'base table' => __MOHA_COMMERCE_ORDER,
+    'revision table' => __MOHA_COMMERCE_ORDER . '_revision',
     'entity keys' => array(
       'id' => 'id',
       'label' => 'id',
+      'revision' => 'vid',
     ),
     //
     'label callback' => 'entity_class_label',
@@ -140,6 +142,13 @@ function moha_commerce_order_entity_property_info() {
     'type' => 'user',
     'description' => t('User ID who made the creation or update.'),
     'schema field' => 'uid',
+  );
+
+  $properties['comment'] = array(
+    'label' => t('Comment'),
+    'type' => 'text',
+    'description' => t('Update reason.'),
+    'schema field' => 'comment',
   );
 
   $items[__MOHA_COMMERCE_ORDER]['properties'] = $properties;
