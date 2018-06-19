@@ -46,7 +46,7 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
 
     $form['filter']['actions']['download'] = array(
       '#type' => 'submit',
-      '#value' => 'Download',
+      '#value' => 'Export All',
     );
 
     return parent::overviewForm($form, $form_state);
@@ -72,8 +72,14 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
     else if ($op_key == 'filter') {
       $_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER'] = isset($values['user']['entity_id'])?$values['user']['entity_id']:'';
     }
-  }
+    else if ($op_key == 'download') {
 
+      $configurations = variable_get(MOHA_COMMERCE_ORDER__VARIABLES, array());
+      $order_export_url = isset($configurations['order_export_url'])?$configurations['order_export_url']:'moha/commerce/order/export/csv';
+
+      drupal_goto($order_export_url);
+    }
+  }
 
   /**
    * {@inheritdoc}

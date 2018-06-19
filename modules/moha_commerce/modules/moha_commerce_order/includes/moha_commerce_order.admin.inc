@@ -71,8 +71,6 @@ function moha_commerce_order_form($form, &$form_state, $order = NULL) {
  */
 function moha_commerce_order_form_validate($node, &$form_state) {
 
-
-
 }
 
 /**
@@ -97,18 +95,26 @@ function moha_commerce_order_form_submit($form, &$form_state) {
 
 
 /**
- * Configure order properties and limitations.
+ * Order administration configurations.
  */
 function _moha_commerce_order_config_form($form, &$form_state) {
 
   $configurations = variable_get(MOHA_COMMERCE_ORDER__VARIABLES, array());
-  $repeated_order_limit = isset($configurations['repeated_order_limit'])?$configurations['repeated_order_limit']:'90';
 
+  $repeated_order_limit = isset($configurations['repeated_order_limit'])?$configurations['repeated_order_limit']:'90';
   $form['repeated_order_limit'] = array(
     '#title' => t('Repeated order limitation'),
     '#type' => 'textfield',
     '#description' => t('Set duration in day(s) to limit user cannot repeat to order product in same category, set to 0 without limitation.'),
     '#default_value' => $repeated_order_limit,
+  );
+
+  $order_export_url = isset($configurations['order_export_url'])?$configurations['order_export_url']:'moha/commerce/order/export/csv';
+  $form['order_export_url'] = array(
+    '#title' => t('Order export URL'),
+    '#type' => 'textfield',
+    '#description' => t('Configure order export URL.'),
+    '#default_value' => $order_export_url,
   );
 
   $form['actions'] = array(
@@ -128,8 +134,8 @@ function _moha_commerce_order_config_form($form, &$form_state) {
 function _moha_commerce_order_config_form_validate($form, &$form_state) {
   $values = $form_state['values'];
 
-  if (!is_integer($values['repeated_order_limit']) || $values['repeated_order_limit'] < 0) {
-    form_error($form['repeated_order_limit'], '');
+  if (preg_match("/^[1-9][0-9]*$/", $values['repeated_order_limit']) == 0) {
+    form_error($form['repeated_order_limit']);
   }
 }
 
@@ -141,6 +147,7 @@ function _moha_commerce_order_config_form_submit($form, &$form_state) {
 
   $configurations = variable_get(MOHA_COMMERCE_ORDER__VARIABLES, array());
   $configurations['repeated_order_limit'] = $values['repeated_order_limit'];
+  $configurations['order_export_url'] = $values['order_export_url'];
   variable_set(MOHA_COMMERCE_ORDER__VARIABLES, $configurations);
 
   drupal_set_message('Your configuration has been saved.');
