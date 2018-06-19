@@ -410,5 +410,15 @@ function moha_entity_wrapper_debug($w) {
   return $values;
 }
 
+/**
+ * @param $status_array array
+ * @param $status_value string
+ *
+ * @throws \InvalidArgumentException
+ */
+function moha_status_key($status_array = array(), $status_value) {
+  return array_search($status_value, $status_array);
+}
+
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
 ctools_include('moha.ckeditor', __MOHA, 'ckeditor');

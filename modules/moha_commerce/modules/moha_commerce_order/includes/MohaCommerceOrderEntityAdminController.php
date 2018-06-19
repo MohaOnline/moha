@@ -186,7 +186,7 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
     $product = node_load($entity->nid);
     $additional_cols[] = $product->title;
 
-    $additional_cols[] = moha_commerce_order_status_array()[$entity->status];
+    $additional_cols[] = moha_commerce_order_status()[$entity->status];
 
     // Order updated and created time.
     $additional_cols[] = format_date($entity->updated, 'short');

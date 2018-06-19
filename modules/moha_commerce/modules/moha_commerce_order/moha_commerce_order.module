@@ -158,11 +158,11 @@ function moha_commerce_order_entity_property_info() {
 
 
 /**
- * @return array
+ * @return mixed
  */
-function moha_commerce_order_status_array() {
+function moha_commerce_order_status($status_value = "") {
   $key = 0;
-  return array(
+  $status_array = array(
     ++$key => 'Ordered',
     ++$key => 'Returned',
     ++$key => 'Transferred',
@@ -170,6 +170,19 @@ function moha_commerce_order_status_array() {
     ($key = 100) => 'Delivered',
     ++$key => 'In-use',
   );
+
+  if ($status_value == "") {
+    return $status_array;
+  }
+  else {
+    $key = array_search($status_value, $status_array);
+    if ($key === false) {
+      throw new InvalidArgumentException("Passed status doesn't exist.");
+    }
+    else {
+      return $key;
+    }
+  }
 }
 
 /**

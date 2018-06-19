@@ -65,7 +65,7 @@ class MohaCommerceOrderEntityController extends EntityAPIController{
     foreach ($entities as $entity) {
 
       $entity->is_new_revision = TRUE;
-      $entity->status = 0;
+      $entity->status = moha_commerce_order_status('Dropped');
       $entity->updated = REQUEST_TIME;
       $entity->uid = $user->uid;
 
