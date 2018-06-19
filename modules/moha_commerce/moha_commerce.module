@@ -54,7 +54,7 @@ function moha_commerce_menu() {
 }
 
 /**
- * @param $nid
+ * @param $node object
  */
 function _moha_commerce_product_order_form(array $form, array &$form_state, $node) {
 
@@ -132,7 +132,7 @@ function _moha_commerce_product_order_form_validate(array $form, array &$form_st
     $query
       ->entityCondition('entity_type', __MOHA_COMMERCE_ORDER)
       ->propertyCondition('oid', $user->uid, '=')
-      ->propertyCondition('status', 1 , '=')
+      ->propertyCondition('status', 100 , '>=')
       ->propertyCondition('created', time() - $repeated_order_limit*24*60*60, '>=');
 
     $result = $query->execute();
@@ -196,6 +196,21 @@ function _moha_commerce_product_order_form_submit(array $form, array &$form_stat
 }
 
 function _moha_commerce_product_order_success($node) {
+  global $user;
+
+  $query = new EntityFieldQuery();
+  $query
+    ->entityCondition('entity_type', __MOHA_COMMERCE_ORDER)
+    ->propertyCondition('oid', $user->uid, '=')
+    ->propertyCondition('uid', $user->uid, '=')
+    ->propertyCondition('status', 1, '=')
+    ->propertyCondition('created', time() - 2*60*60, '>=');
+
+  $result = $query->execute();
+
+  if (empty($result[__MOHA_COMMERCE_ORDER])) {
+    drupal_goto('node/' . $node->nid);
+  }
 
   // Load field image render array, and build html element.
   $image_filed_array = field_view_field('node', $node, 'image');

@@ -161,11 +161,14 @@ function moha_commerce_order_entity_property_info() {
  * @return array
  */
 function moha_commerce_order_status_array() {
+  $key = 0;
   return array(
-    0 => 'Dropped',
-    1 => 'In-use',
-    2 => 'Returned',
-    3 => 'Transferred',
+    ++$key => 'Ordered',
+    ++$key => 'Returned',
+    ++$key => 'Transferred',
+    ++$key => 'Dropped',
+    ($key = 100) => 'Delivered',
+    ++$key => 'In-use',
   );
 }
 

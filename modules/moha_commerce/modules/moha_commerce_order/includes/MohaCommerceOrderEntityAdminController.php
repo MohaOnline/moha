@@ -87,13 +87,44 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
    *  Adds property condition per user operation.
    */
   public function overviewTable($conditions = []) {
+
     if (!empty($_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER'])) {
       $conditions['oid'] = $_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER'];
     }
 
-    $array = parent::overviewTable($conditions);
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', $this->entityType);
+    $query->propertyOrderBy('updated','DESC');
+    $query->propertyOrderBy('status');
 
-    return $array;
+    // Add all conditions to query.
+    foreach ($conditions as $key => $value) {
+      $query->propertyCondition($key, $value);
+    }
+
+    if ($this->overviewPagerLimit) {
+      $query->pager($this->overviewPagerLimit);
+    }
+
+    $results = $query->execute();
+
+    $ids = isset($results[$this->entityType]) ? array_keys($results[$this->entityType]) : array();
+    $entities = $ids ? entity_load($this->entityType, $ids) : array();
+
+    $rows = array();
+    foreach ($entities as $entity) {
+      $rows[] = $this->overviewTableRow($conditions, entity_id($this->entityType, $entity), $entity);
+    }
+
+    $render = array(
+      '#theme' => 'table',
+      '#header' => $this->overviewTableHeaders($conditions, $rows),
+      '#rows' => $rows,
+      '#empty' => t('None.'),
+    );
+
+    return $render;
+
   }
 
   /**

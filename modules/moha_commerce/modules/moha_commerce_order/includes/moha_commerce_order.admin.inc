@@ -43,12 +43,7 @@ function moha_commerce_order_form($form, &$form_state, $order = NULL) {
   $form['status'] = array(
     '#title' => t('Status'),
     '#type' => 'select',
-    '#options' => array(
-      0 => 'Dropped',
-      1 => 'In-use',
-      2 => 'Returned',
-      3 => 'Transferred',
-    ),
+    '#options' => moha_commerce_order_status_array(),
     '#default_value' => isset($order->status)?$order->status:1,
     '#description' => t('Status of order.'),
   );
