@@ -4,6 +4,8 @@ core = 7.x
 package = Moha Online
 
 dependencies[] = entity
+dependencies[] = views
+dependencies[] = views_ui
 dependencies[] = moha
 dependencies[] = moha_commerce
 dependencies[] = entityreference_autocomplete

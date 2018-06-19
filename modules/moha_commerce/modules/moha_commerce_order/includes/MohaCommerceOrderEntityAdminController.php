@@ -8,6 +8,91 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
   /**
    * {@inheritdoc}
    *
+   * Provides filter form for moha_commerce_order on admin page.
+   */
+  public function overviewForm($form, &$form_state) {
+
+    $form['filter'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Orders Filter'),
+      '#weight' => -99999,
+      '#collapsible' => TRUE,
+    );
+
+    $form['filter']['user'] = array(
+      '#title' => t('SSO'),
+      '#type' => 'entityreference',
+      '#description' => 'Specifies whose orders, enter SSO then choose from drop-down menu.',
+      '#required' => FALSE,
+      '#default_value' => isset($_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER'])?$_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER']:'',
+      '#era_entity_type' => 'user',
+      '#era_cardinality' => 1,
+      '#era_bundles' => array('user'),
+    );
+
+    $form['filter']['actions'] = array(
+      '#type' => 'actions',
+    );
+
+    $form['filter']['actions']['filter'] = array(
+      '#type' => 'submit',
+      '#value' => 'Filter',
+    );
+
+    $form['filter']['actions']['reset'] = array(
+      '#type' => 'submit',
+      '#value' => 'Reset Filter',
+    );
+
+    $form['filter']['actions']['download'] = array(
+      '#type' => 'submit',
+      '#value' => 'Download',
+    );
+
+    return parent::overviewForm($form, $form_state);
+  }
+
+  /**
+   * Overview form submit callback.
+   * Stores operation into session.
+   *
+   * @param $form
+   *   The form array of the overview form.
+   * @param $form_state
+   *   The overview form state which will be used for submitting.
+   */
+  public function overviewFormSubmit($form, &$form_state) {
+    $values = $form_state['values'];
+    $op = $values['op'];
+    $op_key = array_search($op, $values);
+
+    if($op_key == 'reset'){
+      $_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER'] = '';
+    }
+    else if ($op_key == 'filter') {
+      $_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER'] = isset($values['user']['entity_id'])?$values['user']['entity_id']:'';
+    }
+  }
+
+
+  /**
+   * {@inheritdoc}
+   *
+   *  Adds property condition per user operation.
+   */
+  public function overviewTable($conditions = []) {
+    if (!empty($_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER'])) {
+      $conditions['oid'] = $_SESSION[__MOHA_COMMERCE_ORDER . '_FILTER_USER'];
+    }
+
+    $array = parent::overviewTable($conditions);
+
+    return $array;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
    * Add additional column headers to entity admin list page.
    */
   protected function overviewTableHeaders($conditions, $rows, $additional_header = []) {
