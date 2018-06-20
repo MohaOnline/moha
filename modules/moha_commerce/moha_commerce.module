@@ -128,7 +128,7 @@ function _moha_commerce_product_order_form_validate(array $form, array &$form_st
     ->propertyCondition('nid', $values['nid'], '=')
     ->propertyCondition('oid', $user->uid, '=')
     ->propertyCondition('uid', $user->uid, '=')
-    ->propertyCondition('status', moha_commerce_order_status('Ordered'), '>=');
+    ->propertyCondition('status', moha_commerce_order_status('Ordered'), '=');
 
   $result = $query->execute();
 
@@ -147,7 +147,7 @@ function _moha_commerce_product_order_form_validate(array $form, array &$form_st
     $query
       ->entityCondition('entity_type', __MOHA_COMMERCE_ORDER)
       ->propertyCondition('oid', $user->uid, '=')
-      ->propertyCondition('status', 100 , '>=')
+      ->propertyCondition('status', moha_commerce_order_status('Ordered'), '>')
       ->propertyCondition('created', time() - $repeated_order_limit*24*60*60, '>=');
 
     $result = $query->execute();
@@ -219,7 +219,7 @@ function _moha_commerce_product_order_success($node) {
     ->entityCondition('entity_type', __MOHA_COMMERCE_ORDER)
     ->propertyCondition('oid', $user->uid, '=')
     ->propertyCondition('uid', $user->uid, '=')
-    ->propertyCondition('status', moha_commerce_order_status('Ordered'), '>=');
+    ->propertyCondition('status', moha_commerce_order_status('Ordered'), '=');
 
   $result = $query->execute();
 
