@@ -97,7 +97,7 @@ function _moha_commerce_product_order_form(array $form, array &$form_state, $nod
   $form['cancel']['#attributes']['id'] = 'form-cancel';
 
   try {
-    $account = _moha_wx_moha_account('njun_dev');
+    $account = _moha_wx_moha_account('tanan-assistant');
     moha_wx_jsapi_config($account);
   }
   catch (Exception $e) {
