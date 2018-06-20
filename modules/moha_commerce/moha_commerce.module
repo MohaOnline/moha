@@ -120,12 +120,28 @@ function _moha_commerce_product_order_form_validate(array $form, array &$form_st
 
   $values = $form_state['values'];
 
+  global $user;
+
+  $query = new EntityFieldQuery();
+  $query
+    ->entityCondition('entity_type', __MOHA_COMMERCE_ORDER)
+    ->propertyCondition('nid', $values['nid'], '=')
+    ->propertyCondition('oid', $user->uid, '=')
+    ->propertyCondition('uid', $user->uid, '=')
+    ->propertyCondition('status', moha_commerce_order_status('Ordered'), '>=')
+    ->propertyCondition('created', time() - 2*60*60, '>=');
+
+  $result = $query->execute();
+
+  if (!empty($result[__MOHA_COMMERCE_ORDER])) {
+    drupal_goto('moha/moha_commerce/order_success/' . $values['nid']);
+  }
+
   // Get duration limitation.
   $configurations = variable_get(MOHA_COMMERCE_ORDER__VARIABLES, array());
   $repeated_order_limit = isset($configurations['repeated_order_limit'])?$configurations['repeated_order_limit']:'90';
   if (!is_numeric($repeated_order_limit)) {$repeated_order_limit = 90;}
 
-  global $user;
 
   try {
     $query = new EntityFieldQuery();
