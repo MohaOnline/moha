@@ -204,7 +204,7 @@ function _moha_commerce_product_order_success($node) {
     ->entityCondition('entity_type', __MOHA_COMMERCE_ORDER)
     ->propertyCondition('oid', $user->uid, '=')
     ->propertyCondition('uid', $user->uid, '=')
-    ->propertyCondition('status', 1, '=')
+    ->propertyCondition('status', moha_commerce_order_status('Ordered'), '>=')
     ->propertyCondition('created', time() - 2*60*60, '>=');
 
   $result = $query->execute();

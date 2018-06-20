@@ -6,6 +6,7 @@ package = Moha Online
 dependencies[] = entity
 dependencies[] = views
 dependencies[] = views_ui
+dependencies[] = views_data_export
 dependencies[] = moha
 dependencies[] = moha_commerce
 dependencies[] = entityreference_autocomplete
