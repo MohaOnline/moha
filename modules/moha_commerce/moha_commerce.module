@@ -182,6 +182,7 @@ function _moha_commerce_product_order_form_submit(array $form, array &$form_stat
     $order_array['nid'] = $values['nid'];
     $order_array['oid'] = $user->uid;
     $order_array['uid'] = $user->uid;
+    $order_array['status'] = moha_commerce_order_status('Ordered');
     $order_array['updated'] = $order_array['created'] = time();
 
     $order = entity_create(__MOHA_COMMERCE_ORDER, $order_array);

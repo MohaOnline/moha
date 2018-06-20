@@ -230,6 +230,12 @@ function moha_commerce_order_update_0701() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
     ),
     'primary key' => array('vid'),
   );
