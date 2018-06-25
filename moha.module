@@ -420,5 +420,21 @@ function moha_status_key($status_array = array(), $status_value) {
   return array_search($status_value, $status_array);
 }
 
+/**
+ * Convert NULL to empty string.
+ *
+ * @param $variable
+ *
+ * @return string
+ */
+function moha_n2e($variable) {
+  if (!empty($variable)) {
+    return $variable;
+  }
+  else {
+    return '';
+  }
+}
+
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
 ctools_include('moha.ckeditor', __MOHA, 'ckeditor');

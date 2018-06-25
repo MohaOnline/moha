@@ -112,13 +112,14 @@ function moha_saml_login() {
 
       $wrapper = entity_metadata_wrapper('profile2', $profile);
 
-      $wrapper->moha_saml_first_name->set($_SERVER['HTTP_FIRST_NAME']);
-      $wrapper->moha_saml_last_name->set($_SERVER['HTTP_LAST_NAME']);
-      $wrapper->moha_saml_formal_name->set($_SERVER['HTTP_FORMAL_NAME']);
-      $wrapper->moha_saml_business_unit->set($_SERVER['HTTP_BUSINESS_UNIT']);
-      $wrapper->moha_saml_title->set($_SERVER['HTTP_TITLE']);
-      $wrapper->moha_saml_email->set($_SERVER['HTTP_EMAIL']);
-      $wrapper->moha_saml_employee_type->set($_SERVER['HTTP_EMPLOYEE_TYPE']);
+      $wrapper->moha_saml_sso->set($sso_id);
+      $wrapper->moha_saml_first_name->set(moha_n2e($_SERVER['HTTP_FIRST_NAME']));
+      $wrapper->moha_saml_last_name->set(moha_n2e($_SERVER['HTTP_LAST_NAME']));
+      $wrapper->moha_saml_formal_name->set(moha_n2e($_SERVER['HTTP_FORMAL_NAME']));
+      $wrapper->moha_saml_business_unit->set(moha_n2e($_SERVER['HTTP_BUSINESS_UNIT']));
+      $wrapper->moha_saml_title->set(moha_n2e($_SERVER['HTTP_TITLE']));
+      $wrapper->moha_saml_email->set(moha_n2e($_SERVER['HTTP_EMAIL']));
+      $wrapper->moha_saml_employee_type->set(moha_n2e($_SERVER['HTTP_EMPLOYEE_TYPE']));
       $wrapper->save(TRUE);
     }
 
