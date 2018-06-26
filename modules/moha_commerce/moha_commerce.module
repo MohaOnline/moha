@@ -50,6 +50,14 @@ function moha_commerce_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $items['admin/moha/commerce/order/deliver/%'] = array(
+    'title' => 'Ordered Product Deliver',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_moha_commerce_order_deliver_form', 5),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -177,8 +185,6 @@ function _moha_commerce_product_order_form_validate(array $form, array &$form_st
   catch (Exception $e) {
     form_error($form, $e->getMessage());
   }
-
-
 }
 
 /**
@@ -248,3 +254,78 @@ function _moha_commerce_product_order_success($node) {
   drupal_add_css(MOHA_COMMERCE_PRODUCT__RELATIVE_PATH . '/css/' . __MOHA_COMMERCE_PRODUCT . '.css');
   return $form;
 }
+
+/**
+ * Update order status to Delivered which means ordered product has been delivered.
+ *
+ * @param $entity_id integer
+ */
+function _moha_commerce_order_deliver_form(array $form, array &$form_state, $entity_id) {
+
+  $entity = entity_load_single(__MOHA_COMMERCE_ORDER, $entity_id);
+
+  $form['id'] = array(
+    '#type' => 'hidden',
+    '#value' => $entity->id,
+  );
+
+  $node = node_load($entity->nid);
+
+  //  $image_filed_array = field_view_field('node', $node, 'image');
+  //  $image_filed_array['#label_display'] = 'hidden';
+  //  $image_markup = drupal_render($image_filed_array);
+  //
+  //  $form['feature_image'] = array(
+  //    '#markup' => $image_markup,
+  //  );
+
+  $form['product_title'] = array(
+    '#markup' => format_string('<div class="product-title">@title</div>', array('@title' => $node->title)),
+  );
+
+  $user = user_load($entity->oid);
+
+  $form['confirm_text'] = array(
+    '#markup' => "Press Yes button to confirm deliver above product to " . $user->name . ".",
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['confirm'] = array(
+    '#type' => 'submit',
+    '#value' => t('Yes')
+  );
+  $form['actions']['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel'),
+  );
+
+  return $form;
+}
+
+function _moha_commerce_order_deliver_form_submit(array $form, array &$form_state) {
+
+  $values = $form_state['values'];
+  $op = $values['op'];
+  $op_key = array_search($op, $values);
+
+  if ($op_key == 'confirm') {
+    global $user;
+
+    $entity = entity_load_single(__MOHA_COMMERCE_ORDER, $values['id']);
+
+    if ($entity) {
+      $entity->is_new_revision = TRUE;
+      $entity->status = moha_commerce_order_status('Delivered');
+      $entity->updated = REQUEST_TIME;
+      $entity->uid = $user->uid;
+      $entity->save();
+    }
+    else {
+      drupal_set_message('Passed order is not invalid.', 'warning');
+    }
+  }
+
+  drupal_goto('admin/moha/commerce/orders');
+
+}
+

@@ -152,7 +152,7 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
     }
 
     // Add operations with the right colspan.
-    $header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount());
+    $header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount()+1);
 
     return $header;
   }
@@ -186,11 +186,19 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
     $product = node_load($entity->nid);
     $additional_cols[] = $product->title;
 
+    // Status
     $additional_cols[] = moha_commerce_order_status()[$entity->status];
 
     // Order updated and created time.
     $additional_cols[] = format_date($entity->updated, 'short');
     $additional_cols[] = format_date($entity->created, 'short');
+
+    if ($entity->status == moha_commerce_order_status('Ordered')) {
+      $additional_cols[] = l('Deliver', 'admin/moha/commerce/order/deliver/' . $entity->id, ['attributes' => ['class' => ['button']]]);
+    }
+    else {
+      $additional_cols[] = '';
+    }
 
     return parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
   }
