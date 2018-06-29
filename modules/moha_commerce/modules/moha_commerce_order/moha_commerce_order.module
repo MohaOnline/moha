@@ -130,6 +130,13 @@ function moha_commerce_order_entity_property_info() {
     'schema field' => 'nid',
   );
 
+  $properties['status'] = array(
+    'label' => t('Status'),
+    'type' => 'integer',
+    'description' => t('Order status.'),
+    'schema field' => 'status',
+  );
+
   $properties['oid'] = array(
     'label' => t('Owner'),
     'type' => 'user',

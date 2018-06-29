@@ -119,7 +119,7 @@ function moha_saml_login() {
       $wrapper->moha_saml_business_unit->set(moha_n2e($_SERVER['HTTP_BUSINESS_UNIT']));
       $wrapper->moha_saml_title->set(moha_n2e($_SERVER['HTTP_TITLE']));
       $wrapper->moha_saml_email->set(moha_n2e($_SERVER['HTTP_EMAIL']));
-//    $wrapper->moha_saml_employee_type->set(moha_n2e($_SERVER['HTTP_EMPLOYEE_TYPE']));
+      $wrapper->moha_saml_employee_type->set(moha_n2e($_SERVER['HTTP_EMPLOYEE_TYPE']));
       $wrapper->save(TRUE);
     }
 
