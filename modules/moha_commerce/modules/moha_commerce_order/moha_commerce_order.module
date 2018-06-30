@@ -27,6 +27,11 @@ define('MOHA_COMMERCE_ORDER__PATH', base_path() . drupal_get_path('module', __MO
 define('MOHA_COMMERCE_ORDER__RELATIVE_PATH', drupal_get_path('module', __MOHA_COMMERCE_ORDER));
 
 /**
+ * Permission: Administer Moha Commerce Orders.
+ */
+define('MOHA_COMMERCE_ORDER__PERMISSION__ADMIN_ORDERS', 'administer moha commerce orders');
+
+/**
  * Implements hook_menu().
  *
  * Declares configuration page entry, etc.
@@ -91,7 +96,7 @@ function moha_commerce_order_entity_info() {
         'plural label' => t(MOHA_COMMERCE_ORDER . 's'),
         'admin' => array(
           'path' => 'admin/moha/commerce/orders',
-          'access arguments' => array('administer moha commerce orders'),
+          'access arguments' => array(MOHA_COMMERCE_ORDER__PERMISSION__ADMIN_ORDERS),
         ),
       ),
     ),
@@ -132,9 +137,10 @@ function moha_commerce_order_entity_property_info() {
 
   $properties['status'] = array(
     'label' => t('Status'),
-    'type' => 'integer',
+    'type' => 'text',
     'description' => t('Order status.'),
     'schema field' => 'status',
+    'getter callback' => 'moha_commerce_order_status_get',
   );
 
   $properties['oid'] = array(
@@ -163,17 +169,19 @@ function moha_commerce_order_entity_property_info() {
 }
 
 /**
+ * Returns status value to label map.
+ *
  * @return mixed
  */
 function moha_commerce_order_status($status_value = "") {
-  $key = 0;
-  $status_array = array(
-    ++$key => 'Returned',
-    ++$key => 'Transferred',
-    ++$key => 'Dropped',
-    ($key = 100) => 'Ordered',
-    ++$key => 'Delivered',
-    ++$key => 'In-use',
+
+  static $status_array = array(
+    1 => 'Returned',
+    2 => 'Transferred',
+    3 => 'Dropped',
+    100 => 'Ordered',
+    101 => 'Delivered',
+    102 => 'In-use',
   );
 
   if ($status_value == "") {
@@ -191,6 +199,63 @@ function moha_commerce_order_status($status_value = "") {
 }
 
 /**
+ * Gets the status property of moha_commerce_order.
+ */
+function moha_commerce_order_status_get($data, array $options, $name, $type, $info) {
+  $name = isset($info['schema field']) ? $info['schema field'] : $name;
+
+  if (isset($data[$name])) {
+    return moha_commerce_order_status()[$data[$name]];
+  }
+
+  return 'No Status';
+}
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function moha_commerce_order_views_post_execute(&$view) {
+
+}
+
+/**
+ * Implements hook_views_pre_render().
+ *
+ * Convert numeric status value to status label for moha_commerce_order exporting.
+ */
+function moha_commerce_order_views_pre_render(&$view) {
+  if ($view->name == 'moha_commerce_order_export') {
+    $status_array = moha_commerce_order_status();
+
+    foreach ($view->result as $item) {
+      $status_key = $item->moha_commerce_order_status;
+      $item->moha_commerce_order_status = ($status_array[$status_key]);
+    }
+  }
+}
+
+/**
+ * Implements hook_views_post_render().
+ */
+function moha_commerce_order_views_post_render(&$view, &$output, &$cache) {
+
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function moha_commerce_order_entity_view($entity, $type, $view_mode, $langcode) {
+
+}
+
+/**
+ * Implements hook_entity_views_field_handlers_alter().
+ */
+function moha_commerce_order_entity_views_field_handlers_alter(array &$field_handlers) {
+
+}
+
+/**
  * @param $op
  * @param $entity object
  * @param $account object
@@ -198,7 +263,7 @@ function moha_commerce_order_status($status_value = "") {
  * @return bool
  */
 function _moha_commerce_order_entity_admin_access_callback($op, $entity = NULL, $account = NULL) {
-  if (user_access('administer moha commerce order', $account)) {
+  if (user_access(MOHA_COMMERCE_ORDER__PERMISSION__ADMIN_ORDERS, $account)) {
     return TRUE;
   }
 
@@ -210,7 +275,7 @@ function _moha_commerce_order_entity_admin_access_callback($op, $entity = NULL, 
  */
 function moha_commerce_order_permission() {
   return array(
-    'administer moha commerce orders' => array(
+    MOHA_COMMERCE_ORDER__PERMISSION__ADMIN_ORDERS => array(
       'title' => 'Administer Moha Commerce Orders',
     ),
     'create own moha commerce order' => array(
