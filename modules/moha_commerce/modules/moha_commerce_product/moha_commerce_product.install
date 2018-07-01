@@ -41,3 +41,12 @@ function moha_commerce_product_update_0700() {
   }
 }
 
+/**
+ * Create additional fields: price.
+ * No need to be invoked in moha_commerce_product_install separately.
+ */
+function moha_commerce_product_update_0701() {
+  moha_create_fields_and_instances('_moha_commerce_product_fields_and_instances');
+  cache_clear_all();
+}
+

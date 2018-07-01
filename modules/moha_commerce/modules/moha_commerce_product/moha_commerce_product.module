@@ -108,6 +108,48 @@ function _moha_commerce_product_fields_and_instances() {
     ),
   );
 
+  $fields_and_instances['moha_product_price'] = array(
+    'label' => t('Price'),
+    'field_name' => 'moha_product_price',
+    'description' => t('Input product price, supports decimal, format: 12345.12, or 12345.'),
+    'entity_type' => 'node',
+    'bundle' => __MOHA_COMMERCE_PRODUCT,
+    'cardinality' => 1,
+    'type' => 'number_decimal',
+    'module' => 'number',
+    'settings' => array(
+      'max' => '',
+      'min' => 0,
+      'prefix' => '',
+      'suffix' => '',
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'number',
+      'settings' => array(),
+      'type' => 'number',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'inline',
+        'module' => 'number',
+        'settings' => array(
+          'decimal_separator' => '.',
+          'prefix_suffix' => TRUE,
+          'scale' => 2,
+          'thousand_separator' => '',
+        ),
+        'type' => 'number_decimal',
+      ),
+      'teaser' => array(
+        'label' => 'inline',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+  );
+
   return $fields_and_instances;
 }
 
