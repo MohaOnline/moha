@@ -138,6 +138,7 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
     $additional_header[] = t('Name');
     $additional_header[] = t('BU');
     $additional_header[] = t('Product');
+    $additional_header[] = t('Price');
     $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
     $additional_header[] = t('Created');
@@ -185,6 +186,8 @@ class MohaCommerceOrderEntityAdminController extends EntityDefaultUIController {
     // Product name.
     $product = node_load($entity->nid);
     $additional_cols[] = $product->title;
+    $wrapper = entity_metadata_wrapper('node', $product);
+    $additional_cols[] = $wrapper->moha_product_price->value();
 
     // Status
     $additional_cols[] = moha_commerce_order_status()[$entity->status];
