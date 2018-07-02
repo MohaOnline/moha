@@ -129,8 +129,10 @@ function _moha_commerce_order_config_form($form, &$form_state) {
 function _moha_commerce_order_config_form_validate($form, &$form_state) {
   $values = $form_state['values'];
 
-  if (preg_match("/^[1-9][0-9]*$/", $values['repeated_order_limit']) == 0) {
-    form_error($form['repeated_order_limit']);
+  if ($values['repeated_order_limit'] != '0') {
+    if (preg_match("/^[1-9][0-9]*$/", $values['repeated_order_limit']) == 0) {
+      form_error($form['repeated_order_limit']);
+    }
   }
 }
 
