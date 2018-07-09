@@ -1,0 +1,4 @@
+name = Moha Views
+description = Predefined views for www.moha.online.
+core = 7.x
+package = Moha Online

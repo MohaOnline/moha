@@ -130,6 +130,7 @@ function _moha_commerce_product_order_form_validate(array $form, array &$form_st
 
   global $user;
 
+  // If success order exists, forward user to success page directly.
   $query = new EntityFieldQuery();
   $query
     ->entityCondition('entity_type', __MOHA_COMMERCE_ORDER)
@@ -143,6 +144,7 @@ function _moha_commerce_product_order_form_validate(array $form, array &$form_st
   if (!empty($result[__MOHA_COMMERCE_ORDER])) {
     drupal_goto('moha/moha_commerce/order_success/' . $values['nid']);
   }
+  ///
 
   // Get duration limitation.
   $configurations = variable_get(MOHA_COMMERCE_ORDER__VARIABLES, array());

@@ -7,6 +7,7 @@ dependencies[] = moha
 dependencies[] = taxonomy
 dependencies[] = text
 dependencies[] = image
+dependencies[] = views
 dependencies[] = video
 dependencies[] = video_ui
 dependencies[] = media

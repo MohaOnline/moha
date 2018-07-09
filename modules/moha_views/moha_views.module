@@ -1,5 +1,11 @@
 <?php
 /**
  * @file
- * @Created: 02/07/2018 8:08 AM
  */
+
+/**
+ * Implements hook_views_api().
+ */
+function moha_views_views_api() {
+
+}

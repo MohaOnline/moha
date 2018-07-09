@@ -212,13 +212,6 @@ function moha_commerce_order_status_get($data, array $options, $name, $type, $in
 }
 
 /**
- * Implements hook_views_post_execute().
- */
-function moha_commerce_order_views_post_execute(&$view) {
-
-}
-
-/**
  * Implements hook_views_pre_render().
  *
  * Convert numeric status value to status label for moha_commerce_order exporting.
@@ -232,6 +225,13 @@ function moha_commerce_order_views_pre_render(&$view) {
       $item->moha_commerce_order_status = ($status_array[$status_key]);
     }
   }
+}
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function moha_commerce_order_views_post_execute(&$view) {
+
 }
 
 /**

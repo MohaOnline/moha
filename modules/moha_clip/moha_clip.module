@@ -665,6 +665,63 @@ function moha_clip_menu() {
 }
 
 /**
+ * Implements hook_views_api().
+ *
+ * Declares location of codes for views.
+ */
+function moha_clip_views_api() {
+  return array(
+    'api' => 3,
+    'path' => MOHA_CLIP__RELATIVE_PATH . '/views',
+    'template path' => MOHA_CLIP__RELATIVE_PATH . '/templates',
+  );
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function moha_clip_views_pre_render(&$view) {
+
+  //
+  if ($view->name == 'moha_clip_list') {
+
+    $rows = $view->result;
+
+    foreach ($rows as $row) {
+      $original = $row->field_body[0]['rendered']['#markup'];
+
+      if (preg_match('/<h1>.+<\/h1>/msi',$original, $h1)){
+        $row->field_body[0]['raw']['safe_value'] = $row->field_body[0]['raw']['value'] = $row->field_body[0]['rendered']['#markup'] = array_pop($h1);
+      }
+      
+    }
+
+    return;
+  }
+  ///
+}
+
+/**
+ * Implements hook_views_post_render().
+ */
+function moha_clip_views_post_render(&$view, &$output, &$cache) {
+  //
+  if ($view->name == 'moha_clip_list') {
+
+    $rows = $view->result;
+
+    foreach ($rows as $row) {
+      foreach ($row->field_body as $body){
+        $original = $body['rendered']['#markup'];
+
+
+      }
+    }
+  }
+  ///
+}
+
+/**
  * Implements hook_theme().
  */
 function moha_clip_theme($existing, $type, $theme, $path) {
