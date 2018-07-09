@@ -1,7 +1,41 @@
-.views-field {
-  display: inline-block;
+body.page-moha-moha-clips {
+  background-color: #f0f1f2;
+}
+
+.page-header {
+  display: none;
+}
+
+.views-row {
+  position: relative;
+  background-color: white;
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+}
+
+.views-row:before, .views-row:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+
+.views-row:after {
+  clear: both;
+}
+
+.views-field-body {
+  float: left;
+}
+
+.views-field-image {
+  background: #b2b2b2 url(../../../img/diagonal-stripes.svg) repeat fixed;
+  float: right;
 }
 
 .views-field-image img {
   width: 300px;
+}
+
+.views-field h1 {
+  margin: 0;
 }
