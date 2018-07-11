@@ -679,8 +679,13 @@ function moha_clip_views_api() {
 
 /**
  * Implements hook_views_pre_render().
+ *
+ * Extract h1 and summary into intro area.
  */
 function moha_clip_views_pre_render(&$view) {
+
+  global $base_url;
+  global $user;
 
   //
   if ($view->name == 'moha_clip_list') {
@@ -690,10 +695,24 @@ function moha_clip_views_pre_render(&$view) {
     foreach ($rows as $row) {
       $original = $row->field_body[0]['rendered']['#markup'];
 
-      if (preg_match('/<h1>.+<\/h1>/msi',$original, $h1)){
-        $row->field_body[0]['raw']['safe_value'] = $row->field_body[0]['raw']['value'] = $row->field_body[0]['rendered']['#markup'] = array_pop($h1);
+      if (preg_match('/<h1>(.+)<\/h1>/msi', $original, $h1)){
+        $intro = '<h2>' . array_pop($h1) . '</h2>';
+        $intro = format_string('<a href="!link">!text</a>', array(
+          '!link' => $base_url . base_path() . 'node/' . $row->nid,
+          '!text' => $intro,
+        ));
+
+        // Add Edit link to who has edit permission.
+        if ($user->uid == 1) {
+          $intro .= format_string('<div class="node-actions"><a href="!link" target="_blank">!text</a></div>', array(
+            '!link' => $base_url . base_path() . 'node/' . $row->nid . '/edit',
+            '!text' => t('Edit'),
+          ));
+        }
+
+        $row->field_body[0]['raw']['safe_value'] = $row->field_body[0]['raw']['value'] = $row->field_body[0]['rendered']['#markup'] = $intro;
       }
-      
+
     }
 
     return;

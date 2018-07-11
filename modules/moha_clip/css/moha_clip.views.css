@@ -25,17 +25,41 @@ body.page-moha-moha-clips {
 
 .views-field-body {
   float: left;
+  padding: 20px 0 20px 20px;
+}
+
+.views-field-body a:hover {
+  text-decoration:none;
+}
+
+.views-field-body h2 {
+  font-size: 16px;
+  margin: 0;
 }
 
 .views-field-image {
+  width: 160px;
   background: #b2b2b2 url(../../../img/diagonal-stripes.svg) repeat fixed;
   float: right;
+  border-left: 1px solid #ddd;
+  /*box-shadow: 0 0 5px 0 #aaa;*/
 }
 
 .views-field-image img {
-  width: 300px;
+  font-size: 1px;
+  max-width: 159em;
+  max-height: 90em;
+  width: auto!important;
+  height: auto!important;
+  margin: auto;
 }
 
-.views-field h1 {
-  margin: 0;
+.node-actions {
+  position: absolute;
+  right: 170px;
+  bottom: 5px;
+}
+
+.node-actions a {
+  font-size: 12px;
 }
