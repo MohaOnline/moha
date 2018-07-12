@@ -424,16 +424,95 @@ function moha_status_key($status_array = array(), $status_value) {
  * Convert NULL to empty string.
  *
  * @param $variable
+ * @param $default string
+ *  Default value when $variable is NULL.
  *
  * @return string
  */
-function moha_n2e($variable) {
+function moha_n2e($variable, $default = '') {
   if (!empty($variable)) {
     return $variable;
   }
   else {
     return '';
   }
+}
+
+/**
+ * Convert array NULL element to empty string.
+ * If $default is specified, return $default.
+ *
+ * @param $array
+ * @param $key
+ * @param $default string
+ *  Default value when element is NULL.
+ *
+ * @return string
+ */
+function moha_an2e($array, $key, $default = '') {
+  if (!empty($array[$key])) {
+    return $array[$key];
+  }
+  else {
+    return $default;
+  }
+}
+
+/**
+ * Set drupal variable which is inform of array.
+ *
+ * @param $variable_name
+ *  Drupal variable name which is stored
+ * @param $key
+ *  Key name in array.
+ * @param $value
+ *  Value which will be set to $key.
+ *
+ */
+function moha_array_variable_set($variable_name, $key, $value = ""){
+  $values = variable_get($variable_name);
+  $values[$key] = $value;
+  variable_set($variable_name, $values);
+}
+
+/**
+ * Get drupal variable which is inform of array.
+ *
+ * @param $variable_name
+ * @param $key
+ * @param $default string
+ *
+ * @return string
+ */
+function moha_array_variable_get($variable_name, $key, $default = "") {
+  $values = variable_get($variable_name);
+
+  if (empty($values[$key])) {
+    return $default;
+  }
+  else {
+    return $values[$key];
+  }
+}
+
+/**
+ * Return block translated string.
+ *
+ * @param $variable_name
+ * @param
+ * @param
+ * @param
+ */
+function moha_i18n_value($variable_name, $module, $delta, $default = '') {
+  $value = variable_get($variable_name, $default);
+
+  if (function_exists('i18n_string')) {
+    $value = i18n_string('blocks:' . $module . ':' . $delta . ':' . $variable_name, $value, array(
+      'format' => I18N_STRING_FILTER_XSS,
+    ));
+  }
+
+  return $value;
 }
 
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.

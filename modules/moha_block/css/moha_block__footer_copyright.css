@@ -1,0 +1,16 @@
+footer.footer {
+  padding: 0;
+}
+
+.moha-block-bottom-copyright {
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.moha-block-black-bottom-2017 {
+  background-color: #3d3d3d;
+  color: white;
+  font-family: "tahoma", sans-serif;
+}

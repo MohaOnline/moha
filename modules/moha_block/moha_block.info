@@ -1,0 +1,10 @@
+name = Moha Block
+description = Provides responsive, configurable and reusable site blocks, like footer blocks.
+core = 7.x
+package = Moha Online
+
+dependencies[] = block
+dependencies[] = jquery_update
+dependencies[] = i18n
+dependencies[] = i18n_block
+

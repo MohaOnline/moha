@@ -1,0 +1,162 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_BLOCK', 'Moha Block');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_BLOCK', 'moha_block');
+
+/**
+ * moha_block__variables.
+ */
+define('MOHA_BLOCK__VARIABLES', __MOHA_BLOCK . '__variables');
+
+/**
+ * moha_block__variable__footer_copyright.
+ */
+define('MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT', __MOHA_BLOCK . '__variable__footer_copyright');
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_block.
+ */
+define('MOHA_BLOCK__PATH', base_path() . drupal_get_path('module', __MOHA_BLOCK));
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_block.
+ */
+define('MOHA_BLOCK__RELATIVE_PATH', drupal_get_path('module', __MOHA_BLOCK));
+
+/**
+ * Block: Footer - Copyright
+ */
+define('MOHA_BLOCK__FOOTER_COPYRIGHT', 'moha_block__footer_copyright');
+
+/**
+ * Implements hook_block_info().
+ */
+function moha_block_block_info() {
+  $blocks[MOHA_BLOCK__FOOTER_COPYRIGHT] = array(
+    'info' => t('Moha Block: Footer - Copyright'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ *
+ * @inheritdoc
+ */
+function moha_block_block_configure($delta = '') {
+  $form = array();
+
+  $copyright = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT, '© ' . date('Y'));
+
+  switch ($delta) {
+    default:
+    case MOHA_BLOCK__FOOTER_COPYRIGHT:
+      $form['footer_copyright'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Copyright'),
+        '#size' => 40,
+        '#default_value' => $copyright,
+        '#required' => 1,
+        '#description' => t('Specifies copyright text on site footer block.'),
+      );
+
+      break;
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ *
+ * @inheritdoc
+ */
+function moha_block_block_save($delta = '', $edit = []) {
+  switch ($delta) {
+    default:
+    case MOHA_BLOCK__FOOTER_COPYRIGHT:
+      moha_array_variable_set(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT, $edit['footer_copyright']);
+      break;
+  }
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * Return front contents of block.
+ */
+function moha_block_block_view($delta = '') {
+  $block = array();
+
+  try {
+    // The $delta parameter tells us which block is being requested.
+    switch ($delta) {
+      case MOHA_BLOCK__FOOTER_COPYRIGHT:
+        $block['subject'] = NULL;
+        $block['content'] = _moha_block_footer_copyright_contents();
+        break;
+    }
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+  }
+
+  return $block;
+}
+
+/**
+ * Returns contents of block: moha_block__footer_copyright.
+ *
+ * @throws \Exception
+ */
+function _moha_block_footer_copyright_contents() {
+
+  drupal_add_css(MOHA_BLOCK__RELATIVE_PATH . '/css/' . MOHA_BLOCK__FOOTER_COPYRIGHT . '.css',
+    array(
+      'type' => 'file',
+      'scope' => 'footer',
+      'weight' => -999,
+      'group' => CSS_THEME,
+    )
+  );
+
+  $contents = array();
+
+  $contents['copyright'] = t(moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT, '© ' . date('Y')));
+
+  return theme(MOHA_BLOCK__FOOTER_COPYRIGHT, array('contents' => $contents));
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Declares in-use templates.
+ */
+function moha_block_theme($existing, $type, $theme, $path) {
+  $templates = array(
+    MOHA_BLOCK__FOOTER_COPYRIGHT => array(
+      'template' => 'templates/' . MOHA_BLOCK__FOOTER_COPYRIGHT,
+      'variables' => array('contents' => array(
+        'copyright' => '© ' . date("Y"),
+      )),
+    ),
+  );
+
+  return $templates;
+}
+
+
+
+
