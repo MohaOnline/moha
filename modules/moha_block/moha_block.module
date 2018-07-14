@@ -24,6 +24,11 @@ define('MOHA_BLOCK__VARIABLES', __MOHA_BLOCK . '__variables');
 define('MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT', __MOHA_BLOCK . '__variable__footer_copyright');
 
 /**
+ * moha_block__variable__footer_icp.
+ */
+define('MOHA_BLOCK__VARIABLE__FOOTER_ICP', __MOHA_BLOCK . '__variable__footer_icp');
+
+/**
  * /sites/all/modules/custom/moha/modules/moha_block.
  */
 define('MOHA_BLOCK__PATH', base_path() . drupal_get_path('module', __MOHA_BLOCK));
@@ -39,6 +44,16 @@ define('MOHA_BLOCK__RELATIVE_PATH', drupal_get_path('module', __MOHA_BLOCK));
 define('MOHA_BLOCK__FOOTER_COPYRIGHT', 'moha_block__footer_copyright');
 
 /**
+ * Block: Footer - ICP
+ */
+define('MOHA_BLOCK__FOOTER_ICP', 'moha_block__footer_icp');
+
+/**
+ * Block: Footer - Police
+ */
+define('MOHA_BLOCK__FOOTER_POLICE', 'moha_block__footer_police');
+
+/**
  * Implements hook_block_info().
  */
 function moha_block_block_info() {
@@ -47,49 +62,17 @@ function moha_block_block_info() {
     'cache' => DRUPAL_CACHE_GLOBAL,
   );
 
+  $blocks[MOHA_BLOCK__FOOTER_ICP] = array(
+    'info' => t('Moha Block: Footer - ICP'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  $blocks[MOHA_BLOCK__FOOTER_POLICE] = array(
+    'info' => t('Moha Block: Footer - Police'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
   return $blocks;
-}
-
-/**
- * Implements hook_block_configure().
- *
- * @inheritdoc
- */
-function moha_block_block_configure($delta = '') {
-  $form = array();
-
-  $copyright = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT, '© ' . date('Y'));
-
-  switch ($delta) {
-    default:
-    case MOHA_BLOCK__FOOTER_COPYRIGHT:
-      $form['footer_copyright'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Copyright'),
-        '#size' => 40,
-        '#default_value' => $copyright,
-        '#required' => 1,
-        '#description' => t('Specifies copyright text on site footer block.'),
-      );
-
-      break;
-  }
-
-  return $form;
-}
-
-/**
- * Implements hook_block_save().
- *
- * @inheritdoc
- */
-function moha_block_block_save($delta = '', $edit = []) {
-  switch ($delta) {
-    default:
-    case MOHA_BLOCK__FOOTER_COPYRIGHT:
-      moha_array_variable_set(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT, $edit['footer_copyright']);
-      break;
-  }
 }
 
 /**
@@ -104,6 +87,14 @@ function moha_block_block_view($delta = '') {
     // The $delta parameter tells us which block is being requested.
     switch ($delta) {
       case MOHA_BLOCK__FOOTER_COPYRIGHT:
+        $block['subject'] = NULL;
+        $block['content'] = _moha_block_footer_copyright_contents();
+        break;
+      case MOHA_BLOCK__FOOTER_ICP:
+        $block['subject'] = NULL;
+        $block['content'] = _moha_block_footer_copyright_icp();
+        break;
+      case MOHA_BLOCK__FOOTER_POLICE:
         $block['subject'] = NULL;
         $block['content'] = _moha_block_footer_copyright_contents();
         break;
@@ -140,6 +131,86 @@ function _moha_block_footer_copyright_contents() {
 }
 
 /**
+ * Returns contents of block: moha_block__footer_icp.
+ *
+ * @throws \Exception
+ */
+function _moha_block_footer_copyright_icp() {
+
+  drupal_add_css(MOHA_BLOCK__RELATIVE_PATH . '/css/' . MOHA_BLOCK__FOOTER_ICP . '.css',
+    array(
+      'type' => 'file',
+      'scope' => 'footer',
+      'weight' => -999,
+      'group' => CSS_THEME,
+    )
+  );
+
+  $contents = array();
+
+  $contents['icp'] = t(moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_ICP, ''));
+
+  return theme(MOHA_BLOCK__FOOTER_ICP, array('contents' => $contents));
+}
+
+/**
+ * Implements hook_block_configure().
+ *
+ * @inheritdoc
+ */
+function moha_block_block_configure($delta = '') {
+  $form = array();
+
+  switch ($delta) {
+    default:
+    case MOHA_BLOCK__FOOTER_COPYRIGHT:
+      $copyright = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT, '© ' . date('Y'));
+
+      $form['footer_copyright'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Copyright'),
+        '#size' => 40,
+        '#default_value' => $copyright,
+        '#required' => 1,
+        '#description' => t('Specifies copyright text on site footer block.'),
+      );
+      break;
+
+    case MOHA_BLOCK__FOOTER_ICP:
+      $icp = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_ICP, '');
+
+      $form['footer_icp'] = array(
+        '#type' => 'textfield',
+        '#title' => t('ICP'),
+        '#size' => 40,
+        '#default_value' => $icp,
+        '#required' => 1,
+        '#description' => t('Specifies ICP text on site footer block.'),
+      );
+      break;
+  }
+
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ *
+ * @inheritdoc
+ */
+function moha_block_block_save($delta = '', $edit = []) {
+  switch ($delta) {
+    default:
+    case MOHA_BLOCK__FOOTER_COPYRIGHT:
+      moha_array_variable_set(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT, $edit['footer_copyright']);
+      break;
+    case MOHA_BLOCK__FOOTER_ICP:
+      moha_array_variable_set(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_ICP, $edit['footer_icp']);
+      break;
+  }
+}
+
+/**
  * Implements hook_theme().
  *
  * Declares in-use templates.
@@ -148,9 +219,30 @@ function moha_block_theme($existing, $type, $theme, $path) {
   $templates = array(
     MOHA_BLOCK__FOOTER_COPYRIGHT => array(
       'template' => 'templates/' . MOHA_BLOCK__FOOTER_COPYRIGHT,
-      'variables' => array('contents' => array(
-        'copyright' => '© ' . date("Y"),
-      )),
+      'variables' => array(
+        'contents' => array(
+          'copyright' => '© ' . date("Y"),
+        )
+      ),
+    ),
+
+    MOHA_BLOCK__FOOTER_ICP => array(
+      'template' => 'templates/' . MOHA_BLOCK__FOOTER_ICP,
+      'variables' => array(
+        'contents' => array(
+          'icp' => '',
+        )
+      ),
+    ),
+
+    MOHA_BLOCK__FOOTER_POLICE => array(
+      'template' => 'templates/' . MOHA_BLOCK__FOOTER_POLICE,
+      'variables' => array(
+        'contents' => array(
+          'police_license_number' => '',
+          'police_license' => '',
+        )
+      ),
     ),
   );
 
