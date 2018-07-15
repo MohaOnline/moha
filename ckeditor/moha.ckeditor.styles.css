@@ -14,7 +14,7 @@
   box-sizing: border-box;
 }
 
-*:lang(zh-cn),*:lang(zh-CN),*:lang(zh-Hans)  {
+*:lang(zh-cn),*:lang(zh-CN),*:lang(zh-Hans) {
   font-family: 'PingFang SC','microsoft yahei','hiragino sans gb',serif;
 }
 
@@ -22,7 +22,11 @@
 
 }
 
-code, code span {
+*:lang(zh-cn).fa, *:lang(zh-CN).fa, *:lang(zh-Hans).fa {
+  font: normal normal normal 14px/1 FontAwesome;
+}
+
+code, code span, code:lang(zh-Hans), code span:lang(zh-Hans) {
   font-family: Menlo,Monaco,Consolas,"Liberation Mono",monospace,Inconsolata,Courier,'Courier New';
   font-size: 1em;
 }
