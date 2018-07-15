@@ -8,14 +8,11 @@
 function moha_wx_views_data() {
   $data = array();
 
-  $data['moha_wx_accounts'] = array(
-    'table' => array(
-      'base' => array (
-        'title' => 'Moha WeChat accounts',
-        'help' => '',
-      )
-    ),
+  $data['moha_wx_accounts']['table']['base'] = array (
+    'title' => t('Moha WeChat accounts'),
+    'help' => '',
   );
+  $data['moha_wx_accounts']['table']['group'] = t('Moha WeChat account');
 
   return $data;
 }

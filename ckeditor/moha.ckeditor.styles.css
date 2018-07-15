@@ -119,8 +119,14 @@ code.hljs {
 
 /** Paragraph & article title. */
 .cke_editable_themed h1, .node-type-moha-clip h1 {
-  font-size: 2.4em;
+  font-size: 1.8em;
   text-align: center;
+}
+
+@media(min-width: 768px) {
+  .cke_editable_themed h1, .node-type-moha-clip h1 {
+    font-size: 2.4em;
+  }
 }
 
 .cke_editable_themed h2, .node-type-moha-clip h2{
