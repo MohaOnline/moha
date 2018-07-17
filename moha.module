@@ -235,7 +235,7 @@ function moha_h2m($human_name) {
  *
  * @return object $role
  */
-function moha_grant_permissions_2_role($role_name, $permissions = array()) {
+function moha_grant_permissions_2_role_with_creation($role_name, $permissions = array()) {
   $role = user_role_load_by_name($role_name);
 
   if (!$role) {

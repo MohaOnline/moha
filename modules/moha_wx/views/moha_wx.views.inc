@@ -91,3 +91,4 @@ function moha_wx_views_data() {
 
   return $data;
 }
+

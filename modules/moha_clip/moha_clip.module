@@ -95,8 +95,8 @@ function _moha_clip_prepare_roles_and_permissions() {
   $user_permissions = array();
   $user_permissions[] = MOHA_CLIP__PERMISSION__VIEW;
 
-  moha_grant_permissions_2_role(MOHA_CLIP__ROLE__ADMIN, $admin_permissions);
-  moha_grant_permissions_2_role(MOHA_CLIP__ROLE__MANAGER, $manager_permissions);
+  moha_grant_permissions_2_role_with_creation(MOHA_CLIP__ROLE__ADMIN, $admin_permissions);
+  moha_grant_permissions_2_role_with_creation(MOHA_CLIP__ROLE__MANAGER, $manager_permissions);
 }
 
 /**
