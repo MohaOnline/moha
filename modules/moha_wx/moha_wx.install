@@ -55,7 +55,7 @@ function moha_wx_update_0700 () {
         'type' => 'varchar',
         'length' => 50,
         'not null' => TRUE,
-        'description' => '',
+        'description' => 'Human name',
       ),
       'wechat_name' => array(
         'type' => 'varchar',

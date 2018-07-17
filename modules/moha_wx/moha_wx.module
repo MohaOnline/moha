@@ -1192,3 +1192,16 @@ EOF;
     watchdog_exception(__FUNCTION__, $e);
   }
 }
+
+/**
+ * Implements hook_views_api().
+ *
+ * Declares locations of views' definitions and templates.
+ */
+function moha_wx_views_api() {
+  return array(
+    'api' => 3,
+    'path' => MOHA_WX__RELATIVE_PATH . '/views',               // view 的定义存放的路径
+    'template path' => MOHA_WX__RELATIVE_PATH . '/templates',  // view 的模版存放的路径
+  );
+}
