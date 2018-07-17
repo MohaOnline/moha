@@ -14,6 +14,7 @@ dependencies[] = entityreference_autocomplete
 files[] = includes/MohaCommerceOrderEntity.php
 files[] = includes/MohaCommerceOrderEntityAdminController.php
 files[] = includes/MohaCommerceOrderEntityController.php
+files[] = views/MohaViewsHandlerStatusField.inc
 
 
 
