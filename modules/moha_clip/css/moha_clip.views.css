@@ -38,6 +38,7 @@ body.page-moha-moha-clips {
 }
 
 .views-field-image {
+  position: relative;
   width: 160px;
   background: #b2b2b2 url(../../../img/diagonal-stripes.svg) repeat fixed;
   float: right;
@@ -52,6 +53,10 @@ body.page-moha-moha-clips {
   width: auto!important;
   height: auto!important;
   margin: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) matrix(1,0,0,1,0,0);
+  position: absolute;
 }
 
 .node-actions {
