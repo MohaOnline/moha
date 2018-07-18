@@ -40,6 +40,7 @@ body.page-moha-moha-clips {
 .views-field-image {
   position: relative;
   width: 160px;
+  height: 90px;
   background: #b2b2b2 url(../../../img/diagonal-stripes.svg) repeat fixed;
   float: right;
   border-left: 1px solid #ddd;
