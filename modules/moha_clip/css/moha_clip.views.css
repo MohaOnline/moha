@@ -2,6 +2,20 @@ body.page-moha-moha-clips {
   background-color: #f0f1f2;
 }
 
+.region.region-content {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+/** iPhone Plus- */
+@media(max-width: 414px) {
+  .view.view-moha-clip-list {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+}
+/* iPhone Plus- **/
+
 .page-header {
   display: none;
 }
