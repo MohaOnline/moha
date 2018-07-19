@@ -124,6 +124,7 @@ drupal_add_js(array(
     <div class="white-back-2018 col-md-9 col-xs-12">
     <?php
       // Hide comments, tags, and links fields from default render.
+      hide($content['language']);
       hide($content['comments']);
       hide($content['links']);
       hide($content['field_tags']);
