@@ -3,7 +3,14 @@
  * @file
  */
 
+/**
+ *
+ */
 define('MOHA_DEMO', 'Moha Demo');
+
+/**
+ *
+ */
 define('__MOHA_DEMO', 'moha_demo');
 
 /**
@@ -16,6 +23,9 @@ define('MOHA_DEMO__RELATIVE_PATH', drupal_get_path('module', __MOHA_DEMO));
  */
 define('MOHA_DEMO__PATH', base_path() . MOHA_DEMO__RELATIVE_PATH);
 
+/**
+ *
+ */
 define('MOHA_DEMO__VARIABLES', __MOHA_DEMO. '__variables');
 
 /**
@@ -41,6 +51,15 @@ function moha_demo_menu() {
     'file' => 'controllers/demo_web/flex.inc',
   ];
 
+  $items[__MOHA_DEMO. '/web/table-cell'] = [
+    'title' => t('Web Demo: table-cell'),
+    'description' => t('Try table-cell'),
+    'page callback' => '__moha_demo_web',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'controllers/demo_web/table_cell.inc',
+  ];
+
   return $items;
 }
 
@@ -58,6 +77,11 @@ function moha_demo_theme($existing, $type, $theme, $path) {
     __MOHA_DEMO . '_web_flex' => array(
       'render element' => 'page',
       'template' => 'templates/demo_web/flex',
+    ),
+    // moha_demo_web_table_cell
+    __MOHA_DEMO . '_web_table_cell' => array(
+      'render element' => 'page',
+      'template' => 'templates/demo_web/table_cell',
     ),
   );
 }

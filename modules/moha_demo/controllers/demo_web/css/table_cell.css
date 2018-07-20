@@ -1,0 +1,10 @@
+.table-cell-wrapper {
+  display: table;
+  border: dotted 1px gray;
+  min-height: 400px;
+}
+
+.table-cell-vertical-middle {
+  display: table-cell;
+  vertical-align: middle;
+}
