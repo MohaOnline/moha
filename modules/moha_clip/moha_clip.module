@@ -379,7 +379,7 @@ function moha_clip_node_info() {
  * You can get fancy with this form, or you can just punt
  * and return the default form that node_content will provide.
  */
-function moha_clip_form($node, $form_state) {
+function moha_clip_form($node, &$form_state) {
   global $theme_key;
 
   if ($theme_key == 'seven') {
@@ -572,6 +572,7 @@ function _moha_clip_fields_and_instances() {
       'allowed_values' => array(
         array(
           'vocabulary' => 'it_technologies',
+          'parent'     => '0',
         ),
       ),
     ),
