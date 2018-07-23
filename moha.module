@@ -515,5 +515,22 @@ function moha_i18n_value($variable_name, $module, $delta, $default = '') {
   return $value;
 }
 
+/**
+ * Returns taxonomy name by tid.
+ *
+ * @param $tid string
+ *   taxonomy id.
+ */
+function moha_taxonomy_name_by_id($tid) {
+  $term = taxonomy_term_load($tid);
+  if ($term) {
+    $name = $term->name;
+  }
+  else {
+    $name = '';
+  }
+  return $name;
+}
+
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
 ctools_include('moha.ckeditor', __MOHA, 'ckeditor');

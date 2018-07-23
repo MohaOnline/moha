@@ -1,0 +1,7 @@
+name = Moha Map
+description = Wraps kinds of map service for Drupal.
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = geofield
+

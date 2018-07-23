@@ -1,0 +1,39 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_install().
+ */
+function moha_map_install() {
+  _moha_map_taxonomy_prepare();
+}
+
+/**
+ * Prepares taxonomy for Moha Map.
+ */
+function _moha_map_taxonomy_prepare() {
+  // Create a vocabulary named "Moha Map Types", enabled for the 'moha_clip' content type.
+  $vocabulary = (object) array(
+    'name' => t('Moha Map Types'),
+    'description' => t('Specifies which type of Map API should be used when rendering geography information.'),
+    'machine_name' => 'moha_map_types',
+  );
+
+  taxonomy_vocabulary_save($vocabulary);
+
+  $moha_map_types = array(
+    'Baidu',
+    'Google',
+  );
+
+  foreach ($moha_map_types as $type) {
+    $term = new stdClass();
+
+    $term->vid = $vocabulary->vid;
+    $term->name = $type;
+
+    taxonomy_term_save($term);
+  }
+}
