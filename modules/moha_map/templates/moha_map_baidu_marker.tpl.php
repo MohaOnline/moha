@@ -35,7 +35,7 @@
   function loadJScript() {
     let script = document.createElement("script");
     script.type = "text/javascript";
-    script.src = "http://api.map.baidu.com/api?v=2.0&callback=init&ak=<?php echo $content['baidu_access_key']?>";
+    script.src = "//api.map.baidu.com/api?v=2.0&callback=init&ak=<?php echo $content['baidu_access_key']?>";
     document.body.appendChild(script);
   }
 

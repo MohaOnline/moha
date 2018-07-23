@@ -127,7 +127,7 @@ function _moha_map_fields_and_instances() {
     'field_name'  => 'moha_coordinator',
     'type'        => 'geofield',
     'cardinality' => 1, // set to FIELD_CARDINALITY_UNLIMITED when no limited.
-    'description' => t('Stores coordinators for map rendering, please note coordinators from different map services, may not be interchangeable.'),
+    'description' => t('Stores coordinators for map rendering. Coordinators from different map services may not be interchangeable.'),
     'entity_type' => 'node',
     'bundle'      => __MOHA_MAP_MARKER,
     'settings'    => array(
