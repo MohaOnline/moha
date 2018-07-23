@@ -52,9 +52,10 @@
     let infoWindow = new BMap.InfoWindow(infoContents);
 
     marker.openInfoWindow(infoWindow);
+
     marker.addEventListener("click", function(){
       this.openInfoWindow(infoWindow);
-      //图片加载完毕重绘infowindow
+      document.getElementsByClassName('moha-map-wrapper');
       document.getElementsByClassName('info-window-img').onload = function (){
         infoWindow.redraw();   //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
       }
