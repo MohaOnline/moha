@@ -19,14 +19,24 @@ define('__MOHA_BLOCK', 'moha_block');
 define('MOHA_BLOCK__VARIABLES', __MOHA_BLOCK . '__variables');
 
 /**
- * moha_block__variable__footer_copyright.
+ * Variable name: moha_block__variable__footer_copyright.
  */
 define('MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT', __MOHA_BLOCK . '__variable__footer_copyright');
 
 /**
- * moha_block__variable__footer_icp.
+ * Variable name: moha_block__variable__footer_icp.
  */
 define('MOHA_BLOCK__VARIABLE__FOOTER_ICP', __MOHA_BLOCK . '__variable__footer_icp');
+
+/**
+ * Variable name: moha_block__variable__footer_police_text.
+ */
+define('MOHA_BLOCK__VARIABLE__FOOTER_POLICE_TEXT', __MOHA_BLOCK . '__variable__footer_police_text');
+
+/**
+ * Variable name: moha_block__variable__footer_police_URL.
+ */
+define('MOHA_BLOCK__VARIABLE__FOOTER_POLICE_URL', __MOHA_BLOCK . '__variable__footer_police_URL');
 
 /**
  * /sites/all/modules/custom/moha/modules/moha_block.
@@ -78,7 +88,7 @@ function moha_block_block_info() {
 /**
  * Implements hook_block_view().
  *
- * Return front contents of block.
+ * Return HTML contents of block.
  */
 function moha_block_block_view($delta = '') {
   $block = array();
@@ -92,11 +102,11 @@ function moha_block_block_view($delta = '') {
         break;
       case MOHA_BLOCK__FOOTER_ICP:
         $block['subject'] = NULL;
-        $block['content'] = _moha_block_footer_copyright_icp();
+        $block['content'] = _moha_block_footer_icp_contents();
         break;
       case MOHA_BLOCK__FOOTER_POLICE:
         $block['subject'] = NULL;
-        $block['content'] = _moha_block_footer_copyright_contents();
+        $block['content'] = _moha_block_footer_police_contents();
         break;
     }
   }
@@ -135,7 +145,7 @@ function _moha_block_footer_copyright_contents() {
  *
  * @throws \Exception
  */
-function _moha_block_footer_copyright_icp() {
+function _moha_block_footer_icp_contents() {
 
   drupal_add_css(MOHA_BLOCK__RELATIVE_PATH . '/css/' . MOHA_BLOCK__FOOTER_ICP . '.css',
     array(
@@ -148,13 +158,39 @@ function _moha_block_footer_copyright_icp() {
 
   $contents = array();
 
-  $contents['icp'] = t(moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_ICP, ''));
+  $contents['icp'] = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_ICP, '');
 
   return theme(MOHA_BLOCK__FOOTER_ICP, array('contents' => $contents));
 }
 
 /**
+ * Returns contents of block: moha_block__footer_icp.
+ *
+ * @throws \Exception
+ */
+function _moha_block_footer_police_contents() {
+
+  drupal_add_css(MOHA_BLOCK__RELATIVE_PATH . '/css/' . MOHA_BLOCK__FOOTER_POLICE . '.css',
+    array(
+      'type' => 'file',
+      'scope' => 'footer',
+      'weight' => -999,
+      'group' => CSS_THEME,
+    )
+  );
+
+  $contents = array();
+
+  $contents['police_license_link_text'] = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_POLICE_TEXT, 'X公网安备1234567890AB号');
+  $contents['police_license_link_url'] = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_POLICE_URL, '');
+
+  return theme(MOHA_BLOCK__FOOTER_POLICE, array('contents' => $contents));
+}
+
+/**
  * Implements hook_block_configure().
+ *
+ * Provides block configurations for each pre-defined blocks.
  *
  * @inheritdoc
  */
@@ -188,6 +224,30 @@ function moha_block_block_configure($delta = '') {
         '#description' => t('Specifies ICP text on site footer block.'),
       );
       break;
+
+    case MOHA_BLOCK__FOOTER_POLICE:
+      $text = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_POLICE_TEXT, 'X公网安备1234567890AB号');
+      $url = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_POLICE_URL, '');
+
+      $form['police_license_link_text'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Police license text'),
+        '#size' => 40,
+        '#default_value' => $text,
+        '#required' => 1,
+        '#description' => t('Specifies police license text on site footer block.'),
+      );
+
+      $form['police_license_link_url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Police license URL'),
+        '#size' => 120,
+        '#default_value' => $url,
+        '#required' => 1,
+        '#description' => t('Specifies police license URL on site footer block.'),
+      );
+
+      break;
   }
 
   return $form;
@@ -207,13 +267,17 @@ function moha_block_block_save($delta = '', $edit = []) {
     case MOHA_BLOCK__FOOTER_ICP:
       moha_array_variable_set(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_ICP, $edit['footer_icp']);
       break;
+    case MOHA_BLOCK__FOOTER_POLICE:
+      moha_array_variable_set(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_POLICE_TEXT, $edit['police_license_link_text']);
+      moha_array_variable_set(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_POLICE_URL, $edit['police_license_link_url']);
+      break;
   }
 }
 
 /**
  * Implements hook_theme().
  *
- * Declares in-use templates.
+ * Declares templates of pre-defined blocks.
  */
 function moha_block_theme($existing, $type, $theme, $path) {
   $templates = array(
@@ -230,7 +294,7 @@ function moha_block_theme($existing, $type, $theme, $path) {
       'template' => 'templates/' . MOHA_BLOCK__FOOTER_ICP,
       'variables' => array(
         'contents' => array(
-          'icp' => '',
+          'icp' => 'X ICP备12345678号',
         )
       ),
     ),
@@ -239,8 +303,8 @@ function moha_block_theme($existing, $type, $theme, $path) {
       'template' => 'templates/' . MOHA_BLOCK__FOOTER_POLICE,
       'variables' => array(
         'contents' => array(
-          'police_license_number' => '',
-          'police_license' => '',
+          'police_license_link_text' => 'X公网安备1234567890AB号',
+          'police_license_link_url' => '',
         )
       ),
     ),

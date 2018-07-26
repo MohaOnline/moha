@@ -25,6 +25,7 @@
     }
   </style>
   <title><?php echo moha_an2e($content, 'title'); ?></title>
+  <?php print(drupal_get_js()); ?>
 </head>
 <body>
 <div id="baidu-map"></div>
@@ -55,10 +56,9 @@
 
     marker.addEventListener("click", function(){
       this.openInfoWindow(infoWindow);
-      document.getElementsByClassName('moha-map-wrapper');
-      document.getElementsByClassName('info-window-img').onload = function (){
+      jQuery('.moha-map-wrapper img').load(function(){
         infoWindow.redraw();   //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
-      }
+      });
     });
 
   }
