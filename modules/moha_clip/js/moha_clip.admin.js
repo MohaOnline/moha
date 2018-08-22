@@ -8,6 +8,7 @@
       });
 
       // Add collapsible effect for image and video field.
+      // Need: drupal_add_library('system', 'drupal.collapse'); to active collapsible effect.
       $('form', context).once('collapsed', function () {
         var $fieldset = $(this).find('.field-type-image fieldset, .field-type-video fieldset');
 
