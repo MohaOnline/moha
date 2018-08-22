@@ -228,10 +228,11 @@ function moha_h2m($human_name) {
 }
 
 /**
- * Grant permissions to specified role, if role doesn't exist, it will be created.
+ * Grant permissions to specified role, if role doesn't exist, will be created first.
  *
  * @param string $role_name
  * @param array $permissions
+ *  Permissions array.
  *
  * @return object $role
  */
@@ -245,8 +246,9 @@ function moha_grant_permissions_2_role_with_creation($role_name, $permissions = 
     $role = user_role_load_by_name($role_name);
   }
 
+  // Passed permissions must be defined in certain module, filter out undefined permissions.
+  // If permission <=> defined module map can't be fetched, no need to grant.
   $all_permissions = user_permission_get_modules();
-
   if (!empty($all_permissions) && is_array($permissions)) {
     foreach ($permissions as $key => $permission) {
       if (empty($all_permissions[$permission])) {
@@ -334,6 +336,7 @@ function _moha_create_profile2($profile2_name = MOHA) {
   $moha_profile = entity_create('profile2_type', array(
     'type' => moha_h2m($profile2_name),
     'label' => $profile2_name,
+    'module' => moha_h2m($profile2_name),
     'data' => array(
       'registration' => FALSE,
       'use_page' => TRUE,
