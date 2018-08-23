@@ -416,9 +416,18 @@ function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id
     $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
     $form['changed']['#suffix'] = '</div>';
 
+    $nid = $form['nid']['#value'];
+    $path = 'node/' . (int) $nid;
+    $alias = drupal_get_path_alias($path);
+
     $form['actions']['view'] = array(
       '#type' => 'markup',
-      '#markup' => '<a class="button form-submit" target="_blank" href="/node/'. $form['nid']['#value'] .'">View</a>',
+      '#markup' => l(t('View'), $alias, array(
+        'attributes' => array(
+          'class' => array('button', 'form-submit'),
+          'target' => '_blank',
+        )
+      ))
     );
 
     $form['actions']['silent_save'] = array(
