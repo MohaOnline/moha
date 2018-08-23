@@ -19,6 +19,21 @@ h1.page-header {
 .field-name-image .field-items .field-item img {
   margin: auto;
 }
+
+@media (max-width: 991px) {
+  .field-name-image .field-items .field-item img {
+    max-height: 160px;
+    width: auto;
+  }
+}
+
+@media (min-width: 992px) {
+  .field-name-image .field-items .field-item img {
+    max-height: 300px;
+    width: auto;
+  }
+}
+
 /***/
 
 /** Sidebar definition. */
