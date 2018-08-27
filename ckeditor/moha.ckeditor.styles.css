@@ -47,7 +47,7 @@ kbd {
   display: inline-block;
   margin: 0 .1rem;
   padding: .1rem .6rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #242729;
   text-shadow: 0 1px 0 #FFF;
   background-color: #e1e3e5;
@@ -118,6 +118,10 @@ code.hljs {
 /***/
 
 /** Paragraph & article title. */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+}
+
 .cke_editable_themed h1, .node-type-moha-clip h1 {
   font-size: 1.8em;
   text-align: center;
@@ -130,15 +134,15 @@ code.hljs {
 }
 
 .cke_editable_themed h2, .node-type-moha-clip h2{
-  font-size: 1.65em;
+  font-size: 24px;
   margin: 2em auto 1rem;
   border-bottom: 1px dotted silver;
   padding-bottom: 1rem;
 }
 
 .cke_editable_themed h3, .node-type-moha-clip h3{
-  font-size: 1.25em;
-  margin: 2em auto 1rem;
+  font-size: 18px;
+  margin: 2em auto 1em;
 }
 
 /* First h3 after h2. */
