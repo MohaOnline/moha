@@ -1,7 +1,7 @@
 /**
  *
  */
-@import "/sites/all/libraries/fontawesome/css/font-awesome.min.css";
+@import "../../../../libraries/fontawesome/css/font-awesome.min.css";
 
 /* Adjust font in CKEditor WYSIWYG edit mode. */
 * {
