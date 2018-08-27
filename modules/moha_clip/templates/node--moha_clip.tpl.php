@@ -88,21 +88,22 @@ drupal_add_js(array(
     'showAndHide' => false,
     'scrollTo' => 30,
     'highlightOffset' => 30,
+    'extendPage' => false,
 
   )
 ), 'setting');
+
+drupal_add_js(MOHA_CLIP__RELATIVE_PATH . '/js/moha_clip.js');
+
+drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/ckeditor/styles.css');
+drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/css/moha_clip.css');
+
+
 ?>
 
 <link rel="stylesheet" href="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css">
-<link rel="stylesheet" href="<?php echo MOHA_CLIP__PATH;?>/ckeditor/styles.css">
-<link rel="stylesheet" href="<?php echo MOHA_CLIP__PATH;?>/css/moha_clip.css">
-
 <script src="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js"></script>
 
-<!--
-<script src="<?php echo MOHA__PATH;?>/js/toc.js"></script>
--->
-<script src="<?php echo MOHA_CLIP__PATH;?>/js/moha_clip.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
 <article id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
