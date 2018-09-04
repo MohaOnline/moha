@@ -264,6 +264,23 @@ div.moha-spotlight.reference-area div.moha-spotlight-icon {
 div.moha-spotlight.reference-area div.moha-spotlight-icon:before {
   content: "\f08e"; /* Awosome font: external-link.*/
 }
+
+.cke_editable_themed div.moha-spotlight-details.reference-details a,
+div.moha-spotlight-details.reference-details a {
+  color: dimgrey;
+  text-decoration: none;
+  -webkit-transition: color .2s linear;
+  -moz-transition: color .2s linear;
+  -ms-transition: color .2s linear;
+  -o-transition: color .2s linear;
+  transition: color .2s linear;
+}
+
+.cke_editable_themed div.moha-spotlight-details.reference-details a:hover,
+div.moha-spotlight-details.reference-details a:hover {
+  color: black;
+  border-bottom: 1px dotted darkgrey;
+}
 /***/
 
 /** Add color for warning spotlight. */
