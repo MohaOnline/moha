@@ -267,7 +267,7 @@ div.moha-spotlight.reference-area div.moha-spotlight-icon:before {
 
 .cke_editable_themed div.moha-spotlight-details.reference-details a,
 div.moha-spotlight-details.reference-details a {
-  color: dimgrey;
+  color: #505050;
   text-decoration: none;
   -webkit-transition: color .2s linear;
   -moz-transition: color .2s linear;
@@ -279,7 +279,7 @@ div.moha-spotlight-details.reference-details a {
 .cke_editable_themed div.moha-spotlight-details.reference-details a:hover,
 div.moha-spotlight-details.reference-details a:hover {
   color: black;
-  border-bottom: 1px dotted darkgrey;
+  border-bottom: 1px dotted #333;
 }
 /***/
 
