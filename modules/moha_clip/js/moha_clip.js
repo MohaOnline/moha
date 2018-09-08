@@ -96,11 +96,6 @@ jQuery(document).ready(function () {
     speed: 800,
     loop: false,
 
-    autoplay: {
-      delay: 6000,
-      disableOnInteraction: true
-    },
-
     // If we need pagination
     pagination: {
       el: '.swiper-pagination',
