@@ -14,6 +14,8 @@ jQuery(document).ready(function () {
 
   function blockFloat() {
     const debug = false;
+    // If add animation effect to float content block.
+    const animationFloat = false;
 
     // Revise for fixed top admin menu.
     const adminMenu = jQuery("#admin-menu");
@@ -59,12 +61,23 @@ jQuery(document).ready(function () {
       }
 
       // Stop current scrolling then scroll to new position.
-      floatBlock.stop().animate({top: blockTopRevised}, 800, 'swing');
+      if (animationFloat) {
+        floatBlock.stop().animate({top: blockTopRevised}, 800, 'swing');
+      }
+      else {
+        floatBlock.css('top', blockTopRevised);
+      }
 
       showScroll2top(true);
     }
     else if (scrolledHeight <= (floatAreaTopY + occupiedHeight)) {
-      floatBlock.stop().animate({top: 0}, 800, 'swing');
+      // Gives second chance to move content block to correct position.
+      if (animationFloat) {
+        floatBlock.stop().animate({top: 0}, 800, 'swing');
+      }
+      else {
+        floatBlock.css('top', 0);
+      }
 
       showScroll2top(false);
     }
