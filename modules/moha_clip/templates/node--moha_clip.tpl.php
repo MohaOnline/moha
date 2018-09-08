@@ -166,6 +166,10 @@ drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/ckeditor/styles.css', array('group' 
         ?>
 
       </div>
+      <div class="moha-clip-scroll-2-top">
+        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+        <!--jQuery("html, body").animate({ scrollTop: 0 });-->
+      </div>
     </div>
     <!-- Sidebar ---->
 

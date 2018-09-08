@@ -314,3 +314,13 @@ div.moha-spotlight.danger-area div.moha-spotlight-icon:before {
   content: "\f00d"; /* Awosome font: times.*/
 }
 /***/
+
+/* Table Style **/
+.cke_editable_themed table {
+  width: 100%;
+}
+.cke_editable_themed table th, .node-type-moha-clip table th {
+  text-align: left;
+  font-weight: bold;
+}
+/***/

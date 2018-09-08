@@ -123,3 +123,31 @@ div.toc-block {
 }
 /***/
 
+/** Moha Clip: Scroll to Top */
+.moha-clip-scroll-2-top {
+  position: fixed;
+  bottom: 38px; /* Align with bottom footer. */
+  width: 50px;
+  right: -50px;
+  height: 56px;
+  background-color: rgba(51,51,51,0.5);
+  -webkit-transition: right .5s linear;
+  -moz-transition: right .5s linear;
+  -ms-transition: right .5s linear;
+  -o-transition: right .5s linear;
+  transition: right .5s linear;
+  cursor: pointer;
+}
+
+.moha-clip-scroll-2-top.moha-clip-scroll-2-top-display {
+  right: 0;
+}
+
+.moha-clip-scroll-2-top i.fa {
+  font-size: 50px;
+}
+
+.white-back-2018 .moha-clip-scroll-2-top i.fa {
+  color: white;
+}
+/***/

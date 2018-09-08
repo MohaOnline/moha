@@ -32,6 +32,17 @@ danger_area_template += '<div class="moha-spotlight-icon fa fa-times"><span>&nbs
 danger_area_template += '<div class="moha-spotlight-details"><p>&nbsp;</p></div>';
 danger_area_template += '</div>';
 
+let table_template = '<div class="moha-widget">';
+table_template += '<table class="moha-table table table-striped">';
+table_template += '<thead><tr><th>&nbsp</th><th>&nbsp</th></tr></thead>';
+table_template += '<tbody><tr><td>&nbsp</td><td>&nbsp</td></tr><tr><td>&nbsp</td><td>&nbsp</td></tr></tbody>';
+table_template += '</table></div>';
+
+let image_gallery_template = '<div class="moha-widget swiper-container">';
+image_gallery_template += '<div class="swiper-wrapper">';
+image_gallery_template += '<div class="moha-widget swiper-slide">&nbsp;</div>';
+image_gallery_template += '</div></div>';
+
 CKEDITOR.addTemplates('moha',
   {
     imagesPath: Drupal.settings.moha.ckeditor_template_image_path,
@@ -65,6 +76,18 @@ CKEDITOR.addTemplates('moha',
         image: 'block-danger.png',
         description: 'Gives danger alerts.',
         html: danger_area_template
+      },
+      {
+        title: 'Table',
+        image: 'block-table.png',
+        description: 'Insert table to host data.',
+        html: table_template
+      },
+      {
+        title: 'Image Gallery',
+        image: 'block-image-slideshow.png',
+        description: 'Insert image gallery to host multiple images.',
+        html: image_gallery_template
       }
     ]
   });

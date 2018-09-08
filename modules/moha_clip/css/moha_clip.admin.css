@@ -33,6 +33,11 @@ div.cke_combopanel {
   height: 460px;
   min-height: 460px;
 }
+
+/* enforce template image. */
+.cke_tpl_preview_img img {
+  width: 100px;
+}
 /***/
 
 /** Fix media widget style for feature images field, this should also work for other fields which is using media widget. */

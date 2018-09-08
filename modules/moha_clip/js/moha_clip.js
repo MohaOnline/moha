@@ -1,5 +1,17 @@
 jQuery(document).ready(function () {
 
+  // Per sidebar height, show scroll to top button
+  function showScroll2top(visible) {
+    const button = jQuery("div.moha-clip-scroll-2-top");
+
+    if (visible) {
+      button.addClass('moha-clip-scroll-2-top-display');
+    }
+    else {
+      button.removeClass('moha-clip-scroll-2-top-display');
+    }
+  }
+
   function blockFloat() {
     const debug = false;
 
@@ -46,13 +58,24 @@ jQuery(document).ready(function () {
         blockTopRevised = floatAreaHeight - occupiedHeight - floatBlockHeight;
       }
 
+      // Stop current scrolling then scroll to new position.
       floatBlock.stop().animate({top: blockTopRevised}, 800, 'swing');
+
+      showScroll2top(true);
     }
     else if (scrolledHeight <= (floatAreaTopY + occupiedHeight)) {
       floatBlock.stop().animate({top: 0}, 800, 'swing');
+
+      showScroll2top(false);
     }
+
   }
 
   jQuery(window).scroll(blockFloat);
+
+  // Bind scroll to top action to button.
+  jQuery('.moha-clip-scroll-2-top').click(function () {
+    jQuery("html, body").animate({ scrollTop: 0 });
+  });
 
 });
