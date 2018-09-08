@@ -151,3 +151,18 @@ div.toc-block {
   color: white;
 }
 /***/
+
+
+/** Image G*/
+.swiper-container {
+  background: transparent url("../../../img/transparent-background.png");
+}
+
+.swiper-wrapper {
+  align-items: center;
+}
+
+.swiper-button-next span , .swiper-button-prev span {
+  display: none;
+}
+/***/

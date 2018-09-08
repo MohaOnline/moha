@@ -99,8 +99,11 @@ drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/css/moha_clip.css', array('group' =>
 drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/ckeditor/styles.css', array('group' => CSS_THEME, 'media' => 'all', 'weight' => 998));
 ?>
 
-<link  href="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css" rel="stylesheet" >
+<link  href="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css" rel="stylesheet" />
 <script src="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js"></script>
+
+<link  href="/sites/all/libraries/swiper/dist/css/swiper.min.css" rel="stylesheet" />
+<script src="/sites/all/libraries/swiper/dist/js/swiper.min.js"></script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

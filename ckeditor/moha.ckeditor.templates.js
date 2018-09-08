@@ -41,7 +41,7 @@ table_template += '</table></div>';
 let image_gallery_template = '<div class="moha-widget swiper-container">';
 image_gallery_template += '<div class="swiper-wrapper">';
 image_gallery_template += '<div class="moha-widget swiper-slide">&nbsp;</div>';
-image_gallery_template += '</div></div>';
+image_gallery_template += '</div><div class="swiper-pagination"><span>Paging</span></div><div class="swiper-button-next"><span>Next</span></div><div class="swiper-button-prev"><span>Prev</span></div></div>';
 
 CKEDITOR.addTemplates('moha',
   {
