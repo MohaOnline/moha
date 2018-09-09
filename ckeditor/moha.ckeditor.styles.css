@@ -324,3 +324,12 @@ div.moha-spotlight.danger-area div.moha-spotlight-icon:before {
   font-weight: bold;
 }
 /***/
+
+/** Moha Widget style. */
+.cke_show_blocks.cke_contents_ltr div.moha-clip-widget:not([contenteditable=false]):not(.cke_show_blocks_off) {
+  padding-left: 0;
+  padding-top: 0;
+}
+
+
+/***/

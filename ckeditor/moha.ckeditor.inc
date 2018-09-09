@@ -31,6 +31,26 @@ function moha_ckeditor_plugin() {
     )
   );
 
+  /* Define widget to make widget block from template as widget and draggable. */
+  $plugins['moha_widget'] = array(
+    // Name of the plugin used to write it.
+    'name' => 'moha_widget',
+    // Description of the plugin - it would be displayed in the plugins management section of profile settings.
+    'desc' => t('Moha common widgets.'),
+    // The full URL to the CKEditor plugins directory, with the trailing slash.
+    'path' => MOHA__PATH. '/ckeditor/moha_widget/',
+    // All toolbar buttons need be declared here.
+    'buttons' => array(
+      'moha_widget' => array(
+        // Path to the button icon. Relative to the plugin directory 'path' unless 'icon_path' is specified.
+        'icon' => 'moha_widget.png',
+        // Optional full path to the directory the icon is located in.
+        'icon_path' => MOHA__PATH. '/ckeditor/moha_widget/icons/',
+        'label' => 'Moha Widget',
+      ),
+    )
+  );
+
   /* Define spotlight widget to make spotlight area from template as widget and draggable. */
   $plugins['moha_save'] = array(
     // Name of the plugin used to write it.

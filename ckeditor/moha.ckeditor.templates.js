@@ -32,16 +32,16 @@ danger_area_template += '<div class="moha-spotlight-icon fa fa-times"><span>&nbs
 danger_area_template += '<div class="moha-spotlight-details"><p>&nbsp;</p></div>';
 danger_area_template += '</div>';
 
-let table_template = '<div class="moha-widget">';
+let table_template = '<div class="moha-clip-widget"><div class="moha-clip-widget-editable">';
 table_template += '<table class="moha-table table table-striped">';
 table_template += '<thead><tr><th>&nbsp</th><th>&nbsp</th></tr></thead>';
 table_template += '<tbody><tr><td>&nbsp</td><td>&nbsp</td></tr><tr><td>&nbsp</td><td>&nbsp</td></tr></tbody>';
-table_template += '</table></div>';
+table_template += '</table></div></div>';
 
-let image_gallery_template = '<div class="moha-widget swiper-container">';
-image_gallery_template += '<div class="swiper-wrapper">';
-image_gallery_template += '<div class="moha-widget swiper-slide">&nbsp;</div>';
-image_gallery_template += '</div><div class="swiper-pagination"><span>Paging</span></div><div class="swiper-button-next"><span>Next</span></div><div class="swiper-button-prev"><span>Prev</span></div></div>';
+let image_gallery_template = '<div class="moha-clip-widget swiper-container">';
+image_gallery_template += '<div class="moha-clip-widget-editable swiper-wrapper">';
+image_gallery_template += '<p class="moha-clip-widget moha-clip-widget-editable swiper-slide">&nbsp;</p></div>';
+image_gallery_template += '<div class="swiper-pagination"><span>Paging</span></div><div class="swiper-button-next"><span>Next</span></div><div class="swiper-button-prev"><span>Prev</span></div></div>';
 
 CKEDITOR.addTemplates('moha',
   {
