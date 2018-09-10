@@ -1,0 +1,40 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Permission: edit user info, overwrite default user edit logic.
+ */
+define('MOHA_USER__PERMISSION__EDIT_USER', 'moha user edit user');
+
+/**
+ * Implements hook_permission().
+ */
+function open_weixin_permission() {
+  return array(
+    MOHA_USER__PERMISSION__EDIT_USER => array(
+      'title' => t('Edit user'),
+      'description' => t('Allows users to update own information.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu_alter().
+ *
+ */
+function moha_user_menu_alter(&$items) {
+  $items['user/%user/edit'] = array(
+    'access callback' => 'moha_user_edit_access',
+  );
+}
+
+/**
+ * Access callback for user account editing.
+ * 
+ * Normal user don't have permission to edit own information.
+ */
+function moha_user_edit_access($account) {
+  return (($GLOBALS['user']->uid == $account->uid) && user_access(MOHA_USER__PERMISSION__EDIT_USER) || user_access('administer users')) && $account->uid > 0;
+}
