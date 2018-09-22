@@ -62,9 +62,8 @@ body.page-moha-moha-clips {
 }
 
 .views-field-image img {
-  font-size: 1px;
-  max-width: 159em;
-  max-height: 90em;
+  max-width: 159px;
+  max-height: 90px;
   width: auto!important;
   height: auto!important;
   margin: auto;
