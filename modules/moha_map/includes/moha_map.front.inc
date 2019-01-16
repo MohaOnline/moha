@@ -19,6 +19,9 @@ function _moha_map_front() {
       $content['baidu_access_key'] = $baidu_access_key;
     }
 
+    // TODO allow user specify which domains could include this page later.
+    drupal_add_http_header("X-Frame-Options", "");
+
     $html = theme('moha_map_baidu_marker', array(
       'content' => $content,
     ));
