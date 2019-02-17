@@ -65,6 +65,9 @@ define('MOHA_BLOCK__FOOTER_POLICE', 'moha_block__footer_police');
 
 /**
  * Implements hook_block_info().
+ *
+ * Moha blocks could be contained in theme file directly.
+ * Don't use with block cache function as CSS files are injected when block rendering.
  */
 function moha_block_block_info() {
   $blocks[MOHA_BLOCK__FOOTER_COPYRIGHT] = array(
