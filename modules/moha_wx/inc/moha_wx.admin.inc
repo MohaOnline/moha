@@ -227,6 +227,14 @@ function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
     '#value' => $account['wechat_name'],
   );
 
+  $form['helps'] = array(
+    '#type' => 'markup',
+    '#markup' => '<div class="moha-admin-hints">
+    <p>Click "Save Menu" button to save below menu configurations to DB and upload same to WeChat account.</p>
+    <p>Click "Delete Menu" button to remove customized menu from WeChat account.</p>
+</div>',
+  );
+
   $form['wx_menu'] = array(
     '#type' => 'textarea',
     '#rows' => 20,
@@ -244,11 +252,6 @@ function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
   $form['actions']['delete'] = array(
     '#type' => 'submit',
     '#value' => t('Delete Menu'),
-  );
-
-  $form['actions']['help'] = array(
-    '#type' => 'markup',
-    '#markup' => '<div class="toolbarModifier-hints"><p>Click "Save Menu" to save above configuration to DB and upload configuration to WeChat account.</p></div>',
   );
 
   return $form;
