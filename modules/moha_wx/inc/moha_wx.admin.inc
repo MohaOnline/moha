@@ -20,9 +20,14 @@ function _wechat_lite_service_accounts_segment_exists($wechat_name) {
 }
 
 /**
+ * URL: admin/moha/wx/config/$account_name.
+ *
  * @param array $form
  * @param array $form_state
  * @param string $account_name
+ *    passed from URL.
+ *
+ * @return array $form
  */
 function _moha_wx_account_form($form, &$form_state, $account_name = ''){
 
@@ -185,6 +190,8 @@ function _moha_wx_account_form_submit($form, &$form_state){
 }
 
 /**
+ * URL: admin/moha/wx/menu/$wechat_name.
+ *
  * @param $form
  * @param $form_state
  * @param string $wechat_name
@@ -211,13 +218,7 @@ function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
       _moha_wx_get_menu($account);
     } catch (Exception $e) {
       // Output error log with related failed API.
-      watchdog(__FUNCTION__,
-        "%msg",
-        array(
-          "%msg" => $e->getMessage(),
-        ),
-        WATCHDOG_ERROR
-      );
+      watchdog_exception(__FUNCTION__, $e);
     }
   }
 
@@ -231,7 +232,7 @@ function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
     '#rows' => 20,
     '#title' => t('WeChat Menu'),
     '#default_value' => $account['wx_menu'],
-    '#description' => t("Put JSON configuration of WeChat menu here."),
+    '#description' => t("Put JSON configuration of WeChat menu here. URL need be manually proceeded, copy and paste \\ before every /."),
     '#format' => 'plain_text',
   );
 
@@ -243,6 +244,11 @@ function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
   $form['actions']['delete'] = array(
     '#type' => 'submit',
     '#value' => t('Delete Menu'),
+  );
+
+  $form['actions']['help'] = array(
+    '#type' => 'markup',
+    '#markup' => '<div class="toolbarModifier-hints"><p>Click "Save Menu" to save above configuration to DB and upload configuration to WeChat account.</p></div>',
   );
 
   return $form;
