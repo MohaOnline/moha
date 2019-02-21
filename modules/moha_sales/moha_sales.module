@@ -1,0 +1,209 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_SALES', 'Moha Sales');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_SALES', 'moha_sales');
+
+/**
+ * moha_sales__variables.
+ */
+define('MOHA_SALES__VARIABLES', __MOHA_SALES . '__variables');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_sales.
+ */
+define('MOHA_SALES__RELATIVE_PATH', drupal_get_path('module', __MOHA_SALES));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_sales.
+ */
+define('MOHA_SALES__PATH', base_path() . MOHA_SALES__RELATIVE_PATH);
+
+/**
+ * Module homepage.
+ */
+define('MOHA_SALES__URL__HOME', 'moha/sales/home');
+
+/**
+ * Module URL: Commission detail page.
+ */
+define('MOHA_SALES__URL__COMMISSION_DETAIL', 'moha/sales/commission/@commission_id');
+
+/**
+ * WeChat OAuth2 state: Moha sales homepage.
+ */
+define('MOHA_SALES__OAUTH2_STATE__HOME', 'MOHA_SALES__OAUTH2_STATE__HOME');
+
+/*
+ * Commission Status:
+ *  New > Accepted.
+ *  New > Waiting > Approved > Accepted.
+ *
+ * Salesman editable commissions:
+ *  New, Approved.
+ *
+ * Manager editable commission:
+ *  Waiting
+ */
+
+/**
+ * Permission: view own commission.
+ */
+define('MOHA_SALES__PERMISSION__VIEW_OWN_COMMISSION', 'view own ' . __MOHA_SALES . ' commission');
+
+/**
+ * Permission: view any commission.
+ */
+define('MOHA_SALES__PERMISSION__VIEW_ANY_COMMISSION', 'view any ' . __MOHA_SALES . ' commission');
+
+/**
+ * Permission: edit own commission.
+ */
+define('MOHA_SALES__PERMISSION__EDIT_OWN_COMMISSION', 'edit own ' . __MOHA_SALES . ' commission');
+
+/**
+ * Permission: edit any commission.
+ */
+define('MOHA_SALES__PERMISSION__EDIT_ANY_COMMISSION', 'edit any ' . __MOHA_SALES . ' commission');
+
+/**
+ * Permission: approve own commission.
+ */
+define('MOHA_SALES__PERMISSION__APPROVE_OWN_COMMISSION', 'approve own ' . __MOHA_SALES . ' commission feedback');
+
+/**
+ * Permission: approve any commission.
+ */
+define('MOHA_SALES__PERMISSION__APPROVE_ANY_COMMISSION', 'approve any ' . __MOHA_SALES . ' commission feedback');
+
+/**
+ * moha_sales__role__manager.
+ */
+define('MOHA_SALES__ROLE__MANAGER', MOHA_SALES . ' Manager');
+
+/**
+ * moha_sales__role__manager.
+ */
+define('MOHA_SALES__ROLE__SALESMAN', MOHA_SALES . ' Salesman');
+
+/**
+ * Create necessary roles and permissions.
+ */
+function _moha_sales_prepare_roles_and_permissions() {
+  $salesman_permissions = array();
+  $salesman_permissions[] = MOHA_SALES__PERMISSION__VIEW_OWN_COMMISSION;
+  $salesman_permissions[] = MOHA_SALES__PERMISSION__EDIT_OWN_COMMISSION;
+
+  $manager_permissions = array();
+  $manager_permissions[] = MOHA_SALES__PERMISSION__VIEW_OWN_COMMISSION;
+  $manager_permissions[] = MOHA_SALES__PERMISSION__APPROVE_OWN_COMMISSION;
+
+  moha_grant_permissions_2_role_with_creation(MOHA_SALES__ROLE__SALESMAN, $salesman_permissions);
+  moha_grant_permissions_2_role_with_creation(MOHA_SALES__ROLE__MANAGER, $manager_permissions);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function moha_sales_menu() {
+
+  /** @see _moha_sales_home() */
+  $items[MOHA_SALES__URL__HOME] = array(
+    'title' => 'Home',
+    'description' => 'Moha Sales Homepage',
+    'page callback' => '_moha_sales_home',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  /**  @see _moha_sales_commission_details() */
+  $items[format_string(MOHA_SALES__URL__COMMISSION_DETAIL, array('@commission_id' => '%'))] = array(
+    'title' => 'Home',
+    'description' => 'Moha Sales Commission Details',
+    'page callback' => '_moha_sales_commission_details',
+    'page arguments' => array(3),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Moha Sales: homepage.
+ */
+function _moha_sales_home() {
+  try {
+    moha_wx_anonymous_fall_back_to_explicit_oauth2_authorization('ge-vcct-mobile', MOHA_SALES__OAUTH2_STATE__HOME);
+
+    drupal_add_css(MOHA__RELATIVE_PATH . '/css/moha.weui-for-work.1.1.2.css');
+
+    $content['#theme_wrappers'] = array(__MOHA_SALES . '_home');
+    $content['#attached'] = array(
+      'css' => array(
+        MOHA_SALES__RELATIVE_PATH . '/css/moha_sales.css',
+      )
+    );
+
+    return $content;
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    moha_show_exception($e);
+  }
+}
+
+/**
+ * Moha Sales Page: Commission details page.
+ */
+function _moha_sales_commission_details($cid) {
+
+  try {
+    moha_wx_anonymous_fall_back_to_explicit_oauth2_authorization('ge-vcct-mobile', MOHA_SALES__OAUTH2_STATE__HOME);
+
+    drupal_add_css(MOHA__RELATIVE_PATH . '/css/moha.weui-for-work.1.1.2.css');
+
+    $content['#theme_wrappers'] = array(__MOHA_SALES . '_commission');
+    $content['#attached'] = array(
+      'css' => array(
+        MOHA_SALES__RELATIVE_PATH . '/css/moha_sales.css',
+      )
+    );
+
+    return $content;
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    moha_show_exception($e);
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function moha_sales_theme($existing, $type, $theme, $path) {
+  $themes = array(
+    //
+    __MOHA_SALES . '_home' => array(
+      'render element' => 'page',
+      'template' => 'templates/home',
+    ),
+    //
+    __MOHA_SALES . '_commission' => array(
+      'render element' => 'page',
+      'template' => 'templates/commission',
+    ),
+  );
+
+  return $themes;
+}
+

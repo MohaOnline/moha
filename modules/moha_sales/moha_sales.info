@@ -1,0 +1,6 @@
+name = Moha Sales
+description = Provides sales relative supports.
+core = 7.x
+package = Moha Online
+
+dependencies[] = moha

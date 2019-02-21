@@ -24,16 +24,18 @@ function _wechat_lite_service_accounts_segment_exists($wechat_name) {
  *
  * @param array $form
  * @param array $form_state
- * @param string $account_name
+ * @param string $wechat_name
  *    passed from URL.
  *
  * @return array $form
  */
-function _moha_wx_account_form($form, &$form_state, $account_name = ''){
+function _moha_wx_account_form($form, &$form_state, $wechat_name = ''){
 
   $account = (object) array(
-    'account_name' => '',
+    'account_name' => $wechat_name,
     'wechat_name' => '',
+    'is_enterprise' => 0,
+    'agent_id' => '',
     'app_id' => '',
     'app_secret' => '',
     'token' => '',
@@ -44,16 +46,23 @@ function _moha_wx_account_form($form, &$form_state, $account_name = ''){
     'news_link' => '',
   );
 
-  $result = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
-    array(
-      ':wechat_name' => $account_name,
-    )
-  );
+  $submit_op = MOHA__FORM_OP__SAVE;
+  $wechat_name = check_plain($wechat_name);
 
-  foreach ($result as $record) {
-    $account = $record;
+  // Load account information per passed $account_name.
+  if (is_string($wechat_name)) {
+    /** @var \PDOStatement $query */
+    $query = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
+      array(
+        ':wechat_name' => $wechat_name,
+      )
+    );
+
+    if ($record = $query->fetchObject()) {
+      $account = $record;
+      $submit_op = MOHA__FORM_OP__UPDATE;
+    }
   }
-
 
   $form['account_name'] = array(
     '#type' => 'textfield',
@@ -70,6 +79,26 @@ function _moha_wx_account_form($form, &$form_state, $account_name = ''){
     '#required' => TRUE,
     '#default_value' => $account->wechat_name,
     '#size' => 40,
+  );
+
+  $form['is_enterprise'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enterprise Account'),
+    '#return_value' => 1,
+    '#default_value' => $account->is_enterprise,
+    '#description' => t("Indicates if current account is an enterprise account."),
+  );
+
+  $form['agent_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('AgentID'),
+    '#default_value' => $account->agent_id,
+    '#description' => t("Accompany with the enterprise account."),
+    '#states' => array(
+      'required' => array(
+        ':input[name="is_enterprise"]' => array('checked' => TRUE),
+      ),
+    ),
   );
 
   $form['app_id'] = array(
@@ -139,14 +168,14 @@ TAG
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save Account'),
+    '#value' => t($submit_op),
   );
 
   return $form;
 }
 
 /**
- * Save WeChat Account information.
+ * Save or update WeChat Account information to moha_wx_accounts.
  * Welcome message related process.
  *
  * @param $form
@@ -154,26 +183,68 @@ TAG
  */
 function _moha_wx_account_form_submit($form, &$form_state){
 
+  // Extracts account information from submitted data.
   $account = $form_state['values'];
 
-  try {
-    $affacted_row_number = db_update('moha_wx_accounts')
-      ->fields(array(
-        'account_name' => $account['account_name'],
-        'app_id' => $account['app_id'],
-        'app_secret' => $account['app_secret'],
-        'token' => $account['token'],
-        'encoding_aes_key' => $account['encoding_aes_key'],
-        'news_title' => $account['news_title'],
-        'news_cover' => $account['news_cover'],
-        'news_link' => $account['news_link'],
-        'text' => $account['text']['value'],
-        'updated' => time(),
-      ))
-      ->condition('wechat_name', $account['wechat_name'])
-      ->execute();
+  // Extracts submission type: Save or Update.
+  $op = $form_state['values']['op'];
+  $op_result = '';
 
-    if ($affacted_row_number == 1) {
+  try {
+    global $user;
+
+    if ($op == t(MOHA__FORM_OP__SAVE)) {
+
+      $result_num = db_insert('moha_wx_accounts')
+        ->fields(array(
+          'uid' => $user->uid,
+          'account_name' => $account['account_name'],
+          'wechat_name' => $account['wechat_name'],
+          'app_id' => $account['app_id'],
+          'app_secret' => $account['app_secret'],
+          'token' => $account['token'],
+          'encoding_aes_key' => $account['encoding_aes_key'],
+          'access_token' => '',
+          'news_title' => $account['news_title'],
+          'news_cover' => $account['news_cover'],
+          'news_link' => $account['news_link'],
+          'text' => $account['text']['value'],
+          'is_enterprise' => $account['is_enterprise'],
+          'agent_id' => $account['agent_id'],
+          'updated' => REQUEST_TIME,
+          'created' => REQUEST_TIME,
+        ))
+        ->execute();
+
+      $op_result = t("This account has been saved.");
+    }
+    elseif ($op == t(MOHA__FORM_OP__UPDATE)) {
+      $result_num = db_update('moha_wx_accounts')
+        ->fields(array(
+          'account_name' => $account['account_name'],
+          'app_id' => $account['app_id'],
+          'app_secret' => $account['app_secret'],
+          'token' => $account['token'],
+          'encoding_aes_key' => $account['encoding_aes_key'],
+          'news_title' => $account['news_title'],
+          'news_cover' => $account['news_cover'],
+          'news_link' => $account['news_link'],
+          'text' => $account['text']['value'],
+          'is_enterprise' => $account['is_enterprise'],
+          'agent_id' => $account['agent_id'],
+          'updated' => REQUEST_TIME,
+        ))
+        ->condition('wechat_name', $account['wechat_name'])
+        ->execute();
+
+      $op_result = t("This account has been updated.");
+    }
+
+    // Insert ID or affected number exists.
+    if (isset($result_num)) {
+      // Provides feedback of submission.
+      drupal_set_message($op_result);
+
       // Fetch full information of account.
       $account = _moha_wx_moha_account($account['wechat_name']);
 
@@ -186,75 +257,74 @@ function _moha_wx_account_form_submit($form, &$form_state){
   }
   catch (Exception $e) {
     watchdog_exception(__FUNCTION__, $e);
+    moha_show_exception($e);
   }
 }
 
 /**
- * URL: admin/moha/wx/menu/$wechat_name.
+ * Form for confirming WeChat menu before to be deployed or to be removed.
+ *
+ * @see admin/moha/wx/menu/$wechat_name.
  *
  * @param $form
  * @param $form_state
  * @param string $wechat_name
  *
- * @return array
+ * @return array $form
  */
 function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
 
-  drupal_add_css(MOHA_WX__RELATIVE_PATH . '/css/moha_wx.admin.css');
+   try {
+    $wechat_name = check_plain($wechat_name);
+    $account = _moha_wx_moha_account($wechat_name);
 
-  $account = (object) array(
-    'wechat_name' => '',
-    'wx_menu' => '',
-  );
-
-  $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
-    array(
-      ':wechat_name' => $wechat_name,
-    )
-  )->fetchAssoc();
-
-  if (empty($account['wx_menu'])) {
-    try {
+    if (empty($account['wx_menu'])) {
       _moha_wx_get_menu($account);
-    } catch (Exception $e) {
-      // Output error log with related failed API.
-      watchdog_exception(__FUNCTION__, $e);
     }
+
+    $form['#attached']['css'] = array(
+      MOHA__RELATIVE_PATH . '/css/moha.admin.css',
+      MOHA_WX__RELATIVE_PATH . '/css/moha_wx.admin.css',
+    );
+
+    $form['wechat_name'] = array(
+      '#type' => 'hidden',
+      '#value' => $account['wechat_name'],
+    );
+
+    $form['helps'] = array(
+      '#type' => 'markup',
+      '#markup' => '<div class="moha-admin-hints">
+      <p>Click "Save Menu" button to save below menu configurations to DB and upload same to WeChat account.</p>
+      <p>Click "Delete Menu" button to clean configuration in DB and remove customized menu from WeChat account.</p>
+  </div>',
+    );
+
+    $form['wx_menu'] = array(
+      '#type' => 'textarea',
+      '#rows' => 20,
+      '#title' => t('WeChat Menu'),
+      '#default_value' => $account['wx_menu'],
+      '#description' => t("Put JSON configurations of WeChat menu here."),
+      '#format' => 'plain_text',
+    );
+
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save Menu'),
+    );
+    $form['actions']['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete Menu'),
+    );
+
+    return $form;
   }
-
-  $form['wechat_name'] = array(
-    '#type' => 'hidden',
-    '#value' => $account['wechat_name'],
-  );
-
-  $form['helps'] = array(
-    '#type' => 'markup',
-    '#markup' => '<div class="moha-admin-hints">
-    <p>Click "Save Menu" button to save below menu configurations to DB and upload same to WeChat account.</p>
-    <p>Click "Delete Menu" button to remove customized menu from WeChat account.</p>
-</div>',
-  );
-
-  $form['wx_menu'] = array(
-    '#type' => 'textarea',
-    '#rows' => 20,
-    '#title' => t('WeChat Menu'),
-    '#default_value' => $account['wx_menu'],
-    '#description' => t("Put JSON configuration of WeChat menu here. URL need be manually proceeded, copy and paste \\ before every /."),
-    '#format' => 'plain_text',
-  );
-
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save Menu'),
-  );
-  $form['actions']['delete'] = array(
-    '#type' => 'submit',
-    '#value' => t('Delete Menu'),
-  );
-
-  return $form;
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    moha_show_exception($e);
+  }
 
 }
 
@@ -267,25 +337,21 @@ function _moha_wx_menu_form_submit($form, &$form_state) {
 
   $values = $form_state['values'];
 
-  if ($values['op'] == 'Delete Menu') {
+  if ($values['op'] == t('Delete Menu')) {
     $values['wx_menu'] = '';
   }
 
-  $affacted_row_number = db_update('moha_wx_accounts')
-    ->fields(array(
-      'wx_menu' => $values['wx_menu'],
-      'updated' => time(),
-    ))
-    ->condition('wechat_name', $values['wechat_name'])
-    ->execute();
-
-  $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
-    array(
-      ':wechat_name' => $values['wechat_name'],
-    )
-  )->fetchAssoc();
-
   try {
+    $affected_row_number = db_update('moha_wx_accounts')
+      ->fields(array(
+        'wx_menu' => $values['wx_menu'],
+        'updated' => REQUEST_TIME,
+      ))
+      ->condition('wechat_name', $values['wechat_name'])
+      ->execute();
+
+    $account = _moha_wx_moha_account($values['wechat_name']);
+
     if ($values['op'] == 'Delete Menu') {
       _moha_wx_delete_menu($account);
     }
@@ -293,14 +359,9 @@ function _moha_wx_menu_form_submit($form, &$form_state) {
       _moha_wx_create_menu($account);
     }
 
-  } catch (Exception $e) {
-    // Output error log with related failed API.
-    watchdog(__FUNCTION__,
-      "%msg",
-      array(
-        "%msg" => $e->getMessage(),
-      ),
-      WATCHDOG_ERROR
-    );
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    moha_show_exception($e);
   }
 }

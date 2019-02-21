@@ -1,0 +1,13 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_install().
+ */
+function moha_sales_install() {
+  // Prepares roles and permissions.
+  _moha_sales_prepare_roles_and_permissions();
+}
+

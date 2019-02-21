@@ -28,6 +28,35 @@ define('MOHA__RELATIVE_PATH', drupal_get_path('module', __MOHA));
 define('MOHA__PATH', base_path() . MOHA__RELATIVE_PATH);
 
 /**
+ * Form OP: Save.
+ */
+define('MOHA__FORM_OP__SAVE', 'Save');
+
+/**
+ * Form OP: Update.
+ */
+define('MOHA__FORM_OP__UPDATE', 'Update');
+
+/**
+ * Form OP: Delete.
+ */
+define('MOHA__FORM_OP__DELETE', 'Delete');
+
+/**
+ * Define common used IT constants.
+ */
+define('MOHA_IT_CONSTANTS', array(
+  '134217728' => '128M',
+  '134,217,728' => '128M',
+  '268435456' => '256M',
+));
+
+/**
+ * JSON encoding options: bitmask.
+ */
+define("MOHA__JSON_ENCODING_OPTIONS_BIT_MASK", JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+
+/**
  *
  *
  * @return array
@@ -126,7 +155,7 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
 
 
 /**
- * Hide menu link edit & delete button.
+ * Hide menu link edit & delete button on menu items list page.
  *
  * Implements hook_form_FORM_ID_alter().
  */
@@ -533,6 +562,42 @@ function moha_taxonomy_name_by_id($tid) {
     $name = '';
   }
   return $name;
+}
+
+/**
+ * Shows error message when exception occurs for administrator.
+ *
+ * @param \Exception $e
+ *   occurring exception.
+ *
+ * @param string $message_type
+ *  (optional) The message's type. Defaults to 'error'.
+ *  These values are supported:
+ *    - 'status'
+ *    - 'warning'
+ *    - 'error'
+ */
+function moha_show_exception(Exception $e, $message_type = 'error') {
+  drupal_set_message(t('Exception: %msg', array('%msg' => $e->getMessage())), $message_type);
+}
+
+/**
+ * Stop request processing when unrecoverable or critical error occurs.
+ *
+ * @param $e \Exception
+ *  Exception why processing need be ended up.
+ *
+ * @param $status_code int
+ *  Customized http status code.
+ */
+function moha_response_error(Exception $e = NULL, $status_code = 503) {
+  drupal_add_http_header('Status', $status_code . ' Service unavailable');
+
+  if ($e != NULL) {
+    print $e->getMessage();
+  }
+
+  drupal_exit();
 }
 
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
