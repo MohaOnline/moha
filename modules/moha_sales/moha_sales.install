@@ -5,6 +5,8 @@
 
 /**
  * Implements hook_install().
+ *
+ * Prepares required roles and permissions.
  */
 function moha_sales_install() {
   // Prepares roles and permissions.

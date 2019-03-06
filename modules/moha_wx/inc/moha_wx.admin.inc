@@ -32,8 +32,8 @@ function _wechat_lite_service_accounts_segment_exists($wechat_name) {
 function _moha_wx_account_form($form, &$form_state, $wechat_name = ''){
 
   $account = (object) array(
-    'account_name' => $wechat_name,
-    'wechat_name' => '',
+    'account_name' => '',   // Account human name.
+    'wechat_name' => $wechat_name, // machine name.
     'is_enterprise' => 0,
     'agent_id' => '',
     'app_id' => '',
