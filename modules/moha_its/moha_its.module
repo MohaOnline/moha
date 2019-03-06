@@ -1,0 +1,190 @@
+<?php
+/**
+ * @file
+ * Date: 18/01/2019
+ */
+
+// TODO
+// Platform information storage entity.
+
+/**
+ * Module human name: Moha ITS.
+ */
+define('MOHA_ITS', 'Moha ITS');
+
+/**
+ * Module machine name: moha_its.
+ */
+define('__MOHA_ITS', 'moha_its');
+
+/**
+ * moha_its__variables.
+ */
+define('MOHA_ITS__VARIABLES', __MOHA_ITS . '__variables');
+
+/**
+ * Entity human name: Moha ITS Group.
+ */
+define('MOHA_ITS_GROUP', 'Moha ITS Group');
+
+/**
+ * Entity machine name: moha_its_group.
+ */
+define('__MOHA_ITS_GROUP', 'moha_its_group');
+
+/**
+ * Entity Machine name: moha_its_bu.
+ */
+define('__MOHA_ITS_BU', 'moha_its_bu');
+
+/**
+ * Permission: Edit any Moha ITS Groups.
+ */
+define('MOHA_ITS__PERMISSION__EDIT_ANY_GROUPS', 'edit any moha its groups');
+
+/**
+ * Moha ITS Group Admin UI Filter value: owner.
+ */
+define('MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER', __MOHA_ITS_GROUP . '__admin_ui_filter__owner');
+
+/**
+ * Moha ITS URL: Moha ITS Group management page.
+ */
+define('MOHA_ITS__URL__GROUP_ADMIN_UI', 'admin/moha/its/groups');
+
+/**
+ * Implements hook_entity_info().
+ */
+function moha_its_entity_info() {
+  $items = array();
+
+  // Stores basic information of a company / group company.
+  // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
+  $items[__MOHA_ITS_GROUP] = array(
+    'label' => t(MOHA_ITS_GROUP),
+    'plural label' => t(MOHA_ITS_GROUP . 's'), // Moha ITS Groups
+    'base table' => __MOHA_ITS_GROUP,
+    'revision table' => __MOHA_ITS_GROUP . '_revision',
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'full_name',
+      'revision' => 'vid',
+    ),
+    //
+    'label callback' => 'entity_class_label',
+
+    /** @see entity_crud_hook_entity_info() */
+    "admin ui" => array(
+      /* Moha ITS Groups management page URL & Class. */
+      "path" => MOHA_ITS__URL__GROUP_ADMIN_UI,
+      "controller class" => "MohaITSGroupEntityAdminController",
+
+      /** @see entity_ui_get_form() */
+      /* Moha ITS Groups add / edit forms containing file. */
+      "file" => "includes/moha_its_group.form.inc",  //
+    ),
+
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    "module" => __MOHA_ITS,
+
+    "access callback" => "_moha_its_group_entity_admin_access_callback",
+
+    'entity class' => 'MohaITSGroupEntity',
+    'controller class' => 'MohaITSGroupEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
+    'uri callback' => 'entity_class_uri',
+
+    // Make entity fieldable; @see field_attach_form to attach added fields.
+    'fieldable' => TRUE,
+    'bundles' => array(
+      __MOHA_ITS_GROUP => array(
+        'label' => t(MOHA_ITS_GROUP),
+        'plural label' => t(MOHA_ITS_GROUP . 's'),
+        'admin' => array(
+          'path' => MOHA_ITS__URL__GROUP_ADMIN_UI,
+          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_GROUPS),
+        ),
+      ),
+    ),
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
+  );
+
+  return $items;
+}
+
+/**
+ * Returns array of status value -> literal label.
+ *
+ * @param $status_value
+ *  if value is passed, return related key.
+ *
+ * @return mixed
+ *
+ * @throws \InvalidArgumentException
+ */
+function moha_its_group_entity_status($status_value = "") {
+
+  /* Status Key <-> Status Text */
+  static $status_values = array(
+    1 => 'Active',
+    2 => 'Disabled',
+    3 => 'Deleted',
+  );
+
+  if ($status_value == "") {
+    return $status_values;
+  }
+  else {
+    $key = array_search($status_value, $status_values);
+    if ($key === false) {
+      throw new InvalidArgumentException("Passed status doesn't exist.");
+    }
+    else {
+      return $key;
+    }
+  }
+}
+
+/**
+ * @param $op
+ * @param $entity object
+ * @param $account object
+ *
+ * @return bool
+ */
+function _moha_its_group_entity_admin_access_callback($op, $entity = NULL, $account = NULL) {
+  global $user;
+
+  if ($user->uid == 1) {
+    return TRUE;
+  }
+
+  if (user_access(MOHA_ITS__PERMISSION__EDIT_ANY_GROUPS, $account)) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/**
+ *
+ * @see form_validate_machine_name()
+ */
+function moha_its_group_entity_exists($value){
+  return FALSE;
+}
+
+/**
+ * Implements hook_permission().
+ *
+ *
+ */
+function moha_its_permission() {
+  return array(
+    MOHA_ITS__PERMISSION__EDIT_ANY_GROUPS => array(
+      'title' => 'Edit Any Moha ITS Groups',
+    ),
+  );
+}

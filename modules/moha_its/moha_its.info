@@ -1,0 +1,18 @@
+name = Moha IT Steward
+description = Moha IT Steward module provides kinds of useful services for IT affairs.
+core = 7.x
+package = Moha
+
+dependencies[] = drupal:system (>= 7.40)
+dependencies[] = block
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = views_ui
+dependencies[] = views_data_export
+dependencies[] = moha
+dependencies[] = entityreference
+dependencies[] = entityreference_autocomplete
+
+files[] = includes/MohaITSGroupEntity.php
+files[] = includes/MohaITSGroupEntityAdminController.php
+files[] = includes/MohaITSGroupEntityController.php
