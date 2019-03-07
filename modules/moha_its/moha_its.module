@@ -81,7 +81,7 @@ function moha_its_entity_info() {
 
       /** @see entity_ui_get_form() */
       /* Moha ITS Groups add / edit forms containing file. */
-      "file" => "includes/moha_its_group.form.inc",  //
+      "file" => "includes/MohaITSGroupEntity.form.inc",  //
     ),
 
     // Declares which module contains related Class information, like Admin UI Class, etc.

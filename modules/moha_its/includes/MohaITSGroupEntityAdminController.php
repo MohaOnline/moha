@@ -136,8 +136,8 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
   protected function overviewTableHeaders($conditions, $rows, $additional_header = []) {
 
 
-    $additional_header[] = t('Name');
     $additional_header[] = t('Full name');
+    $additional_header[] = t('Name');
     $additional_header[] = t('Local name');
     $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
@@ -168,7 +168,7 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
 
 
     // Entity machine name.
-    $additional_cols[] = $entity->full_name;
+    $additional_cols[] = $entity->name;
     $additional_cols[] = $entity->local_name;
 
     // Status
