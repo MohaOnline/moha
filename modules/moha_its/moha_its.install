@@ -180,4 +180,53 @@ function moha_its_schema() {
   return $schema;
 }
 
+/**
+ * @inheritdoc
+ */
+function moha_its_install() {
+  _moha_its_taxonomy_prepare();
+}
+
+
+/**
+ * Prepares taxonomy for Moha ITS Infrastructure.
+ */
+function _moha_its_taxonomy_prepare() {
+
+  $t = get_t();
+
+  // If not exists, create Moha ITS Infrastructure Types Taxonomy.
+  $vocabulary = taxonomy_vocabulary_machine_name_load('moha_its_infrastructure_types');
+
+  if (empty($vocabulary)) {
+
+    // Create a vocabulary named "Moha ITS Infrastructure Types".
+    $vocabulary = (object) array(
+      'name' => $t('Moha ITS Infrastructure Types'),
+      'description' => $t('Specifies which type of platform current platform belong to.'),
+      'machine_name' => 'moha_its_infrastructure_types',
+    );
+
+    taxonomy_vocabulary_save($vocabulary);
+  }
+
+  $infra_types = array(
+    'Azure China',
+    'AWS China',
+    'Aliyun',
+  );
+
+  foreach ($infra_types as $infra_type) {
+    $terms = taxonomy_get_term_by_name($infra_type, $vocabulary->machine_name);
+
+    if (empty($terms)){
+      $term = new stdClass();
+
+      $term->vid = $vocabulary->vid;
+      $term->name = $infra_type;
+
+      taxonomy_term_save($term);
+    }
+  }
+}
 
