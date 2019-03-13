@@ -58,7 +58,7 @@ function _moha_map_view($node) {
     $content['title'] = $node->title;
 
     $map_type_id = $node->moha_map_type[LANGUAGE_NONE][0]['tid'];
-    $map_type = moha_taxonomy_name_by_id($map_type_id);
+    $map_type = moha_term_name_by_tid($map_type_id);
 
     $moha_map_theme_name = '';
 

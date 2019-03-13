@@ -15,5 +15,5 @@ function moha_install() {
  * Create profile2 type for Moha module.
  */
 function moha_update_0700() {
-  _moha_create_profile2(MOHA);
+  moha_create_profile2(MOHA);
 }

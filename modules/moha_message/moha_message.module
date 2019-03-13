@@ -296,7 +296,7 @@ function moha_message_submit_form_submit($form, &$form_state) {
 
   $values = $form_state['values'];
 
-  $tid = moha_get_tid_from_name($values['message_wall']);
+  $tid = moha_tid_by_term_name($values['message_wall']);
 
   global $user;
 
@@ -415,7 +415,7 @@ function _moha_message_wall($term) {
     drupal_add_css("sites/all/modules/custom/moha/css/alertify.css");
 
     // Return nothing when $term is invalid.
-    if (!$tid = moha_get_tid_from_name($term)){
+    if (!$tid = moha_tid_by_term_name($term)){
       return '';
     }
 

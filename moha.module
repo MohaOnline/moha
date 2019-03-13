@@ -28,6 +28,20 @@ define('MOHA__RELATIVE_PATH', drupal_get_path('module', __MOHA));
 define('MOHA__PATH', base_path() . MOHA__RELATIVE_PATH);
 
 /**
+ * JSON encoding options: bitmask.
+ */
+define("MOHA__JSON_ENCODING_OPTIONS_BIT_MASK", JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+
+/**
+ * Define common used constants.
+ */
+define('MOHA__CONSTANTS', array(
+  '134217728' => '128M',
+  '134,217,728' => '128M',
+  '268435456' => '256M',
+));
+
+/**
  * Form OP: Save.
  */
 define('MOHA__FORM_OP__SAVE', 'Save');
@@ -43,18 +57,64 @@ define('MOHA__FORM_OP__UPDATE', 'Update');
 define('MOHA__FORM_OP__DELETE', 'Delete');
 
 /**
- * Define common used IT constants.
+ * Moha Term: Configuration.
  */
-define('MOHA_IT_CONSTANTS', array(
-  '134217728' => '128M',
-  '134,217,728' => '128M',
-  '268435456' => '256M',
-));
+define('MOHA__TERM__CONFIGURATION', 'Configuration');
 
 /**
- * JSON encoding options: bitmask.
+ * Moha Status: configuration.
  */
-define("MOHA__JSON_ENCODING_OPTIONS_BIT_MASK", JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+define('MOHA__TERM__DELETED', 'Deleted');
+
+/**
+ * Moha Status: Active.
+ */
+define('MOHA__TERM__ACTIVE', 'Active');
+
+/**
+ * Moha Status: Disabled.
+ */
+define('MOHA__TERM__DISABLED', 'Disabled');
+
+/**
+ * Moha Status array: entity.
+ */
+define('MOHA__STATUS__ENTITY', array(
+  0 => MOHA__TERM__DELETED,
+  1 => MOHA__TERM__ACTIVE,
+  2 => MOHA__TERM__DISABLED,
+));
+
+
+/**
+ * Moha RACI: Accountable.
+ */
+define('MOHA__TERM__ACCOUNTABLE', 'Accountable');
+
+/**
+ * Moha RACI: Responsible.
+ */
+define('MOHA__TERM__RESPONSIBLE', 'Responsible');
+
+/**
+ * Moha RACI: Consulted.
+ */
+define('MOHA__TERM__CONSULTED', 'Consulted');
+
+/**
+ * Moha RACI: Informed.
+ */
+define('MOHA__TERM__INFORMED', 'Informed');
+
+/**
+ * Moha Status array: RACI.
+ */
+define('MOHA__STATUS__RACI', array(
+  0 => MOHA__TERM__ACCOUNTABLE,
+  1 => MOHA__TERM__RESPONSIBLE,
+  2 => MOHA__TERM__CONSULTED,
+  3 => MOHA__TERM__INFORMED,
+));
 
 /**
  *
@@ -137,6 +197,28 @@ function moha_menu_alter(&$items) {
 }
 
 /**
+ * Implements hook_admin_paths().
+ */
+function moha_admin_paths() {
+  $paths = array();
+
+  /* Let imce use admin theme. */
+  $paths['imce'] = TRUE;
+  $paths['*/imce'] = TRUE;
+
+  $paths['moha/*/add'] = TRUE;
+
+  return $paths;
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function moha_preprocess(&$variables, $hook) {
+
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  *
  * Mount configurations which need be passed to templates.js of CKEditor.
@@ -203,60 +285,6 @@ function _moha_node_ajax_save_callback($form, &$form_state){
 }
 
 /**
- * Silently save node with ajax call.
- *
- * @param $form
- * @param $form_state
- *
- * @return mixed
- */
-function _moha_node_ajax_silently_save_callback($form, &$form_state){
-
-  // @See ajax_form_callback()
-  // valid will be proceed
-  // If error, directly returns.
-  if (form_get_errors()) {
-    return ['changed'];
-  }
-
-  /*
-   * As ajax button doesn't have #submit function, so
-   * form_execute_handlers('submit', $form, $form_state);
-   * will not be invoked, node submit function need be manually executed
-   */
-  node_form_submit($form, $form_state);
-  // need write update time back to form to avoid node was changed by others issue.
-  $form['changed']['#value'] = $form_state['node']->changed;
-
-  return $form['changed'];
-}
-
-/**
- * Helper that generates a machine name using a provided human readable name.
- *
- * @param string $human_name
- *   Human readable name.
- *
- * @return string
- *   Machine name cleaned-up of any special chars.
- */
-function moha_h2m($human_name) {
-
-  $string_mapping = &drupal_static(__FUNCTION__);
-
-  if(empty($string_mapping) || !isset($string_mapping[$human_name])){
-    $machine_name = strtolower($human_name);
-    $machine_name = preg_replace('@[^a-z0-9_]+@', '_', $machine_name);
-    $string_mapping[$human_name] = $machine_name;
-  }
-  else {
-    $machine_name = $string_mapping[$human_name];
-  }
-
-  return $machine_name;
-}
-
-/**
  * Grant permissions to specified role, if role doesn't exist, will be created first.
  *
  * @param string $role_name
@@ -315,66 +343,6 @@ function moha_grant_imce_profile_2_role($role_name, $profile_id = 0) {
 }
 
 /**
- * Implements hook_admin_paths().
- */
-function moha_admin_paths() {
-  $paths = array();
-
-  /* Let imce use admin theme. */
-  $paths['imce'] = TRUE;
-  $paths['*/imce'] = TRUE;
-
-  $paths['moha/*/add'] = TRUE;
-
-  return $paths;
-}
-
-/**
- * Implements hook_preprocess().
- */
-function moha_preprocess(&$variables, $hook) {
-
-}
-
-/**
- * Get tid from term name.
- *
- * @param $term_name
- * @param null $vocabulary
- *
- * @return bool
- */
-function moha_get_tid_from_name($term_name, $vocabulary = NULL){
-  $terms = taxonomy_get_term_by_name($term_name, $vocabulary);
-  if (empty($terms)){
-    return FALSE;
-  }
-
-  $term = array_shift($terms);
-  return $term->tid;
-}
-
-
-/**
- * Create new profile2 file type for user.
- *
- * @param string $profile2_name
- *   Profile2 name.
- */
-function _moha_create_profile2($profile2_name = MOHA) {
-  $moha_profile = entity_create('profile2_type', array(
-    'type' => moha_h2m($profile2_name),
-    'label' => $profile2_name,
-    'module' => moha_h2m($profile2_name),
-    'data' => array(
-      'registration' => FALSE,
-      'use_page' => TRUE,
-    ),
-  ));
-  $moha_profile->save();
-}
-
-/**
  * Create fields and instances per returned array by passed function.
  *
  * @param $get_fields_and_instances
@@ -400,31 +368,238 @@ function moha_create_fields_and_instances($get_fields_and_instances) {
 }
 
 /**
+ * Returns field and instance definitions per types which requires body field.
+ *
+ * @param $types
+ *   'entity'
+ *   'bundle'
+ *
+ * @return array
+ *   Body fields array.
+ */
+function moha_generate_description_fields_and_instances($types) {
+
+  $fields = array();
+
+  foreach ($types as $type) {
+    $fields[] = array(
+      'label' => 'Description',
+      'field_name' => 'moha_description',
+      'type' => 'text_with_summary',
+      'entity_type' => $type['entity'],
+      'bundle' => $type['bundle'],
+      'widget' => array('type' => 'text_textarea_with_summary'),
+      'settings' => array('display_summary' => TRUE),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'text_default',
+        ),
+        'teaser' => array(
+          'label' => 'hidden',
+          'type' => 'text_summary_or_trimmed',
+        ),
+      ),
+    );
+  }
+
+  return $fields;
+}
+
+/**
+ * Add vertical tabs on passed form.
+ *
+ * @param $form
+ */
+function moha_form_add_vertical_tabs(&$form){
+  $form['vertical_tabs'] = array(
+    '#type' => 'vertical_tabs',
+  );
+}
+
+/**
+ * Add a tab named $tab_name on vertical_tabs.
+ *
+ * @param $form
+ *
+ * @param $tab_name string
+ *   tab machine name
+ */
+function moha_form_add_vertical_tab(&$form, $tab_name) {
+  if (!isset($form['vertical_tabs'])){
+    moha_form_add_vertical_tabs($form);
+  }
+
+  $form[$tab_name] = array(
+    '#type' => 'fieldset',
+    '#title' => t(drupal_ucfirst($tab_name)),
+    '#collapsible' => TRUE,
+    '#group' => 'vertical_tabs',
+  );
+}
+
+/**
+ * Attach fields wrapper to passed form.
+ *
+ * @param $form
+ *
+ * @param $vertical_tabs
+ *   if add entity fields on vertical tabs
+ *
+ */
+function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
+
+  $form['fields'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Fields'),
+    '#collapsible' => TRUE,
+  );
+
+  if ($vertical_tabs) {
+    if (!isset($form['vertical_tabs'])){
+      moha_form_add_vertical_tabs($form);
+    }
+    
+    $form['fields']['#group'] = 'vertical_tabs';
+  }
+
+  $form['fields']['hint'] = array(
+    '#markup' =>'<div class="moha-admin-form-hint">Hint: Assets may be uploaded in <a target="_blank" href="/imce">imce</a> first.</div>',
+  );
+
+  $form['fields']['wrapper'] = array(
+    '#type' => 'container',
+  );
+}
+
+/**
+ * Returns options array per vocabulary.
+ *
+ * @param string $vocabulary_name
+ *
+ * @return array
+ */
+function moha_form_options_from_vocabulary($vocabulary_name = '') {
+  $options = array();
+
+  if (empty(trim($vocabulary_name))) {
+    return $options;
+  }
+
+  $vocabulary = taxonomy_vocabulary_machine_name_load($vocabulary_name);
+
+  if (!empty($vocabulary) && !empty($vocabulary->vid)) {
+    $terms = taxonomy_get_tree($vocabulary->vid);
+
+    foreach ($terms as $term) {
+      $options[$term->tid] = $term->name;
+    }
+  }
+
+  return $options;
+}
+
+/**
+ * Create new profile2 file type for user.
+ *
+ * @param string $profile2_name
+ *   Profile2 name.
+ */
+function moha_create_profile2($profile2_name = MOHA) {
+  $moha_profile = entity_create('profile2_type', array(
+    'type' => moha_h2m($profile2_name),
+    'label' => $profile2_name,
+    'module' => moha_h2m($profile2_name),
+    'data' => array(
+      'registration' => FALSE,
+      'use_page' => TRUE,
+    ),
+  ));
+
+  /** @var $moha_profile Profile */
+  $moha_profile->save();
+}
+
+/**
+ * Creates taxonomies as passed array.
+ *
+ * @param $taxonomies array
+ *   'name'
+ *   'description'
+ *   'machine_name'
+ *   'terms'
+ */
+function moha_create_taxonomies($taxonomies = array()) {
+  foreach ($taxonomies as $taxonomy) {
+    // If not exists, create Taxonomy vocabulary.
+    $vocabulary = taxonomy_vocabulary_machine_name_load($taxonomy['machine_name']);
+
+    if (empty($vocabulary)) {
+      $vocabulary = (object)$taxonomy;
+      taxonomy_vocabulary_save($vocabulary);
+    }
+
+    // Creates terms.
+    foreach ($taxonomy['terms'] as $term_value) {
+      $terms = taxonomy_get_term_by_name($term_value, $vocabulary->machine_name);
+
+      if (empty($terms)){
+        $term = new stdClass();
+
+        $term->vid = $vocabulary->vid;
+        $term->name = $term_value;
+
+        taxonomy_term_save($term);
+      }
+    }
+  }
+}
+
+/**
+ * Returns tid by term name.
+ *
+ * @param $term_name
+ *
+ * @param $vocabulary
+ *
+ * @return bool
+ */
+function moha_tid_by_term_name($term_name, $vocabulary = NULL){
+  $terms = taxonomy_get_term_by_name($term_name, $vocabulary);
+  if (empty($terms)){
+    return FALSE;
+  }
+
+  $term = array_shift($terms);
+  return $term->tid;
+}
+
+/**
+ * Returns term name by tid.
+ *
+ * @param $tid string
+ *   taxonomy id.
+ *
+ * @return string
+ *   taxonomy name.
+ */
+function moha_term_name_by_tid($tid) {
+  $term = taxonomy_term_load($tid);
+  if ($term) {
+    $name = $term->name;
+  }
+  else {
+    $name = '';
+  }
+  return $name;
+}
+
+/**
  * @param $node_type string
  *
  */
 function moha_hide_node_comment($node_type){
-
   variable_set('comment_' . $node_type, COMMENT_NODE_HIDDEN);
-}
-
-/**
- * Generates and returns nonce string
- *
- * @param int $length
- *
- * @return string
- */
-function moha_nonce($length = 16) {
-
-  // potential characters
-  $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-  $str = "";
-  for ($i = 0; $i < $length; $i++) {
-    $str .= $chars[mt_rand(0, strlen($chars) - 1)];
-  }
-  return $str;
 }
 
 /**
@@ -443,13 +618,116 @@ function moha_entity_wrapper_debug($w) {
 }
 
 /**
- * @param $status_array array
- * @param $status_value string
+ * Get drupal variable which is inform of array.
  *
- * @throws \InvalidArgumentException
+ * @param $variable_name
+ * @param $key
+ * @param $default string
+ *
+ * @return string
  */
-function moha_status_key($status_array = array(), $status_value) {
-  return array_search($status_value, $status_array);
+function moha_array_variable_get($variable_name, $key, $default = "") {
+  $values = variable_get($variable_name);
+
+  if (empty($values[$key])) {
+    return $default;
+  }
+  else {
+    return $values[$key];
+  }
+}
+
+/**
+ * Set drupal variable which is inform of array.
+ *
+ * @param $variable_name
+ *  Drupal variable name which is stored
+ * @param $key
+ *  Key name in array.
+ * @param $value
+ *  Value which will be set to $key.
+ */
+function moha_array_variable_set($variable_name, $key, $value = ""){
+  $values = variable_get($variable_name);
+  $values[$key] = $value;
+  variable_set($variable_name, $values);
+}
+
+/**
+ * Return block translated string.
+ *
+ * @param $variable_name
+ * @param
+ * @param
+ * @param
+ */
+function moha_i18n_value($variable_name, $module, $delta, $default = '') {
+  $value = variable_get($variable_name, $default);
+
+  if (function_exists('i18n_string')) {
+    $value = i18n_string('blocks:' . $module . ':' . $delta . ':' . $variable_name, $value, array(
+      'format' => I18N_STRING_FILTER_XSS,
+    ));
+  }
+
+  return $value;
+}
+
+/**
+ * Stop request processing when unrecoverable or critical error occurs.
+ *
+ * @param $e \Exception
+ *  Exception why processing need be ended up.
+ *
+ * @param $status_code int
+ *  Customized http status code.
+ */
+function moha_response_error(Exception $e = NULL, $status_code = 503) {
+  drupal_add_http_header('Status', $status_code . ' Service unavailable');
+
+  if ($e != NULL) {
+    print $e->getMessage();
+  }
+
+  drupal_exit();
+}
+
+/**
+ * Shows error message when exception occurs for administrator.
+ *
+ * @param \Exception $e
+ *   occurring exception.
+ *
+ * @param string $message_type
+ *  (optional) The message's type. Defaults to 'error'.
+ *  These values are supported:
+ *    - 'status'
+ *    - 'warning'
+ *    - 'error'
+ */
+function moha_show_exception(Exception $e, $message_type = 'error') {
+  drupal_set_message(t('Exception: %msg', array('%msg' => $e->getMessage())), $message_type);
+}
+
+/* Common functions. */
+
+/**
+ * Generates and returns nonce string
+ *
+ * @param int $length
+ *
+ * @return string
+ */
+function moha_nonce($length = 16) {
+
+  // potential characters
+  $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  $str = "";
+  for ($i = 0; $i < $length; $i++) {
+    $str .= $chars[mt_rand(0, strlen($chars) - 1)];
+  }
+  return $str;
 }
 
 /**
@@ -491,113 +769,52 @@ function moha_an2e($array, $key, $default = '') {
 }
 
 /**
- * Set drupal variable which is inform of array.
+ * Helper that generates a machine name using a provided human readable name.
  *
- * @param $variable_name
- *  Drupal variable name which is stored
- * @param $key
- *  Key name in array.
- * @param $value
- *  Value which will be set to $key.
- *
- */
-function moha_array_variable_set($variable_name, $key, $value = ""){
-  $values = variable_get($variable_name);
-  $values[$key] = $value;
-  variable_set($variable_name, $values);
-}
-
-/**
- * Get drupal variable which is inform of array.
- *
- * @param $variable_name
- * @param $key
- * @param $default string
+ * @param string $human_name
+ *   Human readable name.
  *
  * @return string
+ *   Machine name cleaned-up of any special chars.
  */
-function moha_array_variable_get($variable_name, $key, $default = "") {
-  $values = variable_get($variable_name);
+function moha_h2m($human_name) {
 
-  if (empty($values[$key])) {
-    return $default;
+  $string_mapping = &drupal_static(__FUNCTION__);
+
+  if(empty($string_mapping) || !isset($string_mapping[$human_name])){
+    $machine_name = strtolower($human_name);
+    $machine_name = preg_replace('@[^a-z0-9_]+@', '_', $machine_name);
+    $string_mapping[$human_name] = $machine_name;
   }
   else {
-    return $values[$key];
+    $machine_name = $string_mapping[$human_name];
   }
+
+  return $machine_name;
 }
 
 /**
- * Return block translated string.
+ * Returns array of status value -> literal label.
  *
- * @param $variable_name
- * @param
- * @param
- * @param
- */
-function moha_i18n_value($variable_name, $module, $delta, $default = '') {
-  $value = variable_get($variable_name, $default);
-
-  if (function_exists('i18n_string')) {
-    $value = i18n_string('blocks:' . $module . ':' . $delta . ':' . $variable_name, $value, array(
-      'format' => I18N_STRING_FILTER_XSS,
-    ));
-  }
-
-  return $value;
-}
-
-/**
- * Returns taxonomy name by tid.
+ * @param $value
+ *  if value is passed, return related key.
  *
- * @param $tid string
- *   taxonomy id.
+ * @return mixed
  */
-function moha_taxonomy_name_by_id($tid) {
-  $term = taxonomy_term_load($tid);
-  if ($term) {
-    $name = $term->name;
+function moha_array_key_by_value($value = "", $array = array()) {
+
+  if (trim($value) == "") {
+    throw new InvalidArgumentException('$value is not specified.');
   }
   else {
-    $name = '';
+    $key = array_search($value, $array);
+    if ($key === false) {
+      throw new InvalidArgumentException($value . " is not contained in array.");
+    }
+    else {
+      return $key;
+    }
   }
-  return $name;
-}
-
-/**
- * Shows error message when exception occurs for administrator.
- *
- * @param \Exception $e
- *   occurring exception.
- *
- * @param string $message_type
- *  (optional) The message's type. Defaults to 'error'.
- *  These values are supported:
- *    - 'status'
- *    - 'warning'
- *    - 'error'
- */
-function moha_show_exception(Exception $e, $message_type = 'error') {
-  drupal_set_message(t('Exception: %msg', array('%msg' => $e->getMessage())), $message_type);
-}
-
-/**
- * Stop request processing when unrecoverable or critical error occurs.
- *
- * @param $e \Exception
- *  Exception why processing need be ended up.
- *
- * @param $status_code int
- *  Customized http status code.
- */
-function moha_response_error(Exception $e = NULL, $status_code = 503) {
-  drupal_add_http_header('Status', $status_code . ' Service unavailable');
-
-  if ($e != NULL) {
-    print $e->getMessage();
-  }
-
-  drupal_exit();
 }
 
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.

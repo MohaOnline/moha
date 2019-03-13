@@ -198,6 +198,7 @@ function moha_map_node_type_insert($info) {
     // Save our changes to the body field instance.
     field_update_instance($body_instance);
 
+    /** @see _moha_map_fields_and_instances() */
     moha_create_fields_and_instances('_moha_map_fields_and_instances');
 
     // Hide comment for Moha Map by default.

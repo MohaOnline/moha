@@ -3,7 +3,7 @@
  * @file
  */
 
-class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
+class MohaITSServiceEntityAdminController extends EntityDefaultUIController {
 
   /**
    * {@inheritdoc}
@@ -14,14 +14,14 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
 
     $form['filter'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Groups Filter'),
+      '#title' => t('Service Filter'),
       '#weight' => -99999,
       '#collapsed' => TRUE,
       '#collapsible' => TRUE,
     );
 
     $form['filter']['user'] = array(
-      '#title' => t('Representative name'),
+      '#title' => t('Owner name'),
       '#type' => 'entityreference',
       '#description' => 'Filter by group or company representative, enter representative\'s name then choose from drop-down menu.',
       '#required' => FALSE,
@@ -89,10 +89,6 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
    */
   public function overviewTable($conditions = []) {
 
-    if (!empty($_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER])) {
-      $conditions['rid'] = $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER];
-    }
-
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', $this->entityType);
     $query->propertyOrderBy('updated','DESC');
@@ -137,8 +133,7 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
 
 
     $additional_header[] = t('Full name');
-    $additional_header[] = t('Name');
-    $additional_header[] = t('Local name');
+    $additional_header[] = t('Name (Machine name)');
     $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
     $additional_header[] = t('Created');
@@ -147,10 +142,6 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
 
     // Replace label with ID.
     array_unshift($header, t('ID'));
-
-    if (!empty($this->entityInfo['exportable'])) {
-      $header[] = t('Status');
-    }
 
     // Add operations with the right colspan.
     $header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount()+1);
@@ -169,7 +160,6 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
 
     // Entity machine name.
     $additional_cols[] = $entity->name;
-    $additional_cols[] = $entity->local_name;
 
     // Status
     $additional_cols[] = MOHA__STATUS__ENTITY[$entity->status];

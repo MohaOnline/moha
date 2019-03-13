@@ -33,14 +33,94 @@ define('MOHA_ITS_GROUP', 'Moha ITS Group');
 define('__MOHA_ITS_GROUP', 'moha_its_group');
 
 /**
- * Entity Machine name: moha_its_bu.
+ * Entity human name: Moha ITS Infrastructure.
  */
-define('__MOHA_ITS_BU', 'moha_its_bu');
+define('MOHA_ITS_INFRASTRUCTURE', 'Moha ITS Infrastructure');
+
+/**
+ * Entity machine name: moha_its_infrastructure.
+ */
+define('__MOHA_ITS_INFRASTRUCTURE', 'moha_its_infrastructure');
+
+/**
+ * Entity human name: Moha ITS Consumption.
+ */
+define('MOHA_ITS_CONSUMPTION', 'Moha ITS Consumption');
+
+/**
+ * Entity machine name: moha_its_consumption.
+ */
+define('__MOHA_ITS_CONSUMPTION', 'moha_its_consumption');
+
+/**
+ * Entity human name: Moha ITS Department.
+ */
+define('MOHA_ITS_DEPARTMENT', 'Moha ITS Department');
+
+/**
+ * Entity machine name: moha_its_department.
+ */
+define('__MOHA_ITS_DEPARTMENT', 'moha_its_department');
+
+/**
+ * Entity human name: Moha ITS Solution.
+ */
+define('MOHA_ITS_SOLUTION', 'Moha ITS Solution');
+
+/**
+ * Entity machine name: moha_its_solution.
+ */
+define('__MOHA_ITS_SOLUTION', 'moha_its_solution');
+
+/**
+ * Entity human name: Moha ITS Service.
+ */
+define('MOHA_ITS_SERVICE', 'Moha ITS Service');
+
+/**
+ * Entity machine name: moha_its_service.
+ */
+define('__MOHA_ITS_SERVICE', 'moha_its_service');
+
+/**
+ * Entity human name: Moha ITS Operation.
+ */
+define('MOHA_ITS_OPERATION', 'Moha ITS Operation');
+
+/**
+ * Entity machine name: moha_its_operation.
+ */
+define('__MOHA_ITS_OPERATION', 'moha_its_operation');
+
+/**
+ * Entity human name: Moha ITS Status.
+ */
+define('MOHA_ITS_STATUS', 'Moha ITS Status');
+
+/**
+ * Entity machine name: moha_its_status.
+ */
+define('__MOHA_ITS_STATUS', 'moha_its_status');
 
 /**
  * Permission: Edit any Moha ITS Groups.
  */
-define('MOHA_ITS__PERMISSION__EDIT_ANY_GROUPS', 'edit any moha its groups');
+define('MOHA_ITS__PERMISSION__EDIT_ANY_GROUP', 'edit any moha its group');
+
+/**
+ * Permission: Edit own Moha ITS Groups.
+ */
+define('MOHA_ITS__PERMISSION__EDIT_OWN_GROUP', 'edit own moha its group');
+
+/**
+ * Permission: Edit any Moha ITS Service.
+ */
+define('MOHA_ITS__PERMISSION__EDIT_ANY_SERVICE', 'edit any moha its service');
+
+/**
+ * Permission: Edit any Moha ITS Operation.
+ */
+define('MOHA_ITS__PERMISSION__EDIT_ANY_OPERATION', 'edit any moha its operation');
 
 /**
  * Moha ITS Group Admin UI Filter value: owner.
@@ -51,6 +131,31 @@ define('MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER', __MOHA_ITS_GROUP . '__admin_ui_
  * Moha ITS URL: Moha ITS Group management page.
  */
 define('MOHA_ITS__URL__GROUP_ADMIN_UI', 'admin/moha/its/groups');
+
+/**
+ * Moha ITS URL: Moha ITS Service management page.
+ */
+define('MOHA_ITS__URL__SERVICE_ADMIN_UI', 'admin/moha/its/services');
+
+/**
+ * Moha ITS URL: Moha ITS Group management page.
+ */
+define('MOHA_ITS__URL__OPERATION_ADMIN_UI', 'admin/moha/its/operations');
+
+/**
+ * Moha ITS Vocabulary: Infrastructure types.
+ */
+define('MOHA_ITS__VOCABULARY__INFRASTRUCTURE_TYPES', 'moha_its__vocabulary__infrastructure_types');
+
+/**
+ * Moha ITS Vocabulary: Service types.
+ */
+define('MOHA_ITS__VOCABULARY__SERVICE_TYPES', 'moha_its__vocabulary__service_types');
+
+/**
+ * Moha ITS Vocabulary: Operation types.
+ */
+define('MOHA_ITS__VOCABULARY__OPERATION_TYPES', 'moha_its__vocabulary__operation_types');
 
 /**
  * Implements hook_entity_info().
@@ -69,6 +174,7 @@ function moha_its_entity_info() {
       'id' => 'id',
       'label' => 'full_name',
       'revision' => 'vid',
+//    'bundle' => 'type',
     ),
     //
     'label callback' => 'entity_class_label',
@@ -89,8 +195,8 @@ function moha_its_entity_info() {
 
     "access callback" => "_moha_its_group_entity_admin_access_callback",
 
-    'entity class' => 'MohaITSGroupEntity',
-    'controller class' => 'MohaITSGroupEntityController',
+    'entity class' => 'MohaITSServiceEntity',
+    'controller class' => 'MohaITSServiceEntityController',
     // Uses defaultUri method of entity class to generate entity URL.
     'uri callback' => 'entity_class_uri',
 
@@ -102,7 +208,112 @@ function moha_its_entity_info() {
         'plural label' => t(MOHA_ITS_GROUP . 's'),
         'admin' => array(
           'path' => MOHA_ITS__URL__GROUP_ADMIN_UI,
-          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_GROUPS),
+          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_GROUP),
+        ),
+      ),
+    ),
+//    'bundle keys' => array(
+//      'bundle' => 'type',
+//    ),
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
+  );
+
+  $items[__MOHA_ITS_SERVICE] = array(
+    'label' => t(MOHA_ITS_SERVICE),
+    'plural label' => t(MOHA_ITS_SERVICE . 's'), // Moha ITS Groups
+    'base table' => __MOHA_ITS_SERVICE,
+    'revision table' => __MOHA_ITS_SERVICE . '_revision',
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'full_name',
+      'revision' => 'vid',
+    ),
+    //
+    'label callback' => 'entity_class_label',
+
+    /** @see entity_crud_hook_entity_info() */
+    "admin ui" => array(
+      /* Moha ITS Groups management page URL & Class. */
+      "path" => MOHA_ITS__URL__SERVICE_ADMIN_UI,
+      "controller class" => "MohaITSServiceEntityAdminController",
+
+      /** @see entity_ui_get_form() */
+      /* Moha ITS Groups add / edit forms containing file. */
+      "file" => "includes/MohaITSServiceEntity.form.inc",  //
+    ),
+
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    "module" => __MOHA_ITS,
+
+    "access callback" => "_moha_its_group_entity_admin_access_callback",
+
+    'entity class' => 'MohaITSServiceEntity',
+    'controller class' => 'MohaITSServiceEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
+    'uri callback' => 'entity_class_uri',
+
+    // Make entity fieldable; @see field_attach_form to attach added fields.
+    'fieldable' => TRUE,
+    'bundles' => array(
+      __MOHA_ITS_SERVICE => array(
+        'label' => t(MOHA_ITS_SERVICE),
+        'plural label' => t(MOHA_ITS_SERVICE . 's'),
+        'admin' => array(
+          'path' => MOHA_ITS__URL__SERVICE_ADMIN_UI,
+          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_SERVICE),
+        ),
+      ),
+    ),
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
+  );
+
+  $items[__MOHA_ITS_OPERATION] = array(
+    'label' => t(MOHA_ITS_OPERATION),
+    'plural label' => t(MOHA_ITS_OPERATION . 's'), // Moha ITS Groups
+    'base table' => __MOHA_ITS_OPERATION,
+    'revision table' => __MOHA_ITS_OPERATION . '_revision',
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'title',
+      'revision' => 'vid',
+    ),
+    //
+    'label callback' => 'entity_class_label',
+
+    /** @see entity_crud_hook_entity_info() */
+    "admin ui" => array(
+      /* Moha ITS Groups management page URL & Class. */
+      "path" => MOHA_ITS__URL__OPERATION_ADMIN_UI,
+      "controller class" => "MohaITSOperationEntityAdminController",
+
+      /** @see entity_ui_get_form() */
+      /* Moha ITS Groups add / edit forms containing file. */
+      "file" => "includes/MohaITSOperationEntity.form.inc",  //
+    ),
+
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    "module" => __MOHA_ITS,
+
+    "access callback" => "_moha_its_group_entity_admin_access_callback",
+
+    'entity class' => 'MohaITSOperationEntity',
+    'controller class' => 'MohaITSOperationEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
+    'uri callback' => 'entity_class_uri',
+
+    // Make entity fieldable; @see field_attach_form to attach added fields.
+    'fieldable' => TRUE,
+    'bundles' => array(
+      __MOHA_ITS_OPERATION => array(
+        'label' => t(MOHA_ITS_OPERATION),
+        'plural label' => t(MOHA_ITS_OPERATION . 's'),
+        'admin' => array(
+          'path' => MOHA_ITS__URL__OPERATION_ADMIN_UI,
+          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_OPERATION),
         ),
       ),
     ),
@@ -115,39 +326,26 @@ function moha_its_entity_info() {
 }
 
 /**
- * Returns array of status value -> literal label.
- *
- * @param $status_value
- *  if value is passed, return related key.
- *
- * @return mixed
- *
- * @throws \InvalidArgumentException
+ * Implements hook_menu().
  */
-function moha_its_group_entity_status($status_value = "") {
-
-  /* Status Key <-> Status Text */
-  static $status_values = array(
-    1 => 'Active',
-    2 => 'Disabled',
-    3 => 'Deleted',
+function moha_its_menu() {
+  $items["admin/moha/its"] = array(
+    'title' => 'Moha ITS',
+    'description' => t('Moha IT Steward.'),
+    'page callback' => 'system_admin_menu_block_page',
+    'weight' => -10,
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
   );
 
-  if ($status_value == "") {
-    return $status_values;
-  }
-  else {
-    $key = array_search($status_value, $status_values);
-    if ($key === false) {
-      throw new InvalidArgumentException("Passed status doesn't exist.");
-    }
-    else {
-      return $key;
-    }
-  }
+  return $items;
 }
 
 /**
+ * Judge if user has permission to access Group management page.
+ *
  * @param $op
  * @param $entity object
  * @param $account object
@@ -161,7 +359,7 @@ function _moha_its_group_entity_admin_access_callback($op, $entity = NULL, $acco
     return TRUE;
   }
 
-  if (user_access(MOHA_ITS__PERMISSION__EDIT_ANY_GROUPS, $account)) {
+  if (user_access(MOHA_ITS__PERMISSION__EDIT_ANY_GROUP, $account)) {
     return TRUE;
   }
 
@@ -183,8 +381,42 @@ function moha_its_group_entity_exists($value){
  */
 function moha_its_permission() {
   return array(
-    MOHA_ITS__PERMISSION__EDIT_ANY_GROUPS => array(
-      'title' => 'Edit Any Moha ITS Groups',
+    MOHA_ITS__PERMISSION__EDIT_ANY_GROUP => array(
+      'title' => 'Edit Any Moha ITS Group',
+    ),
+    MOHA_ITS__PERMISSION__EDIT_OWN_GROUP => array(
+      'title' => 'Edit Own Moha ITS Group',
     ),
   );
+}
+
+/**
+ * Returns body field definitions for moha_its_department, moha_its_solution,
+ * moha_its_service, moha_its_operation.
+ *
+ * @return array
+ */
+function moha_its_fields_and_instances() {
+  $types = array(
+//    array(
+//      'entity' => __MOHA_ITS_DEPARTMENT,
+//      'bundle' => __MOHA_ITS_DEPARTMENT,
+//    ),
+//    array(
+//      'entity' => __MOHA_ITS_SOLUTION,
+//      'bundle' => __MOHA_ITS_SOLUTION,
+//    ),
+    array(
+      'entity' => __MOHA_ITS_SERVICE,
+      'bundle' => __MOHA_ITS_SERVICE,
+    ),
+    array(
+      'entity' => __MOHA_ITS_OPERATION,
+      'bundle' => __MOHA_ITS_OPERATION,
+    ),
+  );
+
+  $fields = moha_generate_description_fields_and_instances($types);
+
+  return $fields;
 }

@@ -82,6 +82,12 @@ function moha_its_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'description' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Descriptions of group / company.',
+        'not null' => FALSE,
+      ),
       'comment' => array(
         'type' => 'text', // Can't have default value.
         'size' => 'big',
@@ -167,6 +173,398 @@ function moha_its_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'description' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Descriptions of group / company.',
+        'not null' => FALSE,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      )
+    ),
+    'primary key' => array('vid'),
+  );
+
+  // Entity storing table: Moha ITS Service.
+  $schema['moha_its_service'] = array(
+    'description' => 'Stores service information of IT assets.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary Key: Unique ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'gid' => array(
+        'description' => 'Group / Company ID which this service belong to.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'sid' => array(
+        'description' => 'Solution ID Which current service is belong to.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'name' => array(
+        'description' => 'Service internal name (machine name).',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'full_name' => array(
+        'description' => 'Service full name (human name).',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'tid' => array(
+        'description' => 'Term ID of Service type.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'bid' => array(
+        'description' => 'Moha ITS Business ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who owns the service.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Service status.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  // Entity revision is handled by field API mostly.
+  $schema['moha_its_service_revision'] = array(
+    'description' => 'Stores revisions information for Moha ITS Service entity.',
+    'fields' => array(
+      'vid' => array(
+        'description' => 'Primary Key: Unique Revision ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'id' => array(
+        'description' => 'Parent ID - Group ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'gid' => array(
+        'description' => 'Group / Company ID which this service belong to.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'sid' => array(
+        'description' => 'Solution ID Which current service is belong to.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'name' => array(
+        'description' => 'Service internal name (machine name).',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'full_name' => array(
+        'description' => 'Service full name (human name).',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'tid' => array(
+        'description' => 'Term ID of Service type.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'bid' => array(
+        'description' => 'Moha ITS Business ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who represents the group.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Service status.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      )
+    ),
+    'primary key' => array('vid'),
+  );
+
+  // Operation.
+  $schema['moha_its_operation'] = array(
+    'description' => 'Stores Operation information of curtain service.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary Key: Unique ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'gid' => array(
+        'description' => 'Group / Company ID which this operation belong to.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'sid' => array(
+        'description' => 'Service ID Which current operation is belong to.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'title' => array(
+        'description' => 'Operation title: UID, Owner Name - 201709110924 [1.5].',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'tid' => array(
+        'description' => 'Term ID of Operation type.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who made the operation.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'date' => array(
+        'description' => 'Date time of the effort',
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'not null' => FALSE,
+        'sortable' => TRUE,
+        'default' => NULL,
+      ),
+      'duration' => array(
+        'description' => 'Duration time of operation, unit is hour.',
+        'type' => 'float',
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the record was updated.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the record was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  // Entity revision is handled by field API mostly.
+  $schema['moha_its_operation_revision'] = array(
+    'description' => 'Stores revisions of operation information.',
+    'fields' => array(
+      'vid' => array(
+        'description' => 'Primary Key: Unique Revision ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'id' => array(
+        'description' => 'Parent ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'gid' => array(
+        'description' => 'Group / Company ID which this operation belong to.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'sid' => array(
+        'description' => 'Service ID Which current operation is belong to.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'title' => array(
+        'description' => 'Operation title: UID, Owner Name - 201709110924 [1.5].',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'tid' => array(
+        'description' => 'Term ID of Operation type.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who made the operation.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'date' => array(
+        'description' => 'Start date time of the effort',
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'not null' => FALSE,
+        'sortable' => TRUE,
+        'default' => NULL,
+      ),
+      'duration' => array(
+        'description' => 'Duration time of operation.',
+        'type' => 'float',
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the record was updated.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the record was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
       'comment' => array(
         'type' => 'text', // Can't have default value.
         'size' => 'big',
@@ -182,51 +580,58 @@ function moha_its_schema() {
 
 /**
  * @inheritdoc
+ *
+ * @throws fieldException
  */
 function moha_its_install() {
-  _moha_its_taxonomy_prepare();
-}
+  $taxonomies = _moha_its_taxonomies();
+  moha_create_taxonomies($taxonomies);
 
+  /** @see moha_its_fields_and_instances() */
+  moha_create_fields_and_instances('moha_its_fields_and_instances');
+}
 
 /**
- * Prepares taxonomy for Moha ITS Infrastructure.
+ * Defines and returns Moha ITS taxonomy data.
  */
-function _moha_its_taxonomy_prepare() {
-
+function _moha_its_taxonomies() {
   $t = get_t();
 
-  // If not exists, create Moha ITS Infrastructure Types Taxonomy.
-  $vocabulary = taxonomy_vocabulary_machine_name_load('moha_its_infrastructure_types');
-
-  if (empty($vocabulary)) {
-
-    // Create a vocabulary named "Moha ITS Infrastructure Types".
-    $vocabulary = (object) array(
+  $taxonomies = array(
+    array(
       'name' => $t('Moha ITS Infrastructure Types'),
       'description' => $t('Specifies which type of platform current platform belong to.'),
-      'machine_name' => 'moha_its_infrastructure_types',
-    );
-
-    taxonomy_vocabulary_save($vocabulary);
-  }
-
-  $infra_types = array(
-    'Azure China',
-    'AWS China',
-    'Aliyun',
+      'machine_name' => MOHA_ITS__VOCABULARY__INFRASTRUCTURE_TYPES,
+      'terms' => array(
+        'Azure China',
+        'AWS China',
+        'Aliyun',
+        'On-premises',
+      ),
+    ),
+    array(
+      'name' => $t('Moha ITS Service Types'),
+      'description' => $t('Specifies service type.'),
+      'machine_name' => MOHA_ITS__VOCABULARY__SERVICE_TYPES,
+      'terms' => array(
+        'Virtual Machine',
+        'VPN',
+        'Redis',
+        'MySQL',
+      ),
+    ),
+    //
+    array(
+      'name' => $t('Moha ITS Operation Types'),
+      'description' => $t('Defines Moha ITS Operation Types.'),
+      'machine_name' => MOHA_ITS__VOCABULARY__OPERATION_TYPES,
+      'terms' => array(
+        'Routine Checking',
+        'Patching',
+        MOHA__TERM__CONFIGURATION,
+      ),
+    ),
   );
 
-  foreach ($infra_types as $infra_type) {
-    $terms = taxonomy_get_term_by_name($infra_type, $vocabulary->machine_name);
-
-    if (empty($terms)){
-      $term = new stdClass();
-
-      $term->vid = $vocabulary->vid;
-      $term->name = $infra_type;
-
-      taxonomy_term_save($term);
-    }
-  }
+  return $taxonomies;
 }
-

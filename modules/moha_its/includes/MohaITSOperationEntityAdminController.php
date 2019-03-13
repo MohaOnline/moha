@@ -3,7 +3,7 @@
  * @file
  */
 
-class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
+class MohaITSOperationEntityAdminController extends EntityDefaultUIController {
 
   /**
    * {@inheritdoc}
@@ -14,14 +14,14 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
 
     $form['filter'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Groups Filter'),
+      '#title' => t('Operation Filter'),
       '#weight' => -99999,
       '#collapsed' => TRUE,
       '#collapsible' => TRUE,
     );
 
     $form['filter']['user'] = array(
-      '#title' => t('Representative name'),
+      '#title' => t('Owner name'),
       '#type' => 'entityreference',
       '#description' => 'Filter by group or company representative, enter representative\'s name then choose from drop-down menu.',
       '#required' => FALSE,
@@ -96,7 +96,6 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', $this->entityType);
     $query->propertyOrderBy('updated','DESC');
-    $query->propertyOrderBy('status');
 
     // Add all conditions to query.
     foreach ($conditions as $key => $value) {
@@ -136,10 +135,9 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
   protected function overviewTableHeaders($conditions, $rows, $additional_header = []) {
 
 
-    $additional_header[] = t('Full name');
+    $additional_header[] = t('Title');
     $additional_header[] = t('Name');
     $additional_header[] = t('Local name');
-    $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
     $additional_header[] = t('Created');
 
@@ -165,14 +163,8 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
    */
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = []) {
 
-
-
     // Entity machine name.
-    $additional_cols[] = $entity->name;
-    $additional_cols[] = $entity->local_name;
-
-    // Status
-    $additional_cols[] = MOHA__STATUS__ENTITY[$entity->status];
+    $additional_cols[] = $entity->title;
 
     // Order updated and created time.
     $additional_cols[] = format_date($entity->updated, 'short');

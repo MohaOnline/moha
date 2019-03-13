@@ -16,6 +16,6 @@ function moha_saml_install() {
  *   Field Can't be created and stop update process.
  */
 function moha_saml_update_0700() {
-  _moha_create_profile2(MOHA_SAML);
+  moha_create_profile2(MOHA_SAML);
   moha_create_fields_and_instances('_moha_saml_profile2_fields_and_instances');
 }
