@@ -8,7 +8,7 @@
  *
  * CRUD support for moha_its_group entity.
  */
-class MohaITSOperationEntityController extends EntityAPIController{
+class MohaRACIEntityController extends EntityAPIController{
   /**
    * Builds a structured array representing the entity's content.
    * Invoked by entity_view function.

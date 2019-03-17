@@ -42,6 +42,11 @@ define('MOHA__CONSTANTS', array(
 ));
 
 /**
+ * Data format:
+ */
+define ('MOHA__DATETIME_FORMAT__SHORT', 'Y-m-d H:i');
+
+/**
  * Form OP: Save.
  */
 define('MOHA__FORM_OP__SAVE', 'Save');
@@ -57,9 +62,29 @@ define('MOHA__FORM_OP__UPDATE', 'Update');
 define('MOHA__FORM_OP__DELETE', 'Delete');
 
 /**
+ * Moha Term: Checking.
+ */
+define('MOHA__TERM__CHECKING', 'Checking');
+
+/**
  * Moha Term: Configuration.
  */
 define('MOHA__TERM__CONFIGURATION', 'Configuration');
+
+/**
+ * Moha Term: Backup.
+ */
+define('MOHA__TERM__BACKUP', 'Backup');
+
+/**
+ * Moha Term: Communication.
+ */
+define('MOHA__TERM__COMMUNICATION', 'Communication');
+
+/**
+ * Moha Term: Development.
+ */
+define('MOHA__TERM__DEVELOPMENT', 'Development');
 
 /**
  * Moha Status: configuration.
@@ -470,6 +495,42 @@ function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
   $form['fields']['wrapper'] = array(
     '#type' => 'container',
   );
+}
+
+/**
+ * Set configurations for inline container.
+ *
+ * @param $form
+ *   form element.
+ */
+function moha_form_set_inline_container(&$form) {
+  $form['#type'] = 'container';
+  $form['#attributes'] = array('class' => array('container-inline'));
+}
+
+/**
+ * Add inline wrapper without additional form element.
+ *
+ * @param $form_element
+ *   form element.
+ */
+function moha_form_apply_inline_wrapper(&$form_element) {
+  $form_element['#prefix'] = '<div class="container-inline">';
+  $form_element['#suffix'] = '</div>';
+}
+
+/**
+ * With of input on vertical tab is set to 100% in seven theme.
+ * This function will apply inline style on input element directly.
+ *
+ * @param $form_element
+ */
+function moha_form_input_fix_on_vertical_tab(&$form_element) {
+  global $theme_key;
+
+  if ($theme_key == 'seven') {
+    $form_element['#attributes']['style'] = 'width: inherit;';
+  }
 }
 
 /**

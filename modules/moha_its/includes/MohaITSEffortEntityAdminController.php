@@ -3,7 +3,7 @@
  * @file
  */
 
-class MohaITSOperationEntityAdminController extends EntityDefaultUIController {
+class MohaITSEffortEntityAdminController extends EntityDefaultUIController {
 
   /**
    * {@inheritdoc}
@@ -134,26 +134,20 @@ class MohaITSOperationEntityAdminController extends EntityDefaultUIController {
    */
   protected function overviewTableHeaders($conditions, $rows, $additional_header = []) {
 
-
+    $additional_header[] = t('ID');
     $additional_header[] = t('Title');
-    $additional_header[] = t('Name');
-    $additional_header[] = t('Local name');
+    $additional_header[] = t('Company');
+    $additional_header[] = t('Service');
+    $additional_header[] = t('Type');
+    $additional_header[] = t('Date');
+    $additional_header[] = t('Duration');
+    $additional_header[] = t('Owner');
     $additional_header[] = t('Updated');
     $additional_header[] = t('Created');
 
-    $header = $additional_header;
+    $additional_header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount()+1);
 
-    // Replace label with ID.
-    array_unshift($header, t('ID'));
-
-    if (!empty($this->entityInfo['exportable'])) {
-      $header[] = t('Status');
-    }
-
-    // Add operations with the right colspan.
-    $header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount()+1);
-
-    return $header;
+    return $additional_header;
   }
 
   /**
@@ -163,21 +157,29 @@ class MohaITSOperationEntityAdminController extends EntityDefaultUIController {
    */
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = []) {
 
-    // Entity machine name.
-    $additional_cols[] = $entity->title;
+    // From 3rd property column.
+    $group = entity_load_single(__MOHA_ITS_GROUP, $entity->gid);
+    $additional_cols[] = $group->full_name;
+
+    $service = entity_load_single(__MOHA_ITS_SERVICE, $entity->sid);
+    $additional_cols[] = $service->full_name;
+
+    $term = taxonomy_term_load($entity->tid);
+    $additional_cols[] = $term->name;
+
+    $additional_cols[] = $entity->date;
+    $additional_cols[] = $entity->duration;
+
+    $owner = user_load($entity->oid);
+    $additional_cols[] = $owner->name;
 
     // Order updated and created time.
     $additional_cols[] = format_date($entity->updated, 'short');
     $additional_cols[] = format_date($entity->created, 'short');
 
-    if ($entity->status == moha_array_key_by_value(MOHA__TERM__DISABLED, MOHA__STATUS__ENTITY)) {
-      $additional_cols[] = l('Deliver', 'admin/moha/commerce/order/deliver/' . $entity->id, ['attributes' => ['class' => ['button']]]);
-    }
-    else {
-      $additional_cols[] = '';
-    }
-
     $row = parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
+
+    // Add $id to head of $row.
     array_unshift($row, $id);
     return $row;
   }

@@ -12,7 +12,7 @@
  *
  * @return mixed form array.
  */
-function moha_its_operation_form($form, &$form_state, $group = NULL) {
+function moha_its_group_form($form, &$form_state, $group = NULL) {
 
   $form['id'] = array(
     '#type' => 'hidden',
@@ -101,14 +101,14 @@ function moha_its_operation_form($form, &$form_state, $group = NULL) {
 /**
  * Validate form input.
  */
-function moha_its_operation_form_validate($node, &$form_state) {
+function moha_its_group_form_validate($node, &$form_state) {
 
 }
 
 /**
  * Save order status.
  */
-function moha_its_operation_form_submit($form, &$form_state) {
+function moha_its_group_form_submit($form, &$form_state) {
 
   // Build entity from submission.
   $order = entity_ui_form_submit_build_entity($form, $form_state);
@@ -117,5 +117,5 @@ function moha_its_operation_form_submit($form, &$form_state) {
 
   /** @see \MohaITSServiceEntityController::save()*/
   $order->save();
-  $form_state['redirect'] = MOHA_ITS__URL__OPERATION_ADMIN_UI;
+  $form_state['redirect'] = MOHA_ITS__URL__GROUP_ADMIN_UI;
 }

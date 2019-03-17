@@ -12,6 +12,7 @@ dependencies[] = views_data_export
 dependencies[] = moha
 dependencies[] = entityreference
 dependencies[] = entityreference_autocomplete
+dependencies[] = date_popup
 
 files[] = includes/MohaITSGroupEntity.php
 files[] = includes/MohaITSGroupEntityAdminController.php
@@ -19,6 +20,6 @@ files[] = includes/MohaITSGroupEntityController.php
 files[] = includes/MohaITSServiceEntity.php
 files[] = includes/MohaITSServiceEntityAdminController.php
 files[] = includes/MohaITSServiceEntityController.php
-files[] = includes/MohaITSOperationEntity.php
-files[] = includes/MohaITSOperationEntityAdminController.php
-files[] = includes/MohaITSOperationEntityController.php
+files[] = includes/MohaITSEffortEntity.php
+files[] = includes/MohaITSEffortEntityAdminController.php
+files[] = includes/MohaITSEffortEntityController.php

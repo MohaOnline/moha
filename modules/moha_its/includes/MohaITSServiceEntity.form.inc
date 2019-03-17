@@ -93,7 +93,7 @@ function moha_its_service_form($form, &$form_state, $service = NULL) {
     '#default_value' => isset($service->oid)?$service->oid:'',
   );
 
-  if (!isset($service->is_new)) {
+  if (isset($service->is_new)) {
     moha_form_add_vertical_tab($form,'RACI');
 
     $form['RACI']['new'] = array(
@@ -104,35 +104,31 @@ function moha_its_service_form($form, &$form_state, $service = NULL) {
       '#collapsed' => TRUE,
     );
 
-    $form['RACI']['new']['inline'] = array(
-      '#type' => 'container',
-      '#attributes' => array('class' => array('container-inline')),
-    );
+    moha_form_set_inline_container($form['RACI']['new']['container']);
 
-    $form['RACI']['new']['inline']['user'] = array(
+    $raci_new_container = &$form['RACI']['new']['container'];
+
+    $raci_new_container['user'] = array(
       '#type' => 'textfield',
       '#title' => t('Name'),
     );
 
-    $form['RACI']['new']['inline']['role'] = array(
+    // fix input width in vertical tab.
+    moha_form_input_fix_on_vertical_tab($raci_new_container['user']);
+
+    $raci_new_container['role'] = array(
       '#title' => t('Role'),
       '#type' => 'select',
       '#empty_value' => '',
       '#options' => MOHA__STATUS__RACI,
     );
 
-    $form['RACI']['new']['inline']['submit'] = array(
+    $raci_new_container['submit'] = array(
       '#value' => t('Associate'),
       '#type' => 'submit',
     );
 
-    $form['RACI']['existing'] = array(
-      '#title' => t('Associated users'),
-      '#type' => 'fieldset',
-      '#collapsible' => TRUE,
-    );
-
-  }
+  } // RACI tab end.
 
   $form['actions'] = array(
     '#type' => 'actions',
@@ -165,7 +161,7 @@ function moha_its_service_form_submit($form, &$form_state) {
   /** @see \MohaITSServiceEntityController::save()*/
   $service->save();
 
-  field_attach_submit(__MOHA_ITS_SERVICE, $service, $form['description']['wrapper'], $form_state);
+  field_attach_submit(__MOHA_ITS_SERVICE, $service, $form['fields']['wrapper'], $form_state);
 
   $form_state['redirect'] = MOHA_ITS__URL__SERVICE_ADMIN_UI;
 }

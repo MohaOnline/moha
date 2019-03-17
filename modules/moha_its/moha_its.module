@@ -83,14 +83,14 @@ define('MOHA_ITS_SERVICE', 'Moha ITS Service');
 define('__MOHA_ITS_SERVICE', 'moha_its_service');
 
 /**
- * Entity human name: Moha ITS Operation.
+ * Entity human name: Moha ITS Effort.
  */
-define('MOHA_ITS_OPERATION', 'Moha ITS Operation');
+define('MOHA_ITS_EFFORT', 'Moha ITS Effort');
 
 /**
- * Entity machine name: moha_its_operation.
+ * Entity machine name: moha_its_effort.
  */
-define('__MOHA_ITS_OPERATION', 'moha_its_operation');
+define('__MOHA_ITS_EFFORT', 'moha_its_effort');
 
 /**
  * Entity human name: Moha ITS Status.
@@ -118,9 +118,9 @@ define('MOHA_ITS__PERMISSION__EDIT_OWN_GROUP', 'edit own moha its group');
 define('MOHA_ITS__PERMISSION__EDIT_ANY_SERVICE', 'edit any moha its service');
 
 /**
- * Permission: Edit any Moha ITS Operation.
+ * Permission: Edit any Moha ITS Effort.
  */
-define('MOHA_ITS__PERMISSION__EDIT_ANY_OPERATION', 'edit any moha its operation');
+define('MOHA_ITS__PERMISSION__EDIT_ANY_EFFORT', 'edit any moha its effort');
 
 /**
  * Moha ITS Group Admin UI Filter value: owner.
@@ -138,9 +138,9 @@ define('MOHA_ITS__URL__GROUP_ADMIN_UI', 'admin/moha/its/groups');
 define('MOHA_ITS__URL__SERVICE_ADMIN_UI', 'admin/moha/its/services');
 
 /**
- * Moha ITS URL: Moha ITS Group management page.
+ * Moha ITS URL: Moha ITS Effort management page.
  */
-define('MOHA_ITS__URL__OPERATION_ADMIN_UI', 'admin/moha/its/operations');
+define('MOHA_ITS__URL__EFFORT_ADMIN_UI', 'admin/moha/its/efforts');
 
 /**
  * Moha ITS Vocabulary: Infrastructure types.
@@ -153,9 +153,9 @@ define('MOHA_ITS__VOCABULARY__INFRASTRUCTURE_TYPES', 'moha_its__vocabulary__infr
 define('MOHA_ITS__VOCABULARY__SERVICE_TYPES', 'moha_its__vocabulary__service_types');
 
 /**
- * Moha ITS Vocabulary: Operation types.
+ * Moha ITS Vocabulary: Effort types.
  */
-define('MOHA_ITS__VOCABULARY__OPERATION_TYPES', 'moha_its__vocabulary__operation_types');
+define('MOHA_ITS__VOCABULARY__EFFORT_TYPES', 'moha_its__vocabulary__effort_types');
 
 /**
  * Implements hook_entity_info().
@@ -271,11 +271,11 @@ function moha_its_entity_info() {
     'views controller class' => 'EntityDefaultViewsController',
   );
 
-  $items[__MOHA_ITS_OPERATION] = array(
-    'label' => t(MOHA_ITS_OPERATION),
-    'plural label' => t(MOHA_ITS_OPERATION . 's'), // Moha ITS Groups
-    'base table' => __MOHA_ITS_OPERATION,
-    'revision table' => __MOHA_ITS_OPERATION . '_revision',
+  $items[__MOHA_ITS_EFFORT] = array(
+    'label' => t(MOHA_ITS_EFFORT),
+    'plural label' => t(MOHA_ITS_EFFORT . 's'), // Moha ITS Groups
+    'base table' => __MOHA_ITS_EFFORT,
+    'revision table' => __MOHA_ITS_EFFORT . '_revision',
     'entity keys' => array(
       'id' => 'id',
       'label' => 'title',
@@ -286,13 +286,13 @@ function moha_its_entity_info() {
 
     /** @see entity_crud_hook_entity_info() */
     "admin ui" => array(
-      /* Moha ITS Groups management page URL & Class. */
-      "path" => MOHA_ITS__URL__OPERATION_ADMIN_UI,
-      "controller class" => "MohaITSOperationEntityAdminController",
+      /* Moha ITS Operation management page URL & Class. */
+      "path" => MOHA_ITS__URL__EFFORT_ADMIN_UI,
+      "controller class" => "MohaITSEffortEntityAdminController",
 
       /** @see entity_ui_get_form() */
-      /* Moha ITS Groups add / edit forms containing file. */
-      "file" => "includes/MohaITSOperationEntity.form.inc",  //
+      /* Moha ITS Operation add / edit forms containing file. */
+      "file" => "includes/MohaITSEffortEntity.form.inc",  //
     ),
 
     // Declares which module contains related Class information, like Admin UI Class, etc.
@@ -300,20 +300,20 @@ function moha_its_entity_info() {
 
     "access callback" => "_moha_its_group_entity_admin_access_callback",
 
-    'entity class' => 'MohaITSOperationEntity',
-    'controller class' => 'MohaITSOperationEntityController',
+    'entity class' => 'MohaITSEffortEntity',
+    'controller class' => 'MohaITSEffortEntityController',
     // Uses defaultUri method of entity class to generate entity URL.
     'uri callback' => 'entity_class_uri',
 
     // Make entity fieldable; @see field_attach_form to attach added fields.
     'fieldable' => TRUE,
     'bundles' => array(
-      __MOHA_ITS_OPERATION => array(
-        'label' => t(MOHA_ITS_OPERATION),
-        'plural label' => t(MOHA_ITS_OPERATION . 's'),
+      __MOHA_ITS_EFFORT => array(
+        'label' => t(MOHA_ITS_EFFORT),
+        'plural label' => t(MOHA_ITS_EFFORT . 's'),
         'admin' => array(
-          'path' => MOHA_ITS__URL__OPERATION_ADMIN_UI,
-          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_OPERATION),
+          'path' => MOHA_ITS__URL__EFFORT_ADMIN_UI,
+          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_EFFORT),
         ),
       ),
     ),
@@ -392,7 +392,7 @@ function moha_its_permission() {
 
 /**
  * Returns body field definitions for moha_its_department, moha_its_solution,
- * moha_its_service, moha_its_operation.
+ * moha_its_service, moha_its_effort.
  *
  * @return array
  */
@@ -411,8 +411,8 @@ function moha_its_fields_and_instances() {
       'bundle' => __MOHA_ITS_SERVICE,
     ),
     array(
-      'entity' => __MOHA_ITS_OPERATION,
-      'bundle' => __MOHA_ITS_OPERATION,
+      'entity' => __MOHA_ITS_EFFORT,
+      'bundle' => __MOHA_ITS_EFFORT,
     ),
   );
 

@@ -388,8 +388,8 @@ function moha_its_schema() {
   );
 
   // Operation.
-  $schema['moha_its_operation'] = array(
-    'description' => 'Stores Operation information of curtain service.',
+  $schema[__MOHA_ITS_EFFORT] = array(
+    'description' => 'Stores Operation information.',
     'fields' => array(
       'id' => array(
         'description' => 'Primary Key: Unique ID.',
@@ -432,14 +432,22 @@ function moha_its_schema() {
         'unsigned' => TRUE,
         'default' => 0,
       ),
-      'oid' => array(
-        'description' => 'User ID who made the operation.',
+      'bid' => array(
+        'description' => 'Moha ITS Business ID.',
         'type' => 'int',
         'not null' => TRUE,
+        'unsigned' => TRUE,
         'default' => 0,
       ),
-      'uid' => array(
-        'description' => 'User ID who made the creation or update.',
+      'rid' => array(
+        'description' => 'Moha ITS Request ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who made the operation.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -458,6 +466,12 @@ function moha_its_schema() {
       'duration' => array(
         'description' => 'Duration time of operation, unit is hour.',
         'type' => 'float',
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
       ),
       'updated' => array(
         'description' => 'The Unix timestamp when the record was updated.',
@@ -482,7 +496,7 @@ function moha_its_schema() {
   );
 
   // Entity revision is handled by field API mostly.
-  $schema['moha_its_operation_revision'] = array(
+  $schema[__MOHA_ITS_EFFORT . '_revision'] = array(
     'description' => 'Stores revisions of operation information.',
     'fields' => array(
       'vid' => array(
@@ -521,6 +535,20 @@ function moha_its_schema() {
       ),
       'tid' => array(
         'description' => 'Term ID of Operation type.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'bid' => array(
+        'description' => 'Moha ITS Business ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'rid' => array(
+        'description' => 'Moha ITS Request ID.',
         'type' => 'int',
         'not null' => TRUE,
         'unsigned' => TRUE,
@@ -622,13 +650,15 @@ function _moha_its_taxonomies() {
     ),
     //
     array(
-      'name' => $t('Moha ITS Operation Types'),
-      'description' => $t('Defines Moha ITS Operation Types.'),
-      'machine_name' => MOHA_ITS__VOCABULARY__OPERATION_TYPES,
+      'name' => $t('Moha ITS Effort Types'),
+      'description' => $t('Defines Moha ITS Effort Types.'),
+      'machine_name' => MOHA_ITS__VOCABULARY__EFFORT_TYPES,
       'terms' => array(
-        'Routine Checking',
-        'Patching',
+        MOHA__TERM__BACKUP,
+        MOHA__TERM__CHECKING,
         MOHA__TERM__CONFIGURATION,
+        MOHA__TERM__COMMUNICATION,
+        MOHA__TERM__DEVELOPMENT,
       ),
     ),
   );

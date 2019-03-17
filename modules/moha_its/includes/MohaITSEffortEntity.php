@@ -3,13 +3,13 @@
  * @file
  */
 
-class MohaITSOperationEntity extends Entity {
+class MohaITSEffortEntity extends Entity {
 
   /**
    * @return array
    */
   protected function defaultUri() {
-    return array('path' => 'admin/moha/its/operations/manage/' . $this->identifier());
+    return array('path' => MOHA_ITS__URL__EFFORT_ADMIN_UI . '/manage/' . $this->identifier());
   }
 
   /**
