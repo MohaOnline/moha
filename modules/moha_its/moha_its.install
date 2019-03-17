@@ -389,7 +389,7 @@ function moha_its_schema() {
 
   // Operation.
   $schema[__MOHA_ITS_EFFORT] = array(
-    'description' => 'Stores Operation information.',
+    'description' => 'Stores Effort information.',
     'fields' => array(
       'id' => array(
         'description' => 'Primary Key: Unique ID.',
@@ -419,14 +419,14 @@ function moha_its_schema() {
         'default' => 0,
       ),
       'title' => array(
-        'description' => 'Operation title: UID, Owner Name - 201709110924 [1.5].',
+        'description' => 'Title: 2019-03-18 03:30 | admin(1) | 0.5.',
         'type' => 'varchar',
         'length' => 512,
         'not null' => TRUE,
         'default' => '',
       ),
       'tid' => array(
-        'description' => 'Term ID of Operation type.',
+        'description' => 'Term ID of Effort type.',
         'type' => 'int',
         'not null' => TRUE,
         'unsigned' => TRUE,
@@ -447,7 +447,7 @@ function moha_its_schema() {
         'default' => 0,
       ),
       'oid' => array(
-        'description' => 'User ID who made the operation.',
+        'description' => 'User ID who spent the effort.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -464,7 +464,7 @@ function moha_its_schema() {
         'default' => NULL,
       ),
       'duration' => array(
-        'description' => 'Duration time of operation, unit is hour.',
+        'description' => 'Duration time of effort, unit is hour.',
         'type' => 'float',
       ),
       'uid' => array(
@@ -527,14 +527,14 @@ function moha_its_schema() {
         'default' => 0,
       ),
       'title' => array(
-        'description' => 'Operation title: UID, Owner Name - 201709110924 [1.5].',
+        'description' => 'Title: 2019-03-18 03:30 | admin(1) | 0.5.',
         'type' => 'varchar',
         'length' => 512,
         'not null' => TRUE,
         'default' => '',
       ),
       'tid' => array(
-        'description' => 'Term ID of Operation type.',
+        'description' => 'Term ID of Effort type.',
         'type' => 'int',
         'not null' => TRUE,
         'unsigned' => TRUE,
@@ -555,19 +555,13 @@ function moha_its_schema() {
         'default' => 0,
       ),
       'oid' => array(
-        'description' => 'User ID who made the operation.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'uid' => array(
-        'description' => 'User ID who made the creation or update.',
+        'description' => 'User ID who spent the effort.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
       ),
       'date' => array(
-        'description' => 'Start date time of the effort',
+        'description' => 'Date time of the effort',
         'type' => 'datetime',
         'mysql_type' => 'DATETIME',
         'pgsql_type' => 'timestamp without time zone',
@@ -578,8 +572,14 @@ function moha_its_schema() {
         'default' => NULL,
       ),
       'duration' => array(
-        'description' => 'Duration time of operation.',
+        'description' => 'Duration time of effort, unit is hour.',
         'type' => 'float',
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
       ),
       'updated' => array(
         'description' => 'The Unix timestamp when the record was updated.',
