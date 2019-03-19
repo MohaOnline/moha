@@ -394,7 +394,7 @@ function moha_newsletter_form_moha_newsletter_node_form_alter(&$form, &$form_sta
       '#ajax'  => [
         // #ajax has two required keys: callback and wrapper.
         // 'callback' is a function that will be called when this element changes.
-        'callback' => '_moha_node_ajax_save_callback',
+        'callback' => 'moha_node_ajax_save_callback',
         // 'wrapper' is the HTML id of the page element that will be replaced.
         // Can't use form ID as after ajax process, ID will suffixed by '--2'.
         'wrapper'  => 'moha-node-changed-form-wrapper',

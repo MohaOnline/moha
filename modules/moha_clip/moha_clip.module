@@ -439,7 +439,7 @@ function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id
       '#ajax'  => array(
         // #ajax has two required keys: callback and wrapper.
         // 'callback' is a function that will be called when this element changes.
-        'callback' => '_moha_node_ajax_save_callback',
+        'callback' => 'moha_node_ajax_save_callback',
         // 'wrapper' is the HTML id of the page element that will be replaced.
         // Can't use form ID as after ajax process, ID will suffixed by '--2'.
         'wrapper'  => 'moha-node-changed-form-wrapper',
@@ -447,35 +447,6 @@ function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id
     );
   }
 
-}
-
-/**
- * Save node from ajax call.
- *
- * @param $form
- * @param $form_state
- *
- * @return mixed
- */
-function _moha_clip_ajax_save_callback($form, &$form_state){
-
-  // @See ajax_form_callback()
-  // valid will be proceed
-  // If error, directly returns.
-  if (form_get_errors()) {
-    return $form;
-  }
-
-  /*
-   * As ajax button doesn't have #submit function, so
-   * form_execute_handlers('submit', $form, $form_state);
-   * will not be invoked, node submit function need be manually executed
-   */
-  node_form_submit($form, $form_state);
-  // need write update time back to form to avoid node was changed by others issue.
-  $form['changed']['#value'] = $form_state['node']->changed;
-
-  return $form;
 }
 
 /**
