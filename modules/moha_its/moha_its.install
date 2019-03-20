@@ -646,6 +646,7 @@ function _moha_its_taxonomies() {
         'VPN',
         'Redis',
         'MySQL',
+        'Application',
       ),
     ),
     //

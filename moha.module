@@ -142,6 +142,11 @@ define('MOHA__STATUS__RACI', array(
 ));
 
 /**
+ * Message definition:
+ */
+define('MOHA__MSG__IMCE_MANAGE_ASSETS', '<div class="moha-admin-form-hint">Hint: Public assets may be uploaded in <a target="_blank" href="/imce">imce</a>, private assets could be uploaded them in <a target="_blank" href="/imce/private">imce/private</a>.</div>');
+
+/**
  *
  *
  * @return array
@@ -228,8 +233,7 @@ function moha_admin_paths() {
   $paths = array();
 
   /* Let imce use admin theme. */
-  $paths['imce'] = TRUE;
-  $paths['*/imce'] = TRUE;
+  /* Removed, same could be implemented in IMCE configuration. */
 
   $paths['moha/*/add'] = TRUE;
 
@@ -259,7 +263,6 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
 
   return;
 }
-
 
 /**
  * Hide menu link edit & delete button on menu items list page.
@@ -488,13 +491,26 @@ function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
     $form['fields']['#group'] = 'vertical_tabs';
   }
 
-  $form['fields']['hint'] = array(
-    '#markup' =>'<div class="moha-admin-form-hint">Hint: Assets may be uploaded in <a target="_blank" href="/imce">imce</a> first.</div>',
-  );
+  $form['fields']['hint'] = moha_form_element_prmpt_imce_usage();
 
   $form['fields']['wrapper'] = array(
     '#type' => 'container',
   );
+}
+
+/**
+ * Returns form element for prompt IMCE usage.
+ *
+ * @return array
+ */
+function moha_form_element_prmpt_imce_usage() {
+  $element = array(
+    '#prefix' => '<div class="moha-admin-form-hint">',
+    '#markup' => 'Hint: Assets may be uploaded in <a target="_blank" href="/imce">imce</a>, private assets could be uploaded in <a target="_blank" href="/imce/private">imce/private</a>.',
+    '#suffix' => '</div>'
+  );
+
+  return $element;
 }
 
 /**

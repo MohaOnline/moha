@@ -399,23 +399,27 @@ function moha_clip_form($node, &$form_state) {
     )
   ), 'setting');
 
-  return node_content_form($node, $form_state);
+  $form = node_content_form($node, $form_state);
+
+  $form['hint'] = moha_form_element_prmpt_imce_usage();
+
+  return $form;
 }
 
 /**
  * Implements hook_form_FORM_ID_alter().
- * add additional functions to moha_clip node form:
- *  - Silently Save: Ajax saving function for edit form.
+ *   FORM_ID: moha_clip_node_form.
+ *
+ * Adds additional functions to moha_clip node form:
  *  - View: Open page in separated browser tab / window.
+ *  - Silently Save: Ajax saving function for edit form.
  */
 function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id) {
 
   // Ajax saving function hasn't supported node-adding form.
   if ($form['nid']['#value'] != null) {
 
-    $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
-    $form['changed']['#suffix'] = '</div>';
-
+    // Adds additional action button: View.
     $nid = $form['nid']['#value'];
     $path = 'node/' . (int) $nid;
     $alias = drupal_get_path_alias($path);
@@ -429,6 +433,12 @@ function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id
         )
       ))
     );
+
+    // Adds additional action button: Silently Save.
+    // Other form fields needn't be updated,
+    // only changed (timestamp of last update) field will be replaced
+    $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
+    $form['changed']['#suffix'] = '</div>';
 
     $form['actions']['silent_save'] = array(
       /* Must use 'submit' to trigger form save, otherwise field value can't be proceed correctly. */
