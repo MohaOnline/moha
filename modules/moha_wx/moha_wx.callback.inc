@@ -61,7 +61,7 @@ EOF;
       $response = format_string($welcome_response_template, array(
         '@toUser' => $msg['FromUserName'],
         '@fromUser' => $msg['ToUserName'],
-        '@createTime' => time(),
+        '@createTime' => REQUEST_TIME,
         '@title' => $account['news_title'],
         '@description' => $account['news_digest'],
         '@picurl' => $account['news_cover'],
@@ -83,7 +83,7 @@ EOF;
       $response = format_string($text_template, array(
         '@toUser' => $msg['FromUserName'],
         '@fromUser' => $msg['ToUserName'],
-        '@createTime' => time(),
+        '@createTime' => REQUEST_TIME,
         '@content' => $account['text'],
       ));
 
