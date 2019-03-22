@@ -87,6 +87,11 @@ define('MOHA__TERM__COMMUNICATION', 'Communication');
 define('MOHA__TERM__DEVELOPMENT', 'Development');
 
 /**
+ * Moha Term: Uploading.
+ */
+define('MOHA__TERM__UPLOADING', 'Uploading');
+
+/**
  * Moha Status: configuration.
  */
 define('MOHA__TERM__DELETED', 'Deleted');
@@ -140,11 +145,6 @@ define('MOHA__STATUS__RACI', array(
   2 => MOHA__TERM__CONSULTED,
   3 => MOHA__TERM__INFORMED,
 ));
-
-/**
- * Message definition:
- */
-define('MOHA__MSG__IMCE_MANAGE_ASSETS', '<div class="moha-admin-form-hint">Hint: Public assets may be uploaded in <a target="_blank" href="/imce">imce</a>, private assets could be uploaded them in <a target="_blank" href="/imce/private">imce/private</a>.</div>');
 
 /**
  *
