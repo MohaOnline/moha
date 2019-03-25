@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_LIBS', 'Moha Fonts');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_LIBS', 'moha_fonts');
+
+/**
+ * moha_libs__variables.
+ */
+define('MOHA_LIBS__VARIABLES', __MOHA_LIBS . '__variables');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_libs
+ */
+define('MOHA_LIBS__PATH', drupal_get_path('module', __MOHA_LIBS));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_libs
+ */
+define('__MOHA_LIBS__PATH', base_path() . MOHA_LIBS__PATH);
+
+/**
+ * Implements hook_boot().
+ */
+function moha_libs_boot() {
+  libraries_load('moha_libs');
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function moha_libs_libraries_info() {
+  $libraries['moha_libs'] = array(
+    'name' => 'Moha Libraries',
+    'module_altered' => FALSE,
+    'library path' => MOHA_LIBS__PATH,
+    'files' => array(
+      'js' => array(),
+      'css' => array(),
+      'php' => array('vendor/autoload.php'),
+    ),
+  );
+
+  return $libraries;
+}

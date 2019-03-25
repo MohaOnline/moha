@@ -8,13 +8,13 @@ class MohaRACIEntityAdminController extends EntityDefaultUIController {
   /**
    * {@inheritdoc}
    *
-   * Provides filter form for moha_its_group on admin UI page.
+   * Provides filter form for moha_raci on admin UI page.
    */
   public function overviewForm($form, &$form_state) {
 
     $form['filter'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Groups Filter'),
+      '#title' => t('RACI Filter'),
       '#weight' => -99999,
       '#collapsed' => TRUE,
       '#collapsible' => TRUE,
@@ -25,7 +25,7 @@ class MohaRACIEntityAdminController extends EntityDefaultUIController {
       '#type' => 'entityreference',
       '#description' => 'Filter by group or company representative, enter representative\'s name then choose from drop-down menu.',
       '#required' => FALSE,
-      '#default_value' => isset($_SESSION[__MOHA_ITS_GROUP . '_FILTER_USER'])?$_SESSION[__MOHA_ITS_GROUP . '_FILTER_USER']:'',
+      '#default_value' => isset($_SESSION[__MOHA_RACI . '_FILTER_USER'])?$_SESSION[__MOHA_RACI . '_FILTER_USER']:'',
       '#era_entity_type' => 'user',
       '#era_cardinality' => 1,
       '#era_bundles' => array('user'),
@@ -68,10 +68,10 @@ class MohaRACIEntityAdminController extends EntityDefaultUIController {
     $op_key = array_search($op, $values);
 
     if($op_key == 'reset'){
-      $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER] = '';
+      $_SESSION[MOHA_RACI] = '';
     }
     else if ($op_key == 'filter') {
-      $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER] = isset($values['user']['entity_id'])?$values['user']['entity_id']:'';
+      $_SESSION[MOHA_RACI] = isset($values['user']['entity_id'])?$values['user']['entity_id']:'';
     }
     else if ($op_key == 'download') {
 
@@ -89,8 +89,8 @@ class MohaRACIEntityAdminController extends EntityDefaultUIController {
    */
   public function overviewTable($conditions = []) {
 
-    if (!empty($_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER])) {
-      $conditions['rid'] = $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER];
+    if (!empty($_SESSION[MOHA_RACI])) {
+      $conditions['rid'] = $_SESSION[MOHA_RACI];
     }
 
     $query = new EntityFieldQuery();

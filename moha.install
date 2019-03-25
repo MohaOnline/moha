@@ -18,8 +18,25 @@ function moha_update_0700() {
   moha_create_profile2(MOHA);
 }
 
+/**
+ * Create tables for raci entity.
+ */
+function moha_update_0701() {
+  $schemas = moha_schema();
+
+  foreach ($schemas as $schema_name => $schema_array) {
+    if (!db_table_exists($schema_name)) {
+      db_create_table($schema_name, $schema_array);
+    }
+  }
+}
+
+/**
+ * Implements hook_schema().
+ */
 function moha_schema(){
-  // Entity storing table: Moha ITS RACI.
+  /** @see MOHA__STATUS__RACI */
+  // Entity storing table: Moha RACI.
   $schema['moha_raci'] = array(
     'description' => 'Stores RACI information for Entity and User.',
     'fields' => array(
@@ -36,13 +53,6 @@ function moha_schema(){
         'unsigned' => TRUE,
         'default' => 0,
       ),
-      'eid' => array(
-        'description' => 'Which entity current record are associated with',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
       'entity' => array(
         'description' => 'Entity type (machine name).',
         'type' => 'varchar',
@@ -50,15 +60,31 @@ function moha_schema(){
         'not null' => TRUE,
         'default' => '',
       ),
-      'oid' => array(
-        'description' => 'Owner ID who associated with entity.',
+      'eid' => array(
+        'description' => 'Which entity current record are associated with',
         'type' => 'int',
         'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      // Owner could be any entity.
+      'owner_entity' => array(
+        'description' => 'Entity type (machine name) of owner.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'oid' => array(
+        'description' => 'Which ID owned this record.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
         'default' => 0,
       ),
       'raci' => array(
         /** @see MOHA__STATUS__RACI */
-        'description' => 'RACI Status.',
+        'description' => 'RACI Relationship.',
         'type' => 'int',
         'not null' => TRUE,
         'unsigned' => TRUE,
@@ -116,13 +142,6 @@ function moha_schema(){
         'unsigned' => TRUE,
         'default' => 0,
       ),
-      'eid' => array(
-        'description' => 'Which entity current record are associated with',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
       'entity' => array(
         'description' => 'Entity type (machine name).',
         'type' => 'varchar',
@@ -130,15 +149,31 @@ function moha_schema(){
         'not null' => TRUE,
         'default' => '',
       ),
-      'oid' => array(
-        'description' => 'Owner ID who associated with entity.',
+      'eid' => array(
+        'description' => 'Which entity current record are associated with',
         'type' => 'int',
         'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      // Owner could be any entity.
+      'owner_entity' => array(
+        'description' => 'Entity type (machine name) of owner.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'oid' => array(
+        'description' => 'Which ID owned this record.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
         'default' => 0,
       ),
       'raci' => array(
         /** @see MOHA__STATUS__RACI */
-        'description' => 'RACI Status.',
+        'description' => 'RACI Relationship.',
         'type' => 'int',
         'not null' => TRUE,
         'unsigned' => TRUE,

@@ -108,6 +108,11 @@ define('__MOHA_ITS_STATUS', 'moha_its_status');
 define('MOHA_ITS__PERMISSION__EDIT_ANY_GROUP', 'edit any moha its group');
 
 /**
+ * Permission: Edit any Moha ITS Infrastructure.
+ */
+define('MOHA_ITS__PERMISSION__EDIT_ANY_INFRASTRUCTURE', 'edit any moha its infrastructure');
+
+/**
  * Permission: Edit own Moha ITS Groups.
  */
 define('MOHA_ITS__PERMISSION__EDIT_OWN_GROUP', 'edit own moha its group');
@@ -131,6 +136,11 @@ define('MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER', __MOHA_ITS_GROUP . '__admin_ui_
  * Moha ITS URL: Moha ITS Group management page.
  */
 define('MOHA_ITS__URL__GROUP_ADMIN_UI', 'admin/moha/its/groups');
+
+/**
+ * Moha ITS URL: Moha ITS Infrastructure management page.
+ */
+define('MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI', 'admin/moha/its/infrastructures');
 
 /**
  * Moha ITS URL: Moha ITS Service management page.
@@ -195,8 +205,8 @@ function moha_its_entity_info() {
 
     "access callback" => "_moha_its_group_entity_admin_access_callback",
 
-    'entity class' => 'MohaITSServiceEntity',
-    'controller class' => 'MohaITSServiceEntityController',
+    'entity class' => 'MohaITSGroupEntity',
+    'controller class' => 'MohaITSGroupEntityController',
     // Uses defaultUri method of entity class to generate entity URL.
     'uri callback' => 'entity_class_uri',
 
@@ -215,6 +225,57 @@ function moha_its_entity_info() {
 //    'bundle keys' => array(
 //      'bundle' => 'type',
 //    ),
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
+  );
+
+  $items[__MOHA_ITS_INFRASTRUCTURE] = array(
+    'label' => t(MOHA_ITS_INFRASTRUCTURE),
+    'plural label' => t(MOHA_ITS_INFRASTRUCTURE . 's'), // Moha ITS Groups
+    'base table' => __MOHA_ITS_INFRASTRUCTURE,
+    'revision table' => __MOHA_ITS_INFRASTRUCTURE . '_revision',
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'full_name',
+      'revision' => 'vid',
+    ),
+    //
+    'label callback' => 'entity_class_label',
+
+    /** @see entity_crud_hook_entity_info() */
+    "admin ui" => array(
+      /* Moha ITS Infrastructure management page URL & Class. */
+      "path" => MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI,
+      "controller class" => "MohaITSInfrastructureEntityAdminController",
+
+      /** @see entity_ui_get_form() */
+      /* Moha ITS Infrastructure add / edit forms containing file. */
+      "file" => "includes/MohaITSInfrastructureEntity.form.inc",  //
+    ),
+
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    "module" => __MOHA_ITS,
+
+    "access callback" => "_moha_its_group_entity_admin_access_callback",
+
+    'entity class' => 'MohaITSInfrastructureEntity',
+    'controller class' => 'MohaITSInfrastructureEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
+    'uri callback' => 'entity_class_uri',
+
+    // Make entity fieldable; @see field_attach_form to attach added fields.
+    'fieldable' => TRUE,
+    'bundles' => array(
+      __MOHA_ITS_INFRASTRUCTURE => array(
+        'label' => t(MOHA_ITS_INFRASTRUCTURE),
+        'plural label' => t(MOHA_ITS_INFRASTRUCTURE . 's'),
+        'admin' => array(
+          'path' => MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI,
+          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_INFRASTRUCTURE),
+        ),
+      ),
+    ),
 
     // Views support.
     'views controller class' => 'EntityDefaultViewsController',
@@ -249,8 +310,8 @@ function moha_its_entity_info() {
 
     "access callback" => "_moha_its_group_entity_admin_access_callback",
 
-    'entity class' => 'MohaITSServiceEntity',
-    'controller class' => 'MohaITSServiceEntityController',
+    'entity class' => 'MohaITSInfrastructureEntity',
+    'controller class' => 'MohaITSInfrastructureEntityController',
     // Uses defaultUri method of entity class to generate entity URL.
     'uri callback' => 'entity_class_uri',
 

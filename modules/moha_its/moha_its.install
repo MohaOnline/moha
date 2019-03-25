@@ -189,6 +189,9 @@ function moha_its_schema() {
     'primary key' => array('vid'),
   );
 
+  // Entity storing table: Moha ITS Infrastructure.
+
+
   // Entity storing table: Moha ITS Service.
   $schema['moha_its_service'] = array(
     'description' => 'Stores service information of IT assets.',
@@ -628,7 +631,7 @@ function _moha_its_taxonomies() {
   $taxonomies = array(
     array(
       'name' => $t('Moha ITS Infrastructure Types'),
-      'description' => $t('Specifies which type of platform current platform belong to.'),
+      'description' => $t('Specifies which type of platform current infrastructure belong to.'),
       'machine_name' => MOHA_ITS__VOCABULARY__INFRASTRUCTURE_TYPES,
       'terms' => array(
         'Azure China',
@@ -660,6 +663,7 @@ function _moha_its_taxonomies() {
         MOHA__TERM__CONFIGURATION,
         MOHA__TERM__COMMUNICATION,
         MOHA__TERM__DEVELOPMENT,
+        MOHA__TERM__UPLOADING,
       ),
     ),
   );

@@ -9,7 +9,7 @@ class MohaRACIEntity extends Entity {
    * @return array
    */
   protected function defaultUri() {
-    return array('path' => 'admin/moha/its/raci/manage/' . $this->identifier());
+    return array('path' => MOHA__URL__RACI_ADMIN_UI . '/manage/' . $this->identifier());
   }
 
   /**

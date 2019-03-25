@@ -10,5 +10,9 @@ dependencies[] = token
 dependencies[] = profile2
 dependencies[] = field_collection
 dependencies[] = jquery_update
+dependencies[] = libraries
 
-files[] = includes/Braintree.php
+files[] = includes/MohaRACIEntity.form.inc
+files[] = includes/MohaRACIEntity.php
+files[] = includes/MohaRACIEntityAdminController.php
+files[] = includes/MohaRACIEntityController.php

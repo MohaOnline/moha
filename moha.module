@@ -28,6 +28,26 @@ define('MOHA__RELATIVE_PATH', drupal_get_path('module', __MOHA));
 define('MOHA__PATH', base_path() . MOHA__RELATIVE_PATH);
 
 /**
+ * Entity human name: Moha RACI.
+ */
+define('MOHA_RACI', 'Moha RACI');
+
+/**
+ * Entity machine name: moha_raci.
+ */
+define('__MOHA_RACI', 'moha_raci');
+
+/**
+ * Moha URL: Moha RACI management page.
+ */
+define('MOHA__URL__RACI_ADMIN_UI', 'admin/moha/raci');
+
+/**
+ * Permission: Edit any Moha RACI.
+ */
+define('MOHA__PERMISSION__EDIT_ANY_RACI', 'edit any moha raci');
+
+/**
  * JSON encoding options: bitmask.
  */
 define("MOHA__JSON_ENCODING_OPTIONS_BIT_MASK", JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
@@ -115,7 +135,6 @@ define('MOHA__STATUS__ENTITY', array(
   2 => MOHA__TERM__DISABLED,
 ));
 
-
 /**
  * Moha RACI: Accountable.
  */
@@ -140,11 +159,82 @@ define('MOHA__TERM__INFORMED', 'Informed');
  * Moha Status array: RACI.
  */
 define('MOHA__STATUS__RACI', array(
-  0 => MOHA__TERM__ACCOUNTABLE,
-  1 => MOHA__TERM__RESPONSIBLE,
+  0 => MOHA__TERM__ACCOUNTABLE, // Resource Owner.
+  1 => MOHA__TERM__RESPONSIBLE, // Principal.
   2 => MOHA__TERM__CONSULTED,
   3 => MOHA__TERM__INFORMED,
 ));
+
+/**
+ * Implements hook_entity_info().
+ *
+ * Declares entity: moha_raci.
+ */
+function moha_entity_info() {
+  $items = array();
+
+  // Stores basic information of an RACI.
+  // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
+  $items[__MOHA_RACI] = array(
+    'label' => t(MOHA_RACI),
+    'plural label' => t(MOHA_RACI . 's'), // Moha RACIs
+    'base table' => __MOHA_RACI,
+    'revision table' => __MOHA_RACI . '_revision',
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'eid',
+      'revision' => 'vid',
+    ),
+    //
+    'label callback' => 'entity_class_label',
+
+    /** @see entity_crud_hook_entity_info() */
+    "admin ui" => array(
+      /* Moha RACI management page URL & Class. */
+      "path" => MOHA__URL__RACI_ADMIN_UI,
+      "controller class" => "MohaRACIEntityAdminController",
+
+      /** @see entity_ui_get_form() */
+      /* Moha RACI add / edit forms containing file. */
+      "file" => "includes/MohaRACIEntity.form.inc",  //
+    ),
+
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    "module" => __MOHA,
+
+    "access callback" => "_moha_raci_entity_admin_access_callback",
+
+    'entity class' => 'MohaRACIEntity',
+    'controller class' => 'MohaRACIEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
+    'uri callback' => 'entity_class_uri',
+
+    // Make entity fieldable; @see field_attach_form to attach added fields.
+    'fieldable' => TRUE,
+    'bundles' => array(
+      __MOHA_RACI => array(
+        'label' => t(MOHA_RACI),
+        'plural label' => t(MOHA_RACI . 's'),
+        'admin' => array(
+          'path' => MOHA__URL__RACI_ADMIN_UI,
+          'access arguments' => array(MOHA__PERMISSION__EDIT_ANY_RACI),
+        ),
+      ),
+    ),
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
+  );
+
+  return $items;
+}
+
+/**
+ *
+ */
+function _moha_raci_entity_admin_access_callback() {
+  return TRUE;
+}
 
 /**
  *

@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * Human name.
+ */
+define('MOHA_QR', 'Moha QR');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_QR', 'moha_qr');
+
+/**
+ * moha_qr__variables.
+ */
+define('MOHA_QR__VARIABLES', __MOHA_QR . '__variables');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_qr.
+ */
+define('MOHA_QR__PATH', drupal_get_path('module', __MOHA_QR));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_qr.
+ */
+define('__MOHA_QR__PATH', base_path() . MOHA_QR__PATH);
+
+/**
+ * Implements hook_menu().
+ */
+function moha_qr_menu() {
+
+  $items[__MOHA . '/qr/list'] = array(
+
+  );
+
+  $items[__MOHA . '/qr/detail/%node'] = array(
+    'title' => t('Web Demo: Input Box'),
+    'description' => t('Style input box'),
+    'page callback' => '__moha_demo_web_input',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_node_info().
+ *
+ * Declares content types: moha_qr.
+ */
+function moha_qr_node_info() {
+  $items = array(
+    __MOHA_QR => array(
+      'name' => t(MOHA_QR),
+      'base' => __MOHA_QR, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
+      'description' => t('Use <i>Moha QR</i> to store one QR information.'),
+      'title_label' => t('QR Name'),
+      'has_title' => TRUE,
+      'locked' => FALSE,
+    ),
+  );
+
+  return $items;
+}
+
+
+
+
+
+
+
+

@@ -115,7 +115,7 @@ function moha_its_group_form_submit($form, &$form_state) {
 
   $order->rid = $order->rid['entity_id'];
 
-  /** @see \MohaITSServiceEntityController::save()*/
+  /** @see \MohaITSInfrastructureEntityController::save()*/
   $order->save();
   $form_state['redirect'] = MOHA_ITS__URL__GROUP_ADMIN_UI;
 }
