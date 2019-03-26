@@ -1,7 +1,7 @@
 let moha_widget_template = '';
 moha_widget_template += '<div class="moha-clip-widget">&nbsp</div>';
 
-let allowedMohaWidgetDetails = 'table(*); thead; tbody; th; tr; td; a[*]; a(*); div(*); span; img[*]; img(*); p(*)';
+let allowedMohaWidgetDetails = 'table(*); thead; tbody; th; tr; td; a[*]; a(*); div(*); span; img[*]; img{*}; img(*); p(*)';
 
 CKEDITOR.plugins.add('moha_widget', {
   requires: 'widget',

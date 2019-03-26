@@ -190,7 +190,160 @@ function moha_its_schema() {
   );
 
   // Entity storing table: Moha ITS Infrastructure.
+  $schema[__MOHA_ITS_INFRASTRUCTURE] = array(
+    'description' => 'Stores infrastructure information of IT platform.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary Key: Unique ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'name' => array(
+        'description' => 'Infrastructure internal name (machine name).',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'full_name' => array(
+        'description' => 'Infrastructure full name (human name).',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'tid' => array(
+        'description' => 'Term ID of infrastructure type.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'Owner ID who or which entity owns the infrastructure.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Entity status.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
 
+  // Entity revision is handled by field API mostly.
+  $schema[__MOHA_ITS_INFRASTRUCTURE . '_revision'] = array(
+    'description' => 'Stores revisions information for Moha ITS Infrastructure entity.',
+    'fields' => array(
+      'vid' => array(
+        'description' => 'Primary Key: Unique Revision ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'id' => array(
+        'description' => 'Parent ID - Group ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'name' => array(
+        'description' => 'Infrastructure internal name (machine name).',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'full_name' => array(
+        'description' => 'Infrastructure full name (human name).',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'tid' => array(
+        'description' => 'Term ID of infrastructure type.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'Owner ID who or which entity owns the infrastructure.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Entity status.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('vid'),
+  );
 
   // Entity storing table: Moha ITS Service.
   $schema['moha_its_service'] = array(
@@ -292,7 +445,7 @@ function moha_its_schema() {
   );
 
   // Entity revision is handled by field API mostly.
-  $schema['moha_its_service_revision'] = array(
+  $schema[__MOHA_ITS_SERVICE . '_revision'] = array(
     'description' => 'Stores revisions information for Moha ITS Service entity.',
     'fields' => array(
       'vid' => array(
@@ -634,10 +787,10 @@ function _moha_its_taxonomies() {
       'description' => $t('Specifies which type of platform current infrastructure belong to.'),
       'machine_name' => MOHA_ITS__VOCABULARY__INFRASTRUCTURE_TYPES,
       'terms' => array(
-        'Azure China',
-        'AWS China',
-        'Aliyun',
-        'On-premises',
+        MOHA_ITS__TERM__AZURE_CHINA,
+        MOHA_ITS__TERM__AWS_CHINA,
+        MOHA_ITS__TERM__ALIYUN,
+        MOHA_ITS__TERM__ON_PREMISES,
       ),
     ),
     array(
@@ -670,3 +823,22 @@ function _moha_its_taxonomies() {
 
   return $taxonomies;
 }
+
+/**
+ * Create tables for moha its entities.
+ * @throws \FieldException
+ */
+function moha_its_update_0701() {
+  $schemas = moha_its_schema();
+
+  foreach ($schemas as $schema_name => $schema_array) {
+    if (!db_table_exists($schema_name)) {
+      db_create_table($schema_name, $schema_array);
+    }
+  }
+
+  /** @see moha_its_fields_and_instances() */
+  moha_create_fields_and_instances('moha_its_fields_and_instances');
+}
+
+

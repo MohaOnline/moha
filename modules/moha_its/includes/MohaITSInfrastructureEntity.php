@@ -9,7 +9,7 @@ class MohaITSInfrastructureEntity extends Entity {
    * @return array
    */
   protected function defaultUri() {
-    return array('path' => 'admin/moha/its/services/manage/' . $this->identifier());
+    return array('path' => MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI . '/manage/' . $this->identifier());
   }
 
   /**
@@ -20,7 +20,15 @@ class MohaITSInfrastructureEntity extends Entity {
       return '';
     }
     else {
-      return parent::defaultLabel();
+      $label = parent::defaultLabel();
+
+      if (isset($this->tid)){
+        $term_name = moha_term_name_by_tid($this->tid);
+
+        $label = $label . ' (' . $term_name . ')';
+      }
+
+      return $label;
     }
   }
 }

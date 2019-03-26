@@ -162,7 +162,7 @@ class MohaITSEffortEntityAdminController extends EntityDefaultUIController {
     $additional_cols[] = $group->full_name;
 
     $service = entity_load_single(__MOHA_ITS_SERVICE, $entity->sid);
-    $additional_cols[] = $service->full_name;
+    $additional_cols[] = $service->label();
 
     $term = taxonomy_term_load($entity->tid);
     $additional_cols[] = $term->name;

@@ -158,6 +158,26 @@ define('MOHA_ITS__URL__EFFORT_ADMIN_UI', 'admin/moha/its/efforts');
 define('MOHA_ITS__VOCABULARY__INFRASTRUCTURE_TYPES', 'moha_its__vocabulary__infrastructure_types');
 
 /**
+ * Moha ITS Infrastructure type: Azure China.
+ */
+define('MOHA_ITS__TERM__AZURE_CHINA', 'Azure China');
+
+/**
+ * Moha ITS Infrastructure type: On-premises.
+ */
+define('MOHA_ITS__TERM__ON_PREMISES', 'On-premises');
+
+/**
+ * Moha ITS Infrastructure type: AWS China.
+ */
+define('MOHA_ITS__TERM__AWS_CHINA', 'AWS China');
+
+/**
+ * Moha ITS Infrastructure type: Aliyun.
+ */
+define('MOHA_ITS__TERM__ALIYUN', 'Aliyun');
+
+/**
  * Moha ITS Vocabulary: Service types.
  */
 define('MOHA_ITS__VOCABULARY__SERVICE_TYPES', 'moha_its__vocabulary__service_types');
@@ -232,7 +252,7 @@ function moha_its_entity_info() {
 
   $items[__MOHA_ITS_INFRASTRUCTURE] = array(
     'label' => t(MOHA_ITS_INFRASTRUCTURE),
-    'plural label' => t(MOHA_ITS_INFRASTRUCTURE . 's'), // Moha ITS Groups
+    'plural label' => t(MOHA_ITS_INFRASTRUCTURE . 's'), // Moha ITS Infrastructures
     'base table' => __MOHA_ITS_INFRASTRUCTURE,
     'revision table' => __MOHA_ITS_INFRASTRUCTURE . '_revision',
     'entity keys' => array(
@@ -283,7 +303,7 @@ function moha_its_entity_info() {
 
   $items[__MOHA_ITS_SERVICE] = array(
     'label' => t(MOHA_ITS_SERVICE),
-    'plural label' => t(MOHA_ITS_SERVICE . 's'), // Moha ITS Groups
+    'plural label' => t(MOHA_ITS_SERVICE . 's'), // Moha ITS Service.
     'base table' => __MOHA_ITS_SERVICE,
     'revision table' => __MOHA_ITS_SERVICE . '_revision',
     'entity keys' => array(
@@ -310,8 +330,8 @@ function moha_its_entity_info() {
 
     "access callback" => "_moha_its_group_entity_admin_access_callback",
 
-    'entity class' => 'MohaITSInfrastructureEntity',
-    'controller class' => 'MohaITSInfrastructureEntityController',
+    'entity class' => 'MohaITSServiceEntity',
+    'controller class' => 'MohaITSServiceEntityController',
     // Uses defaultUri method of entity class to generate entity URL.
     'uri callback' => 'entity_class_uri',
 
@@ -468,6 +488,10 @@ function moha_its_fields_and_instances() {
 //      'bundle' => __MOHA_ITS_SOLUTION,
 //    ),
     array(
+      'entity' => __MOHA_ITS_INFRASTRUCTURE,
+      'bundle' => __MOHA_ITS_INFRASTRUCTURE,
+    ),
+    array(
       'entity' => __MOHA_ITS_SERVICE,
       'bundle' => __MOHA_ITS_SERVICE,
     ),
@@ -477,7 +501,32 @@ function moha_its_fields_and_instances() {
     ),
   );
 
-  $fields = moha_generate_description_fields_and_instances($types);
+  $fields_and_instances = moha_generate_description_fields_and_instances($types);
 
-  return $fields;
+  $fields_and_instances['moha_its_infra_expense_token'] = array(
+    'label'       => t('Expense Token'),
+    'field_name'  => 'moha_its_infra_expense_token',
+    'description' => t('Input access token to get expense on this platform.'),
+    'type'        => 'text',
+    'cardinality' => 1,
+    'entity_type' => __MOHA_ITS_INFRASTRUCTURE,
+    'bundle' => __MOHA_ITS_INFRASTRUCTURE,
+    'settings' => array(
+      'max_length' => 2048  ,
+    ),
+    'widget' => array(
+      'type' => 'text_textfield',
+      'weight' => -100,
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+      ),
+    ),
+  );
+
+  return $fields_and_instances;
 }

@@ -14,7 +14,7 @@ class MohaITSInfrastructureEntityAdminController extends EntityDefaultUIControll
 
     $form['filter'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Service Filter'),
+      '#title' => t('Infrastructure Filter'),
       '#weight' => -99999,
       '#collapsed' => TRUE,
       '#collapsible' => TRUE,

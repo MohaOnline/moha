@@ -14,7 +14,7 @@ class MohaITSServiceEntityAdminController extends EntityDefaultUIController {
 
     $form['filter'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Service Filter'),
+      '#title' => t('Services sort and filter'),
       '#weight' => -99999,
       '#collapsed' => TRUE,
       '#collapsible' => TRUE,
@@ -134,6 +134,7 @@ class MohaITSServiceEntityAdminController extends EntityDefaultUIController {
 
     $additional_header[] = t('Full name');
     $additional_header[] = t('Name (Machine name)');
+    $additional_header[] = t('Type');
     $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
     $additional_header[] = t('Created');
@@ -160,6 +161,9 @@ class MohaITSServiceEntityAdminController extends EntityDefaultUIController {
 
     // Entity machine name.
     $additional_cols[] = $entity->name;
+
+    // Service type, if exists, show term name, otherwise show empty string as placeholder.
+    $additional_cols[] = moha_term_name_by_tid($entity->tid);
 
     // Status
     $additional_cols[] = MOHA__STATUS__ENTITY[$entity->status];

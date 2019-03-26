@@ -66,8 +66,9 @@ function moha_its_service_form($form, &$form_state, $service = NULL) {
   field_attach_form(__MOHA_ITS_SERVICE, $service, $form['fields']['wrapper'], $form_state);
 
   moha_form_add_vertical_tab($form,'properties');
+  $properties = &$form['properties'];
 
-  $form['properties']['gid'] = array(
+  $properties['gid'] = array(
     '#title' => t('Group / company'),
     '#type' => 'entityreference',
     '#description' => t('Specify which group / company this service belong to.'),
@@ -80,7 +81,20 @@ function moha_its_service_form($form, &$form_state, $service = NULL) {
     '#default_value' => isset($service->gid)?$service->gid:'',
   );
 
-  $form['properties']['oid'] = array(
+  $properties['bid'] = array(
+    '#title' => t('Business'),
+    '#type' => 'entityreference',
+    '#description' => t('Specify which business this service belong to.'),
+    '#era_entity_type' => __MOHA_ITS_GROUP,
+    '#era_cardinality' => 1,
+    '#era_query_settings' => array(
+      'property_conditions' => array(
+      ),
+    ),
+    '#default_value' => isset($service->bid)?$service->bid:'',
+  );
+
+  $properties['oid'] = array(
     '#title' => t('Owner'),
     '#type' => 'entityreference',
     '#description' => t('Specify who owns this service.'),
@@ -93,12 +107,12 @@ function moha_its_service_form($form, &$form_state, $service = NULL) {
     '#default_value' => isset($service->oid)?$service->oid:'',
   );
 
-  if (isset($service->is_new)) {
+  if (!isset($service->is_new)) {
     moha_form_add_vertical_tab($form,'RACI');
 
     $form['RACI']['new'] = array(
       '#type' => 'fieldset',
-      '#title' => 'Associate new user',
+      '#title' => 'Associate new owner',
       '#description' => 'Associate new user with this service.',
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,

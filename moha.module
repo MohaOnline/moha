@@ -182,7 +182,7 @@ function moha_entity_info() {
     'revision table' => __MOHA_RACI . '_revision',
     'entity keys' => array(
       'id' => 'id',
-      'label' => 'eid',
+      'label' => 'id',
       'revision' => 'vid',
     ),
     //
@@ -338,6 +338,24 @@ function moha_preprocess(&$variables, $hook) {
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide menu link edit & delete button on menu items list page.
+ */
+function moha_form_menu_overview_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+
+  if ($user->uid != 1 && !user_access('administer site configuration')) {
+    foreach ($form as $key => $value) {
+      if (strpos($key, "mlid") !== FALSE) {
+        unset($form[$key]["operations"]["edit"]);
+        unset($form[$key]["operations"]["delete"]);
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  *
  * Mount configurations which need be passed to templates.js of CKEditor.
@@ -355,24 +373,6 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Hide menu link edit & delete button on menu items list page.
- *
- * Implements hook_form_FORM_ID_alter().
- */
-function moha_form_menu_overview_form_alter(&$form, &$form_state, $form_id) {
-  global $user;
-
-  if ($user->uid != 1 && !user_access('administer site configuration')) {
-    foreach ($form as $key => $value) {
-      if (strpos($key, "mlid") !== FALSE) {
-        unset($form[$key]["operations"]["edit"]);
-        unset($form[$key]["operations"]["delete"]);
-      }
-    }
-  }
-}
-
-/**
  * Save node from ajax call.
  * don't call when create node.
  *
@@ -383,8 +383,8 @@ function moha_form_menu_overview_form_alter(&$form, &$form_state, $form_id) {
  */
 function moha_node_ajax_save_callback($form, &$form_state){
 
-  // @See ajax_form_callback()
-  // valid will be proceed
+  /** @See ajax_form_callback() */
+  // validation will be proceed
   // If error, directly returns.
   if (form_get_errors()) {
     return $form;
@@ -400,6 +400,40 @@ function moha_node_ajax_save_callback($form, &$form_state){
   $form['changed']['#value'] = $form_state['node']->changed;
 
   return $form['changed'];
+}
+
+/**
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return mixed
+ */
+function _moha_form_entity_raci_form_entity_type_change_ajax_callback($form, &$form_state) {
+  if (form_get_errors()) {
+    return $form;
+  }
+
+  $form['eid']['#value'] = '';
+
+  return $form['eid'];
+}
+
+/**
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return mixed
+ */
+function _moha_form_entity_raci_form_owner_entity_type_change_ajax_callback($form, &$form_state) {
+  if (form_get_errors()) {
+    return $form;
+  }
+
+  $form['oid']['#value'] = '';
+
+  return $form['oid'];
 }
 
 /**

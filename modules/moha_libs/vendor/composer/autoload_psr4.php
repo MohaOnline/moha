@@ -6,6 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'clagiordano\\weblibs\\configmanager\\' => array($vendorDir . '/clagiordano/weblibs-configmanager/src'),
+    'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Stringy\\' => array($vendorDir . '/danielstjules/stringy/src'),
     'Psr\\SimpleCache\\' => array($vendorDir . '/psr/simple-cache/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
@@ -17,8 +20,11 @@ return array(
     'MicrosoftAzure\\Storage\\Common\\' => array($vendorDir . '/microsoft/azure-storage-common/src/Common'),
     'MicrosoftAzure\\Storage\\Blob\\' => array($vendorDir . '/microsoft/azure-storage-blob/src/Blob'),
     'Matrix\\' => array($vendorDir . '/markbaker/matrix/classes/src'),
+    'JmesPath\\' => array($vendorDir . '/mtdowling/jmespath.php/src'),
     'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
+    'AlibabaCloud\\Client\\' => array($vendorDir . '/alibabacloud/client/src'),
+    'Adbar\\' => array($vendorDir . '/adbario/php-dot-notation/src'),
 );

@@ -6,6 +6,7 @@
         "microsoft/azure-storage-table": "^1.1",
         "microsoft/azure-storage-file": "^1.1",
         "phpmailer/phpmailer": "^6.0",
-        "psr/log": "^1.1"
+        "psr/log": "^1.1",
+        "alibabacloud/client": "^1.0"
     }
 }

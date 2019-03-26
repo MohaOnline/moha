@@ -40,6 +40,7 @@ table_template += '</table></div></div>';
 
 let image_gallery_template = '<div class="moha-clip-widget swiper-container">';
 image_gallery_template += '<div class="moha-clip-widget-editable swiper-wrapper">';
+image_gallery_template += '<p class="moha-clip-widget moha-clip-widget-editable swiper-slide">&nbsp;</p>';
 image_gallery_template += '<p class="moha-clip-widget moha-clip-widget-editable swiper-slide">&nbsp;</p></div>';
 image_gallery_template += '<div class="swiper-pagination"><span>Paging</span></div><div class="swiper-button-next"><span>Next</span></div><div class="swiper-button-prev"><span>Prev</span></div></div>';
 
@@ -86,7 +87,7 @@ CKEDITOR.addTemplates('moha',
       {
         title: 'Image Gallery',
         image: 'block-image-slideshow.png',
-        description: 'Insert image gallery to host multiple images.',
+        description: 'Insert image gallery to host multiple images in one block. <span style="color:red;">Select and copy P element</span>, click <strong>red return icon</strong> to insert paragraph, then paste P element to insert more images.',
         html: image_gallery_template
       }
     ]

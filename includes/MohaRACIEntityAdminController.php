@@ -136,17 +136,18 @@ class MohaRACIEntityAdminController extends EntityDefaultUIController {
   protected function overviewTableHeaders($conditions, $rows, $additional_header = []) {
 
 
-    $additional_header[] = t('Full name');
-    $additional_header[] = t('Name');
-    $additional_header[] = t('Local name');
+    $additional_header[] = t('ID');
+    $additional_header[] = t('Entity Type');
+    $additional_header[] = t('Entity');
+    $additional_header[] = t('Owner Type');
+    $additional_header[] = t('Owner');
+    $additional_header[] = t('RACI');
     $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
     $additional_header[] = t('Created');
 
     $header = $additional_header;
 
-    // Replace label with ID.
-    array_unshift($header, t('ID'));
 
     if (!empty($this->entityInfo['exportable'])) {
       $header[] = t('Status');
@@ -163,30 +164,49 @@ class MohaRACIEntityAdminController extends EntityDefaultUIController {
    *
    * Add additional columns to entity admin list page.
    */
-  protected function overviewTableRow($conditions, $id, $entity, $additional_cols = []) {
-
-
+  protected function overviewTableRow($conditions, $id, $raci, $additional_cols = []) {
 
     // Entity machine name.
-    $additional_cols[] = $entity->name;
-    $additional_cols[] = $entity->local_name;
 
     // Status
-    $additional_cols[] = MOHA__STATUS__ENTITY[$entity->status];
+    $additional_cols[] = $raci->entity;
+
+    $entity = entity_load_single($raci->entity, $raci->eid);
+    $additional_cols[] = array('data' => array(
+      '#theme' => 'entity_ui_overview_item',
+      '#label' => entity_label($raci->entity, $entity),
+      '#name' => !empty($entity->exportable) ? entity_id($raci->entity, $entity) : FALSE,
+      '#url' => entity_uri($raci->entity, $entity),
+      '#entity_type' => $raci->entity,
+    ));
+
+    $additional_cols[] = $raci->owner_entity;
+
+    $owner = entity_load_single($raci->owner_entity, $raci->oid);
+    $additional_cols[] = array('data' => array(
+      '#theme' => 'entity_ui_overview_item',
+      '#label' => entity_label($raci->owner_entity, $owner),
+      '#name' => !empty($owner->exportable) ? entity_id($raci->owner_entity, $owner) : FALSE,
+      '#url' => entity_uri($raci->owner_entity, $owner),
+      '#entity_type' => $raci->owner_entity,
+    ));
+
+    $additional_cols[] = MOHA__STATUS__RACI[$raci->raci];
+    $additional_cols[] = MOHA__STATUS__ENTITY[$raci->status];
 
     // Order updated and created time.
-    $additional_cols[] = format_date($entity->updated, 'short');
-    $additional_cols[] = format_date($entity->created, 'short');
+    $additional_cols[] = format_date($raci->updated, 'short');
+    $additional_cols[] = format_date($raci->created, 'short');
 
-    if ($entity->status == moha_array_key_by_value(MOHA__TERM__DISABLED, MOHA__STATUS__ENTITY)) {
-      $additional_cols[] = l('Deliver', 'admin/moha/commerce/order/deliver/' . $entity->id, ['attributes' => ['class' => ['button']]]);
+    if ($raci->status == moha_array_key_by_value(MOHA__TERM__DISABLED, MOHA__STATUS__ENTITY)) {
+      $additional_cols[] = l('Deliver', 'admin/moha/commerce/order/deliver/' . $raci->id, ['attributes' => ['class' => ['button']]]);
     }
     else {
       $additional_cols[] = '';
     }
 
-    $row = parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
-    array_unshift($row, $id);
+    $row = parent::overviewTableRow($conditions, $id, $raci, $additional_cols);
+
     return $row;
   }
 }

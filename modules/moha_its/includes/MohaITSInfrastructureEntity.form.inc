@@ -23,7 +23,7 @@ function moha_its_infrastructure_form($form, &$form_state, $infrastructure = NUL
     '#type' => 'textfield',
     '#title' => t('Full name'),
     '#default_value' => empty($infrastructure->full_name)?'':$infrastructure->full_name,
-    '#description' => t('Human name of the service.'),
+    '#description' => t('Human name of the infrastructure.'),
     '#maxlength' => 128,
     '#size' => 120,
     '#required' => TRUE,
@@ -32,7 +32,7 @@ function moha_its_infrastructure_form($form, &$form_state, $infrastructure = NUL
   $form['name'] = array(
     '#type' => 'machine_name',
     '#description' => t('A unique name from infrastructure platform.'),
-    '#default_value' => empty($infrastructure->name)?'':$infrastructure->name,
+    '#default_value' => !empty($infrastructure->name)?$infrastructure->name:'',
     '#machine_name' => array(
       'source' => array('full_name'), // Bind machine_name field to relative normal field.
       'label' => t('URI'),
@@ -42,10 +42,10 @@ function moha_its_infrastructure_form($form, &$form_state, $infrastructure = NUL
     ),
   );
 
-  $options = moha_form_options_from_vocabulary(MOHA_ITS__VOCABULARY__SERVICE_TYPES);
+  $options = moha_form_options_from_vocabulary(MOHA_ITS__VOCABULARY__INFRASTRUCTURE_TYPES);
 
   $form['tid'] = array(
-    '#title' => t('Service type'),
+    '#title' => t('Infrastructure type'),
     '#type' => 'select',
     '#options' => $options,
     '#empty_value' => '',
@@ -63,22 +63,9 @@ function moha_its_infrastructure_form($form, &$form_state, $infrastructure = NUL
 
   // Attach entity fields.
   moha_form_add_entity_fields_wrapper($form);
-  field_attach_form(__MOHA_ITS_SERVICE, $infrastructure, $form['fields']['wrapper'], $form_state);
+  field_attach_form(__MOHA_ITS_INFRASTRUCTURE, $infrastructure, $form['fields']['wrapper'], $form_state);
 
   moha_form_add_vertical_tab($form,'properties');
-
-  $form['properties']['gid'] = array(
-    '#title' => t('Group / company'),
-    '#type' => 'entityreference',
-    '#description' => t('Specify which group / company this service belong to.'),
-    '#era_entity_type' => __MOHA_ITS_GROUP,
-    '#era_cardinality' => 1,
-    '#era_query_settings' => array(
-      'property_conditions' => array(
-      ),
-    ),
-    '#default_value' => isset($infrastructure->gid)?$infrastructure->gid:'',
-  );
 
   $form['properties']['oid'] = array(
     '#title' => t('Owner'),
@@ -154,14 +141,14 @@ function moha_its_infrastructure_form_validate($node, &$form_state) {
 function moha_its_infrastructure_form_submit($form, &$form_state) {
 
   // Build entity from submission.
-  $service = entity_ui_form_submit_build_entity($form, $form_state);
+  $entity = entity_ui_form_submit_build_entity($form, $form_state);
 
-  $service->oid = $service->oid['entity_id'];
+  $entity->oid = $entity->oid['entity_id'];
 
   /** @see \MohaITSInfrastructureEntityController::save()*/
-  $service->save();
+  $entity->save();
 
-  field_attach_submit(__MOHA_ITS_SERVICE, $service, $form['fields']['wrapper'], $form_state);
+  field_attach_submit(__MOHA_ITS_INFRASTRUCTURE, $entity, $form['fields']['wrapper'], $form_state);
 
-  $form_state['redirect'] = MOHA_ITS__URL__SERVICE_ADMIN_UI;
+  $form_state['redirect'] = MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI;
 }

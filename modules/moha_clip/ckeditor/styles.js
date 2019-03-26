@@ -19,17 +19,17 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Heading 1'		, element : 'h1' },
       { name : 'Heading 2'		, element : 'h2' },
       { name : 'Heading 3'		, element : 'h3' },
+      { name : 'Heading 4'		, element : 'h4' },
 
       /*
-      { name : 'Heading 4'		, element : 'h4' },
       { name : 'Heading 5'		, element : 'h5' },
       { name : 'Heading 6'		, element : 'h6' },
       { name : 'Preformatted Text', element : 'pre' },
       { name : 'Address'			, element : 'address' },
-      */
 
       { name : 'Blue Title'		, element : 'h3', styles : { 'color' : 'Blue' } },
       { name : 'Red Title'		, element : 'h3', styles : { 'color' : 'Red' } },
+      */
 
       /* Inline Styles */
 
@@ -44,17 +44,16 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Superscript'		, element : 'sup' },
       */
 
-      { name : 'Computer Code'	, element : 'code' },
-      { name : 'Keyboard'	, element : 'kbd' },
-
+      { name : 'Code'	    , element : 'code' },
+      { name : 'Keyboard'	, element : 'kbd'  },
+/*
       { name : 'Marker: Yellow'	, element : 'span', styles : { 'background-color' : 'Yellow' } },
       { name : 'Marker: Green'	, element : 'span', styles : { 'background-color' : 'Lime' } },
 
-      { name : 'Big'				, element : 'big' },
+      { name : 'Big'			, element : 'big' },
       { name : 'Small'			, element : 'small' },
       { name : 'Typewriter'		, element : 'tt' },
 
-      { name : 'Keyboard Phrase'	, element : 'kbd' },
       { name : 'Sample Text'		, element : 'samp' },
       { name : 'Variable'			, element : 'var' },
 
@@ -66,7 +65,7 @@ if(typeof(CKEDITOR) !== 'undefined') {
 
       { name : 'Language: RTL'	, element : 'span', attributes : { 'dir' : 'rtl' } },
       { name : 'Language: LTR'	, element : 'span', attributes : { 'dir' : 'ltr' } },
-
+*/
       /* Object Styles */
 
       {
