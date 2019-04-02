@@ -6,12 +6,12 @@
 /**
  * Human name.
  */
-define('MOHA_LIBS', 'Moha Fonts');
+define('MOHA_LIBS', 'Moha Libraries');
 
 /**
  * Machine name.
  */
-define('__MOHA_LIBS', 'moha_fonts');
+define('__MOHA_LIBS', 'moha_libs');
 
 /**
  * moha_libs__variables.
@@ -29,24 +29,18 @@ define('MOHA_LIBS__PATH', drupal_get_path('module', __MOHA_LIBS));
 define('__MOHA_LIBS__PATH', base_path() . MOHA_LIBS__PATH);
 
 /**
- * Implements hook_boot().
- */
-function moha_libs_boot() {
-  libraries_load('moha_libs');
-}
-
-/**
  * Implements hook_libraries_info().
  */
 function moha_libs_libraries_info() {
-  $libraries['moha_libs'] = array(
-    'name' => 'Moha Libraries',
+  $libraries[__MOHA_LIBS] = array(
+    'name' => MOHA_LIBS,
     'module_altered' => FALSE,
-    'library path' => MOHA_LIBS__PATH,
+    'library path' => MOHA_LIBS__PATH . '/vendor',
+    'version' => '1.0',
     'files' => array(
       'js' => array(),
       'css' => array(),
-      'php' => array('vendor/autoload.php'),
+      'php' => array('autoload.php'),
     ),
   );
 

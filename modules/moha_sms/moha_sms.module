@@ -1,0 +1,182 @@
+<?php
+use AlibabaCloud\Client\AlibabaCloud;
+
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_SMS', 'Moha SMS');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_SMS', 'moha_sms');
+
+/**
+ * moha_sms__variables.
+ */
+define('MOHA_SMS__VARIABLES', __MOHA_SMS . '__variables');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_sms.
+ */
+define('MOHA_SMS__PATH', drupal_get_path('module', __MOHA_SMS));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_sms.
+ */
+define('__MOHA_SMS__PATH', base_path() . MOHA_SMS__PATH);
+
+/**
+ *
+ */
+define('MOHA_SMS__URL__SEND', 'moha/sms/send');
+
+/**
+ * Implements hook_menu().
+ */
+function moha_sms_menu() {
+  $items = array();
+
+  $items["admin/moha/sms"] = array(
+    'title' => 'Moha SMS',
+    'description' => t('Moha SMS module.'),
+    'page callback' => 'system_admin_menu_block_page',
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['admin/moha/sms/send'] = array(
+    'title' => t('Moha SMS manual sending'),
+    'description' => t('SMS single sending page.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_moha_sms_send_form'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['admin/moha/sms/send/%'] = array(
+    'title' => t('Moha SMS manual sending'),
+    'description' => t('SMS single sending page.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_moha_sms_send_form', 4),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ *
+ *
+ * @param $form
+ * @param $form_state
+ * @param string $sender
+ *
+ * @return array
+ */
+function _moha_sms_send_form($form, &$form_state, $sender = '') {
+  $form['phone_no'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Phone#'),
+    '#description' => 'Specify cell phone number.',
+    '#default_value' => '',
+    '#size' => 30,
+    '#required' => TRUE,
+  );
+
+  $form['receipt_no'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Receipt#'),
+    '#description' => 'Specify express receipt number.',
+    '#default_value' => '',
+    '#required' => TRUE,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send'),
+  );
+
+  return $form;
+}
+
+/**
+ *
+ *
+ * @param $form
+ * @param $form_state
+ */
+function _moha_sms_send_form_submit($form, &$form_state) {
+  // Download：https://github.com/aliyun/openapi-sdk-php-client
+  // Usage：https://github.com/aliyun/openapi-sdk-php-client/blob/master/README-CN.md
+  libraries_load(__MOHA_LIBS);
+
+  $values = $form_state['values'];
+
+  $phone_no   = $values['phone_no'];
+  $receipt_no = $values['receipt_no'];
+
+  $accessKeyId  = variable_get('aliyunAccessKeyId','');
+  $accessSecret = variable_get('aliyunAccessSecret', '');
+
+  $signature = variable_get('aliyunSMSSignature','');
+  $template  = variable_get('aliyunSMSTemplate','');
+
+
+  try {
+    AlibabaCloud::accessKeyClient($accessKeyId, $accessSecret)
+      ->regionId('cn-hangzhou')
+      ->asDefaultClient();
+
+    $result = AlibabaCloud::rpc()
+      ->product('Dysmsapi')
+      ->scheme('https') // https | http
+      ->version('2017-05-25')
+      ->action('SendSms')
+      ->method('POST')
+      ->options([
+        'query' => [
+          'RegionId' => 'cn-hangzhou',
+          'PhoneNumbers' => $phone_no,
+          'SignName' => $signature,
+          'TemplateCode' => $template,
+          'TemplateParam' => format_string('{"no":"!receipt_no"}', array('!receipt_no' => $receipt_no)),
+        ],
+      ])
+      ->request();
+
+    $res = $result->all();
+
+    // Show feedback.
+    if ($res['Code'] == 'OK') {
+      drupal_set_message('SMS has been sent.');
+    }
+    else {
+      drupal_set_message('SMS has not been sent.', 'error');
+    }
+
+    // Logs SMS sending result.
+    $params = array();
+    foreach ($res as $key => $value) {
+      $params['%'.$key] = $value;
+    }
+    watchdog(__FUNCTION__, 'Message: %Message, RequestId: RequestId: %RequestId, BizId: %BizId, Code: %Code', $params);
+
+    return;
+  }
+  catch (Exception $e) {
+    moha_show_exception($e);
+    watchdog_exception(__FUNCTION__, $e);
+  }
+}
+
+
+
