@@ -448,6 +448,33 @@ function _moha_its_group_entity_admin_access_callback($op, $entity = NULL, $acco
 }
 
 /**
+ * Implements hook_query_TAG_alter().
+ *
+ * Alter entityreference_autocomplete_validate_entityreference().
+ *
+ * @see https://www.drupal.org/docs/7/api/database-api/dynamic-queries/query-alteration-tagging
+ */
+function moha_its_query_era_query_alter(QueryAlterableInterface $query) {
+  /** @var $query \SelectQuery*/
+  $tables = $query->getTables();
+
+  // Skip verify label for moha_its_service entity.
+  if (isset($tables[__MOHA_ITS_SERVICE])) {
+    $conditions = &$query->conditions();
+    foreach($conditions as $key => $condition){
+      if (is_numeric($key)) {
+        if ($conditions[$key]['field'] == "moha_its_service.full_name") {
+          unset($conditions[$key]);
+          break;
+        }
+      }
+    }
+  }
+
+  return;
+}
+
+/**
  *
  * @see form_validate_machine_name()
  */
