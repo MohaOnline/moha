@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## 1.1.1 - 2019-04-02
+- Added endpoints for `batchcomputenew`, `privatelink`.
+- Improve Region ID tips.
+
+
+## 1.1.0 - 2019-04-01
+- Updated `composer.json`.
+
+
+## 1.0.27 - 2019-03-31
+- Support `Policy` for `ramRoleArnClient`.
+
+
+## 1.0.26 - 2019-03-27
+- Support `pid`, `cost`, `start_time` for Log.
+
+
+## 1.0.25 - 2019-03-27
+- Updated default log format.
+- Add endpoints for `dbs`.
+
+
+## 1.0.24 - 2019-03-26
+- Support Log.
+
+
 ## 1.0.23 - 2019-03-23
 - Remove SVG.
 

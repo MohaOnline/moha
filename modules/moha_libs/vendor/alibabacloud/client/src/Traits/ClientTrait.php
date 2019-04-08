@@ -83,11 +83,11 @@ trait ClientTrait
 
     /**
      * @codeCoverageIgnore
+     * @return Client
+     * @throws ClientException
      * @deprecated
      * Get the global client.
      *
-     * @return Client
-     * @throws ClientException
      */
     public static function getGlobalClient()
     {
@@ -191,17 +191,18 @@ trait ClientTrait
     /**
      * Use the AssumeRole of the RAM account to complete  the authentication.
      *
-     * @param string $accessKeyId
-     * @param string $accessKeySecret
-     * @param string $roleArn
-     * @param string $roleSessionName
+     * @param string       $accessKeyId
+     * @param string       $accessKeySecret
+     * @param string       $roleArn
+     * @param string       $roleSessionName
+     * @param string|array $policy
      *
      * @return RamRoleArnClient
      * @throws ClientException
      */
-    public static function ramRoleArnClient($accessKeyId, $accessKeySecret, $roleArn, $roleSessionName)
+    public static function ramRoleArnClient($accessKeyId, $accessKeySecret, $roleArn, $roleSessionName, $policy = '')
     {
-        return new RamRoleArnClient($accessKeyId, $accessKeySecret, $roleArn, $roleSessionName);
+        return new RamRoleArnClient($accessKeyId, $accessKeySecret, $roleArn, $roleSessionName, $policy);
     }
 
     /**

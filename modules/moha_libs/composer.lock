@@ -57,16 +57,16 @@
         },
         {
             "name": "alibabacloud/client",
-            "version": "1.0.23",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aliyun/openapi-sdk-php-client.git",
-                "reference": "a5a764c53fef158a0cb3501df606de02b2625830"
+                "reference": "5687188544773b5496c4c2baabba4ca0862576e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aliyun/openapi-sdk-php-client/zipball/a5a764c53fef158a0cb3501df606de02b2625830",
-                "reference": "a5a764c53fef158a0cb3501df606de02b2625830",
+                "url": "https://api.github.com/repos/aliyun/openapi-sdk-php-client/zipball/5687188544773b5496c4c2baabba4ca0862576e5",
+                "reference": "5687188544773b5496c4c2baabba4ca0862576e5",
                 "shasum": ""
             },
             "require": {
@@ -75,12 +75,12 @@
                 "danielstjules/stringy": "^3.1",
                 "ext-curl": "*",
                 "ext-json": "*",
+                "ext-libxml": "*",
                 "ext-mbstring": "*",
                 "ext-openssl": "*",
                 "ext-simplexml": "*",
+                "ext-xmlwriter": "*",
                 "guzzlehttp/guzzle": "^6.3",
-                "guzzlehttp/promises": "^1.3",
-                "guzzlehttp/psr7": "^1.4",
                 "mtdowling/jmespath.php": "^2.4",
                 "php": ">=5.5"
             },
@@ -93,14 +93,13 @@
                 "ext-spl": "*",
                 "league/climate": "^3.2.4",
                 "mikey179/vfsstream": "^1.6",
+                "monolog/monolog": "^1.24",
                 "phpunit/phpunit": "^4.8.35|^5.4.3",
                 "psr/cache": "^1.0",
                 "symfony/dotenv": "^3.4",
                 "symfony/var-dumper": "^3.4"
             },
             "suggest": {
-                "ext-curl": "To send requests using cURL",
-                "ext-openssl": "Working with private distributions and verifying received messages",
                 "ext-sockets": "To use client-side monitoring"
             },
             "type": "library",
@@ -136,10 +135,11 @@
                 "aliyun",
                 "client",
                 "cloud",
+                "library",
                 "sdk",
                 "tool"
             ],
-            "time": "2019-03-23T05:58:37+00:00"
+            "time": "2019-04-02T15:21:13+00:00"
         },
         {
             "name": "clagiordano/weblibs-configmanager",
@@ -594,20 +594,20 @@
         },
         {
             "name": "microsoft/azure-storage-blob",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Azure/azure-storage-blob-php.git",
-                "reference": "6a89f277e876056cc80bd867f7d6104557ee26a4"
+                "reference": "6fcef8b68227b190854296d5d159aa666418873d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Azure/azure-storage-blob-php/zipball/6a89f277e876056cc80bd867f7d6104557ee26a4",
-                "reference": "6a89f277e876056cc80bd867f7d6104557ee26a4",
+                "url": "https://api.github.com/repos/Azure/azure-storage-blob-php/zipball/6fcef8b68227b190854296d5d159aa666418873d",
+                "reference": "6fcef8b68227b190854296d5d159aa666418873d",
                 "shasum": ""
             },
             "require": {
-                "microsoft/azure-storage-common": "~1.2.0",
+                "microsoft/azure-storage-common": "~1.3.0",
                 "php": ">=5.6.0"
             },
             "type": "library",
@@ -634,20 +634,20 @@
                 "sdk",
                 "storage"
             ],
-            "time": "2018-08-02T11:05:31+00:00"
+            "time": "2019-03-26T10:04:16+00:00"
         },
         {
             "name": "microsoft/azure-storage-common",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Azure/azure-storage-common-php.git",
-                "reference": "5a721c15a4eba9233e423203bee168e47c7f8682"
+                "reference": "154c2c38203297035fb718689b691b15adfd49ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Azure/azure-storage-common-php/zipball/5a721c15a4eba9233e423203bee168e47c7f8682",
-                "reference": "5a721c15a4eba9233e423203bee168e47c7f8682",
+                "url": "https://api.github.com/repos/Azure/azure-storage-common-php/zipball/154c2c38203297035fb718689b691b15adfd49ab",
+                "reference": "154c2c38203297035fb718689b691b15adfd49ab",
                 "shasum": ""
             },
             "require": {
@@ -678,24 +678,24 @@
                 "sdk",
                 "storage"
             ],
-            "time": "2018-08-02T10:54:53+00:00"
+            "time": "2019-03-26T09:52:54+00:00"
         },
         {
             "name": "microsoft/azure-storage-file",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Azure/azure-storage-file-php.git",
-                "reference": "7e4725933552e413816d94d075458a50f6fa3f41"
+                "reference": "93c5a8a12b4215734b3e18106d94554f036feb9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Azure/azure-storage-file-php/zipball/7e4725933552e413816d94d075458a50f6fa3f41",
-                "reference": "7e4725933552e413816d94d075458a50f6fa3f41",
+                "url": "https://api.github.com/repos/Azure/azure-storage-file-php/zipball/93c5a8a12b4215734b3e18106d94554f036feb9f",
+                "reference": "93c5a8a12b4215734b3e18106d94554f036feb9f",
                 "shasum": ""
             },
             "require": {
-                "microsoft/azure-storage-common": "~1.1",
+                "microsoft/azure-storage-common": "~1.3",
                 "php": ">=5.6.0"
             },
             "type": "library",
@@ -722,24 +722,24 @@
                 "sdk",
                 "storage"
             ],
-            "time": "2018-04-26T07:56:44+00:00"
+            "time": "2019-03-26T10:08:59+00:00"
         },
         {
             "name": "microsoft/azure-storage-queue",
-            "version": "1.1.1",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Azure/azure-storage-queue-php.git",
-                "reference": "2c9955f7e717a0600da45943cf5e46873b97fce3"
+                "reference": "161eda43ec7df150f36648ad7db780fffd8bf3da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Azure/azure-storage-queue-php/zipball/2c9955f7e717a0600da45943cf5e46873b97fce3",
-                "reference": "2c9955f7e717a0600da45943cf5e46873b97fce3",
+                "url": "https://api.github.com/repos/Azure/azure-storage-queue-php/zipball/161eda43ec7df150f36648ad7db780fffd8bf3da",
+                "reference": "161eda43ec7df150f36648ad7db780fffd8bf3da",
                 "shasum": ""
             },
             "require": {
-                "microsoft/azure-storage-common": "~1.2.0",
+                "microsoft/azure-storage-common": "~1.3.0",
                 "php": ">=5.6.0"
             },
             "type": "library",
@@ -766,7 +766,7 @@
                 "sdk",
                 "storage"
             ],
-            "time": "2018-08-02T11:19:50+00:00"
+            "time": "2019-03-26T10:07:11+00:00"
         },
         {
             "name": "microsoft/azure-storage-table",
