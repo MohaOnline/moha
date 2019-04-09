@@ -142,15 +142,15 @@ function _moha_sms_send_form_submit($form, &$form_state) {
       ->version('2017-05-25')
       ->action('SendSms')
       ->method('POST')
-      ->options([
-        'query' => [
+      ->options(array(
+        'query' => array(
           'RegionId' => 'cn-hangzhou',
           'PhoneNumbers' => $phone_no,
           'SignName' => $signature,
           'TemplateCode' => $template,
           'TemplateParam' => format_string('{"receipt_no":"!receipt_no"}', array('!receipt_no' => $receipt_no)),
-        ],
-      ])
+        ),
+      ))
       ->request();
 
     $res = $result->all();
