@@ -148,7 +148,7 @@ function _moha_sms_send_form_submit($form, &$form_state) {
           'PhoneNumbers' => $phone_no,
           'SignName' => $signature,
           'TemplateCode' => $template,
-          'TemplateParam' => format_string('{"no":"!receipt_no"}', array('!receipt_no' => $receipt_no)),
+          'TemplateParam' => format_string('{"receipt_no":"!receipt_no"}', array('!receipt_no' => $receipt_no)),
         ],
       ])
       ->request();
