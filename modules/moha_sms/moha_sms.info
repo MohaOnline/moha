@@ -5,3 +5,7 @@ package = Moha Online
 
 dependencies[] = moha
 dependencies[] = moha_libs
+
+files[] = includes/MohaSMSAliyunRequestEntity.php
+files[] = includes/MohaSMSAliyunRequestEntityAdminController.php
+files[] = includes/MohaSMSAliyunRequestEntityController.php

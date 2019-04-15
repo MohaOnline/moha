@@ -1,7 +1,214 @@
 <?php
+
+/**
+ * Implements hook_schema().
+ */
+function moha_sms_schema() {
+  // Operation.
+  $schema[__MOHA_SMS_ALIYUN_REQUEST] = array(
+    'description' => 'Aliyun SMS sending requests.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary Key: Unique ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'phone' => array(
+        'description' => 'Phone number the SMS was sent to.',
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => '',
+      ),
+      'template' => array(
+        'description' => 'SMS template number used.',
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => '',
+      ),
+      'params' => array(
+        'description' => 'Params sent with template.',
+        'type' => 'varchar',
+        'length' => 1024,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => 'SMS status.',
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => '',
+      ),
+      'Code' => array(
+        'description' => 'SMS result code.',
+        'type' => 'varchar',
+        'length' => 64,
+        'default' => '',
+      ),
+      'Message' => array(
+        'description' => 'SMS result.',
+        'type' => 'varchar',
+        'length' => 128,
+        'default' => '',
+      ),
+      'RequestId' => array(
+        'description' => 'Request ID.',
+        'type' => 'varchar',
+        'length' => 128,
+        'default' => '',
+      ),
+      'BizId' => array(
+        'description' => 'Business ID returned once request was accepted.',
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => '',
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the record was updated.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the record was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  // Entity revision is handled by field API mostly.
+  $schema[__MOHA_SMS_ALIYUN_REQUEST . '_revision'] = array(
+    'description' => 'Stores revisions of Aliyun SMS sending requests.',
+    'fields' => array(
+      'vid' => array(
+        'description' => 'Primary Key: Unique Revision ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'id' => array(
+        'description' => 'Parent ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'phone' => array(
+        'description' => 'Phone number the SMS was sent to.',
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => '',
+      ),
+      'template' => array(
+        'description' => 'SMS template number used.',
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => '',
+      ),
+      'params' => array(
+        'description' => 'Params sent with template.',
+        'type' => 'varchar',
+        'length' => 1024,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => 'SMS status.',
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => '',
+      ),
+      'Code' => array(
+        'description' => 'SMS result code.',
+        'type' => 'varchar',
+        'length' => 64,
+        'default' => '',
+      ),
+      'Message' => array(
+        'description' => 'SMS result.',
+        'type' => 'varchar',
+        'length' => 128,
+        'default' => '',
+      ),
+      'RequestId' => array(
+        'description' => 'Request ID.',
+        'type' => 'varchar',
+        'length' => 128,
+        'default' => '',
+      ),
+      'BizId' => array(
+        'description' => 'Business ID returned once request was accepted.',
+        'type' => 'varchar',
+        'length' => 32,
+        'default' => '',
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the record was updated.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the record was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      )
+    ),
+    'primary key' => array('vid'),
+  );
+
+  return $schema;
+}
+
 /**
  * Implements hook_install().
  */
 function moha_sms_install() {
 
+}
+
+/**
+ * Create tables for moha sms entities.
+ */
+function moha_sms_update_0701() {
+  $schemas = moha_sms_schema();
+
+  foreach ($schemas as $schema_name => $schema_array) {
+    if (!db_table_exists($schema_name)) {
+      db_create_table($schema_name, $schema_array);
+    }
+  }
 }

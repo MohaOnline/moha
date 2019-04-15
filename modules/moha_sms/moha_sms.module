@@ -31,9 +31,125 @@ define('MOHA_SMS__PATH', drupal_get_path('module', __MOHA_SMS));
 define('__MOHA_SMS__PATH', base_path() . MOHA_SMS__PATH);
 
 /**
- *
+ * Entity machine name: moha_sms_aliyun_request.
  */
-define('MOHA_SMS__URL__SEND', 'moha/sms/send');
+define('__MOHA_SMS_ALIYUN_REQUEST', 'moha_sms_aliyun_request');
+
+/**
+ * Entity human name: Moha SMS Aliyun Request.
+ */
+define('MOHA_SMS_ALIYUN_REQUEST', 'Moha SMS Aliyun Request');
+
+/**
+ * Permission: Edit any Moha SMS Aliyun Request.
+ */
+define('MOHA_SMS__PERMISSION__EDIT_ANY_ALIYUN_REQUEST', 'edit any moha sms aliyun request');
+
+/**
+ * Moha SMS URL:
+ */
+define('MOHA_SMS__URL__SEND', 'admin/moha/sms/send');
+
+/**
+ * Moha SMS URL: Moha SMS Aliyun Request management page.
+ */
+define('MOHA_SMS__URL__ALIYUN_REQUEST_ADMIN_UI', 'admin/moha/entities/sms-aliyun-requests');
+
+/**
+ * Moha SMS Aliyun Request Admin UI Filter value: phone.
+ */
+define('MOHA_SMS_ALIYUN_REQUEST__ADMIN_UI_FILTER__PHONE', __MOHA_SMS_ALIYUN_REQUEST . '__admin_ui_filter__phone');
+
+/**
+ * Moha SMS Aliyun Request Admin UI Filter value: receipt_no.
+ */
+define('MOHA_SMS_ALIYUN_REQUEST__ADMIN_UI_FILTER__RECEIPT_NO', __MOHA_SMS_ALIYUN_REQUEST . '__admin_ui_filter__receipt_no');
+
+/**
+ * Judge if user has permission to access Group management page.
+ *
+ * @param $op
+ * @param $entity object
+ * @param $account object
+ *
+ * @return bool
+ */
+function _moha_sms_entity_admin_access_callback($op, $account = NULL) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  if ($account->uid == 1) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function moha_sms_entity_info() {
+  $items = array();
+
+  // Stores basic information of a company / group company.
+  // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
+  $items[__MOHA_SMS_ALIYUN_REQUEST] = [
+    'label' => t(MOHA_SMS_ALIYUN_REQUEST),
+    'plural label' => t(MOHA_SMS_ALIYUN_REQUEST . 's'),
+    // Moha ITS Groups
+    'base table' => __MOHA_SMS_ALIYUN_REQUEST,
+    'revision table' => __MOHA_SMS_ALIYUN_REQUEST . '_revision',
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'id',
+      'revision' => 'vid',
+    ),
+    //
+    'label callback' => 'entity_class_label',
+
+    /** @see entity_crud_hook_entity_info() */
+    "admin ui" => array(
+      /* Moha SMS Aliyun Request management page URL & Class. */
+      "path" => MOHA_SMS__URL__ALIYUN_REQUEST_ADMIN_UI,
+      "controller class" => "MohaSMSAliyunRequestEntityAdminController",
+
+      /** @see entity_ui_get_form() */
+      /* Moha SMS Aliyun Request add / edit forms containing file. */
+      "file" => "includes/MohaSMSAliyunRequestEntity.form.inc",  //
+    ),
+
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    "module" => __MOHA_SMS,
+
+    "access callback" => '_moha_sms_entity_admin_access_callback',
+
+    'entity class' => 'MohaSMSAliyunRequestEntity',
+    'controller class' => 'MohaSMSAliyunRequestEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
+    'uri callback' => 'entity_class_uri',
+
+    // Make entity fieldable; @see field_attach_form to attach added fields.
+    'fieldable' => TRUE,
+    'bundles' => array(
+      __MOHA_SMS_ALIYUN_REQUEST => array(
+        'label' => t(MOHA_ITS_GROUP),
+        'plural label' => t(MOHA_ITS_GROUP . 's'),
+        'admin' => array(
+          'path' => MOHA_SMS__URL__ALIYUN_REQUEST_ADMIN_UI,
+          'access arguments' => array(MOHA_SMS__PERMISSION__EDIT_ANY_ALIYUN_REQUEST),
+        ),
+      ),
+    ),
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
+  ];
+
+  return $items;
+}
 
 /**
  * Implements hook_menu().
@@ -73,7 +189,7 @@ function moha_sms_menu() {
 }
 
 /**
- *
+ * Form generation.
  *
  * @param $form
  * @param $form_state
@@ -85,7 +201,7 @@ function _moha_sms_send_form($form, &$form_state, $sender = '') {
   $form['phone_no'] = array(
     '#type' => 'textfield',
     '#title' => t('Phone#'),
-    '#description' => 'Specify cell phone number.',
+    '#description' => 'Enter 11-digit cell phone number.',
     '#default_value' => '',
     '#size' => 30,
     '#required' => TRUE,
@@ -94,9 +210,25 @@ function _moha_sms_send_form($form, &$form_state, $sender = '') {
   $form['receipt_no'] = array(
     '#type' => 'textfield',
     '#title' => t('Receipt#'),
-    '#description' => 'Specify express receipt number.',
+    '#description' => 'Enter 12-digit express receipt number.',
     '#default_value' => '',
     '#required' => TRUE,
+  );
+
+  $form['advanced_options'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced Options'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $advanced_options = &$form['advanced_options'];
+
+  $advanced_options['bypass'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Bypass validation.'),
+    '#description' => 'Check to bypass validation of phone# and receipt#',
+    '#default_value' => '',
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -109,7 +241,35 @@ function _moha_sms_send_form($form, &$form_state, $sender = '') {
 }
 
 /**
+ * Form validation.
  *
+ * @param $form
+ * @param $form_state
+ */
+function _moha_sms_send_form_validate($form, &$form_state) {
+
+  $values = $form_state['values'];
+
+  if (!isset($values['bypass']) || $values['bypass'] == 0) {
+
+    $phone_no   = trim($values['phone_no']);
+    $receipt_no = trim($values['receipt_no']);
+
+    $mobile_no_format = '/\d{11}/';
+    $receipt_no_format = '/\d{12}/';
+
+    if (!preg_match($mobile_no_format, $phone_no)) {
+      form_set_error('phone_no', "Phone number need be 11-digit number.");
+    }
+
+    if (!preg_match($receipt_no_format, $receipt_no)) {
+      form_set_error('receipt_no', "Receipt number need be 12-digit number.");
+    }
+  }
+}
+
+/**
+ * Form submission.
  *
  * @param $form
  * @param $form_state
@@ -121,8 +281,8 @@ function _moha_sms_send_form_submit($form, &$form_state) {
 
   $values = $form_state['values'];
 
-  $phone_no   = $values['phone_no'];
-  $receipt_no = $values['receipt_no'];
+  $phone_no   = trim($values['phone_no']);
+  $receipt_no = trim($values['receipt_no']);
 
   $accessKeyId  = variable_get('aliyunAccessKeyId','');
   $accessSecret = variable_get('aliyunAccessSecret', '');
@@ -136,6 +296,8 @@ function _moha_sms_send_form_submit($form, &$form_state) {
       ->regionId('cn-hangzhou')
       ->asDefaultClient();
 
+    $template_params = format_string('{"receipt_no":"!receipt_no"}', array('!receipt_no' => $receipt_no));
+
     $result = AlibabaCloud::rpc()
       ->product('Dysmsapi')
       ->scheme('https') // https | http
@@ -148,27 +310,45 @@ function _moha_sms_send_form_submit($form, &$form_state) {
           'PhoneNumbers' => $phone_no,
           'SignName' => $signature,
           'TemplateCode' => $template,
-          'TemplateParam' => format_string('{"recipt_no":"!receipt_no"}', array('!receipt_no' => $receipt_no)),
+          'TemplateParam' => $template_params,
         ),
       ))
       ->request();
 
     $res = $result->all();
 
+    // Save Aliyun SMS Request.
+    global $user;
+    $entity_array = $res;
+    $entity_array['phone'] = $phone_no;
+    $entity_array['template'] = $template;
+    $entity_array['params'] = $template_params;
+    $entity_array['uid'] = $user->uid;
+    $entity = entity_create(__MOHA_SMS_ALIYUN_REQUEST, $entity_array);
+
+    if ($entity) {
+      $entity->save();
+    }
+
+    $link = l("logs", 'admin/reports/dblog', array('attributes' => array('target' => '_blank')));
+
     // Show feedback.
     if ($res['Code'] == 'OK') {
-      drupal_set_message('SMS has been sent.');
+      drupal_set_message('SMS has been sent, check ' . $link . ' for details.');
     }
     else {
-      drupal_set_message('SMS has not been sent.', 'error');
+      drupal_set_message('SMS has not been sent, check ' . $link . ' for details.', 'error');
     }
+
+
 
     // Logs SMS sending result.
     $params = array();
     foreach ($res as $key => $value) {
       $params['%'.$key] = $value;
     }
-    watchdog(__FUNCTION__, 'Message: %Message, RequestId: RequestId: %RequestId, BizId: %BizId, Code: %Code', $params);
+
+    watchdog(__FUNCTION__, 'Message: %Message, RequestId: %RequestId, BizId: %BizId, Code: %Code', $params);
 
     return;
   }

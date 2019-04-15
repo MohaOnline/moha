@@ -303,6 +303,17 @@ function moha_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
+  $items["admin/moha/entities"] = array(
+    'title' => 'Moha Entities',
+    'description' => t('Entities of Moha enhancement system.'),
+    'page callback' => 'system_admin_menu_block_page',
+    'weight' => -9,
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
   return $items;
 }
 
