@@ -135,8 +135,8 @@ function moha_sms_entity_info() {
     'fieldable' => TRUE,
     'bundles' => array(
       __MOHA_SMS_ALIYUN_REQUEST => array(
-        'label' => t(MOHA_ITS_GROUP),
-        'plural label' => t(MOHA_ITS_GROUP . 's'),
+        'label' => t(MOHA_SMS_ALIYUN_REQUEST),
+        'plural label' => t(MOHA_SMS_ALIYUN_REQUEST . 's'),
         'admin' => array(
           'path' => MOHA_SMS__URL__ALIYUN_REQUEST_ADMIN_UI,
           'access arguments' => array(MOHA_SMS__PERMISSION__EDIT_ANY_ALIYUN_REQUEST),
