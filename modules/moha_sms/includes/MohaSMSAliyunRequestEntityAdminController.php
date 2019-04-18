@@ -137,18 +137,18 @@ class MohaSMSAliyunRequestEntityAdminController extends EntityDefaultUIControlle
    */
   protected function overviewTableHeaders($conditions, $rows, $additional_header = []) {
 
-    $additional_header[] = t('ID');
+    // $additional_header[] = t('ID');
+    // $additional_header[] = t('Updated');
+    $additional_header[] = t('Created');
     $additional_header[] = t('Phone');
-    $additional_header[] = t('Template');
     $additional_header[] = t('Params');
+    // $additional_header[] = t('Template');
     $additional_header[] = t('Code');
     $additional_header[] = t('Message');
     $additional_header[] = t('RequestId');
     $additional_header[] = t('BizId');
-    $additional_header[] = t('Updated');
-    $additional_header[] = t('Created');
 
-    $additional_header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount()+1);
+    // $additional_header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount()+1);
 
     return $additional_header;
   }
@@ -160,17 +160,19 @@ class MohaSMSAliyunRequestEntityAdminController extends EntityDefaultUIControlle
    */
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = []) {
 
+    // Order updated and created time.
+    // $additional_cols[] = format_date($entity->updated, 'short');
+    $additional_cols[] = format_date($entity->created, 'short');
+
     $additional_cols[] = $entity->phone;
-    $additional_cols[] = $entity->template;
     $additional_cols[] = $entity->params;
+    // $additional_cols[] = $entity->template;
     $additional_cols[] = $entity->Code;
     $additional_cols[] = $entity->Message;
     $additional_cols[] = $entity->RequestId;
     $additional_cols[] = $entity->BizId;
 
-    // Order updated and created time.
-    $additional_cols[] = format_date($entity->updated, 'short');
-    $additional_cols[] = format_date($entity->created, 'short');
+    return $additional_cols;
 
     $row = parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
 
