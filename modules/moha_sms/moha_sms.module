@@ -262,8 +262,8 @@ function _moha_sms_send_form_validate($form, &$form_state) {
     $phone_no   = trim($values['phone_no']);
     $receipt_no = trim($values['receipt_no']);
 
-    $mobile_no_format = '/\d{11}/';
-    $receipt_no_format = '/\d{12}/';
+    $mobile_no_format = '/^\d{11}$/';
+    $receipt_no_format = '/^\d{12}$/';
 
     if (!preg_match($mobile_no_format, $phone_no)) {
       form_set_error('phone_no', "Phone number need be 11-digit number.");
@@ -334,20 +334,21 @@ function _moha_sms_send_form_submit($form, &$form_state) {
     $entity = entity_create(__MOHA_SMS_ALIYUN_REQUEST, $entity_array);
 
     if ($entity) {
+      /** @var \MohaSMSAliyunRequestEntity $entity*/
       $entity->save();
     }
 
     $link = l("history", MOHA_SMS__URL__ALIYUN_REQUEST_ADMIN_UI, array('attributes' => array('target' => '_blank')));
 
+    $severity = WATCHDOG_INFO;
     // Show feedback.
     if ($res['Code'] == 'OK') {
       drupal_set_message('SMS has been sent, check ' . $link . ' to check details.');
     }
     else {
       drupal_set_message(format_string('SMS has not been sent, check !link to check details.', array('!link' => $link)), 'error');
+      $severity = WATCHDOG_ERROR;
     }
-
-
 
     // Logs SMS sending result.
     $params = array();
@@ -355,7 +356,7 @@ function _moha_sms_send_form_submit($form, &$form_state) {
       $params['%'.$key] = $value;
     }
 
-    watchdog(__FUNCTION__, 'Message: %Message, RequestId: %RequestId, BizId: %BizId, Code: %Code', $params);
+    watchdog(__FUNCTION__, 'Message: %Message, RequestId: %RequestId, BizId: %BizId, Code: %Code', $params, $severity);
 
     return;
   }
