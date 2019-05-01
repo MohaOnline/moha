@@ -19,9 +19,6 @@ function _moha_map_front() {
       $content['baidu_access_key'] = $baidu_access_key;
     }
 
-    // TODO allow user specify which domains could include this page later.
-    drupal_add_http_header("X-Frame-Options", "");
-
     $html = theme('moha_map_baidu_marker', array(
       'content' => $content,
     ));
@@ -42,6 +39,10 @@ function _moha_map_view($node) {
 
     $content = array();
 
+
+    // TODO allow user specify which domains could include this page later.
+    drupal_add_http_header("X-Frame-Options", "ALLOWALL");
+
     if (empty($baidu_access_key)) {
       // Goto Moha Map is unavailable page.
     }
@@ -60,12 +61,13 @@ function _moha_map_view($node) {
     $map_type_id = $node->moha_map_type[LANGUAGE_NONE][0]['tid'];
     $map_type = moha_term_name_by_tid($map_type_id);
 
-    $moha_map_theme_name = '';
-
     switch (strtolower($map_type)) {
       default:
       case 'baidu':
         $moha_map_theme_name = 'moha_map_baidu_marker';
+        break;
+      case 'gaode':
+        $moha_map_theme_name = 'moha_map_gaode_marker';
         break;
     }
 
