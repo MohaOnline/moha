@@ -38,9 +38,14 @@ define('MOHA_RACI', 'Moha RACI');
 define('__MOHA_RACI', 'moha_raci');
 
 /**
+ * Moha URL: Moha entities summary page.
+ */
+define('MOHA__URL__ENTITIES', 'admin/moha/entities');
+
+/**
  * Moha URL: Moha RACI management page.
  */
-define('MOHA__URL__RACI_ADMIN_UI', 'admin/moha/raci');
+define('MOHA__URL__RACI_ADMIN_UI', MOHA__URL__ENTITIES . '/raci');
 
 /**
  * Permission: Edit any Moha RACI.
@@ -189,20 +194,21 @@ function moha_entity_info() {
     'label callback' => 'entity_class_label',
 
     /** @see entity_crud_hook_entity_info() */
-    "admin ui" => array(
+    'admin ui' => array(
       /* Moha RACI management page URL & Class. */
-      "path" => MOHA__URL__RACI_ADMIN_UI,
-      "controller class" => "MohaRACIEntityAdminController",
+      'path' => MOHA__URL__RACI_ADMIN_UI,
+      'controller class' => 'MohaRACIEntityAdminController',
 
       /** @see entity_ui_get_form() */
       /* Moha RACI add / edit forms containing file. */
-      "file" => "includes/MohaRACIEntity.form.inc",  //
+      'file' => 'includes/MohaRACIEntity.form.inc',  //
     ),
 
     // Declares which module contains related Class information, like Admin UI Class, etc.
-    "module" => __MOHA,
+    'module' => __MOHA,
 
-    "access callback" => "_moha_raci_entity_admin_access_callback",
+    /** @see entity_access() */
+    'access callback' => 'moha_entity_access',
 
     'entity class' => 'MohaRACIEntity',
     'controller class' => 'MohaRACIEntityController',
@@ -230,18 +236,11 @@ function moha_entity_info() {
 }
 
 /**
- *
- */
-function _moha_raci_entity_admin_access_callback() {
-  return TRUE;
-}
-
-/**
- *
+ * Permissions administrator should have.
  *
  * @return array
  */
-function _moha_admin_common_permissions() {
+function moha_permissions_4_admin() {
   $admin_common_permissions = array(
     'view the administration theme',
     'access administration menu',
@@ -256,6 +255,15 @@ function _moha_admin_common_permissions() {
   );
 
   return $admin_common_permissions;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function moha_permission() {
+  $permissions = moha_entity_permission(__MOHA_RACI);
+
+  return $permissions;
 }
 
 /**
@@ -292,7 +300,7 @@ function moha_image_default_styles() {
  * Implements hook_menu().
  */
 function moha_menu() {
-  $items["admin/moha"] = array(
+  $items['admin/moha'] = array(
     'title' => 'Moha',
     'description' => t('Moha enhancement system.'),
     'page callback' => 'system_admin_menu_block_page',
@@ -303,7 +311,7 @@ function moha_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
-  $items["admin/moha/entities"] = array(
+  $items[MOHA__URL__ENTITIES] = array(
     'title' => 'Moha Entities',
     'description' => t('Entities of Moha enhancement system.'),
     'page callback' => 'system_admin_menu_block_page',
@@ -445,6 +453,97 @@ function _moha_form_entity_raci_form_owner_entity_type_change_ajax_callback($for
   $form['oid']['#value'] = '';
 
   return $form['oid'];
+}
+
+/**
+ * Generates entity permission array.
+ *
+ * @param $entity_type
+ *   Entity type name.
+ *
+ * @return array
+ */
+function moha_entity_permission($entity_type) {
+
+  $permissions_array = array(
+    'view own ' . $entity_type => array(
+      'title' => t('View own ' . $entity_type),
+    ),
+    'view any ' . $entity_type => array(
+      'title' => t('View any ' . $entity_type),
+    ),
+    'update own ' . $entity_type => array(
+      'title' => t('Update own ' . $entity_type),
+    ),
+    'update any ' . $entity_type => array(
+      'title' => t('Update any ' . $entity_type),
+    ),
+    'create ' . $entity_type => array(
+      'title' => t('Create ' . $entity_type),
+    ),
+    'delete own ' . $entity_type => array(
+      'title' => t('Delete own ' . $entity_type),
+    ),
+    'delete any ' . $entity_type => array(
+      'title' => t('Delete any ' . $entity_type),
+    ),
+  );
+
+  return $permissions_array;
+}
+
+/**
+ * Determines whether the given user can perform actions on an entity.
+ *
+ * @param $op
+ *   The operation being performed. One of 'view', 'update', 'create' or
+ *   'delete'.
+ * @param $entity_type
+ *   The entity type of the entity to check for.
+ * @param $entity
+ *   Optionally an entity to check access for. If no entity is given, it will be
+ *   determined whether access is allowed for all entities of the given type.
+ * @param $account
+ *   The user to check for. Leave it to NULL to check for the global user.
+ *
+ * @return boolean
+ *   Whether access is allowed or not. If the entity type does not specify any
+ *   access information, NULL is returned.
+ */
+function moha_entity_access($op, $entity, $account, $entity_type) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  // User #1 has all privileges:
+  if ($account->uid == 1) {
+    return TRUE;
+  }
+
+  if ($op == 'view') {
+
+  }
+  elseif ($op == 'create') {
+    return user_access('create ' . $entity_type, $account);
+  }
+
+}
+
+/**
+ * @param $w object
+ *   Entity Wrapper which need be inspected.
+ *
+ * @return array
+ *   key-value pairs of wrapper object.
+ */
+function moha_entity_wrapper_debug($w) {
+  $values = array();
+  foreach ($w->getPropertyInfo() as $key => $val) {
+    $values[$key] = $w->$key->value();
+  }
+  return $values;
 }
 
 /**
@@ -812,21 +911,6 @@ function moha_term_name_by_tid($tid) {
  */
 function moha_hide_node_comment($node_type){
   variable_set('comment_' . $node_type, COMMENT_NODE_HIDDEN);
-}
-
-/**
- * @param $w object
- *   Entity Wrapper which need be inspected.
- *
- * @return array
- *   key-value pairs of wrapper object.
- */
-function moha_entity_wrapper_debug($w) {
-  $values = array();
-  foreach ($w->getPropertyInfo() as $key => $val) {
-    $values[$key] = $w->$key->value();
-  }
-  return $values;
 }
 
 /**

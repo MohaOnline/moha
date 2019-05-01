@@ -135,22 +135,22 @@ define('MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER', __MOHA_ITS_GROUP . '__admin_ui_
 /**
  * Moha ITS URL: Moha ITS Group management page.
  */
-define('MOHA_ITS__URL__GROUP_ADMIN_UI', 'admin/moha/its/groups');
+define('MOHA_ITS__URL__GROUP_ADMIN_UI', MOHA__URL__ENTITIES . '/its-groups');
 
 /**
  * Moha ITS URL: Moha ITS Infrastructure management page.
  */
-define('MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI', 'admin/moha/its/infrastructures');
+define('MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI', MOHA__URL__ENTITIES . '/its-infrastructures');
 
 /**
  * Moha ITS URL: Moha ITS Service management page.
  */
-define('MOHA_ITS__URL__SERVICE_ADMIN_UI', 'admin/moha/its/services');
+define('MOHA_ITS__URL__SERVICE_ADMIN_UI', MOHA__URL__ENTITIES . '/its-services');
 
 /**
  * Moha ITS URL: Moha ITS Effort management page.
  */
-define('MOHA_ITS__URL__EFFORT_ADMIN_UI', 'admin/moha/its/efforts');
+define('MOHA_ITS__URL__EFFORT_ADMIN_UI', MOHA__URL__ENTITIES . '/its-efforts');
 
 /**
  * Moha ITS Vocabulary: Infrastructure types.
@@ -210,20 +210,19 @@ function moha_its_entity_info() {
     'label callback' => 'entity_class_label',
 
     /** @see entity_crud_hook_entity_info() */
-    "admin ui" => array(
+    'admin ui' => array(
       /* Moha ITS Groups management page URL & Class. */
-      "path" => MOHA_ITS__URL__GROUP_ADMIN_UI,
-      "controller class" => "MohaITSGroupEntityAdminController",
+      'path' => MOHA_ITS__URL__GROUP_ADMIN_UI,
+      'controller class' => "MohaITSGroupEntityAdminController",
 
       /** @see entity_ui_get_form() */
       /* Moha ITS Groups add / edit forms containing file. */
-      "file" => "includes/MohaITSGroupEntity.form.inc",  //
+      'file' => "includes/MohaITSGroupEntity.form.inc",  //
     ),
 
     // Declares which module contains related Class information, like Admin UI Class, etc.
-    "module" => __MOHA_ITS,
-
-    "access callback" => "_moha_its_group_entity_admin_access_callback",
+    'module' => __MOHA_ITS,
+    'access callback' => 'moha_entity_access',
 
     'entity class' => 'MohaITSGroupEntity',
     'controller class' => 'MohaITSGroupEntityController',
@@ -264,21 +263,19 @@ function moha_its_entity_info() {
     'label callback' => 'entity_class_label',
 
     /** @see entity_crud_hook_entity_info() */
-    "admin ui" => array(
+    'admin ui' => array(
       /* Moha ITS Infrastructure management page URL & Class. */
-      "path" => MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI,
-      "controller class" => "MohaITSInfrastructureEntityAdminController",
+      'path' => MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI,
+      'controller class' => 'MohaITSInfrastructureEntityAdminController',
 
       /** @see entity_ui_get_form() */
       /* Moha ITS Infrastructure add / edit forms containing file. */
-      "file" => "includes/MohaITSInfrastructureEntity.form.inc",  //
+      'file' => 'includes/MohaITSInfrastructureEntity.form.inc',  //
     ),
 
     // Declares which module contains related Class information, like Admin UI Class, etc.
-    "module" => __MOHA_ITS,
-
-    "access callback" => "_moha_its_group_entity_admin_access_callback",
-
+    'module' => __MOHA_ITS,
+    'access callback' => 'moha_entity_access',
     'entity class' => 'MohaITSInfrastructureEntity',
     'controller class' => 'MohaITSInfrastructureEntityController',
     // Uses defaultUri method of entity class to generate entity URL.
@@ -315,20 +312,19 @@ function moha_its_entity_info() {
     'label callback' => 'entity_class_label',
 
     /** @see entity_crud_hook_entity_info() */
-    "admin ui" => array(
+    'admin ui' => array(
       /* Moha ITS Groups management page URL & Class. */
-      "path" => MOHA_ITS__URL__SERVICE_ADMIN_UI,
-      "controller class" => "MohaITSServiceEntityAdminController",
+      'path' => MOHA_ITS__URL__SERVICE_ADMIN_UI,
+      'controller class' => 'MohaITSServiceEntityAdminController',
 
       /** @see entity_ui_get_form() */
       /* Moha ITS Groups add / edit forms containing file. */
-      "file" => "includes/MohaITSServiceEntity.form.inc",  //
+      'file' => 'includes/MohaITSServiceEntity.form.inc',  //
     ),
 
     // Declares which module contains related Class information, like Admin UI Class, etc.
-    "module" => __MOHA_ITS,
-
-    "access callback" => "_moha_its_group_entity_admin_access_callback",
+    'module' => __MOHA_ITS,
+    'access callback' => 'moha_entity_access',
 
     'entity class' => 'MohaITSServiceEntity',
     'controller class' => 'MohaITSServiceEntityController',
@@ -366,20 +362,19 @@ function moha_its_entity_info() {
     'label callback' => 'entity_class_label',
 
     /** @see entity_crud_hook_entity_info() */
-    "admin ui" => array(
+    'admin ui' => array(
       /* Moha ITS Operation management page URL & Class. */
-      "path" => MOHA_ITS__URL__EFFORT_ADMIN_UI,
-      "controller class" => "MohaITSEffortEntityAdminController",
+      'path' => MOHA_ITS__URL__EFFORT_ADMIN_UI,
+      'controller class' => 'MohaITSEffortEntityAdminController',
 
       /** @see entity_ui_get_form() */
       /* Moha ITS Operation add / edit forms containing file. */
-      "file" => "includes/MohaITSEffortEntity.form.inc",  //
+      'file' => 'includes/MohaITSEffortEntity.form.inc',  //
     ),
 
     // Declares which module contains related Class information, like Admin UI Class, etc.
-    "module" => __MOHA_ITS,
-
-    "access callback" => "_moha_its_group_entity_admin_access_callback",
+    'module' => __MOHA_ITS,
+    'access callback' => 'moha_entity_access',
 
     'entity class' => 'MohaITSEffortEntity',
     'controller class' => 'MohaITSEffortEntityController',
@@ -453,9 +448,10 @@ function _moha_its_group_entity_admin_access_callback($op, $entity = NULL, $acco
  * Alter entityreference_autocomplete_validate_entityreference().
  *
  * @see https://www.drupal.org/docs/7/api/database-api/dynamic-queries/query-alteration-tagging
+ * @see hook_query_TAG_alter
  */
 function moha_its_query_era_query_alter(QueryAlterableInterface $query) {
-  /** @var $query \SelectQuery*/
+  /** @var $query \SelectQuery */
   $tables = $query->getTables();
 
   // Skip verify label for moha_its_service entity.
@@ -463,7 +459,7 @@ function moha_its_query_era_query_alter(QueryAlterableInterface $query) {
     $conditions = &$query->conditions();
     foreach($conditions as $key => $condition){
       if (is_numeric($key)) {
-        if ($conditions[$key]['field'] == "moha_its_service.full_name") {
+        if ($conditions[$key]['field'] == 'moha_its_service.full_name') {
           unset($conditions[$key]);
           break;
         }
@@ -485,17 +481,15 @@ function moha_its_group_entity_exists($value){
 /**
  * Implements hook_permission().
  *
- *
+ * Returns permissions array for entities.
  */
 function moha_its_permission() {
-  return array(
-    MOHA_ITS__PERMISSION__EDIT_ANY_GROUP => array(
-      'title' => 'Edit Any Moha ITS Group',
-    ),
-    MOHA_ITS__PERMISSION__EDIT_OWN_GROUP => array(
-      'title' => 'Edit Own Moha ITS Group',
-    ),
-  );
+  $permissions = moha_entity_permission(__MOHA_ITS_SERVICE)
+    + moha_entity_permission(__MOHA_ITS_EFFORT)
+    + moha_entity_permission(__MOHA_ITS_GROUP)
+    + moha_entity_permission(__MOHA_ITS_INFRASTRUCTURE)
+  ;
+  return $permissions;
 }
 
 /**
