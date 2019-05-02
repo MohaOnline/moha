@@ -387,8 +387,6 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
       'ckeditor_template_image_path' => MOHA__PATH . '/ckeditor/', // Usage: Drupal.settings.moha.ckeditor_template_image_path.
     )
   ), 'setting');
-
-  return;
 }
 
 /**
@@ -402,7 +400,7 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
  */
 function moha_node_ajax_save_callback($form, &$form_state){
 
-  /** @See ajax_form_callback() */
+  /** @see ajax_form_callback() */
   // validation will be proceed
   // If error, directly returns.
   if (form_get_errors()) {
@@ -914,7 +912,7 @@ function moha_hide_node_comment($node_type){
 }
 
 /**
- * Get drupal variable which is inform of array.
+ * Get drupal variable which is stored in form of array.
  *
  * @param $variable_name
  * @param $key
@@ -934,14 +932,14 @@ function moha_array_variable_get($variable_name, $key, $default = "") {
 }
 
 /**
- * Set drupal variable which is inform of array.
+ * Set drupal variable which is stored in form of array.
  *
  * @param $variable_name
- *  Drupal variable name which is stored
+ *   Drupal variable name which is stored
  * @param $key
- *  Key name in array.
+ *   Key name in array.
  * @param $value
- *  Value which will be set to $key.
+ *   Value which will be set to $key.
  */
 function moha_array_variable_set($variable_name, $key, $value = ""){
   $values = variable_get($variable_name);
@@ -953,9 +951,11 @@ function moha_array_variable_set($variable_name, $key, $value = ""){
  * Return block translated string.
  *
  * @param $variable_name
- * @param
- * @param
- * @param
+ * @param $module
+ * @param $delta
+ * @param $default
+ *
+ * @return mixed
  */
 function moha_i18n_value($variable_name, $module, $delta, $default = '') {
   $value = variable_get($variable_name, $default);

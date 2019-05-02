@@ -1,6 +1,22 @@
 (function ($) {
-
   Drupal.behaviors.moha_clip_admin = {
+    load_preview: function(){
+      jQuery('iframe#moha-node-preview').attr('src', Drupal.settings.moha_clip.preview_url);
+
+      // jQuery.get(Drupal.settings.moha_clip.preview_url).success(function (data) {
+      //   console.log(data);
+      //   jQuery('iframe#moha-node-preview').contents().find('html').html(data);
+      // });
+    },
+
+    load_anonymous_preview: function() {
+      jQuery.get(Drupal.settings.moha_clip.preview_url).success(function (data) {
+        var context = jQuery('iframe#moha-node-preview')[0].contentWindow.document;
+        var body = jQuery('body', context);
+        body.html(data);
+      });
+    },
+
     attach: function (context, settings) {
       // Hide success message automatically.
       $(".messages.status", context).once('success-message-fade-out', function(){
@@ -44,6 +60,8 @@
           // Current scrolled distance.
           const currentScrollY      = document.documentElement.scrollTop > document.body.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop;
 
+          if (toolbar == null) { return; }
+
           toolbar.style.width     = content.offsetWidth + "px";
           toolbar.style.top       = "0px";
           toolbar.style.margin    = "0 auto";
@@ -68,6 +86,12 @@
             content.style.paddingTop = "0px";
           }
         }, false);
+      });
+
+      // Adjust iFrame preview window.
+      jQuery('div#moha-node-preview-wrapper').insertBefore('div#edit-body');
+      jQuery('iframe#moha-node-preview').load(function () {
+        jQuery('div#moha-node-preview-wrapper').height(this.contentWindow.document.body.offsetHeight + 50);
       });
 
     }

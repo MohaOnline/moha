@@ -21,12 +21,12 @@ define('MOHA_CLIP__VARIABLES', __MOHA_CLIP . '__variables');
 /**
  * /sites/all/modules/custom/moha/modules/moha_clip.
  */
-define('MOHA_CLIP__PATH', base_path() . drupal_get_path('module', __MOHA_CLIP));
+define('__MOHA_CLIP__PATH', base_path() . drupal_get_path('module', __MOHA_CLIP));
 
 /**
  * sites/all/modules/custom/moha/modules/moha_clip.
  */
-define('MOHA_CLIP__RELATIVE_PATH', drupal_get_path('module', __MOHA_CLIP));
+define('MOHA_CLIP__PATH', drupal_get_path('module', __MOHA_CLIP));
 
 /**
  * Permission: view moha_clip content.
@@ -233,7 +233,7 @@ config.codeSnippet_theme = \'monokai_sublime\';
 config.extraPlugins = \'autogrow\';
 config.autoGrow_maxHeight = 0;
 config.autoGrow_onStartup = true;
-config.templates_files = [ "' . MOHA_CLIP__PATH . '/ckeditor/templates.js" ];
+config.templates_files = [ "' . __MOHA_CLIP__PATH . '/ckeditor/templates.js" ];
 config.templates = \'moha\';
 config.templates_replaceContent = false;
 config.keystrokes = [
@@ -275,9 +275,9 @@ config.keystrokes = [
       ),
     ),
     'css_mode' => 'self',
-    'css_path' => MOHA_CLIP__PATH . '/ckeditor/styles.css',
+    'css_path' => __MOHA_CLIP__PATH . '/ckeditor/styles.css',
     'css_style' => 'self',
-    'styles_path' => MOHA_CLIP__PATH . '/ckeditor/styles.js',
+    'styles_path' => __MOHA_CLIP__PATH . '/ckeditor/styles.js',
     'filebrowser' => $file_browser,
     'filebrowser_image' => $file_browser,
     'filebrowser_flash' => $file_browser,
@@ -384,17 +384,17 @@ function moha_clip_form($node, &$form_state) {
 
   if ($theme_key == 'seven') {
     // Fix admin style issue when admin theme is seven.
-    drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/css/moha_clip.admin.css');
+    drupal_add_css(MOHA_CLIP__PATH . '/css/moha_clip.admin.css');
   }
 
   // Add collapsible effect to image and video fields.
-  drupal_add_js(MOHA_CLIP__RELATIVE_PATH . '/js/moha_clip.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
+  drupal_add_js(MOHA_CLIP__PATH . '/js/moha_clip.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
   drupal_add_library('system', 'drupal.collapse');
 
   // Pass setting values from PHP to JS.
   drupal_add_js(array(
     __MOHA_CLIP => array(
-      'ckeditor_template_image_path' => MOHA_CLIP__PATH . '/ckeditor/', // Usage: Drupal.settings.moha_clip.ckeditor_template_image_path.
+      'ckeditor_template_image_path' => __MOHA_CLIP__PATH . '/ckeditor/', // Usage: Drupal.settings.moha_clip.ckeditor_template_image_path.
       'speaker' => ''
     )
   ), 'setting');
@@ -439,6 +439,23 @@ function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id
     // only changed (timestamp of last update) field will be replaced
     $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
     $form['changed']['#suffix'] = '</div>';
+
+    $no_iframe = t('Your browser do not support iframe.');
+    $form['preview'] = array(
+      '#prefix' => '<div id="moha-node-preview-wrapper">',
+      '#markup' => <<<PREVIEW
+<iframe name="moha-node-preview" id="moha-node-preview" class="" frameborder="0" src="$alias">
+  <p>$no_iframe</p>
+</iframe>
+PREVIEW
+,
+      '#suffix' => '</div>',
+    );
+    drupal_add_js(array(
+      __MOHA_CLIP => array(
+        'preview_url' => url($alias, array('absolute' => TRUE)), // Usage: Drupal.settings.moha_clip.preview_url.
+      )
+    ), 'setting');
 
     $form['actions']['silent_save'] = array(
       /* Must use 'submit' to trigger form save, otherwise field value can't be proceed correctly. */
@@ -670,8 +687,8 @@ function moha_clip_menu() {
 function moha_clip_views_api() {
   return array(
     'api' => 3,
-    'path' => MOHA_CLIP__RELATIVE_PATH . '/views',
-    'template path' => MOHA_CLIP__RELATIVE_PATH . '/templates',
+    'path' => MOHA_CLIP__PATH . '/views',
+    'template path' => MOHA_CLIP__PATH . '/templates',
   );
 }
 

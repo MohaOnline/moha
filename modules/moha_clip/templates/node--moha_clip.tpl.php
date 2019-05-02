@@ -93,10 +93,10 @@ drupal_add_js(array(
   )
 ), 'setting');
 
-drupal_add_js(MOHA_CLIP__RELATIVE_PATH . '/js/moha_clip.js');
+drupal_add_js(MOHA_CLIP__PATH . '/js/moha_clip.js');
 
-drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/css/moha_clip.css', array('group' => CSS_THEME, 'media' => 'all', 'weight' => 990));
-drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/ckeditor/styles.css', array('group' => CSS_THEME, 'media' => 'all', 'weight' => 998));
+drupal_add_css(MOHA_CLIP__PATH . '/css/moha_clip.css', array('group' => CSS_THEME, 'media' => 'all', 'weight' => 990));
+drupal_add_css(MOHA_CLIP__PATH . '/ckeditor/styles.css', array('group' => CSS_THEME, 'media' => 'all', 'weight' => 998));
 ?>
 
 <link  href="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css" rel="stylesheet" />

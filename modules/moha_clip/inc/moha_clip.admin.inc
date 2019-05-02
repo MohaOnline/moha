@@ -6,7 +6,7 @@
 function _moha_clip_manager_form($form, &$form_state) {
 
   // Load at the end.
-  drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/css/moha_clip_admin.css', array(
+  drupal_add_css(MOHA_CLIP__PATH . '/css/moha_clip_admin.css', array(
     'group' => CSS_THEME,
     'weight' => 999,
   ));

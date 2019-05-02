@@ -1,7 +1,6 @@
 <?php
 /**
  * @file
- * Date: 18/01/2019
  */
 
 // TODO
@@ -21,6 +20,16 @@ define('__MOHA_ITS', 'moha_its');
  * moha_its__variables.
  */
 define('MOHA_ITS__VARIABLES', __MOHA_ITS . '__variables');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_its.
+ */
+define('MOHA_ITS__PATH', drupal_get_path('module', __MOHA_ITS));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_its.
+ */
+define('__MOHA_ITS__PATH', base_path() . MOHA_ITS__PATH);
 
 /**
  * Entity human name: Moha ITS Group.

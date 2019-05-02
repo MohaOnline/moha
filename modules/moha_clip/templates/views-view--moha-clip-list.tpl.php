@@ -1,5 +1,5 @@
 <?php
-drupal_add_css(MOHA_CLIP__RELATIVE_PATH . '/css/moha_clip.views.css');
+drupal_add_css(MOHA_CLIP__PATH . '/css/moha_clip.views.css');
 
 /**
  * @file
