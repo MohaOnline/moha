@@ -76,14 +76,15 @@ div.cke_combopanel {
 /***/
 
 div.content {
-  max-width: 888px;
+  max-width: 850px;
 }
 
 div#moha-node-preview-wrapper {
   position: absolute;
+  padding-top: 30px;
   right: 0;
-  width: 900px;
-  height: 500px;
+  width: 850px;
+  height: 400px;
 }
 
 iframe#moha-node-preview {

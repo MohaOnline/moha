@@ -2,11 +2,6 @@
   Drupal.behaviors.moha_clip_admin = {
     load_preview: function(){
       jQuery('iframe#moha-node-preview').attr('src', Drupal.settings.moha_clip.preview_url);
-
-      // jQuery.get(Drupal.settings.moha_clip.preview_url).success(function (data) {
-      //   console.log(data);
-      //   jQuery('iframe#moha-node-preview').contents().find('html').html(data);
-      // });
     },
 
     load_anonymous_preview: function() {
@@ -20,7 +15,7 @@
     attach: function (context, settings) {
       // Hide success message automatically.
       $(".messages.status", context).once('success-message-fade-out', function(){
-        $(this).delay(5000).fadeTo(1500, 0.05).slideUp(500);
+        $(this).delay(6000).fadeTo(1500, 0.05).slideUp(500);
       });
 
       // Add collapsible effect for image and video field.
@@ -88,10 +83,19 @@
         }, false);
       });
 
-      // Adjust iFrame preview window.
-      jQuery('div#moha-node-preview-wrapper').insertBefore('div#edit-body');
-      jQuery('iframe#moha-node-preview').load(function () {
-        jQuery('div#moha-node-preview-wrapper').height(this.contentWindow.document.body.offsetHeight + 50);
+      // Adjust iFrame preview window, if width of window is too narrow, hide preview window.
+      var windowWidth = jQuery(window).width();
+      if (windowWidth > 1800) {
+        jQuery('div#moha-node-preview-wrapper').css('display', 'block').insertBefore('div#edit-body');
+      }
+      else {
+        jQuery('div#moha-node-preview-wrapper').css('display', 'none');
+      }
+
+      jQuery('div#moha-node-preview-wrapper', context).once('fix-preview-wrapper-height', function () {
+        jQuery('iframe#moha-node-preview').load(function () {
+          jQuery('div#moha-node-preview-wrapper').height(this.contentWindow.document.body.offsetHeight + 50);
+        });
       });
 
     }
