@@ -24,6 +24,9 @@ jQuery(document).ready(function () {
 
     // Float area information.
     const floatArea = jQuery('div.col-md-3.col-xs-12');
+    if (floatArea.offset() === undefined) {
+      return;
+    }
     const floatAreaTopY = floatArea.offset().top;
     const floatAreaHeight = floatArea.height();
 

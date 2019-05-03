@@ -18,14 +18,14 @@ function moha_ckeditor_plugin() {
     // Description of the plugin - it would be displayed in the plugins management section of profile settings.
     'desc' => t('Moha customized widgets.'),
     // The full URL to the CKEditor plugins directory, with the trailing slash.
-    'path' => MOHA__PATH. '/ckeditor/moha_spotlight/',
+    'path' => __MOHA__PATH. '/ckeditor/moha_spotlight/',
     // All toolbar buttons need be declared here.
     'buttons' => array(
       'moha_spotlight' => array(
         // Path to the button icon. Relative to the plugin directory 'path' unless 'icon_path' is specified.
         'icon' => 'moha_spotlight.png',
         // Optional full path to the directory the icon is located in.
-        'icon_path' => MOHA__PATH. '/ckeditor/moha_spotlight/icons/',
+        'icon_path' => __MOHA__PATH. '/ckeditor/moha_spotlight/icons/',
         'label' => 'Moha Spotlight Widget',
       ),
     )
@@ -38,14 +38,14 @@ function moha_ckeditor_plugin() {
     // Description of the plugin - it would be displayed in the plugins management section of profile settings.
     'desc' => t('Moha common widgets.'),
     // The full URL to the CKEditor plugins directory, with the trailing slash.
-    'path' => MOHA__PATH. '/ckeditor/moha_widget/',
+    'path' => __MOHA__PATH. '/ckeditor/moha_widget/',
     // All toolbar buttons need be declared here.
     'buttons' => array(
       'moha_widget' => array(
         // Path to the button icon. Relative to the plugin directory 'path' unless 'icon_path' is specified.
         'icon' => 'moha_widget.png',
         // Optional full path to the directory the icon is located in.
-        'icon_path' => MOHA__PATH. '/ckeditor/moha_widget/icons/',
+        'icon_path' => __MOHA__PATH. '/ckeditor/moha_widget/icons/',
         'label' => 'Moha Widget',
       ),
     )
@@ -58,14 +58,14 @@ function moha_ckeditor_plugin() {
     // Description of the plugin - it would be displayed in the plugins management section of profile settings.
     'desc' => t('Moha customized saving function.'),
     // The full URL to the CKEditor plugins directory, with the trailing slash.
-    'path' => MOHA__PATH. '/ckeditor/moha_save/',
+    'path' => __MOHA__PATH. '/ckeditor/moha_save/',
     // All toolbar buttons need be declared here.
     'buttons' => array(
       'moha_saveiconsicons' => array(
         // Path to the button icon. Relative to the plugin directory 'path' unless 'icon_path' is specified.
         'icon' => 'moha_save.png',
         // Optional full path to the directory the icon is located in.
-        'icon_path' => MOHA__PATH. '/ckeditor/moha_save/icons/',
+        'icon_path' => __MOHA__PATH. '/ckeditor/moha_save/icons/',
         'label' => 'Moha Save',
       ),
     )

@@ -364,11 +364,11 @@ function moha_newsletter_form($node, &$form_state) {
 
   if ($theme_key == 'seven') {
     // Fix admin style issue when admin theme is seven.
-    drupal_add_css(MOHA__RELATIVE_PATH . '/css/moha.admin.css');
+    drupal_add_css(MOHA__PATH . '/css/moha.admin.css');
   }
 
   // Add collapsible effect to image and video fields.
-  drupal_add_js(MOHA__PATH . '/js/moha.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
+  drupal_add_js(__MOHA__PATH . '/js/moha.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
 
   return node_content_form($node, $form_state);
 }

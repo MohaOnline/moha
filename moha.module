@@ -20,12 +20,12 @@ define('MOHA__VARIABLES', __MOHA . '__variables');
 /**
  * sites/all/modules/custom/moha
  */
-define('MOHA__RELATIVE_PATH', drupal_get_path('module', __MOHA));
+define('MOHA__PATH', drupal_get_path('module', __MOHA));
 
 /**
  * /sites/all/modules/custom/moha
  */
-define('MOHA__PATH', base_path() . MOHA__RELATIVE_PATH);
+define('__MOHA__PATH', base_path() . MOHA__PATH);
 
 /**
  * Entity human name: Moha RACI.
@@ -350,13 +350,6 @@ function moha_admin_paths() {
 }
 
 /**
- * Implements hook_preprocess().
- */
-function moha_preprocess(&$variables, $hook) {
-
-}
-
-/**
  * Implements hook_form_FORM_ID_alter().
  *
  * Hide menu link edit & delete button on menu items list page.
@@ -384,7 +377,7 @@ function moha_form_node_form_alter(&$form, &$form_state, $form_id) {
   // Pass path of CKEditor templates icons from PHP to JS.
   drupal_add_js(array(
     __MOHA => array(
-      'ckeditor_template_image_path' => MOHA__PATH . '/ckeditor/', // Usage: Drupal.settings.moha.ckeditor_template_image_path.
+      'ckeditor_template_image_path' => __MOHA__PATH . '/ckeditor/', // Usage: Drupal.settings.moha.ckeditor_template_image_path.
     )
   ), 'setting');
 }
@@ -723,7 +716,7 @@ function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
     $form['fields']['#group'] = 'vertical_tabs';
   }
 
-  $form['fields']['hint'] = moha_form_element_prmpt_imce_usage();
+  $form['fields']['hint'] = moha_form_element_prompt_imce_usage();
 
   $form['fields']['wrapper'] = array(
     '#type' => 'container',
@@ -735,7 +728,7 @@ function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
  *
  * @return array
  */
-function moha_form_element_prmpt_imce_usage() {
+function moha_form_element_prompt_imce_usage() {
   $element = array(
     '#prefix' => '<div class="moha-admin-form-hint">',
     '#markup' => 'Hint: Assets may be uploaded in <a target="_blank" href="/imce">imce</a>, private assets could be uploaded in <a target="_blank" href="/imce/private">imce/private</a>.',
@@ -806,6 +799,22 @@ function moha_form_options_from_vocabulary($vocabulary_name = '') {
   }
 
   return $options;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function moha_preprocess_html(&$variables) {
+  // Return anonymous page for preview.
+  $parms = drupal_get_query_parameters();
+  if (isset($parms['preview'])) {
+    global $user;
+    drupal_save_session(FALSE);
+    $user = user_load(0);
+
+    // Suppress fancy stuff like admin and admin_menu.module for the preview.
+    module_invoke_all('suppress');
+  }
 }
 
 /**

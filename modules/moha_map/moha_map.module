@@ -99,7 +99,7 @@ function moha_map_form($node, &$form_state) {
 
   if ($theme_key == 'seven') {
     // Fix admin style issue when admin theme is seven.
-    drupal_add_css(MOHA__RELATIVE_PATH . '/css/moha.admin.css');
+    drupal_add_css(MOHA__PATH . '/css/moha.admin.css');
   }
 
   // Add configurations per content type.

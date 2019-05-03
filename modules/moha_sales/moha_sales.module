@@ -145,7 +145,7 @@ function _moha_sales_home() {
   try {
     moha_wx_anonymous_fall_back_to_explicit_oauth2_authorization('ge-vcct-mobile', MOHA_SALES__OAUTH2_STATE__HOME);
 
-    drupal_add_css(MOHA__RELATIVE_PATH . '/css/moha.weui-for-work.1.1.2.css');
+    drupal_add_css(MOHA__PATH . '/css/moha.weui-for-work.1.1.2.css');
 
     $content['#theme_wrappers'] = array(__MOHA_SALES . '_home');
     $content['#attached'] = array(
@@ -170,7 +170,7 @@ function _moha_sales_commission_details($cid) {
   try {
     moha_wx_anonymous_fall_back_to_explicit_oauth2_authorization('ge-vcct-mobile', MOHA_SALES__OAUTH2_STATE__HOME);
 
-    drupal_add_css(MOHA__RELATIVE_PATH . '/css/moha.weui-for-work.1.1.2.css');
+    drupal_add_css(MOHA__PATH . '/css/moha.weui-for-work.1.1.2.css');
 
     $content['#theme_wrappers'] = array(__MOHA_SALES . '_commission');
     $content['#attached'] = array(

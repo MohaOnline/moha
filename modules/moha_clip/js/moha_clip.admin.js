@@ -1,15 +1,20 @@
 (function ($) {
+
   Drupal.behaviors.moha_clip_admin = {
     load_preview: function(){
       jQuery('iframe#moha-node-preview').attr('src', Drupal.settings.moha_clip.preview_url);
     },
 
     load_anonymous_preview: function() {
+      var tmp_cookie = document.cookie;
+      document.cookie = '';
       jQuery.get(Drupal.settings.moha_clip.preview_url).success(function (data) {
-        var context = jQuery('iframe#moha-node-preview')[0].contentWindow.document;
-        var body = jQuery('body', context);
-        body.html(data);
+        document.getElementById('moha-node-preview').srcdoc = data;
+        // var context = jQuery('iframe#moha-node-preview')[0].contentWindow.document;
+        // var body = jQuery('body', context);
+        // body.html(data);
       });
+      document.cookie = tmp_cookie;
     },
 
     attach: function (context, settings) {

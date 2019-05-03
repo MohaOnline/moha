@@ -131,7 +131,7 @@
   <?php endif; ?>
 </div>
 
-  <script src="<?php echo MOHA__PATH;?>/js/alertify.js"></script>
+  <script src="<?php echo __MOHA__PATH;?>/js/alertify.js"></script>
 
   <script>
     (function ($) {

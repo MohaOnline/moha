@@ -401,7 +401,7 @@ function moha_clip_form($node, &$form_state) {
 
   $form = node_content_form($node, $form_state);
 
-  $form['hint'] = moha_form_element_prmpt_imce_usage();
+  $form['hint'] = moha_form_element_prompt_imce_usage();
 
   return $form;
 }
@@ -440,11 +440,12 @@ function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id
     $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
     $form['changed']['#suffix'] = '</div>';
 
+    $preview_url = url($alias, array('query'=>array('preview'=>'true')));
     $no_iframe = t('Your browser do not support iframe.');
     $form['preview'] = array(
       '#prefix' => '<div id="moha-node-preview-wrapper">',
       '#markup' => <<<PREVIEW
-<iframe name="moha-node-preview" id="moha-node-preview" class="" frameborder="0" src="$alias">
+<iframe name="moha-node-preview" id="moha-node-preview" class="" frameborder="0" src="$preview_url">
   <p>$no_iframe</p>
 </iframe>
 PREVIEW
