@@ -79,7 +79,7 @@ div.content {
   max-width: 850px;
 }
 
-div#moha-node-preview-wrapper {
+div#moha_node_preview_wrapper {
   position: absolute;
   padding-top: 30px;
   right: 0;
@@ -87,7 +87,7 @@ div#moha-node-preview-wrapper {
   height: 400px;
 }
 
-iframe#moha-node-preview {
+    iframe#moha_node_preview {
   width: 100%;
   height: 100%;
 }

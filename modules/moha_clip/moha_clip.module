@@ -443,9 +443,9 @@ function moha_clip_form_moha_clip_node_form_alter(&$form, &$form_state, $form_id
     $preview_url = url($alias, array('query'=>array('preview'=>'true')));
     $no_iframe = t('Your browser do not support iframe.');
     $form['preview'] = array(
-      '#prefix' => '<div id="moha-node-preview-wrapper">',
+      '#prefix' => '<div id="moha_node_preview_wrapper">',
       '#markup' => <<<PREVIEW
-<iframe name="moha-node-preview" id="moha-node-preview" class="" frameborder="0" src="$preview_url">
+<iframe name="moha_node_preview" id="moha_node_preview" class="" frameborder="0" src="$preview_url">
   <p>$no_iframe</p>
 </iframe>
 PREVIEW
