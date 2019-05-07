@@ -463,14 +463,14 @@ function moha_entity_permission($entity_type) {
     'view any ' . $entity_type => array(
       'title' => t('View any ' . $entity_type),
     ),
+    'create ' . $entity_type => array(
+      'title' => t('Create ' . $entity_type),
+    ),
     'update own ' . $entity_type => array(
       'title' => t('Update own ' . $entity_type),
     ),
     'update any ' . $entity_type => array(
       'title' => t('Update any ' . $entity_type),
-    ),
-    'create ' . $entity_type => array(
-      'title' => t('Create ' . $entity_type),
     ),
     'delete own ' . $entity_type => array(
       'title' => t('Delete own ' . $entity_type),
@@ -514,10 +514,22 @@ function moha_entity_access($op, $entity, $account, $entity_type) {
   }
 
   if ($op == 'view') {
-
+    if (user_access('view any ' . $entity_type, $account)) {
+      return TRUE;
+    };
   }
   elseif ($op == 'create') {
     return user_access('create ' . $entity_type, $account);
+  }
+  elseif ($op == 'update') {
+    if (user_access('update any ' . $entity_type, $account)) {
+      return TRUE;
+    }
+  }
+  elseif ($op == 'delete') {
+    if (user_access('delete any ' . $entity_type, $account)) {
+      return TRUE;
+    }
   }
 
 }
