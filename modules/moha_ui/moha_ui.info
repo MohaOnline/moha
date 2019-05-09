@@ -1,0 +1,7 @@
+name = Moha UI
+description = Provides UI enhansment: Moha UI Images Uploading.
+core = 7.x
+package = Moha Online
+
+dependencies[] = moha
+dependencies[] = moha_libs

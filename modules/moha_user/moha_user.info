@@ -2,3 +2,5 @@ name = Moha User
 description = Moha personal center.
 core = 7.x
 package = Moha Online
+
+dependencies[] = moha

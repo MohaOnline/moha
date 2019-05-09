@@ -1,0 +1,10 @@
+#moha_real_time_preview {
+    width: 375px;
+    height: 812px;
+    overflow-x:hidden;
+}
+
+#moha_real_time_preview.iphone_x_portrait {
+    width: 375px;
+    height: 812px;
+}

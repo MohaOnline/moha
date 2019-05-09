@@ -9,7 +9,7 @@ function __moha_demo_web_flex() {
   $content['#theme_wrappers'] = array('moha_demo_web_flex');
   $content['#attached'] = array(
     'css' => array(
-      MOHA_DEMO__RELATIVE_PATH. '/controllers/demo_web/css/flex.css'
+      MOHA_DEMO__PATH. '/controllers/demo_web/css/flex.css'
     )
   );
 

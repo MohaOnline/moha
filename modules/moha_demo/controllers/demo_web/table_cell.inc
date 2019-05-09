@@ -4,11 +4,11 @@
  */
 
 
-function __moha_demo_web() {
+function __moha_demo_web_table_cell() {
   $content['#theme_wrappers'] = array('moha_demo_web_table_cell');
   $content['#attached'] = array(
     'css' => array(
-      MOHA_DEMO__RELATIVE_PATH. '/controllers/demo_web/css/table_cell.css'
+      MOHA_DEMO__PATH. '/controllers/demo_web/css/table_cell.css'
     )
   );
 

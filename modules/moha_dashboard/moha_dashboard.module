@@ -21,12 +21,12 @@ define('MOHA_DASHBOARD__VARIABLES', __MOHA_DASHBOARD . '__variables');
 /**
  * sites/all/modules/custom/moha/modules/moha_dashboard
  */
-define('MOHA_DASHBOARD__RELATIVE_PATH', drupal_get_path('module', __MOHA_DASHBOARD));
+define('MOHA_DASHBOARD__PATH', drupal_get_path('module', __MOHA_DASHBOARD));
 
 /**
  * /sites/all/modules/custom/moha/modules/moha_dashboard
  */
-define('MOHA_DASHBOARD__PATH', base_path() . MOHA_DASHBOARD__RELATIVE_PATH);
+define('__MOHA_DASHBOARD__PATH', base_path() . MOHA_DASHBOARD__PATH);
 
 /**
  * Implements hook_dashboard_regions().
@@ -65,7 +65,7 @@ function moha_dashboard_dashboard_regions_alter(&$regions) {
  */
 function theme_moha_dashboard_region_first($variables) {
 
-  drupal_add_css(MOHA_DASHBOARD__RELATIVE_PATH . '/css/moha_dashboard.css');
+  drupal_add_css(MOHA_DASHBOARD__PATH . '/css/moha_dashboard.css');
 
   return theme_dashboard_region($variables);
 }

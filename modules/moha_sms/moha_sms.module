@@ -1,9 +1,9 @@
 <?php
-use AlibabaCloud\Client\AlibabaCloud;
-
 /**
  * @file
+ * Provides SMS capability for other Moha modules.
  */
+use AlibabaCloud\Client\AlibabaCloud;
 
 /**
  * Human name.

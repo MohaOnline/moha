@@ -4,27 +4,27 @@
  */
 
 /**
- *
+ * Human name.
  */
 define('MOHA_DEMO', 'Moha Demo');
 
 /**
- *
+ * Machine name.
  */
 define('__MOHA_DEMO', 'moha_demo');
 
 /**
  * sites/all/modules/custom/moha/modules/moha_demo.
  */
-define('MOHA_DEMO__RELATIVE_PATH', drupal_get_path('module', __MOHA_DEMO));
+define('MOHA_DEMO__PATH', drupal_get_path('module', __MOHA_DEMO));
 
 /**
  * /sites/all/modules/custom/moha/modules/moha_demo.
  */
-define('MOHA_DEMO__PATH', base_path() . MOHA_DEMO__RELATIVE_PATH);
+define('__MOHA_DEMO__PATH', base_path() . MOHA_DEMO__PATH);
 
 /**
- *
+ * Module variables name.
  */
 define('MOHA_DEMO__VARIABLES', __MOHA_DEMO. '__variables');
 
@@ -54,10 +54,19 @@ function moha_demo_menu() {
   $items[__MOHA_DEMO. '/web/table-cell'] = [
     'title' => t('Web Demo: table-cell'),
     'description' => t('Try table-cell'),
-    'page callback' => '__moha_demo_web',
+    'page callback' => '__moha_demo_web_table_cell',
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
     'file' => 'controllers/demo_web/table_cell.inc',
+  ];
+
+  $items[__MOHA_DEMO. '/web/real-time-preview'] = [
+    'title' => t('Web Demo: real-time preview'),
+    'description' => t('Demo real-time preview technology.'),
+    'page callback' => '__moha_demo_web_real_time_preview',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'controllers/demo_web/real_time_preview.inc',
   ];
 
   return $items;
@@ -67,7 +76,7 @@ function moha_demo_menu() {
  * Implements hook_theme().
  */
 function moha_demo_theme($existing, $type, $theme, $path) {
-  return array(
+  $themes = array(
     // moha_demo_web_input
     __MOHA_DEMO . '_web_input' => array(
       'render element' => 'page',
@@ -83,5 +92,12 @@ function moha_demo_theme($existing, $type, $theme, $path) {
       'render element' => 'page',
       'template' => 'templates/demo_web/table_cell',
     ),
+    // moha_demo_real_time_preview
+    __MOHA_DEMO . '_web_real_time_preview' => array(
+      'render element' => 'page', /* render array will be passed in $page. */
+      'template' => 'templates/demo_web/real_time_preview',
+    ),
   );
+
+  return $themes;
 }

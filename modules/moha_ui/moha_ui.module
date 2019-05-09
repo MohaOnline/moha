@@ -1,0 +1,96 @@
+<?php
+/**
+ * @file provides kinds of UI enhansment widget.
+ *
+ * @URL https://www.drupal.org/docs/7/core/modules/image/working-with-images
+ * @URL https://www.drupal.org/node/465230 Posting video from mobile.
+ * @URL http://git.blivesta.com/drawer/package-managers/
+ * @URL https://github.com/cubiq/iscroll#configuring-the-iscroll
+ * @URL https://www.drupal.org/project/drupal/issues/2753457
+ * @URL https://www.antimath.info/css/change-throbber-in-drupal-7/
+ * @URL https://zhuanlan.zhihu.com/p/26430952 WeUI Uploader with Vue.JS
+ * @see https://www.drupal.org/docs/7/api/javascript-api/ajax-forms-in-drupal-7
+ * @see https://api.drupal.org/api/drupal/includes%21ajax.inc/group/ajax/7.x
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_UI', 'Moha UI');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_UI', 'moha_ui');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_ui.
+ */
+define('MOHA_UI__PATH', drupal_get_path('module', __MOHA_UI));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_ui.
+ */
+define('__MOHA_UI__PATH', base_path() . MOHA_UI__PATH);
+
+/**
+ * Module variables name.
+ */
+define('MOHA_UI__VARIABLES', __MOHA_UI. '__variables');
+
+/**
+ * Implements hook_element_info().
+ *
+ * @see https://www.drupal.org/node/169815
+ */
+function moha_ui_element_info() {
+
+}
+
+/**
+ * Implements hook_field_info().
+ *
+ * @see https://api.drupal.org/api/drupal/modules!field!field.module/group/field/7.x
+ */
+function moha_ui_field_info() {
+
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function moha_ui_field_widget_info() {
+
+//  .ajax-progress-throbber
+//  .ajax-progress-throbber .message
+//  .ajax-progress-throbber .throbber
+  // https://www.antimath.info/css/change-throbber-in-drupal-7/
+
+  $widgets = array(
+    'image_mobile_uploader' => array(
+      'label' => t('Image Mobile Uploader'),
+      'field types' => array('image'),
+      'settings' => array(
+        'progress_indicator' => 'toast',
+        'preview_image_style' => 'thumbnail',
+      ),
+      'behaviors' => array(
+        'multiple values' => FIELD_BEHAVIOR_CUSTOM,
+        'default value' => FIELD_BEHAVIOR_NONE,
+      ),
+    ),
+  );
+
+  return $widgets;
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+
+}
+
+
+
+
