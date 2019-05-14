@@ -39,6 +39,25 @@ define('__MOHA_UI__PATH', base_path() . MOHA_UI__PATH);
 define('MOHA_UI__VARIABLES', __MOHA_UI. '__variables');
 
 /**
+ * Implements hook_libraries_info().
+ */
+function moha_ui_libraries_info() {
+
+  $libraries[__MOHA_UI] = array(
+    'name' => MOHA_UI,
+    'library path' => MOHA_UI__PATH,
+    'version' => '1.0',
+    'files' => array(
+      'js' => array('libs/weui.js/dist/weui.js'),
+      'css' => array('libs/weui/dist/style/weui.css'),
+      'php' => array(),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
  * Implements hook_element_info().
  *
  * @see https://www.drupal.org/node/169815
@@ -64,13 +83,13 @@ function moha_ui_field_widget_info() {
 //  .ajax-progress-throbber
 //  .ajax-progress-throbber .message
 //  .ajax-progress-throbber .throbber
-  // https://www.antimath.info/css/change-throbber-in-drupal-7/
 
   $widgets = array(
-    'image_mobile_uploader' => array(
-      'label' => t('Image Mobile Uploader'),
+    'moha_ui_image_mobile_uploader' => array(
+      'label' => t('Moha UI: Image Mobile Uploader'),
       'field types' => array('image'),
       'settings' => array(
+        /** @see https://www.antimath.info/css/change-throbber-in-drupal-7/ */
         'progress_indicator' => 'toast',
         'preview_image_style' => 'thumbnail',
       ),
@@ -91,6 +110,11 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
 
 }
 
+/**
+ * Implements hook_field_formatter_info().
+ */
+function moha_ui_field_formatter_info() {
 
+}
 
 

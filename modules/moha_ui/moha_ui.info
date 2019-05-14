@@ -4,4 +4,3 @@ core = 7.x
 package = Moha Online
 
 dependencies[] = moha
-dependencies[] = moha_libs
