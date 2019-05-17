@@ -51,23 +51,24 @@ function moha_demo_menu() {
     'file' => 'controllers/demo_web/flex.inc',
   ];
 
-  $items[__MOHA_DEMO. '/web/table-cell'] = [
+  $items[__MOHA_DEMO. '/web/table-cell'] = array(
     'title' => t('Web Demo: table-cell'),
     'description' => t('Try table-cell'),
     'page callback' => '__moha_demo_web_table_cell',
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
     'file' => 'controllers/demo_web/table_cell.inc',
-  ];
+  );
 
-  $items[__MOHA_DEMO. '/web/real-time-preview'] = [
+  $items[__MOHA_DEMO. '/web/real-time-preview'] = array(
     'title' => t('Web Demo: real-time preview'),
     'description' => t('Demo real-time preview technology.'),
+    /** @see __moha_demo_web_real_time_preview */
     'page callback' => '__moha_demo_web_real_time_preview',
     'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
     'file' => 'controllers/demo_web/real_time_preview.inc',
-  ];
+  );
 
   return $items;
 }
