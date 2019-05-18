@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="jquery rating-stars example">
+    <meta name="author" content="lkraemer.de">
+
+    <title>jQuery RatingStars</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+        crossorigin="anonymous">
+    <!-- FontAwesome core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+        crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <style>
+        a {
+            color: #f1c40f;
+        }
+
+        a:hover,
+        a:active,
+        a:focus {
+            color: #dab10d;
+        }
+
+        .rating-stars {
+            width: 100%;
+            text-align: center;
+        }
+
+        .rating-stars .rating-stars-container {
+            font-size: 0px;
+        }
+
+        .rating-stars .rating-stars-container .rating-star {
+            display: inline-block;
+            font-size: 32px;
+            color: #555555;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .rating-stars .rating-stars-container .rating-star.is--active,
+        .rating-stars .rating-stars-container .rating-star.is--hover {
+            color: #f1c40f;
+        }
+
+        .rating-stars .rating-stars-container .rating-star.is--no-hover {
+            color: #555555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="site-header py-1">
+        <div class="container d-flex flex-column flex-md-row justify-content-between">
+            <a class="py-2" href="#">
+                <i class="fa fa-star fa-2x"></i>
+            </a>
+        </div>
+    </nav>
+
+    <div class="position-relative overflow-hidden p-3 p-md-6 m-md-3 text-center bg-light">
+        <a class="py-2 d-none d-md-inline-block" href="example1.html">default using</a>
+        <a class="py-2 d-none d-md-inline-block" href="example2.html">events</a>
+
+        <div class="col-md-5 p-lg-5 mx-auto my-5">
+            <h3>rating stars with changing event</h3>
+            <p>
+                ratingChanged (click on a star):
+                <span id="ratingChanged"></span>
+            </p>
+            <p>
+                ratingOnEnter (mouse enter on a star):
+                <span id="ratingOnEnter"></span>
+            </p>
+            <p>
+                ratingOnLeave (leave a star):
+                <span id="ratingOnLeave"></span>
+            </p>
+            <div class="rating-stars block">
+                <input type="number" readonly="readonly" class="form-control rating-value" name="rating-stars-value" id="rating-stars-value">
+                <div class="rating-stars-container">
+                    <div class="rating-star">
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <div class="rating-star">
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <div class="rating-star">
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <div class="rating-star">
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <div class="rating-star">
+                        <i class="fa fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <br />
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script>
+        window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+
+    <script src="../dist/js/jquery.rating-stars.min.js"></script>
+    <script>
+        var ratingOptions = {
+            selectors: {
+                starsSelector: '.rating-stars',
+                starSelector: '.rating-star',
+                starActiveClass: 'is--active',
+                starHoverClass: 'is--hover',
+                starNoHoverClass: 'is--no-hover',
+                targetFormElementSelector: '.rating-value'
+            }
+        };
+
+        $(".rating-stars").ratingStars(ratingOptions);
+
+        $(".rating-stars").on("ratingChanged", function (ev, data) {
+            $("#ratingChanged").html(data.ratingValue);
+        });
+
+        $(".rating-stars").on("ratingOnEnter", function (ev, data) {
+            $("#ratingOnEnter").html(data.ratingValue);
+        });
+
+        $(".rating-stars").on("ratingOnLeave", function (ev, data) {
+            $("#ratingOnLeave").html(data.ratingValue);
+        });
+    </script>
+</body>
+
+</html>
