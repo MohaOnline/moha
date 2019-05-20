@@ -41,12 +41,12 @@ define('MOHA_BLOCK__VARIABLE__FOOTER_POLICE_URL', __MOHA_BLOCK . '__variable__fo
 /**
  * /sites/all/modules/custom/moha/modules/moha_block.
  */
-define('MOHA_BLOCK__PATH', base_path() . drupal_get_path('module', __MOHA_BLOCK));
+define('__MOHA_BLOCK__PATH', base_path() . drupal_get_path('module', __MOHA_BLOCK));
 
 /**
  * sites/all/modules/custom/moha/modules/moha_block.
  */
-define('MOHA_BLOCK__RELATIVE_PATH', drupal_get_path('module', __MOHA_BLOCK));
+define('MOHA_BLOCK__PATH', drupal_get_path('module', __MOHA_BLOCK));
 
 /**
  * Block: Footer - Copyright
@@ -122,72 +122,66 @@ function moha_block_block_view($delta = '') {
 
 /**
  * Returns contents of block: moha_block__footer_copyright.
- *
- * @throws \Exception
  */
 function _moha_block_footer_copyright_contents() {
-
-  drupal_add_css(MOHA_BLOCK__RELATIVE_PATH . '/css/' . MOHA_BLOCK__FOOTER_COPYRIGHT . '.css',
-    array(
-      'type' => 'file',
-      'scope' => 'footer',
-      'weight' => -999,
-      'group' => CSS_THEME,
-    )
-  );
 
   $contents = array();
 
   $contents['copyright'] = t(moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_COPYRIGHT, '© ' . date('Y')));
 
-  return theme(MOHA_BLOCK__FOOTER_COPYRIGHT, array('contents' => $contents));
+  $contents['#theme'] = array(MOHA_BLOCK__FOOTER_COPYRIGHT);
+  $contents['#attached'] = array(
+    'css' => array(
+      MOHA_BLOCK__PATH . '/css/' . MOHA_BLOCK__FOOTER_COPYRIGHT . '.css',
+    ),
+  );
+
+  $contents['#cache'] = TRUE;
+
+  return $contents;
 }
 
 /**
  * Returns contents of block: moha_block__footer_icp.
- *
- * @throws \Exception
  */
 function _moha_block_footer_icp_contents() {
-
-  drupal_add_css(MOHA_BLOCK__RELATIVE_PATH . '/css/' . MOHA_BLOCK__FOOTER_ICP . '.css',
-    array(
-      'type' => 'file',
-      'scope' => 'footer',
-      'weight' => -999,
-      'group' => CSS_THEME,
-    )
-  );
 
   $contents = array();
 
   $contents['icp'] = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_ICP, '');
 
-  return theme(MOHA_BLOCK__FOOTER_ICP, array('contents' => $contents));
+  $contents['#theme'] = array(MOHA_BLOCK__FOOTER_ICP);
+  $contents['#attached'] = array(
+    'css' => array(
+      MOHA_BLOCK__PATH . '/css/' . MOHA_BLOCK__FOOTER_ICP . '.css',
+    ),
+  );
+
+  $contents['#cache'] = TRUE;
+
+  return $contents;
 }
 
 /**
  * Returns contents of block: moha_block__footer_icp.
- *
- * @throws \Exception
  */
 function _moha_block_footer_police_contents() {
-
-  drupal_add_css(MOHA_BLOCK__RELATIVE_PATH . '/css/' . MOHA_BLOCK__FOOTER_POLICE . '.css',
-    array(
-      'type' => 'file',
-      'scope' => 'footer',
-      'weight' => -999,
-      'group' => CSS_THEME,
-    )
-  );
 
   $contents = array();
 
   $contents['police_license_link_text'] = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_POLICE_TEXT, 'X公网安备1234567890AB号');
   $contents['police_license_link_url'] = moha_array_variable_get(MOHA_BLOCK__VARIABLES, MOHA_BLOCK__VARIABLE__FOOTER_POLICE_URL, '');
 
-  return theme(MOHA_BLOCK__FOOTER_POLICE, array('contents' => $contents));
+  $contents['#theme'] = array(MOHA_BLOCK__FOOTER_POLICE);
+  $contents['#attached'] = array(
+    'css' => array(
+      MOHA_BLOCK__PATH . '/css/' . MOHA_BLOCK__FOOTER_POLICE . '.css',
+    ),
+  );
+
+  $contents['#cache'] = TRUE;
+
+  return $contents;
 }
 
 /**
@@ -286,30 +280,17 @@ function moha_block_theme($existing, $type, $theme, $path) {
   $templates = array(
     MOHA_BLOCK__FOOTER_COPYRIGHT => array(
       'template' => 'templates/' . MOHA_BLOCK__FOOTER_COPYRIGHT,
-      'variables' => array(
-        'contents' => array(
-          'copyright' => '© ' . date("Y"),
-        )
-      ),
+      'render element' => 'contents',
     ),
 
     MOHA_BLOCK__FOOTER_ICP => array(
       'template' => 'templates/' . MOHA_BLOCK__FOOTER_ICP,
-      'variables' => array(
-        'contents' => array(
-          'icp' => 'X ICP备12345678号',
-        )
-      ),
+      'render element' => 'contents',
     ),
 
     MOHA_BLOCK__FOOTER_POLICE => array(
       'template' => 'templates/' . MOHA_BLOCK__FOOTER_POLICE,
-      'variables' => array(
-        'contents' => array(
-          'police_license_link_text' => 'X公网安备1234567890AB号',
-          'police_license_link_url' => '',
-        )
-      ),
+      'render element' => 'contents',
     ),
   );
 
