@@ -39,6 +39,33 @@ define('__MOHA_UI__PATH', base_path() . MOHA_UI__PATH);
 define('MOHA_UI__VARIABLES', __MOHA_UI. '__variables');
 
 /**
+ * Implements hook_library().
+ */
+function moha_ui_library() {
+  $libraries[__MOHA_UI] = array(
+    'title' => MOHA_UI,
+    'website' => 'https://www.moha.online/',
+    'version' => '1.0',
+    'js' => array(
+      MOHA_UI__PATH . '/libs/weui.js/dist/weui.js' => array(),
+      MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
+    ),
+    'css' => array(
+      MOHA_UI__PATH . '/libs/weui/dist/style/weui.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+      MOHA_UI__PATH . '/libs/font-awesome/css/font-awesome.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
  * Implements hook_libraries_info().
  */
 function moha_ui_libraries_info() {
@@ -69,6 +96,31 @@ function moha_ui_libraries_info() {
  */
 function moha_ui_element_info() {
 
+  $elements = array(
+    /* Element: Moha UI - Rating. */
+    'moha_ui_rating' => array(
+      /* Element carries a value. */
+      '#input' => TRUE,
+      '#theme' => array('moha_ui_rating'),
+    ),
+
+  );
+
+  return $elements;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function moha_ui_theme($existing, $type, $theme, $path) {
+  $templates = array(
+    'moha_ui_rating' => array(
+      'template' => 'elements/moha_ui_rating',
+      'rent element' => 'element',
+    ),
+  );
+
+  return $templates;
 }
 
 /**
@@ -126,9 +178,10 @@ function moha_ui_field_formatter_info() {
  * Implements hook_webform_component_info().
  */
 function moha_ui_webform_component_info() {
-  $components['moha_ui_star_rating'] = array(
-    'label' => t('Moha UI - Star Rating'),
-    'description' => t('Star Rating.'),
+  /* Only 16 chars are allowed as Webform component machine name. */
+  $components['moha_ui_rating'] = array(
+    'label' => t('Moha UI - Rating'),
+    'description' => t('Provides Rating field for WebForm.'),
     'features' => array(
       // This component includes an analysis callback. Defaults to TRUE.
       'analysis' => TRUE,
@@ -197,7 +250,7 @@ function moha_ui_webform_component_info() {
     // Defaults to 'string'.
     'conditional_type' => 'numeric',
 
-    'file' => 'webform/components/moha_ui_star_rating.inc',
+    'file' => 'webform/components/moha_ui_rating.inc',
   );
 
   return $components;

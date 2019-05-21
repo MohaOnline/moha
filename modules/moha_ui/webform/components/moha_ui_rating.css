@@ -1,0 +1,16 @@
+.rating-stars .rating-stars-container .rating-star.is--active, .rating-stars .rating-stars-container .rating-star.is--hover {
+  color: #f1c40f;
+}
+
+
+.rating-stars .rating-stars-container .rating-star {
+  display: inline-block;
+  font-size: 32px;
+  color: #555555;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.rating-stars + .form-type-textfield {
+  display: none;
+}

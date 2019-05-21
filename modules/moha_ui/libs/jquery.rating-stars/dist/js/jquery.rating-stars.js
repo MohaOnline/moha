@@ -1,3 +1,4 @@
+$ = jQuery;
 jQuery.fn.ratingStars = function( options ) {
  
     var defaults = {
