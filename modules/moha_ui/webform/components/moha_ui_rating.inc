@@ -85,7 +85,7 @@ function _webform_render_moha_ui_rating($component, $value = NULL, $filter = TRU
 RATING_ITEM;
   }
 
-  $elements['rating']['ui'] = array(
+  $elements['rating']['rating_area'] = array(
     '#markup' => <<< RATING_CONTAINER
 <div class="rating-stars-container">
 $rating_items_placeholder
@@ -170,6 +170,11 @@ RATINGJS
  */
 function _webform_submit_moha_ui_rating($component, $value) {
 
+  if (!empty($value['rating']['value'])) {
+    $value['rating'] = $value['rating']['value'];
+  }
+
+  return $value;
 }
 
 /**
