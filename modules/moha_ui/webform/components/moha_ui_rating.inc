@@ -16,8 +16,13 @@ function _webform_defaults_moha_ui_rating() {
     'form_key' => NULL,
     'required' => TRUE,
     'extra' => array(
+      /* Allowed max rating score. */
+      'max_score' => 5,
       /* When rating value is less than this value, details need be provided. */
-      'threshold_need_details' => '3',
+      /* Use 0 when the low score is not concerned. */
+      'threshold_score' => 3,
+      /* Concrete survey question, if empty then use label. */
+      'question' => '',
     ),
   );
 
@@ -39,12 +44,20 @@ function _webform_edit_moha_ui_rating(array $component, array $form, array $form
     '#collapsed' => false,
   );
 
-  $form['extra']['threshold_need_details'] = array(
-    '#title' => t('Threshold: Need details'),
-    '#description' => t('Specify a number, when rating is less than the specified value, details need be provided.'),
+  $form['extra']['max_score'] = array(
+    '#title' => t('Max score'),
+    '#description' => t('Specify allowed max score.'),
     '#size' => '10',
     '#type' => 'textfield',
-    '#default_value' => $component['extra']['threshold_need_details'],
+    '#default_value' => $component['extra']['max_score'],
+  );
+
+  $form['extra']['threshold_score'] = array(
+    '#title' => t('Threshold score'),
+    '#description' => t('Specify a number, when rating is less or equals than the value, details need be provided. '),
+    '#size' => '10',
+    '#type' => 'textfield',
+    '#default_value' => $component['extra']['threshold_score'],
   );
 
   return $form;
@@ -61,34 +74,28 @@ function _webform_render_moha_ui_rating($component, $value = NULL, $filter = TRU
 
   $form_key = $component['form_key'];
   $wrapper_class = 'moha_ui_rating_' . $form_key;
-  $threshold_need_details = $component['extra']['threshold_need_details'];
+
+  $max_score = $component['extra']['max_score'];
+  $rating_items_placeholder = '';
+  for ($i = 0; $i < $max_score; $i++) {
+    $rating_items_placeholder .= <<<RATING_ITEM
+  <div class="rating-star">
+     <i class="fa fa-star"></i>
+  </div>
+RATING_ITEM;
+  }
 
   $elements['rating']['ui'] = array(
-    '#markup' => <<< RATING
+    '#markup' => <<< RATING_CONTAINER
 <div class="rating-stars-container">
-  <div class="rating-star">
-      <i class="fa fa-star"></i>
-  </div>
-  <div class="rating-star">
-      <i class="fa fa-star"></i>
-  </div>
-  <div class="rating-star">
-      <i class="fa fa-star"></i>
-  </div>
-  <div class="rating-star">
-      <i class="fa fa-star"></i>
-  </div>
-  <div class="rating-star">
-      <i class="fa fa-star"></i>
-  </div>
+$rating_items_placeholder
 </div>
-RATING
+RATING_CONTAINER
   ,
   );
 
   $elements['rating']['#prefix'] = "<div class='rating-stars $wrapper_class'>";
-
-  $elements['rating']['#suffix'] = '</div>';
+  $elements['rating']['#suffix'] = "</div>";
 
   $elements['rating']['value'] = array(
     '#type' => 'hidden',
@@ -99,6 +106,8 @@ RATING
     '#title' => t('Reason'),
     '#type' => 'textfield',
   );
+
+  $threshold_score = $component['extra']['threshold_score'];
 
   /** @see https://www.drupal.org/docs/7/api/javascript-api/managing-javascript-in-drupal-7 */
   $elements['#attached'] = array(
@@ -121,14 +130,18 @@ jQuery(document).ready(function () {
 
   jQuery('.$wrapper_class').ratingStars(ratingOptions);
 
-  jQuery('.$wrapper_class').on("ratingChanged", function (ev, data) {
-    if (data.ratingValue <= $threshold_need_details) {
-      jQuery('.rating-stars + .form-type-textfield').css('display', 'inherit');
-    }
-    else {
-      jQuery('.rating-stars + .form-type-textfield').css('display', 'none');
-    }
-  });
+  if ($threshold_score >= 0) {
+    jQuery('.$wrapper_class').on("ratingChanged", function (ev, data) {
+      if (data.ratingValue <= $threshold_score) {
+        jQuery('.rating-stars.$wrapper_class + .form-type-textfield').css('display', 'inherit');
+      }
+      else {
+        jQuery('.rating-stars.$wrapper_class + .form-type-textfield').css('display', 'none');
+      }
+    });
+  }
+  
+  
 });
 RATINGJS
   ,
@@ -151,21 +164,21 @@ RATINGJS
 }
 
 /**
+ * Implements _webform_submit_component().
+ *
+ * @see _webform_submit_component
+ */
+function _webform_submit_moha_ui_rating($component, $value) {
+
+}
+
+/**
  * Implements _webform_display_component().
  *
  * @inheritdoc
  * @see _webform_display_component
  */
-function _webform_display_moha_ui_rating() {
-
-}
-
-/**
- * Implements _webform_submit_component().
- *
- * @see _webform_submit_component
- */
-function _webform_submit_moha_ui_rating() {
+function _webform_display_moha_ui_rating($component, $value, $format = 'html', $submission = array()) {
 
 }
 

@@ -1,5 +1,7 @@
 (function ($) {
 
+  /* globals Drupal:object */
+
   Drupal.behaviors.moha_clip_admin = {
     load_preview: function(){
       jQuery('iframe#moha_node_preview').attr('src', Drupal.settings.moha_clip.preview_url);
