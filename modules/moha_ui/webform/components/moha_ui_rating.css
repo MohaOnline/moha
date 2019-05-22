@@ -9,7 +9,3 @@
   cursor: pointer;
   padding: 5px 10px;
 }
-
-.rating-stars + .form-type-textfield {
-  display: none;
-}

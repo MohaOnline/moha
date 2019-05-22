@@ -72,24 +72,37 @@ function _webform_edit_moha_ui_rating(array $component, array $form, array $form
  */
 function _webform_render_moha_ui_rating($component, $value = NULL, $filter = TRUE, $submission = NULL) {
 
+  $component_label = $component['name'];
   $form_key = $component['form_key'];
   $wrapper_class = 'moha_ui_rating_' . $form_key;
+
+  $score = empty($value['rating']) ? 0 : $value['rating'];
 
   $max_score = $component['extra']['max_score'];
   $rating_items_placeholder = '';
   for ($i = 0; $i < $max_score; $i++) {
-    $rating_items_placeholder .= <<<RATING_ITEM
-  <div class="rating-star">
-     <i class="fa fa-star"></i>
-  </div>
+    if ($i < $score) {
+      $rating_items_placeholder .= <<<RATING_ITEM
+        <div class="rating-star is--active">
+           <i class="fa fa-star"></i>
+        </div>
 RATING_ITEM;
+    }
+    else {
+      $rating_items_placeholder .= <<<RATING_ITEM
+        <div class="rating-star">
+           <i class="fa fa-star"></i>
+        </div>
+RATING_ITEM;
+    }
   }
 
   $elements['rating']['rating_area'] = array(
     '#markup' => <<< RATING_CONTAINER
-<div class="rating-stars-container">
-$rating_items_placeholder
-</div>
+      <label>$component_label</label>
+      <div class="rating-stars-container">
+      $rating_items_placeholder
+      </div>
 RATING_CONTAINER
   ,
   );
@@ -99,12 +112,15 @@ RATING_CONTAINER
 
   $elements['rating']['value'] = array(
     '#type' => 'hidden',
-    '#default_value' => 0,
+    '#default_value' => $score,
   );
+
+  $details = empty($value['details'])?'':$value['details'];
 
   $elements['details'] = array(
     '#title' => t('Reason'),
     '#type' => 'textfield',
+    '#default_value' => $details,
   );
 
   $threshold_score = $component['extra']['threshold_score'];
@@ -130,7 +146,12 @@ jQuery(document).ready(function () {
 
   jQuery('.$wrapper_class').ratingStars(ratingOptions);
 
-  if ($threshold_score >= 0) {
+  // Submission editing.
+  if ($score <= 0 || $threshold_score <= 0 || $score > $threshold_score) {
+    jQuery('.rating-stars.$wrapper_class + .form-type-textfield').css('display', 'none');
+  }
+  
+  if ($threshold_score > 0) {
     jQuery('.$wrapper_class').on("ratingChanged", function (ev, data) {
       if (data.ratingValue <= $threshold_score) {
         jQuery('.rating-stars.$wrapper_class + .form-type-textfield').css('display', 'inherit');
@@ -140,7 +161,6 @@ jQuery(document).ready(function () {
       }
     });
   }
-  
   
 });
 RATINGJS
