@@ -1,10 +1,12 @@
 <?php
-
+/**
+ * @file
+ */
 
 /**
  * Human name.
  */
-define('MOHA_STYLE', 'Moha Newsletter');
+define('MOHA_STYLE', 'Moha Style');
 
 /**
  * Machine name.
@@ -19,19 +21,24 @@ define('MOHA_STYLE__VARIABLES', __MOHA_STYLE . '__variables');
 /**
  * /sites/all/modules/custom/moha/modules/moha_style.
  */
-define('MOHA_STYLE__PATH', base_path() . drupal_get_path('module', __MOHA_STYLE));
+define('__MOHA_STYLE__PATH', base_path() . drupal_get_path('module', __MOHA_STYLE));
 
 /**
  * sites/all/modules/custom/moha/modules/moha_style.
  */
-define('MOHA_STYLE__RELATIVE_PATH', drupal_get_path('module', __MOHA_STYLE));
+define('MOHA_STYLE__PATH', drupal_get_path('module', __MOHA_STYLE));
 
 /**
  * Implements hook_init().
  */
 function moha_style_init() {
+  drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style_common.css');
+
   // fix style of front page.
   if (!path_is_admin(current_path())) {
-    drupal_add_css(MOHA_STYLE__RELATIVE_PATH . '/css/moha_style.css');
+    drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style.css');
+  }
+  else {
+    drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style_admin.css');
   }
 }
