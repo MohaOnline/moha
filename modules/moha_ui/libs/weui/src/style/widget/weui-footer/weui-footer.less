@@ -17,9 +17,8 @@
 @import "../../base/fn";
 
 .weui-footer {
-    color: @weuiTextColorTips;
+    color: @weuiTextColorGray;
     font-size: 14px;
-    line-height:1.4;
     text-align: center;
     a{
         color: @weuiLinkColorDefault;
@@ -27,7 +26,7 @@
 }
 .weui-footer_fixed-bottom{
     position: fixed;
-    bottom: 16px;
+    bottom: .52em;
     left: 0;
     right: 0;
 }
@@ -37,12 +36,12 @@
 .weui-footer__link{
     display: inline-block;
     vertical-align: top;
-    margin: 0 8px;
+    margin: 0 .62em;
     position: relative;
     font-size: 14px;
     &:before{
         .setLeftLine();
-        left: -8px;
+        left: -.65em;
         top: .36em;
         bottom: .36em;
     }
@@ -53,6 +52,6 @@
     }
 }
 .weui-footer__text{
-    padding: 0 16px;
+    padding: 0 .34em;
     font-size: 12px;
 }

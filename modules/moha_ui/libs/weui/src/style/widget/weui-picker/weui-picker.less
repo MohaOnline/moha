@@ -23,9 +23,6 @@
     left: 0;
     bottom: 0;
     z-index: 5000;
-    background-color: #fff;
-    padding-bottom:constant(safe-area-inset-bottom);
-    padding-bottom:env(safe-area-inset-bottom);
     backface-visibility: hidden;
     transform: translate(0, 100%);
     //slide up animation
@@ -34,13 +31,11 @@
 
 .weui-picker__hd {
     display: flex;
-    padding: 16px;
-    padding: 16px calc(16px ~"+ constant(safe-area-inset-right)") 16px calc(16px ~"+ constant(safe-area-inset-left)");
-    padding: 16px calc(16px ~"+ env(safe-area-inset-right)") 16px calc(16px ~"+ env(safe-area-inset-left)");
+    padding: 9px 15px;
+    background-color: #fff;
     position: relative;
     text-align: center;
     font-size: 17px;
-    line-height:1.4;
     &:after {
         .setBottomLine(@weuiLineColorLight);
     }
@@ -49,11 +44,11 @@
 .weui-picker__action {
     display: block;
     flex: 1;
-    color: @weuiLinkColorDefault;
+    color: @weuiColorPrimary;
 
     &:first-child {
         text-align: left;
-        color: @weuiTextColorTitle;
+        color: #888;
     }
     &:last-child {
         text-align: right;
@@ -64,7 +59,7 @@
     display: flex;
     position: relative;
     background-color: #fff;
-    height: 240px;
+    height: 238px;
     overflow: hidden;
 }
 
@@ -73,17 +68,6 @@
     position: relative;
     height: 100%;
     //-webkit-mask-box-image: -webkit-linear-gradient(bottom,transparent,transparent 5%,#fff 50%,#fff 50%,transparent 95%,transparent);
-    &:first-child{
-      .weui-picker__item {
-        padding-left:constant(safe-area-inset-left);
-        padding-left:env(safe-area-inset-left);
-      }
-    } &:last-child{
-      .weui-picker__item {
-        padding-right:constant(safe-area-inset-right);
-        padding-right:env(safe-area-inset-right);
-      }
-    }
 }
 
 .weui-picker__mask {
@@ -124,15 +108,16 @@
 }
 
 .weui-picker__item {
+    padding: 0;
     height: @pickerItemHeight;
     line-height: @pickerItemHeight;
     text-align: center;
-    color: @weuiTextColorTitle;
+    color: #000;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
 
 .weui-picker__item_disabled {
-    color: @weuiTextColorDesc;
+    color: @weuiTextColorGray;
 }

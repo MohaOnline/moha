@@ -18,5 +18,14 @@
 
 .weui-btn_disabled {
     color: @weuiBtnDisabledFontColor;
-    background-color: @weuiBtnDisabledBg;
+    &.weui-btn_default {
+        color: @weuiBtnDefaultDisabledFontColor;
+        background-color: @weuiBtnDefaultDisabledBg;
+    }
+    &.weui-btn_primary {
+        background-color: @weuiBtnPrimaryDisabledBg;
+    }
+    &.weui-btn_warn {
+        background-color: @weuiBtnwarnDisabledBg;
+    }
 }

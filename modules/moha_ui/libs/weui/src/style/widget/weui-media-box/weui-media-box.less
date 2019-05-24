@@ -17,11 +17,11 @@
 @import "../../base/fn";
 
 .weui-media-box {
-    padding: 16px;
+    padding: 15px;
     position: relative;
     &:before {
         .setTopLine(@weuiLineColorLight);
-        left: 16px;
+        left: 15px;
     }
     &:first-child {
         &:before {
@@ -40,22 +40,19 @@
 .weui-media-box__title {
     font-weight: 400;
     font-size: 17px;
-    line-height:1.4;
-    color:@weuiTextColorTitle;
     .ellipsis();
     word-wrap: break-word;
     word-break: break-all;
 }
 .weui-media-box__desc {
-    color: @weuiTextColorTips;
-    font-size: 14px;
-    line-height:1.4;
-    padding-top:4px;
+    color: @weuiTextColorGray;
+    font-size: 13px;
+    line-height: 1.2;
     .ellipsisLn(2);
 }
 .weui-media-box__info {
-    margin-top: 16px;
-    padding-bottom: 4px;
+    margin-top: 15px;
+    padding-bottom: 5px;
     font-size: 13px;
     color: #CECECE;
     line-height: 1em;
@@ -70,11 +67,16 @@
     padding-left: 1em;
     border-left: 1px solid #CECECE;
 }
+.weui-media-box_text {
+    .weui-media-box__title {
+        margin-bottom: 8px;
+    }
+}
 .weui-media-box_appmsg {
     display: flex;
     align-items: center;
     .weui-media-box__hd {
-        margin-right: 16px;
+        margin-right: .8em;
         width: 60px;
         height: 60px;
         line-height: 60px;

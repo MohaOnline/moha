@@ -44,13 +44,12 @@ z-index:
 }
 
 .weui-cells__title {
-    margin-top: 16px;
-    margin-bottom: 3px;
+    margin-top: .77em; // 15px - 行高
+    margin-bottom: .3em; // 8px - 行高
     padding-left: @weuiCellGapH;
     padding-right: @weuiCellGapH;
-    color: @weuiTextColorDesc;
+    color: @weuiTextColorGray;
     font-size: @weuiCellTipsFontSize;
-    line-height:1.4;
 
     & + .weui-cells {
         margin-top: 0;
@@ -59,14 +58,14 @@ z-index:
 
 .weui-cells__tips {
     margin-top: .3em; // 8px - 行高
-    color: @weuiTextColorDesc;
+    color: @weuiTextColorGray;
     padding-left: @weuiCellGapH;
     padding-right: @weuiCellGapH;
     font-size: @weuiCellTipsFontSize;
 }
 
 .weui-cell {
-    padding: @weuiCellGapV;
+    padding: @weuiCellGapV @weuiCellGapH;
     position: relative; //这个是为了兼容cells容器onepx方案被before挡住而做的
     display: flex;
     align-items: center;
@@ -89,5 +88,5 @@ z-index:
 }
 .weui-cell__ft {
     text-align: right;
-    color: @weuiTextColorDesc;
+    color: @weuiTextColorGray;
 }

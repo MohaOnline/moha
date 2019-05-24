@@ -17,19 +17,15 @@
 @import "../../../base/fn";
 
 .weui-cells_checkbox {
-    .weui-check__label{
-      &:before{left:55px;}
-    }
     .weui-cell__hd {
         padding-right: @weuiCellInnerGapH;
     }
     .weui-icon-checked {
         &:before {
             content: '\EA01';
-            color: @weuiLineColorDark;
+            color: #C9C9C9;
             font-size: 23px;
             display: block;
-            margin:0;
         }
     }
 }
@@ -42,7 +38,7 @@
             & + .weui-icon-checked {
                 &:before {
                     content: '\EA06';
-                    color: @weuiColorPrimary;
+                    color: #09BB07;
                 }
             }
         }
