@@ -1,0 +1,9 @@
+/** WeUI style fix. */
+a.weui-dialog__btn:hover {
+  text-decoration: none;
+}
+
+a.weui-dialog__btn_primary:hover {
+  color: #0BB20C;
+}
+/***/

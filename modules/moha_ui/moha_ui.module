@@ -59,6 +59,10 @@ function moha_ui_library() {
         'type' => 'file',
         'media' => 'screen',
       ),
+      MOHA_UI__PATH . '/css/moha_ui.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
     ),
   );
 
@@ -81,6 +85,7 @@ function moha_ui_libraries_info() {
       'css' => array(
         'libs/weui/dist/style/weui.css',
         'libs/font-awesome/css/font-awesome.css',
+        'css/moha_ui.css',
       ),
       'php' => array(),
     ),

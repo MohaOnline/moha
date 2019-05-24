@@ -36,7 +36,7 @@ function moha_style_init() {
 
   // fix style of front page.
   if (!path_is_admin(current_path())) {
-    drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style.css');
+    drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style_front.css');
   }
   else {
     drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style_admin.css');
