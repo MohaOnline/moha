@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_admin_menu_output_build().
+ *
+ * Invoked before cached in @see admin_menu_output();
+ */
+function moha_admin_menu_admin_menu_output_build(&$content) {
+
+  global $user;
+  $user_roles = array_keys($user->roles);
+
+  $menu = db_select('custom_menu_toolbar_role_menus', 'm')
+    ->fields('m')
+    ->condition('rid', $user_roles, 'IN')
+    ->orderBy('weight')
+    ->range(0, 1)
+    ->execute()
+    ->fetchObject();
+
+  if ($menu && $menu->menu_name != '_none') {
+    $menu_name = $menu->menu_name;
+  }
+  else {
+    $menu_name = 'management';
+  }
+
+  $content['menu'] = admin_menu_links_menu(admin_menu_tree($menu_name));
+  $content['menu']['#theme'] = 'admin_menu_links';
+  $content['menu']['#wrapper_attributes']['id'] = 'admin-menu-menu';
+  // Ensure the menu tree is rendered between the icon and user links.
+  $content['menu']['#weight'] = 0;
+
+}
+
+/**
+ * Implements @see hook_form_FORM_ID_alter().
+ *
+ * @see custom_menu_toolbar_menu_settings_form().
+ */
+function moha_admin_menu_form_custom_menu_toolbar_menu_settings_form_alter(&$form, &$form_state, $form_id) {
+  $form_addition['instruction'] = array(
+    '#markup' => '<div>' . t('When user has multiple roles, first configured menu affects.') . '</div>',
+    '#weight' => -15,
+  );
+
+  $form = $form_addition + $form;
+}
+
+
+

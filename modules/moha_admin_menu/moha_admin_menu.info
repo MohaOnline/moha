@@ -1,0 +1,9 @@
+name = Moha Admin Menu
+description = Provides for diffrent admin menu for different role.
+core = 7.x
+package = Moha Online
+
+dependencies[] = admin_menu
+dependencies[] = custom_menu_toolbar
+
+configure = admin/config/administration/custom-menu-toolbar
