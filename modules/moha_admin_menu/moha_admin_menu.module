@@ -7,6 +7,10 @@
  * Implements hook_admin_menu_output_build().
  *
  * Invoked before cached in @see admin_menu_output();
+ *
+ * Similar logic from @see _custom_menu_toolbar_get_menu_for_current_user().
+ *
+ *
  */
 function moha_admin_menu_admin_menu_output_build(&$content) {
 
@@ -28,7 +32,20 @@ function moha_admin_menu_admin_menu_output_build(&$content) {
     $menu_name = 'management';
   }
 
-  $content['menu'] = admin_menu_links_menu(admin_menu_tree($menu_name));
+  if (function_exists('admin_menu_tree')) {
+    $function = 'admin_menu_tree';
+  }
+  else {
+    $function = '_admin_menu_tree';
+  }
+  if ($user->uid == 1 && $menu_name != 'management') {
+    $content['menu'] = admin_menu_links_menu($function('management'));
+    $content['menu'][$menu_name] = admin_menu_links_menu($function($menu_name));
+    $content['menu'][$menu_name]['#title'] = moha_ucfirst($menu_name);
+  }
+  else {
+    $content['menu'] = admin_menu_links_menu($function($menu_name));
+  }
   $content['menu']['#theme'] = 'admin_menu_links';
   $content['menu']['#wrapper_attributes']['id'] = 'admin-menu-menu';
   // Ensure the menu tree is rendered between the icon and user links.
@@ -43,12 +60,44 @@ function moha_admin_menu_admin_menu_output_build(&$content) {
  */
 function moha_admin_menu_form_custom_menu_toolbar_menu_settings_form_alter(&$form, &$form_state, $form_id) {
   $form_addition['instruction'] = array(
-    '#markup' => '<div>' . t('When user has multiple roles, first configured menu affects.') . '</div>',
-    '#weight' => -15,
+    '#markup' => '<div>' . t(<<<INSTRUCTION
+For Custom Menu Toolbar module, when user has multiple roles, last configured menu affects. <br>
+Moha Admin Menu keeps authenticated user with "- No toolbar -" configuration at the end of table to hide Custom Menu Toolbar for logged in user;<br>
+instead first configured menu will be used or embedded in amdin_menu. 
+INSTRUCTION
+    ) . '</div>',
+    '#weight' => -99,
   );
 
   $form = $form_addition + $form;
+  $form['#submit'][] = 'moha_admin_menu_custom_menu_toolbar_menu_settings_form_submit';
 }
 
+/**
+ * @param $form
+ * @param $form_state
+ *
+ * @throws \InvalidMergeQueryException
+ */
+function moha_admin_menu_custom_menu_toolbar_menu_settings_form_submit(&$form, &$form_state) {
+  // Keeps authenticated role with no customized menu and with the highest weight.
+  db_merge('custom_menu_toolbar_role_menus')
+    //->condition('rid', 2)
+    ->key(array(
+      'rid' => 2,
+    ))
+    ->fields(array(
+      'menu_name' => '_none',
+      'weight' => 999,
+    ))
+    ->execute();
 
+  // Eliminate original management menu from admin_menu.
+  $components = variable_get('admin_menu_components', array());
+  $components['admin_menu.menu'] = FALSE;
+  variable_set('admin_menu_components', $components);
+
+  // Rebuild admin_menu.
+  admin_menu_flush_caches();
+}
 

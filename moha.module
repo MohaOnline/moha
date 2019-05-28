@@ -1,5 +1,12 @@
 <?php
-/** Http request timeout, unit is second. */
+/**
+ * @file
+ * Common used functions and global configurations.
+ */
+
+/**
+ * Http request timeout, unit is second.
+ */
 define('MOHA__TIME_OUT__HTTP_REQUEST', '120');
 
 /**
@@ -1135,6 +1142,18 @@ function moha_array_key_by_value($value = "", $array = array()) {
       return $key;
     }
   }
+}
+
+/**
+ * Capitalizes the first letter of a UTF-8 string.
+ *
+ * @param $text
+ *
+ * @return string
+ */
+function moha_ucfirst($text) {
+  // Note: no mbstring equivalent!
+  return drupal_strtoupper(drupal_substr($text, 0, 1)) . drupal_substr($text, 1);
 }
 
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
