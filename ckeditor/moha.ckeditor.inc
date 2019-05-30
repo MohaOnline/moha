@@ -74,3 +74,70 @@ function moha_ckeditor_plugin() {
   return $plugins;
 
 }
+
+/**
+ * Handles files uploaded by CKEditor.
+ *
+ * @return int
+ */
+function moha_ajax_upload_by_ckeditor() {
+  $validators = array(
+    'file_validate_extensions' => array("jpg png gif jpeg")
+  );
+
+  $result = array();
+
+  $ckeditor_destination = moha_array_variable_get(MOHA__VARIABLES, 'ckeditor_destination', 'public');
+  $ckeditor_directory = moha_array_variable_get(MOHA__VARIABLES, 'ckeditor_directory', 'upload');
+  $location = $ckeditor_destination . '://moha/ckeditor/' . $ckeditor_directory;
+
+  try {
+    $dir = file_prepare_directory($location, FILE_CREATE_DIRECTORY);
+
+    if (!$dir) {
+      $error_msg = format_string(t('%location can not be created or written.'), array('%location' => $location));
+      throw new Exception($error_msg);
+    }
+
+    if (!empty($_FILES['upload']['size'])) {
+      $_FILES['files']['name']['upload'] = ctools_uuid_generate() . '-' . transliteration_clean_filename($_FILES['upload']['name']);
+      $_FILES['files']['tmp_name']['upload'] = $_FILES['upload']['tmp_name'];
+      $_FILES['files']['size']['upload'] = $_FILES['upload']['size'];
+      $_FILES['files']['error']['upload'] = $_FILES['upload']['error'];
+    }
+    else {
+      $error_msg = t('File is not valid.');
+      throw new Exception($error_msg);
+    }
+
+    $file = file_save_upload('upload', $validators, $location);
+
+    if ($file) {
+      $file->status = FILE_STATUS_PERMANENT;
+      file_save($file);
+      file_usage_add($file, __MOHA, 'file', $file->fid);
+
+      $url = file_create_url($file->uri);
+      $result['url'] = $url;
+      $result['fileName'] = $file->filename;
+      $result['uploaded'] = 1;
+    }
+    else {
+      $errors = error_get_last();
+      $error_msg = json_encode($errors, MOHA__JSON_ENCODING_OPTIONS_BIT_MASK);
+      throw new Exception($error_msg);
+    }
+  }
+  // Exposed to public need handles all errors.
+  catch (Exception $e) {
+    $error_msg = $e->getMessage();
+    watchdog(__FUNCTION__, $error_msg, NULL, WATCHDOG_ERROR);
+
+    $result['uploaded'] = 0;
+    $result['error']['message'] = $error_msg;
+  }
+
+  echo json_encode($result);
+
+  return MENU_SITE_ONLINE;
+}

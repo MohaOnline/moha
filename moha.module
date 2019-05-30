@@ -332,6 +332,38 @@ function moha_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
+  $items['moha/ckeditor_upload'] = array(
+    'title' => t('Moha Ajax Backend - CKEditor File Uploading'),
+    'description' => t('Accept file uploaded by Upload Image plugin of CKEditor.'),
+    'page callback' => 'moha_ajax_upload_by_ckeditor',
+    'access arguments' => array('post comments'),
+    'file' => 'ckeditor/moha.ckeditor.inc',
+  );
+
+  $items['admin/moha/ckeditor_upload'] = array(
+    'title' => t('Moha CKEditor File Uploading'),
+    'description' => t('Configure storage for files uploaded by CKEditor.'),
+    'page callback' => 'drupal_get_form',
+    /* @see moha_ckeditor_upload_form() */
+    'page arguments' => array('moha_ckeditor_upload_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'ckeditor/moha.ckeditor.admin.inc',
+  );
+
+  $items['moha/ajax_upload_file'] = array(
+    'title' => t('Moha UI Ajax Backend - Image Uploading'),
+    'description' => t('Accept uploaded image through Ajax.'),
+    'page callback' => 'moha_ui_ajax_upload_image',
+    'access arguments' => array('post comments'),
+  );
+
+  $items['moha/ajax_upload_weui_uploader'] = array(
+    'title' => t('Moha UI Ajax Backend - Image Uploading'),
+    'description' => t('Accept uploaded image through Ajax.'),
+    'page callback' => 'moha_ui_ajax_upload_weui_uploader',
+    'access arguments' => array('post comments'),
+  );
+
   return $items;
 }
 
