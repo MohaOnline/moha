@@ -1,0 +1,5 @@
+/** Fix vertical align of check and radio input which are not covered by seven theme. */
+.form-item input.form-checkbox, .form-item input.form-radio {
+  vertical-align: baseline;
+}
+/***/

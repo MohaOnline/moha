@@ -19,26 +19,32 @@ define('__MOHA_STYLE', 'moha_style');
 define('MOHA_STYLE__VARIABLES', __MOHA_STYLE . '__variables');
 
 /**
- * /sites/all/modules/custom/moha/modules/moha_style.
- */
-define('__MOHA_STYLE__PATH', base_path() . drupal_get_path('module', __MOHA_STYLE));
-
-/**
  * sites/all/modules/custom/moha/modules/moha_style.
  */
 define('MOHA_STYLE__PATH', drupal_get_path('module', __MOHA_STYLE));
 
 /**
- * Implements hook_init().
+ * /sites/all/modules/custom/moha/modules/moha_style.
  */
-function moha_style_init() {
-  drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style_common.css');
+define('__MOHA_STYLE__PATH', base_path() . MOHA_STYLE__PATH);
 
-  // fix style of front page.
-  if (!path_is_admin(current_path())) {
-    drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style_front.css');
+/**
+ * Implements hook_page_build().
+ *
+ * Includes css to fine tuning html elements.
+ */
+function moha_style_page_build(&$page) {
+  $page['page_bottom']['#attached']['css'][] = MOHA_STYLE__PATH . '/css/moha_style_common.css';
+
+  global $theme_key;
+
+  if (path_is_admin(current_path())) {
+    // Fix element style for theme seven.
+    if ($theme_key == 'seven') {
+      $page['page_bottom']['#attached']['css'][] = MOHA_STYLE__PATH . '/css/moha_style_admin.seven.css';
+    }
   }
   else {
-    drupal_add_css(MOHA_STYLE__PATH . '/css/moha_style_admin.css');
+    $page['page_bottom']['#attached']['css'][] = MOHA_STYLE__PATH . '/css/moha_style_front.css';
   }
 }
