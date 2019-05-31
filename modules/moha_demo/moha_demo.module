@@ -60,6 +60,7 @@ function moha_demo_menu() {
     'file' => 'controllers/demo_web/table_cell.inc',
   );
 
+  /** @link moha_demo/web/real-time-preview */
   $items[__MOHA_DEMO. '/web/real-time-preview'] = array(
     'title' => t('Web Demo: real-time preview'),
     'description' => t('Demo real-time preview technology.'),
