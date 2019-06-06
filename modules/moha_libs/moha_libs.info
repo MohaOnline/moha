@@ -1,6 +1,7 @@
 name = Moha Libs
 description = Contains all kinds of libraries.
 core = 7.x
-package = Moha
+
+package = Moha Online
 
 dependencies[] = moha

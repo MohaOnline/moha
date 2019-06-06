@@ -1,7 +1,8 @@
 name = Moha IT Steward
 description = Moha IT Steward module provides kinds of useful services for IT affairs.
 core = 7.x
-package = Moha
+
+package = Moha Online
 
 dependencies[] = drupal:system (>= 7.40)
 dependencies[] = block
