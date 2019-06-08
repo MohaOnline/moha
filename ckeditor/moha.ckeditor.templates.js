@@ -44,6 +44,9 @@ image_gallery_template += '<p class="moha-clip-widget moha-clip-widget-editable 
 image_gallery_template += '<p class="moha-clip-widget moha-clip-widget-editable swiper-slide">&nbsp;</p></div>';
 image_gallery_template += '<div class="swiper-pagination"><span>Paging</span></div><div class="swiper-button-next"><span>Next</span></div><div class="swiper-button-prev"><span>Prev</span></div></div>';
 
+/* jshint unused:false, strict: false */
+/* globals Drupal:object */
+/* globals CKEDITOR:object */
 CKEDITOR.addTemplates('moha',
   {
     imagesPath: Drupal.settings.moha.ckeditor_template_image_path,

@@ -97,13 +97,11 @@ drupal_add_js(MOHA_CLIP__PATH . '/js/moha_clip.js');
 
 drupal_add_css(MOHA_CLIP__PATH . '/css/moha_clip.css', array('group' => CSS_THEME, 'media' => 'all', 'weight' => 990));
 drupal_add_css(MOHA_CLIP__PATH . '/ckeditor/styles.css', array('group' => CSS_THEME, 'media' => 'all', 'weight' => 998));
+/** @var $content array */
 ?>
 
 <link  href="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css" rel="stylesheet" />
 <script src="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js"></script>
-
-<link  href="/sites/all/libraries/swiper/dist/css/swiper.min.css" rel="stylesheet" />
-<script src="/sites/all/libraries/swiper/dist/js/swiper.min.js"></script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 
@@ -118,8 +116,6 @@ drupal_add_css(MOHA_CLIP__PATH . '/ckeditor/styles.css', array('group' => CSS_TH
     <?php print render($title_suffix); ?>
   </header>
   <?php endif; ?>
-
-
 
   <div class="row">
     <!---- Main Content -->

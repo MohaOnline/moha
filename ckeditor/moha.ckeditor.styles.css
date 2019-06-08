@@ -1,7 +1,7 @@
 /**
  *
  */
-@import "../../../../libraries/fontawesome/css/font-awesome.min.css";
+@import "../modules/moha_ui/libs/font-awesome/css/font-awesome.css";
 
 /* Adjust font in CKEditor WYSIWYG edit mode. */
 * {
