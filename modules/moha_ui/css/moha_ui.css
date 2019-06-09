@@ -13,4 +13,8 @@ input[type="file"].weui-uploader__input {
   height: 100%;
   padding: 0;
 }
+.weui-uploader__input-box {
+  width: 79px;
+  height: 79px;
+}
 /***/

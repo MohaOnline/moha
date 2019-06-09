@@ -210,6 +210,8 @@ function uploader(selector, options) {
             const $item = $($.render(tplItem, {
                 id: file.id
             }));
+            $uploader.find('.weui-uploader__file').remove();
+            $uploader.find('.weui-uploader__input-box').hide();
             $uploader.find('.weui-uploader__files').append($item);
         };
     }
@@ -292,7 +294,7 @@ function uploader(selector, options) {
             });
         }
 
-        this.value = '';
+//        this.value = '';
     });
 }
 export default uploader;

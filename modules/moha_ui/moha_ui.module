@@ -232,7 +232,6 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
  */
 function moha_ui_image_mobile_uploader_widget_process($element, &$form_state, $form) {
   $element['#theme'] = 'moha_ui_image_mobile_uploader_widget';
-  $element['#attached']['js'][] = MOHA_UI__PATH . '/js/moha_ui_image_mobile_uploader.js';
   $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
 
   return $element;
@@ -244,6 +243,9 @@ function moha_ui_image_mobile_uploader_widget_process($element, &$form_state, $f
  * @param $variables
  *   An associative array containing:
  *   - element: A render element representing the widgets.
+ *
+ * @see theme_file_widget_multiple()
+ *   Removes draggable table feature.
  *
  * @ingroup themeable
  */
@@ -352,7 +354,7 @@ function theme_moha_ui_image_mobile_uploader_widget($variables) {
   $output .= '<div class="image-widget form-managed-file clearfix">';
 
   if (isset($element['preview'])) {
-    $output .= '<div class="image-preview weui-uploader__files">';
+    $output .= '<div class="image-preview">';
     $output .= drupal_render($element['preview']);
     $output .= '</div>';
 
@@ -364,18 +366,20 @@ function theme_moha_ui_image_mobile_uploader_widget($variables) {
     $output .= '</div>';
   }
   else {
-    $element['upload']['#prefix'] = '<div class="weui-uploader__input-box">';
+    $element['upload']['#prefix'] = '<div class="moha_ui_image_preview_window"><ul class="weui-uploader__files"></ul></div><div class="weui-uploader__input-box">';
     $element['upload']['#suffix'] = '</div>';
     $element['upload']['#attributes']['class'][] = 'weui-uploader__input';
-    /** @link https://stackoverflow.com/questions/3828554/how-to-allow-input-type-file-to-accept-only-image-files @unlink */
 
+    /** @link https://stackoverflow.com/questions/3828554/how-to-allow-input-type-file-to-accept-only-image-files @unlink */
     if (!empty($element['#upload_validators']['file_validate_extensions'])) {
       $extensions = explode(' ', $element['#upload_validators']['file_validate_extensions'][0]);
       $element['upload']['#attributes']['accept'] = '.' . implode(',.', $extensions);
     }
     // Alternative way to limit file type when upload images.
     // $element['upload']['#attributes']['accept'] = 'image/*';
-    $output .= '<div class="image-widget-data">';
+
+    $element['upload']['#attached']['js'][] = MOHA_UI__PATH . '/js/moha_ui_image_mobile_uploader.js';
+    $output .= '<div class="image-widget-data moha_ui_image_mobile_uploader">';
     $output .= drupal_render_children($element);
     $output .= '</div>';
   }
@@ -473,4 +477,3 @@ function moha_ui_webform_component_info() {
 
   return $components;
 }
-
