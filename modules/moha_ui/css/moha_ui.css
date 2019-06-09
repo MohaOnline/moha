@@ -7,3 +7,10 @@ a.weui-dialog__btn_primary:hover {
   color: #0BB20C;
 }
 /***/
+
+/** Fix style conflict with bootstrap and seven. */
+input[type="file"].weui-uploader__input {
+  height: 100%;
+  padding: 0;
+}
+/***/

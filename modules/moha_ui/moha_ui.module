@@ -123,6 +123,10 @@ function moha_ui_theme($existing, $type, $theme, $path) {
       'template' => 'elements/moha_ui_rating',
       'render element' => 'element',
     ),
+    'moha_ui_file_widget_multiple' => array(
+      'render element' => 'element',
+    ),
+    // Image preview and image uploader widget.
     'moha_ui_image_mobile_uploader_widget' => array(
       'render element' => 'element',
     ),
@@ -158,7 +162,7 @@ function moha_ui_field_widget_info() {
       'field types' => array('image'),
       'settings' => array(
         /** @see https://www.antimath.info/css/change-throbber-in-drupal-7/ */
-        'progress_indicator' => 'toast',
+        'progress_indicator' => 'throbber',
         'preview_image_style' => 'thumbnail',
       ),
       'behaviors' => array(
@@ -178,13 +182,12 @@ function moha_ui_field_widget_info() {
  */
 function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
 
-  libraries_load(__MOHA_UI);
 
   switch ($instance['widget']['type']) {
     default:
-      return;
+      return $element;
 
-    /*  */
+    /* Return Moha UI widget. */
     case 'moha_ui_image_mobile_uploader':
       $cardinality = $field['cardinality'];
       $widget = array();
@@ -207,10 +210,14 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
        */
       foreach (element_children($elements) as $delta) {
         if ($elements[$delta]['#type'] == 'managed_file') {
-//          $elements[$delta]['#prefix'] = '<div class="weui-uploader__input-box">';
-//          $elements[$delta]['#suffix'] = '</div>';
           $elements[$delta]['#process'][] = 'moha_ui_image_mobile_uploader_widget_process';
         }
+      }
+
+      // When multiple images are allowed in current image field,
+      // Use Moha UI multiple template to render preview list responsively.
+      if (isset($elements['#theme'])) {
+        $elements['#theme'] = 'moha_ui_file_widget_multiple';
       }
 
       return $elements;
@@ -225,7 +232,108 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
  */
 function moha_ui_image_mobile_uploader_widget_process($element, &$form_state, $form) {
   $element['#theme'] = 'moha_ui_image_mobile_uploader_widget';
+  $element['#attached']['js'][] = MOHA_UI__PATH . '/js/moha_ui_image_mobile_uploader.js';
+  $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
+
   return $element;
+}
+
+/**
+ * Returns HTML for a group of file upload widgets.
+ *
+ * @param $variables
+ *   An associative array containing:
+ *   - element: A render element representing the widgets.
+ *
+ * @ingroup themeable
+ */
+function theme_moha_ui_file_widget_multiple($variables) {
+  $element = $variables['element'];
+
+  // Special ID and classes for draggable tables.
+  $table_id = $element['#id'] . '-table';
+
+  // Build up a table of applicable fields.
+  $headers = array();
+  $headers[] = t('Uploaded');
+  if ($element['#display_field']) {
+    $headers[] = array(
+      'data' => t('Display'),
+      'class' => array('checkbox'),
+    );
+  }
+  $headers[] = t('Operations');
+
+  // Get our list of widgets in order (needed when the form comes back after
+  // preview or failed validation).
+  $widgets = array();
+  foreach (element_children($element) as $key) {
+    $widgets[] = &$element[$key];
+  }
+  usort($widgets, '_field_sort_items_value_helper');
+
+  $rows = array();
+  foreach ($widgets as $key => &$widget) {
+    // Save the uploading row for last.
+    if ($widget['#file'] == FALSE) {
+      $widget['#title'] = $element['#file_upload_title'];
+      $widget['#description'] = $element['#file_upload_description'];
+      continue;
+    }
+
+    // Delay rendering of the buttons, so that they can be rendered later in the
+    // "operations" column.
+    $operations_elements = array();
+    foreach (element_children($widget) as $sub_key) {
+      if (isset($widget[$sub_key]['#type']) && $widget[$sub_key]['#type'] == 'submit') {
+        hide($widget[$sub_key]);
+        $operations_elements[] = &$widget[$sub_key];
+      }
+    }
+
+    // Delay rendering of the "Display" option and the weight selector, so that
+    // each can be rendered later in its own column.
+    if ($element['#display_field']) {
+      hide($widget['display']);
+    }
+
+    hide($widget['_weight']);
+
+    // Render everything else together in a column, without the normal wrappers.
+    $widget['#theme_wrappers'] = array();
+    $information = drupal_render($widget);
+
+    // Render the previously hidden elements, using render() instead of
+    // drupal_render(), to undo the earlier hide().
+    $operations = '';
+    foreach ($operations_elements as $operation_element) {
+      $operations .= render($operation_element);
+    }
+    $display = '';
+    if ($element['#display_field']) {
+      unset($widget['display']['#title']);
+      $display = array(
+        'data' => render($widget['display']),
+        'class' => array('checkbox'),
+      );
+    }
+
+    // Arrange the row with all of the rendered columns.
+    $row = array();
+    $row[] = $information;
+    if ($element['#display_field']) {
+      $row[] = $display;
+    }
+    $row[] = $operations;
+    $rows[] = array(
+      'data' => $row,
+      'class' => isset($widget['#attributes']['class']) ? array_merge($widget['#attributes']['class'], array('draggable')) : array('draggable'),
+    );
+  }
+
+  $output = empty($rows) ? '' : theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('id' => $table_id)));
+  $output .= drupal_render_children($element);
+  return $output;
 }
 
 /**
@@ -247,21 +355,31 @@ function theme_moha_ui_image_mobile_uploader_widget($variables) {
     $output .= '<div class="image-preview weui-uploader__files">';
     $output .= drupal_render($element['preview']);
     $output .= '</div>';
-  }
 
-  $output .= '<div class="image-widget-data">';
-  if ($element['fid']['#value'] != 0) {
-    $element['filename']['#markup'] .= ' <span class="file-size">(' . format_size($element['#file']->filesize) . ')</span> ';
+    $output .= '<div class="image-widget-data moha_ui-image-preview-meta">';
+    hide($element['filename']);
+    hide($element['alt']);
+    hide($element['title']);
+    $output .= drupal_render_children($element);
+    $output .= '</div>';
   }
-
-  if (isset($element['upload'])) {
+  else {
     $element['upload']['#prefix'] = '<div class="weui-uploader__input-box">';
     $element['upload']['#suffix'] = '</div>';
     $element['upload']['#attributes']['class'][] = 'weui-uploader__input';
+    /** @link https://stackoverflow.com/questions/3828554/how-to-allow-input-type-file-to-accept-only-image-files @unlink */
+
+    if (!empty($element['#upload_validators']['file_validate_extensions'])) {
+      $extensions = explode(' ', $element['#upload_validators']['file_validate_extensions'][0]);
+      $element['upload']['#attributes']['accept'] = '.' . implode(',.', $extensions);
+    }
+    // Alternative way to limit file type when upload images.
+    // $element['upload']['#attributes']['accept'] = 'image/*';
+    $output .= '<div class="image-widget-data">';
+    $output .= drupal_render_children($element);
+    $output .= '</div>';
   }
 
-  $output .= drupal_render_children($element);
-  $output .= '</div>';
   $output .= '</div>';
 
   return $output;
