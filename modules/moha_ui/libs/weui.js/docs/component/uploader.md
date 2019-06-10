@@ -13,6 +13,8 @@ uploader 上传组件
 | [options.auto] | <code>boolean</code> | <code>true</code> | 设置为`true`后，不需要手动调用上传，有文件选择即开始上传。用this.upload()来上传，详情请看example |
 | [options.type] | <code>string</code> | <code>&quot;file&quot;</code> | 上传类型, `file`为文件上传; `base64`为以base64上传 |
 | [options.fileVal] | <code>string</code> | <code>&quot;file&quot;</code> | 文件上传域的name |
+| [options.uploadOne] | <code>boolean</code> | <code>true</code> | moha_ui 设置为`true`后， 只显示最后一次的预览图片 |
+| [options.leaveFileValue] | <code>boolean</code> | <code>true</code> | moha_ui 设置为`true`后，生成预览后不会清除 input 元素的值 |
 | [options.compress] | <code>object</code> |  | 压缩配置, `false`则不压缩 |
 | [options.compress.width] | <code>number</code> | <code>1600</code> | 图片的最大宽度 |
 | [options.compress.height] | <code>number</code> | <code>1600</code> | 图片的最大高度 |

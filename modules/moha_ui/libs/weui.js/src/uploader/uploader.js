@@ -179,6 +179,14 @@ function uploader(selector, options) {
         auto: true,
         type: 'file',
         fileVal: 'file',
+        /**
+         * moha_ui hack start
+         * uploadOne: only one image is allowed to upload.
+         * leaveFileValue: File input element will not be cleaned.
+         **/
+        uploadOne: true,
+        leaveFileValue: true,
+        /** moha_ui hack end */
         xhrFields: {},
         onBeforeQueued: $.noop,
         onQueued: $.noop,
@@ -210,8 +218,14 @@ function uploader(selector, options) {
             const $item = $($.render(tplItem, {
                 id: file.id
             }));
-            $uploader.find('.weui-uploader__file').remove();
-            $uploader.find('.weui-uploader__input-box').hide();
+
+            /** moha_ui hack start */
+            if (options.uploadOne) {
+                $uploader.find('.weui-uploader__file').remove();
+                $uploader.find('.weui-uploader__input-box').hide();
+            }
+            /** moha_ui hack end */
+
             $uploader.find('.weui-uploader__files').append($item);
         };
     }
@@ -294,7 +308,11 @@ function uploader(selector, options) {
             });
         }
 
-//        this.value = '';
+        /** moha_ui hack start */
+        if(options.leaveFileValue === false) {
+            this.value = '';
+        }
+        /** moha_ui hack end */
     });
 }
 export default uploader;

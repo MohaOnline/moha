@@ -1,11 +1,12 @@
 /**
  * @file
  */
+/* jshint esversion: 6 */
+/* jshint unused:false, strict: false */
+/* globals Drupal:object, jQuery:object, weui:object */
 
 (function ($) {
 
-  /* globals Drupal:object, weui:object */
-  /* jshint unused:false, strict: false */
   Drupal.behaviors.mohaUIImageMobileUploader = {
     attach: function(context) {
 
@@ -40,7 +41,9 @@
             while (!target.classList.contains('weui-uploader__file') && target) {
               target = target.parentNode;
             }
-            if (!target) return;
+            if (!target) {
+              return;
+            }
 
             var url = target.getAttribute('style') || '';
             var id = target.getAttribute('data-id');
@@ -59,7 +62,9 @@
                       break;
                     }
                   }
-                  if (index !== undefined) uploadCustomFileList.splice(index, 1);
+                  if (index !== undefined) {
+                    uploadCustomFileList.splice(index, 1);
+                  }
 
                   target.remove();
                   gallery.hide();
