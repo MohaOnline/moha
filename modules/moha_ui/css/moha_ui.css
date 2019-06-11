@@ -9,12 +9,22 @@ a.weui-dialog__btn_primary:hover {
 /***/
 
 /** Fix style conflict with bootstrap and seven. */
+.block ul.weui-uploader__files {
+  list-style: none;
+  margin: auto;
+}
+
 input[type="file"].weui-uploader__input {
   height: 100%;
   padding: 0;
 }
+
 .weui-uploader__input-box {
   width: 79px;
   height: 79px;
 }
 /***/
+
+.weui-mask_transparent {
+  background-color: rgba(0, 0, 0, 0.5);
+}

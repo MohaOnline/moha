@@ -49,6 +49,7 @@ function moha_ui_library() {
     'js' => array(
       MOHA_UI__PATH . '/libs/weui.js/dist/weui.js' => array(),
       MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
     ),
     'css' => array(
       MOHA_UI__PATH . '/libs/weui/dist/style/weui.css' => array(
@@ -81,6 +82,8 @@ function moha_ui_libraries_info() {
     'files' => array(
       'js' => array(
         'libs/weui.js/dist/weui.js',
+        'libs/jquery.rating-stars/dist/js/jquery.rating-stars.js',
+        'js/moha_ui.ajax.js'
       ),
       'css' => array(
         'libs/weui/dist/style/weui.css',
@@ -162,7 +165,7 @@ function moha_ui_field_widget_info() {
       'field types' => array('image'),
       'settings' => array(
         /** @see https://www.antimath.info/css/change-throbber-in-drupal-7/ */
-        'progress_indicator' => 'throbber',
+        'progress_indicator' => 'loading',
         'preview_image_style' => 'thumbnail',
       ),
       'behaviors' => array(
@@ -182,7 +185,6 @@ function moha_ui_field_widget_info() {
  */
 function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
 
-
   switch ($instance['widget']['type']) {
     default:
       return $element;
@@ -195,14 +197,14 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
       $elements = image_field_widget_form($form, $form_state, $field, $instance, $langcode, $items, $delta, $element);
 
       /**
-       * #process flow of image elements:
+       * Original #process flow of image elements:
        *
        * @see file_field_widget_process_multiple()
        * @see file_managed_file_process()
        * @see file_field_widget_process()
        * @see image_field_widget_process() changes #theme to image_widget.
        *
-       * #theme flow of image elements:
+       * Original #theme flow of image elements:
        *
        * @see theme_file_widget_multiple()
        * @see theme_image_widget()
@@ -210,6 +212,7 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
        */
       foreach (element_children($elements) as $delta) {
         if ($elements[$delta]['#type'] == 'managed_file') {
+          /** @see moha_ui_image_mobile_uploader_widget_process() */
           $elements[$delta]['#process'][] = 'moha_ui_image_mobile_uploader_widget_process';
         }
       }
@@ -217,6 +220,7 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
       // When multiple images are allowed in current image field,
       // Use Moha UI multiple template to render preview list responsively.
       if (isset($elements['#theme'])) {
+        /** @see moha_ui_file_widget_multiple() */
         $elements['#theme'] = 'moha_ui_file_widget_multiple';
       }
 
@@ -231,6 +235,7 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
  * Replace moha_ui_image_mobile_uploader as #theme to render.
  */
 function moha_ui_image_mobile_uploader_widget_process($element, &$form_state, $form) {
+  /** @see theme_moha_ui_image_mobile_uploader_widget() */
   $element['#theme'] = 'moha_ui_image_mobile_uploader_widget';
   $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
 
@@ -272,6 +277,7 @@ function theme_moha_ui_file_widget_multiple($variables) {
   foreach (element_children($element) as $key) {
     $widgets[] = &$element[$key];
   }
+  /** @see _field_sort_items_value_helper() */
   usort($widgets, '_field_sort_items_value_helper');
 
   $rows = array();
@@ -308,6 +314,8 @@ function theme_moha_ui_file_widget_multiple($variables) {
     // Render the previously hidden elements, using render() instead of
     // drupal_render(), to undo the earlier hide().
     $operations = '';
+
+    /** $operation_element['#ajax']['path']; */
     foreach ($operations_elements as $operation_element) {
       $operations .= render($operation_element);
     }
@@ -346,6 +354,8 @@ function theme_moha_ui_file_widget_multiple($variables) {
  *   - element: A render element representing the image field widget.
  *
  * @see theme_image_widget()
+ * @see theme_moha_ui_file_widget_multiple()
+ *
  * @ingroup themeable
  */
 function theme_moha_ui_image_mobile_uploader_widget($variables) {

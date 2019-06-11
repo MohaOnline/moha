@@ -8,7 +8,7 @@
 (function ($) {
 
   Drupal.behaviors.mohaUIImageMobileUploader = {
-    attach: function(context) {
+    attach: function(context, settings) {
 
    //   $('.moha_ui_image_mobile_uploader', context).once('moha_ui_image_mobile_uploader', function () {
 
@@ -68,7 +68,8 @@
 
                   target.remove();
                   gallery.hide();
-                  jQuery('.weui-uploader__input-box').show();
+                  $('.weui-uploader__input', context).val('');
+                  $('.weui-uploader__input-box', context).show();
                 });
               }
             });
