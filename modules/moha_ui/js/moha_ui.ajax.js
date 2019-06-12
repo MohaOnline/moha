@@ -17,7 +17,7 @@
        * @see ajax.js
        */
       Drupal.ajax.prototype.beforeSend = function (xmlhttprequest, options) {
-        Drupal.ajax.weuiLoading = weui.loading(Drupal.t('Processing...'));
+        Drupal.behaviors.mohaUIAjax.weUILoading = weui.loading(Drupal.t('Processing...'));
 
         // For forms without file inputs, the jQuery Form plugin serializes the
         // form values, and then calls jQuery's $.ajax() function, which
@@ -86,7 +86,7 @@
         // next call by mistake.
         this.settings = null;
 
-        Drupal.ajax.weuiLoading.hide();
+        Drupal.behaviors.mohaUIAjax.weUILoading.hide();
       };
 
       /**
@@ -105,7 +105,7 @@
           Drupal.attachBehaviors(this.form, settings);
         }
 
-        Drupal.ajax.weuiLoading.hide();
+        Drupal.behaviors.mohaUIAjax.weUILoading.hide();
       };
 
     // mohaUIAjax attached.

@@ -7,3 +7,4 @@ package = Moha Online
 dependencies[] = moha
 dependencies[] = image
 dependencies[] = webform
+dependencies[] = little_helpers

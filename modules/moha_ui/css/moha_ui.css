@@ -9,9 +9,14 @@ a.weui-dialog__btn_primary:hover {
 /***/
 
 /** Fix style conflict with bootstrap and seven. */
-.block ul.weui-uploader__files {
+div.moha_ui_image_mobile_uploader_preview ul.weui-uploader__files {
   list-style: none;
   margin: auto;
+  padding: 0;
+}
+
+.weui-uploader__file {
+  cursor: pointer;
 }
 
 input[type="file"].weui-uploader__input {

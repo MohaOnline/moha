@@ -39,6 +39,11 @@ define('__MOHA_UI__PATH', base_path() . MOHA_UI__PATH);
 define('MOHA_UI__VARIABLES', __MOHA_UI. '__variables');
 
 /**
+ * Image field Widget: Image Mobile Uploader.
+ */
+define('MOHA_UI__WIDGET__IMAGE_MOBILE_UPLOADER', 'moha_ui_image_mobile_uploader');
+
+/**
  * Implements hook_library().
  */
 function moha_ui_library() {
@@ -126,7 +131,7 @@ function moha_ui_theme($existing, $type, $theme, $path) {
       'template' => 'elements/moha_ui_rating',
       'render element' => 'element',
     ),
-    'moha_ui_file_widget_multiple' => array(
+    'moha_ui_image_mobile_uploader_widget_multiple' => array(
       'render element' => 'element',
     ),
     // Image preview and image uploader widget.
@@ -160,7 +165,7 @@ function moha_ui_field_widget_info() {
 //  .ajax-progress-throbber .throbber
 
   $widgets = array(
-    'moha_ui_image_mobile_uploader' => array(
+    MOHA_UI__WIDGET__IMAGE_MOBILE_UPLOADER => array(
       'label' => t('Moha UI: Image Mobile Uploader'),
       'field types' => array('image'),
       'settings' => array(
@@ -190,9 +195,7 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
       return $element;
 
     /* Return Moha UI widget. */
-    case 'moha_ui_image_mobile_uploader':
-      $cardinality = $field['cardinality'];
-      $widget = array();
+    case MOHA_UI__WIDGET__IMAGE_MOBILE_UPLOADER:
 
       $elements = image_field_widget_form($form, $form_state, $field, $instance, $langcode, $items, $delta, $element);
 
@@ -220,8 +223,8 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
       // When multiple images are allowed in current image field,
       // Use Moha UI multiple template to render preview list responsively.
       if (isset($elements['#theme'])) {
-        /** @see moha_ui_file_widget_multiple() */
-        $elements['#theme'] = 'moha_ui_file_widget_multiple';
+        /** @see theme_moha_ui_image_mobile_uploader_widget_multiple() */
+        $elements['#theme'] = 'moha_ui_image_mobile_uploader_widget_multiple';
       }
 
       return $elements;
@@ -254,11 +257,19 @@ function moha_ui_image_mobile_uploader_widget_process($element, &$form_state, $f
  *
  * @ingroup themeable
  */
-function theme_moha_ui_file_widget_multiple($variables) {
+function theme_moha_ui_image_mobile_uploader_widget_multiple($variables) {
   $element = $variables['element'];
 
   // Special ID and classes for draggable tables.
   $table_id = $element['#id'] . '-table';
+
+  $wrapperSelector = '#' . $element['#id'];
+
+  drupal_add_js(array(
+    __MOHA_UI => array(
+      'mobileImageWidgetWrapperSelector' => array($wrapperSelector),
+    )
+  ), 'setting');
 
   // Build up a table of applicable fields.
   $headers = array();
@@ -337,7 +348,7 @@ function theme_moha_ui_file_widget_multiple($variables) {
     $row[] = $operations;
     $rows[] = array(
       'data' => $row,
-      'class' => isset($widget['#attributes']['class']) ? array_merge($widget['#attributes']['class'], array('draggable')) : array('draggable'),
+      'class' => isset($widget['#attributes']['class']) ? $widget['#attributes']['class'] : array(),
     );
   }
 
@@ -354,7 +365,7 @@ function theme_moha_ui_file_widget_multiple($variables) {
  *   - element: A render element representing the image field widget.
  *
  * @see theme_image_widget()
- * @see theme_moha_ui_file_widget_multiple()
+ * @see theme_moha_ui_image_mobile_uploader_widget_multiple()
  *
  * @ingroup themeable
  */
@@ -376,7 +387,7 @@ function theme_moha_ui_image_mobile_uploader_widget($variables) {
     $output .= '</div>';
   }
   else {
-    $element['upload']['#prefix'] = '<div class="moha_ui_image_preview_window"><ul class="weui-uploader__files"></ul></div><div class="weui-uploader__input-box">';
+    $element['upload']['#prefix'] = '<div class="moha_ui_image_mobile_uploader_preview"><ul class="weui-uploader__files"></ul></div><div class="weui-uploader__input-box">';
     $element['upload']['#suffix'] = '</div>';
     $element['upload']['#attributes']['class'][] = 'weui-uploader__input';
 
