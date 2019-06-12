@@ -316,13 +316,17 @@ function theme_moha_ui_image_mobile_uploader_widget_multiple($variables) {
       if (isset($widget['#value']['uri'])) {
         $weui_preview .= format_string($weui_preview_template, [
           '!id' => $widget['remove_button']['#id'],
+          '!img' => image_style_url('large', $widget['#value']['uri']),
+          // Original file.
+          // '!img' => file_create_url($widget['#value']['uri']),
           '!url' => image_style_url('thumbnail', $widget['#value']['uri']),
         ]);
       }
       else {
         $file = file_load($widget['#value']['fid']);
         $weui_preview .= format_string($weui_preview_template, [
-          '!id' => '',
+          '!id' => $widget['remove_button']['#id'],
+          '!img' => image_style_url('large', $file->uri),
           '!url' => image_style_url('thumbnail', $file->uri),
         ]);
       }

@@ -14,6 +14,36 @@
         const wrapperSelector = settings.moha_ui.mobileImageWidgetWrapperSelector[i];
         console.log(wrapperSelector);
 
+
+        $(wrapperSelector + ' .moha_ui_image_mobile_preview.weui-uploader__files', context).once('moha_ui_image_mobile_preview', function () {
+          $(wrapperSelector + ' .moha_ui_image_mobile_preview.weui-uploader__files').each(function (index) {
+            this.addEventListener('click', function (e) {
+              var target = e.target;
+
+              while (!target.classList.contains('weui-uploader__file') && target) {
+                target = target.parentNode;
+              }
+              if (!target) {
+                return;
+              }
+
+              var url = target.getAttribute('data-img') || '';
+              var id = target.getAttribute('data-id');
+
+              var gallery = weui.gallery(url, {
+                onDelete: function () {
+                  weui.confirm(Drupal.t('Clear this image?'), function () {
+                    const event = document.createEvent('HTMLEvents');
+                    Drupal.ajax[id].eventResponse(event);
+                    target.remove();
+                    gallery.hide();
+                  });
+                }
+              });
+            });
+          }); // each.
+        });
+
         $(wrapperSelector + ' .moha_ui_image_mobile_uploader', context).once('moha_ui_image_mobile_uploader', function () {
 
           let uploadCustomFileList = [];
@@ -74,7 +104,7 @@
                 }
               });
             });
-          });
+          }); // each.
           //
           // // 缩略图预览
           // var preview_window = document.querySelector('.weui-uploader__files');
