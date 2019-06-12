@@ -856,9 +856,9 @@ function moha_form_options_from_vocabulary($vocabulary_name = '') {
 }
 
 /**
- * Implements hook_preprocess_HOOK().
+ * Implements hook_init().
  */
-function moha_preprocess_html(&$variables) {
+function moha_init() {
   // Return anonymous page for preview.
   $parms = drupal_get_query_parameters();
   if (isset($parms['preview'])) {
