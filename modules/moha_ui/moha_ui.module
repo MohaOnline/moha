@@ -291,6 +291,8 @@ function theme_moha_ui_image_mobile_uploader_widget_multiple($variables) {
   /** @see _field_sort_items_value_helper() */
   usort($widgets, '_field_sort_items_value_helper');
 
+  $weui_preview = '';
+
   $rows = array();
   foreach ($widgets as $key => &$widget) {
     // Save the uploading row for last.
@@ -298,6 +300,32 @@ function theme_moha_ui_image_mobile_uploader_widget_multiple($variables) {
       $widget['#title'] = $element['#file_upload_title'];
       $widget['#description'] = $element['#file_upload_description'];
       continue;
+    }
+
+    // Generate weui preview.
+    /*
+    <div class="moha_ui_image_mobile_uploader_preview">
+      <ul class="weui-uploader__files">
+        <li class="weui-uploader__file" data-id="1" style="background-image: url(&quot;blob:http://dev.moha.online/da62c475-5382-4c38-81db-51e619d8700d&quot;);"></li>
+      </ul>
+    </div>
+    */
+    static $weui_preview_template = '<li class="weui-uploader__file" data-id="!id" data-img="!img" style="background-image: url(!url);"></li>';
+
+    if (isset($widget['#value']['fid'])) {
+      if (isset($widget['#value']['uri'])) {
+        $weui_preview .= format_string($weui_preview_template, [
+          '!id' => $widget['remove_button']['#id'],
+          '!url' => image_style_url('thumbnail', $widget['#value']['uri']),
+        ]);
+      }
+      else {
+        $file = file_load($widget['#value']['fid']);
+        $weui_preview .= format_string($weui_preview_template, [
+          '!id' => '',
+          '!url' => image_style_url('thumbnail', $file->uri),
+        ]);
+      }
     }
 
     // Delay rendering of the buttons, so that they can be rendered later in the
@@ -351,8 +379,12 @@ function theme_moha_ui_image_mobile_uploader_widget_multiple($variables) {
       'class' => isset($widget['#attributes']['class']) ? $widget['#attributes']['class'] : array(),
     );
   }
+  $output = empty($rows) ? '' : theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('id' => $table_id, 'class' => array('moha_ui_hide'))));
 
-  $output = empty($rows) ? '' : theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('id' => $table_id)));
+  if ($weui_preview) {
+    $output .= '<ul class="weui-uploader__files moha_ui_image_mobile_preview">' . $weui_preview . '</ul>';
+  }
+
   $output .= drupal_render_children($element);
   return $output;
 }

@@ -1,3 +1,11 @@
+.moha_ui_hide {
+  display: none;
+}
+
+.moha_ui_show {
+  display: inherit;
+}
+
 /** WeUI style fix. */
 a.weui-dialog__btn:hover {
   text-decoration: none;
@@ -9,10 +17,12 @@ a.weui-dialog__btn_primary:hover {
 /***/
 
 /** Fix style conflict with bootstrap and seven. */
-div.moha_ui_image_mobile_uploader_preview ul.weui-uploader__files {
+div.moha_ui_image_mobile_uploader_preview ul.weui-uploader__files,
+ul.weui-uploader__files.moha_ui_image_mobile_preview {
   list-style: none;
   margin: auto;
   padding: 0;
+  overflow: hidden;
 }
 
 .weui-uploader__file {
