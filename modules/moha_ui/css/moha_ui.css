@@ -26,14 +26,14 @@ a.weui-dialog__btn_primary:hover {
   border: none;
 }
 
-.field-widget-moha-ui-image-mobile-uploader legend {
+.field-widget-moha-ui-image-mobile-uploader legend.panel-heading {
   margin-bottom: 0;
+  margin-left: 10px;
   width: inherit;
+  background-image: inherit;
   background-color: transparent;
-}
-
-fieldset {
   border: none;
+  padding: 0 5px;
 }
 
 div.moha_ui_image_mobile_uploader_preview ul.weui-uploader__files,

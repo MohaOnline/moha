@@ -10,38 +10,39 @@
   Drupal.behaviors.mohaUIImageMobileUploader = {
     attach: function(context, settings) {
 
+      /* Bind gallery preview feature for each image field used moha_ui_image_mobile_uploader widget. */
       for (let i=0; i<settings.moha_ui.mobileImageWidgetWrapperSelector.length; i++) {
         const wrapperSelector = settings.moha_ui.mobileImageWidgetWrapperSelector[i];
-        console.log(wrapperSelector);
 
         $(wrapperSelector + ' .moha_ui_image_mobile_preview.weui-uploader__files', context).once('moha_ui_image_mobile_preview', function () {
-          $(wrapperSelector + ' .moha_ui_image_mobile_preview.weui-uploader__files').each(function (index) {
-            this.addEventListener('click', function (e) {
-              var target = e.target;
 
-              while (!target.classList.contains('weui-uploader__file') && target) {
-                target = target.parentNode;
+          this.addEventListener('click', function (e) {
+            var target = e.target;
+
+            while (target && target.classList && !target.classList.contains('weui-uploader__file') ) {
+              target = target.parentNode;
+            }
+            if (!target || !target.classList) {
+              return;
+            }
+
+            const url = target.getAttribute('data-img') || '';
+            const id = target.getAttribute('data-id');
+
+            const gallery = weui.gallery(url, {
+              onDelete: function () {
+                weui.confirm(Drupal.t('Cancel this image?'), function () {
+                  const event = document.createEvent('HTMLEvents');
+                  Drupal.ajax[id].eventResponse(event);
+                  target.remove();
+                  gallery.hide();
+                });
               }
-              if (!target) {
-                return;
-              }
-
-              var url = target.getAttribute('data-img') || '';
-              var id = target.getAttribute('data-id');
-
-              var gallery = weui.gallery(url, {
-                onDelete: function () {
-                  weui.confirm(Drupal.t('Cancel this image?'), function () {
-                    const event = document.createEvent('HTMLEvents');
-                    Drupal.ajax[id].eventResponse(event);
-                    target.remove();
-                    gallery.hide();
-                  });
-                }
-              });
             });
-          }); // each.
-        });
+
+          });
+
+        }); // once
 
         $(wrapperSelector + ' .moha_ui_image_mobile_uploader', context).once('moha_ui_image_mobile_uploader', function () {
 
@@ -67,15 +68,16 @@
             this.addEventListener('click', function (e) {
               var target = e.target;
 
-              while (!target.classList.contains('weui-uploader__file') && target) {
+              while (target && target.classList && !target.classList.contains('weui-uploader__file') ) {
                 target = target.parentNode;
               }
-              if (!target) {
+
+              if (!target || !target.classList) {
                 return;
               }
 
-              var url = target.getAttribute('style') || '';
-              var id = target.getAttribute('data-id');
+              let url = target.getAttribute('style') || '';
+              const id = target.getAttribute('data-id');
 
               if (url) {
                 url = url.match(/url\((.*?)\)/)[1].replace(/"/g, '');
@@ -107,7 +109,8 @@
 
         }); // moha_ui_image_mobile_uploader once end.
 
-      } // for.
+      } // Widget wrappers for end.
+
     } // function attach.
   };
 
