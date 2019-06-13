@@ -7,6 +7,11 @@
 }
 
 /** WeUI style fix. */
+.weui-dialog__btn,
+.weui-gallery__del{
+  line-height: inherit;
+}
+
 a.weui-dialog__btn:hover {
   text-decoration: none;
 }
@@ -17,6 +22,20 @@ a.weui-dialog__btn_primary:hover {
 /***/
 
 /** Fix style conflict with bootstrap and seven. */
+.field-widget-moha-ui-image-mobile-uploader div.table-responsive {
+  border: none;
+}
+
+.field-widget-moha-ui-image-mobile-uploader legend {
+  margin-bottom: 0;
+  width: inherit;
+  background-color: transparent;
+}
+
+fieldset {
+  border: none;
+}
+
 div.moha_ui_image_mobile_uploader_preview ul.weui-uploader__files,
 ul.weui-uploader__files.moha_ui_image_mobile_preview {
   list-style: none;

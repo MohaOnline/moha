@@ -14,7 +14,6 @@
         const wrapperSelector = settings.moha_ui.mobileImageWidgetWrapperSelector[i];
         console.log(wrapperSelector);
 
-
         $(wrapperSelector + ' .moha_ui_image_mobile_preview.weui-uploader__files', context).once('moha_ui_image_mobile_preview', function () {
           $(wrapperSelector + ' .moha_ui_image_mobile_preview.weui-uploader__files').each(function (index) {
             this.addEventListener('click', function (e) {
@@ -32,7 +31,7 @@
 
               var gallery = weui.gallery(url, {
                 onDelete: function () {
-                  weui.confirm(Drupal.t('Clear this image?'), function () {
+                  weui.confirm(Drupal.t('Cancel this image?'), function () {
                     const event = document.createEvent('HTMLEvents');
                     Drupal.ajax[id].eventResponse(event);
                     target.remove();
@@ -83,7 +82,7 @@
               }
               var gallery = weui.gallery(url, {
                 onDelete: function () {
-                  weui.confirm(Drupal.t('Clear this image?'), function () {
+                  weui.confirm(Drupal.t('Cancel this image?'), function () {
                     var index;
                     for (var i = 0, len = uploadCustomFileList.length; i < len; ++i) {
                       var file = uploadCustomFileList[i];
@@ -105,50 +104,6 @@
               });
             });
           }); // each.
-          //
-          // // 缩略图预览
-          // var preview_window = document.querySelector('.weui-uploader__files');
-          // if (preview_window) {
-          //   document.querySelector('.weui-uploader__files').addEventListener('click', function (e) {
-          //     var target = e.target;
-          //
-          //     while (!target.classList.contains('weui-uploader__file') && target) {
-          //       target = target.parentNode;
-          //     }
-          //     if (!target) {
-          //       return;
-          //     }
-          //
-          //     var url = target.getAttribute('style') || '';
-          //     var id = target.getAttribute('data-id');
-          //
-          //     if (url) {
-          //       url = url.match(/url\((.*?)\)/)[1].replace(/"/g, '');
-          //     }
-          //     var gallery = weui.gallery(url, {
-          //       onDelete: function () {
-          //         weui.confirm('确定删除该图片？', function () {
-          //           var index;
-          //           for (var i = 0, len = uploadCustomFileList.length; i < len; ++i) {
-          //             var file = uploadCustomFileList[i];
-          //             if (file.id == id) {
-          //               index = i;
-          //               break;
-          //             }
-          //           }
-          //           if (index !== undefined) {
-          //             uploadCustomFileList.splice(index, 1);
-          //           }
-          //
-          //           target.remove();
-          //           gallery.hide();
-          //           $('.weui-uploader__input', context).val('');
-          //           $('.weui-uploader__input-box', context).show();
-          //         });
-          //        }
-          //      });
-          //    });
-          // }
 
         }); // moha_ui_image_mobile_uploader once end.
 
