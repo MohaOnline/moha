@@ -1,0 +1,79 @@
+*,
+*:before,
+*:after {
+  font: 10px/1.5 'PingFang SC','microsoft yahei',system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",tahoma,arial,'helvetica neue','hiragino sans gb',sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.page-moha-demo h2 {
+  font-size: 18px;
+}
+
+.flex-item {
+  background-color: rgba(0,0,0,0.35);
+}
+
+/* Horizontal arrange children elements. */
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* Vertical arrange children elements. */
+.flex-container-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/** Horizontal scroll demo: customize scrollbar. */
+.flex-container-horizontal-scroll::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+.flex-container-horizontal-scroll::-webkit-scrollbar-track { /* Track */
+  background: #f1f1f1;
+}
+
+.flex-container-horizontal-scroll::-webkit-scrollbar-thumb { /* Handle */
+  background: #888;
+}
+
+.flex-container-horizontal-scroll::-webkit-scrollbar-thumb:hover { /* Handle on hover */
+  background: #555;
+}
+
+.flex-container-horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+}
+
+.flex-container-horizontal-scroll .flex-item {
+  min-width: 25%;
+  text-align: center;
+  margin: auto;
+}
+/***/
+
+.flex-container-horizontal-scroll-touch::-webkit-scrollbar {
+  display: none;
+}
+
+.flex-container-horizontal-scroll-touch {
+  -webkit-overflow-scrolling: touch;
+}
+
+.flex-column {
+  display: flex;
+  width: 500px;
+  height: 100px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  flex-direction: column;
+  background-color: rgba(0,255,0,0.35);
+}
