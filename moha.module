@@ -1188,5 +1188,27 @@ function moha_ucfirst($text) {
   return drupal_strtoupper(drupal_substr($text, 0, 1)) . drupal_substr($text, 1);
 }
 
+/**
+ * Convert to celsius degree.
+ *
+ * @param $degree
+ *
+ * @return int
+ */
+function moha_toCelsius($degree) {
+  return ($degree - 32) * 5 / 9;
+}
+
+/**
+ * Convert to fahrenheit degree.
+ *
+ * @param $degree
+ *
+ * @return int
+ */
+function moha_toFahrenheit($degree) {
+  return $degree * 9 / 5 + 32;
+}
+
 // include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
 ctools_include('moha.ckeditor', __MOHA, 'ckeditor');

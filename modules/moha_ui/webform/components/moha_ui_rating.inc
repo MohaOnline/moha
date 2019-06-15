@@ -35,7 +35,7 @@ function _webform_defaults_moha_ui_rating() {
  * @inheritdoc
  * @see _webform_edit_component
  */
-function _webform_edit_moha_ui_rating(array $component, array $form = NULL, array $form_state = NULL) {
+function _webform_edit_moha_ui_rating(array $component, array $form, array $form_state) {
 
   $form['extra'] = array(
     '#type' => 'fieldset',

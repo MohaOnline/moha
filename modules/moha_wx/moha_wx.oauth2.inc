@@ -17,6 +17,8 @@ function _moha_wx_oauth2_errors($error_code) {
     '10015' => '公众号未授权第三方平台，请检查授权状态',
     '10016' => '不支持微信开放平台的Appid，请使用公众号App',
   );
+
+  return $error_mapping[$error_code];
 }
 
 /**
@@ -44,14 +46,14 @@ function _moha_wx_oauth2_request_explicit_authorization($wechat_name, $state) {
       // When user hasn't logged in, redirect him/her to WeChat OAuth2 explicit authentication URL.
       drupal_goto(
         format_string(MOHA_WX__API__OAUTH2_WITH_USER_INFO,
-          [
+          array(
             '@APPID' => $account['app_id'],
             '@REDIRECT_URI' => url(
-              format_string(MOHA_WX__URL__OAUTH2_BACK_WITH_USER_INFO, ['@WECHAT_NAME' => $wechat_name]),
+              format_string(MOHA_WX__URL__OAUTH2_BACK_WITH_USER_INFO, array('@WECHAT_NAME' => $wechat_name)),
               array('absolute' => TRUE)
             ),
             '@STATE' => $state
-          ])
+          ))
       );
     }
   }

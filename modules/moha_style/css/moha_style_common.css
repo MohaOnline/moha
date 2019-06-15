@@ -1,0 +1,8 @@
+/**
+ * Eliminate form builder blue frame when move elements.
+ * Almost all theme has same inconvenience.
+ */
+#form-builder div.form-builder-placeholder {
+  border: none;
+}
+/***/

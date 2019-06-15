@@ -1,14 +1,93 @@
 <?php
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_SURVEY', 'Moha Survey');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_SURVEY', 'moha_survey');
+
+/**
+ * moha_survey__variables.
+ */
+define('MOHA_SURVEY__VARIABLES', __MOHA_SURVEY . '__variables');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_survey.
+ */
+define('MOHA_SURVEY__PATH', drupal_get_path('module', __MOHA_SURVEY));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_survey.
+ */
+define('__MOHA_SURVEY__PATH', base_path() . MOHA_SURVEY__PATH);
+
+/**
+ * Implements hook_permission().
+ */
+function moha_survey_permission() {
+  $permissions = array(
+    'administer any survey' =>  array(
+      'title' => t('Administer any survey'),
+      'description' => t('Perform administration tasks for any survey.'),
+    ),
+    'administer own survey' =>  array(
+      'title' => t('Administer own survey'),
+      'description' => t('Perform administration tasks for own survey.'),
+    ),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function moha_survey_theme($existing, $type, $theme, $path) {
+  $templates = array(
+    'moha_survey_dashboard' => array(
+      'template' => 'templates/moha_survey_dashboard',
+      'render element' => 'content',
+    ),
+  );
+
+  return $templates;
+}
 
 /**
  * Implements hook_menu().
  */
 function moha_survey_menu() {
-  $items['moha-survey/add'] = array(
+
+  $items['admin/moha/survey'] = array(
+    'title' => 'Survey management',
+    'description' => 'Manage surveys, survey templates, survey questions and statistics.',
+    'page callback' => 'moha_survey_dashboard',
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'moha_survey.admin.inc',
+  );
+
+  $items['admin/moha/survey/dashboard'] = array(
+    'title' => 'Dashboard',
+    'description' => 'Survey Dashboard',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -1,
+    'file' => 'moha_survey.admin.inc',
+  );
+
+  $items['admin/moha/survey/add'] = array(
     'title' => 'Create a survey',
     'page callback' => 'moha_survey_create',
+    // TODO set proper permissions.
     'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
+    'type' => MENU_LOCAL_TASK,
   );
 
   return $items;
@@ -20,6 +99,7 @@ function moha_survey_create(){
 
 function moha_survey_add_form($form, &$form_state) {
 
+  // TODO spell error
   $form['survery_name'] = array(
     '#type' => 'textfield',
     '#title' => 'survey name',
@@ -97,6 +177,8 @@ function moha_survey_add_form_submit($form, &$form_state) {
       'extra' => array(
         'title_display' => 'inline',
         'private' => 0,
+        'max_score' => 5,
+        'threshold_score' => 3,
       ),
     ),
     array(
@@ -109,6 +191,8 @@ function moha_survey_add_form_submit($form, &$form_state) {
       'extra' => array(
         'title_display' => 'inline',
         'private' => 0,
+        'max_score' => 5,
+        'threshold_score' => 3,
       ),
     ),
   );

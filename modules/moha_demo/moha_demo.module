@@ -33,6 +33,16 @@ define('MOHA_DEMO__VARIABLES', __MOHA_DEMO. '__variables');
  */
 function moha_demo_menu() {
 
+  /** @link moha_demo/web/domjs @endlink */
+  $items[__MOHA_DEMO. '/web/domjs'] = [
+    'title' => t('Web Demo: Dom with Javascript'),
+    'description' => t('Style input box'),
+    'page callback' => '__moha_demo_domjs',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'controllers/moha_demo_web.inc',
+  ];
+
   $items[__MOHA_DEMO. '/web/input'] = [
     'title' => t('Web Demo: Input Box'),
     'description' => t('Style input box'),
@@ -42,8 +52,8 @@ function moha_demo_menu() {
     'file' => 'controllers/demo_web/input.inc',
   ];
 
-  /** @link moha_demo/web/flex @endlink */
   /** @see __moha_demo_web_flex() */
+  /** @link moha_demo/web/flex @endlink */
   $items[__MOHA_DEMO. '/web/flex'] = [
     'title' => t('Web Demo: Flex'),
     'description' => t('Try flex'),
@@ -81,6 +91,11 @@ function moha_demo_menu() {
  */
 function moha_demo_theme($existing, $type, $theme, $path) {
   $themes = array(
+    // Theme name: moha_demo_web_dom_js
+    __MOHA_DEMO . '_web_dom_js' => array(
+      'render element' => 'content',
+      'template' => 'templates/moha_demo_web_dom_js',
+    ),
     // moha_demo_web_input
     __MOHA_DEMO . '_web_input' => array(
       'render element' => 'page',

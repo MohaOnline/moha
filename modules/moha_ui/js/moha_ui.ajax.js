@@ -1,5 +1,6 @@
 /**
  * @file
+ *   Customized Ajax effect behaviors.
  */
 /* jshint esversion: 6 */
 /* jshint unused:false, strict: false */
@@ -8,6 +9,9 @@
 (function ($) {
   Drupal.behaviors.mohaUIAjax = {
     attach: function (context, settings) {
+
+      /* When ajax.js is not loaded. */
+      if (Drupal.ajax === undefined) { return; }
 
       /**
        * Prepare the Ajax request before it is sent.

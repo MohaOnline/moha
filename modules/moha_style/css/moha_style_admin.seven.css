@@ -3,3 +3,14 @@
   vertical-align: baseline;
 }
 /***/
+
+
+/** Fix conflict AdminLTE and theme: seven. */
+html {
+  font-size: 16px;
+}
+
+.breadcrumb {
+  background-color: #e0e0d8;
+}
+/***/

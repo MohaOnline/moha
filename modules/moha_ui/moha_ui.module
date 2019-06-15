@@ -15,6 +15,11 @@ define('MOHA_UI', 'Moha UI');
 define('__MOHA_UI', 'moha_ui');
 
 /**
+ * Machine name.
+ */
+define('__MOHA_UI_ADMIN', 'moha_ui_admin');
+
+/**
  * sites/all/modules/custom/moha/modules/moha_ui.
  */
 define('MOHA_UI__PATH', drupal_get_path('module', __MOHA_UI));
@@ -36,16 +41,21 @@ define('MOHA_UI__WIDGET__IMAGE_MOBILE_UPLOADER', 'moha_ui_image_mobile_uploader'
 
 /**
  * Implements hook_library().
+ *
+ * @see drupal_add_library
  */
 function moha_ui_library() {
+  /** @example  drupal_add_library(__MOHA_UI, __MOHA_UI); */
   $libraries[__MOHA_UI] = array(
     'title' => MOHA_UI,
     'website' => 'https://www.moha.online/',
     'version' => '1.0',
     'js' => array(
+      MOHA_UI__PATH . '/libs/lodash.js' => array(),
       MOHA_UI__PATH . '/libs/weui.js/dist/weui.js' => array(),
       MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.js' => array(),
     ),
     'css' => array(
       MOHA_UI__PATH . '/libs/weui/dist/style/weui.css' => array(
@@ -63,11 +73,55 @@ function moha_ui_library() {
     ),
   );
 
+  /** @example  drupal_add_library(__MOHA_UI, __MOHA_UI); */
+  $libraries[__MOHA_UI_ADMIN] = array(
+    'title' => 'Moha UI Admin',
+    'website' => 'https://www.moha.online/admin/',
+    'version' => '1.0',
+    'js' => array(
+      MOHA_UI__PATH . '/libs/lodash.js' => array(),
+      MOHA_UI__PATH . '/libs/AdminLTE/bower_components/bootstrap/dist/js/bootstrap.js' => array(),
+      MOHA_UI__PATH . '/libs/AdminLTE/dist/js/adminlte.js' => array(),
+      MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(),
+    ),
+    'css' => array(
+      MOHA_UI__PATH . '/libs/font-awesome/css/font-awesome.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+      MOHA_UI__PATH . '/libs/AdminLTE/bower_components/bootstrap/dist/css/bootstrap.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+      MOHA_UI__PATH . '/libs/AdminLTE/bower_components/bootstrap/dist/css/bootstrap-theme.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+      MOHA_UI__PATH . '/libs/AdminLTE/dist/css/AdminLTE.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+      MOHA_UI__PATH . '/libs/AdminLTE/dist/css/skins/skin-blue.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+      MOHA_UI__PATH . '/css/moha_ui.admin.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+  );
+
   return $libraries;
 }
 
 /**
  * Implements hook_libraries_info().
+ *
+ * @see libraries_load();
  */
 function moha_ui_libraries_info() {
 
@@ -77,9 +131,11 @@ function moha_ui_libraries_info() {
     'version' => '1.0',
     'files' => array(
       'js' => array(
+        'libs/lodash.js',
         'libs/weui.js/dist/weui.js',
         'libs/jquery.rating-stars/dist/js/jquery.rating-stars.js',
-        'js/moha_ui.ajax.js'
+        'js/moha_ui.ajax.js',
+        'js/moha_ui.js',
       ),
       'css' => array(
         'libs/weui/dist/style/weui.css',
@@ -231,6 +287,7 @@ function moha_ui_field_widget_form(&$form, &$form_state, $field, $instance, $lan
 function moha_ui_image_mobile_uploader_widget_process($element, &$form_state, $form) {
   /** @see theme_moha_ui_image_mobile_uploader_widget() */
   $element['#theme'] = 'moha_ui_image_mobile_uploader_widget';
+  $element['#attached']['library'][] = array('system', 'ui');
   $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
 
   return $element;
