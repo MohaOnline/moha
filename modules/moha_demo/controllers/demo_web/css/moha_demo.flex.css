@@ -12,15 +12,30 @@
   font-size: 18px;
 }
 
-.flex-item {
-  background-color: rgba(0,0,0,0.35);
-}
-
 /* Horizontal arrange children elements. */
 .flex-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  /* alignment on main axis. */
+  justify-content: space-between; /* */
+  /* alignment on cross axis: single line/column. */
+  align-items: flex-start;
+  /* alignment on cross axis: multiple line/column. */
+  align-content: flex-start;
+}
+
+.flex-item {
+  background-color: rgba(0,0,0,0.35);
+  order: inherit;
+  flex-grow: inherit;
+  flex-shrink: inherit;
+  flex-basis: auto;
+  /* Override align-items. */
+  align-self: flex-start;
+}
+
+.flex-container .flex-item:last-child {
+  justify-self: flex-start;
 }
 
 /* Vertical arrange children elements. */
