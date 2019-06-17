@@ -1,0 +1,12 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_enable().
+ */
+function moha_survey_enable() {
+  // Disable author and date information.
+  variable_set('node_submitted_webform', FALSE);
+}

@@ -109,12 +109,19 @@ function moha_survey_add_form($form, &$form_state) {
     '#type' => 'submit',
     '#value' => 'Add',
   );
+
+  if (defined('__MOHA_UI')) {
+    $form['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
+    $form['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
+  }
+
   return $form;
 }
 
 
 function moha_survey_add_form_submit($form, &$form_state) {
 
+  global $user;
   //https://www.drupal.org/node/2030697  Programmatically creating a webform
   $node = new stdClass();
   $node->type = 'webform';
@@ -123,7 +130,7 @@ function moha_survey_add_form_submit($form, &$form_state) {
   $node->language = 'en';
   $node->body[LANGUAGE_NONE][0]['value']   = '';
   $node->body[LANGUAGE_NONE][0]['format']  = 'full_html';
-  $node->uid = 1;
+  $node->uid = $user->uid;
   $node->promote = 0;
   $node->comment = 0;
 
@@ -202,7 +209,7 @@ function moha_survey_add_form_submit($form, &$form_state) {
   $node->webform = array(
     'confirmation' => '',
     'confirmation_format' => NULL,
-    'redirect_url' => '<confirmation>',
+    'redirect_url' => 'moha/survey/submitted',
     'status' => '1',
     'block' => '0',
     'teaser' => '0',
@@ -210,14 +217,15 @@ function moha_survey_add_form_submit($form, &$form_state) {
     'auto_save' => '0',
     'submit_notice' => '1',
     'submit_text' => '',
-    'submit_limit' => '-1', // User can submit more than once.
+    'submit_limit' => '1', // User can submit only once.
     'submit_interval' => '-1',
     'total_submit_limit' => '-1',
     'total_submit_interval' => '-1',
     'record_exists' => TRUE,
     'roles' => array(
-      0 => '1', // Anonymous user can submit this webform.
+      0 => '2', // Only allow login user take survey.
     ),
+    'progressbar_bar' => FALSE,
     'components' => $components,
   );
 
