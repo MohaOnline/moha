@@ -1,0 +1,148 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function moha_survey_menu() {
+  $items['moha-survey/add'] = array(
+    'title' => 'Create a survey',
+    'page callback' => 'moha_survey_create',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+function moha_survey_create(){
+  return drupal_get_form('moha_survey_add_form');
+}
+
+function moha_survey_add_form($form, &$form_state) {
+
+  $form['survery_name'] = array(
+    '#type' => 'textfield',
+    '#title' => 'survey name',
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Add',
+  );
+  return $form;
+}
+
+
+function moha_survey_add_form_submit($form, &$form_state) {
+
+  //https://www.drupal.org/node/2030697  Programmatically creating a webform
+  $node = new stdClass();
+  $node->type = 'webform';
+  node_object_prepare($node);
+  $node->title = $form_state['values']['survery_name'];
+  $node->language = 'en';
+  $node->body[LANGUAGE_NONE][0]['value']   = '';
+  $node->body[LANGUAGE_NONE][0]['format']  = 'full_html';
+  $node->uid = 1;
+  $node->promote = 0;
+  $node->comment = 0;
+
+  // Create the webform components.
+  $components = array(
+    array(
+      'name' => 'Gender',
+      'form_key' => 'gender',
+      'type' => 'select',
+      'mandatory' => 1,
+      'weight' => 0,
+      'pid' => 0,
+      'extra' => array(
+        'title_display' => 'inline',
+        'private' => 0,
+        'items' => "Mrs|Mrs\nMiss|Miss\nMr|Mr",
+        'aslist' => 1,
+      ),
+    ),
+    array(
+      'name' => 'Last name',
+      'form_key' => 'name',
+      'type' => 'textfield',
+      'mandatory' => 1,
+      'weight' => 5,
+      'pid' => 0,
+      'extra' => array(
+        'title_display' => 'inline',
+        'private' => 0,
+      ),
+    ),
+    array(
+      'name' => 'First name',
+      'form_key' => 'first_name',
+      'type' => 'textfield',
+      'mandatory' => 1,
+      'weight' => 10,
+      'pid' => 0,
+      'extra' => array(
+        'title_display' => 'inline',
+        'private' => 0,
+      ),
+    ),
+    array(
+      'name' => 'question1',
+      'form_key' => 'question1',
+      'type' => 'moha_ui_rating',
+      'mandatory' => 1,
+      'weight' => 10,
+      'pid' => 0,
+      'extra' => array(
+        'title_display' => 'inline',
+        'private' => 0,
+      ),
+    ),
+    array(
+      'name' => 'question2',
+      'form_key' => 'question2',
+      'type' => 'moha_ui_rating',
+      'mandatory' => 1,
+      'weight' => 10,
+      'pid' => 0,
+      'extra' => array(
+        'title_display' => 'inline',
+        'private' => 0,
+      ),
+    ),
+  );
+
+
+  // Attach the webform to the node.
+  $node->webform = array(
+    'confirmation' => '',
+    'confirmation_format' => NULL,
+    'redirect_url' => '<confirmation>',
+    'status' => '1',
+    'block' => '0',
+    'teaser' => '0',
+    'allow_draft' => '0',
+    'auto_save' => '0',
+    'submit_notice' => '1',
+    'submit_text' => '',
+    'submit_limit' => '-1', // User can submit more than once.
+    'submit_interval' => '-1',
+    'total_submit_limit' => '-1',
+    'total_submit_interval' => '-1',
+    'record_exists' => TRUE,
+    'roles' => array(
+      0 => '1', // Anonymous user can submit this webform.
+    ),
+    'components' => $components,
+  );
+
+  // todo associated moha_ui_rating component with summit survey question
+
+  // Save the node.
+  node_save($node);
+
+  $form_state['redirect'] = 'node/'. $node->nid;
+
+}
+

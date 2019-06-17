@@ -1,0 +1,6 @@
+name = Moha Survery
+description = Apply a friendly page to create survey .
+core = 7.x
+package = Moha Online
+
+dependencies[] = webform
