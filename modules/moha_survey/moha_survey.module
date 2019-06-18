@@ -65,22 +65,50 @@ function moha_survey_theme($existing, $type, $theme, $path) {
  */
 function moha_survey_menu() {
 
+  // Moha Survey management entry.
   $items['admin/moha/survey'] = array(
     'title' => 'Survey management',
     'description' => 'Manage surveys, survey templates, survey questions and statistics.',
+    /** @see moha_survey_dashboard */
     'page callback' => 'moha_survey_dashboard',
     'access arguments' => array('administer own survey'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'moha_survey.admin.inc',
   );
 
+  // Moha Survey Dashboard, alias to parent path.
   $items['admin/moha/survey/dashboard'] = array(
     'title' => 'Dashboard',
     'description' => 'Survey Dashboard',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -1,
     'file' => 'moha_survey.admin.inc',
-  );
+    );
+
+  // Moha Survey edit form.
+  $items['admin/moha/survey/edit/%node'] = array(
+    'title' => 'Survey update',
+    'description' => 'Update title and components of a survey.',
+    'page callback' => 'drupal_get_form',
+    /** @see moha_survey_edit_form */
+    'page arguments' => array('moha_survey_edit_form', 4),
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_survey.admin.inc',
+    );
+
+
+  // Moha Survey component edit form.
+  $items['admin/moha/survey/component/%node/%cid'] = array(
+    'title' => 'Survey component edit',
+    'description' => 'Update component details of a survey.',
+    'page callback' => 'drupal_get_form',
+    /** @see moha_survey_component_edit_form */
+    'page arguments' => array('moha_survey_component_edit_form', 4, 5),
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_survey.admin.inc',
+    );
 
   $items['admin/moha/survey/add'] = array(
     'title' => 'Create a survey',
@@ -134,40 +162,49 @@ function moha_survey_add_form_submit($form, &$form_state) {
   $node->promote = 0;
   $node->comment = 0;
 
+  $weight = 0;
   // Create the webform components.
   $components = array(
     array(
       'name' => 'Gender',
-      'form_key' => 'gender',
+      'form_key' => ctools_uuid_generate(),
       'type' => 'select',
       'mandatory' => 1,
-      'weight' => 0,
-      'pid' => 0,
+      'weight' => ++$weight,
+      'pid' => 0, // no field set.
+      'required' => 1,
       'extra' => array(
-        'title_display' => 'inline',
+        'title_display' => 'before',
+        'description_above' => 1,
         'private' => 0,
         'items' => "Mrs|Mrs\nMiss|Miss\nMr|Mr",
-        'aslist' => 1,
+        'aslist' => 0,
+        'multiple' => 0,
       ),
     ),
     array(
-      'name' => 'Last name',
-      'form_key' => 'name',
-      'type' => 'textfield',
+      'name' => 'Where did you visit?',
+      'form_key' => ctools_uuid_generate(),
+      'type' => 'select',
       'mandatory' => 1,
-      'weight' => 5,
+      'weight' => ++$weight,
       'pid' => 0,
+      'required' => 1,
       'extra' => array(
-        'title_display' => 'inline',
+        'title_display' => 'before',
+        'description_above' => 1,
         'private' => 0,
+        'items' => "Paris|Paris\nTokyo|Tokyo\nShanghai|Shanghai\nNew York|New York",
+        'aslist' => 0,
+        'multiple' => 1,
       ),
     ),
     array(
-      'name' => 'First name',
-      'form_key' => 'first_name',
+      'name' => 'Name',
+      'form_key' => ctools_uuid_generate(),
       'type' => 'textfield',
       'mandatory' => 1,
-      'weight' => 10,
+      'weight' => ++$weight,
       'pid' => 0,
       'extra' => array(
         'title_display' => 'inline',
@@ -176,13 +213,13 @@ function moha_survey_add_form_submit($form, &$form_state) {
     ),
     array(
       'name' => 'question1',
-      'form_key' => 'question1',
+      'form_key' => ctools_uuid_generate(),
       'type' => 'moha_ui_rating',
       'mandatory' => 1,
-      'weight' => 10,
+      'weight' => ++$weight,
       'pid' => 0,
       'extra' => array(
-        'title_display' => 'inline',
+        'title_display' => 'before',
         'private' => 0,
         'max_score' => 5,
         'threshold_score' => 3,
@@ -190,13 +227,13 @@ function moha_survey_add_form_submit($form, &$form_state) {
     ),
     array(
       'name' => 'question2',
-      'form_key' => 'question2',
+      'form_key' => ctools_uuid_generate(),
       'type' => 'moha_ui_rating',
       'mandatory' => 1,
-      'weight' => 10,
+      'weight' => ++$weight,
       'pid' => 0,
       'extra' => array(
-        'title_display' => 'inline',
+        'title_display' => 'before',
         'private' => 0,
         'max_score' => 5,
         'threshold_score' => 3,
@@ -234,7 +271,7 @@ function moha_survey_add_form_submit($form, &$form_state) {
   // Save the node.
   node_save($node);
 
-  $form_state['redirect'] = 'node/'. $node->nid;
+  $form_state['redirect'] = 'admin/moha/survey/edit/'. $node->nid;
 
 }
 
