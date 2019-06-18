@@ -181,6 +181,19 @@ define('MOHA__STATUS__RACI', array(
 ));
 
 /**
+ * Implements hook_theme().
+ */
+function moha_theme($existing, $type, $theme, $path) {
+  $themes = array(
+    'moha_admin_form_2_draggable_table' => array(
+      'render element' => 'form',
+    ),
+  );
+
+  return $themes;
+}
+
+/**
  * Implements hook_entity_info().
  *
  * Declares entity: moha_raci.
@@ -855,6 +868,129 @@ function moha_form_options_from_vocabulary($vocabulary_name = '') {
   return $options;
 }
 
+
+/**
+ * Turn admin data configuration form to draggable table.
+ *   Weight row must have row-weight class:
+ *
+ * @example
+ *   '#attributes' => array('class' => array('row-weight')),
+ *
+ * Suitable for:
+ * - link configuration form.
+ *
+ * @throws Exception
+ */
+function theme_moha_admin_form_2_draggable_table($variables) {
+  $element = $variables['form'];
+
+  $header = array();
+  $element_keys = element_children($element);
+
+  if (empty($element_keys)){
+    return theme('table', array(
+      'header' => array(
+        'content'=> 'No content available.',
+      ),
+      'attributes' => array('id' => $element['#id'] . '-draggable-table'),
+    ));
+  }
+
+  $rows = array();
+
+  foreach ($element_keys as $key) {
+    $row = array();
+    $row['data'] = array();
+    $index = 0;
+    foreach ($element[$key] as $field_name => $field_content) {
+      $first = substr($field_name, 0, 1);
+      if ($first == '#') {
+        // Skip default form property.
+        continue;
+      }
+      $header[$index++] = $field_name;
+      $row['data'][] = drupal_render($field_content);
+      $row['class'] = array('draggable');
+
+    }
+    $rows[] = $row;
+  }
+
+  // New row on fly http://drupal.stackexchange.com/questions/63126/adding-new-rows-on-a-draggable-table-via-jquery.
+  $output = theme('table', array(
+    'header' => $header,
+    'rows' => $rows,
+    'attributes' => array('id' => $element['#id'] . '-draggable-table'),
+  ));
+
+  drupal_add_tabledrag($element['#id'] . '-draggable-table', 'order', 'sibling', 'row-weight');
+
+  return $output;
+}
+
+
+/**
+ * Eliminate empty record.
+ *
+ * @param array $values
+ * @param array $condition_columns
+ *
+ * @return array
+ */
+function moha_draggable_table_data_trim_empty(&$values, $condition_columns = array('name')) {
+  if (!is_array($values)) {
+    return array();
+  }
+
+  $array_length = count($values);
+
+  for ($i = 0; $i < $array_length; $i++) {
+    $current = $values[$i];
+
+    $unset_flag = FALSE;
+
+    foreach ($condition_columns as $column) {
+      if (empty($current[$column])) {
+        $unset_flag = TRUE;
+      }
+    }
+
+    if ($unset_flag) {
+      unset($values[$i]);
+    }
+  }
+
+  return $values;
+}
+
+
+/**
+ * sort passed array per weight, then eliminate weight after storing.
+ */
+function moha_draggable_table_data_trim_weight(&$values) {
+  uasort($values, 'drupal_sort_weight');
+  $values = array_values($values);
+  array_walk($values, 'moha_unset_weight');
+
+  return $values;
+}
+
+/**
+ * Recall weight element from an array.
+ */
+function moha_unset_weight(&$item) {
+  if (isset($item['weight'])) {
+    unset($item['weight']);
+  }
+}
+
+
+function moha_draggable_table_data_prepare_for_saving(&$values) {
+  $values = moha_draggable_table_data_trim_empty($values);
+  $values = moha_draggable_table_data_trim_weight($values);
+  return $values;
+}
+
 /**
  * Implements hook_init().
  */
@@ -869,6 +1005,24 @@ function moha_init() {
     // Suppress fancy stuff like admin and admin_menu.module for the preview.
     module_invoke_all('suppress');
   }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function moha_preprocess_html(&$variables) {
+
+  /* Add meta tag, actual effect: <meta name="referrer" content="no-referrer" /> */
+  $meta_description = array(
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => array(
+      'name' => 'referrer',
+      'content' => "no-referrer",
+    )
+  );
+
+  drupal_add_html_head($meta_description, 'no-referrer');
 }
 
 /**

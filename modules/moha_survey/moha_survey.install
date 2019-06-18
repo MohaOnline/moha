@@ -10,3 +10,169 @@ function moha_survey_enable() {
   // Disable author and date information.
   variable_set('node_submitted_webform', FALSE);
 }
+
+/**
+ * Implements hook_schema().
+ */
+function moha_survey_schema() {
+
+  // @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
+  $schema['moha_survey_template'] = array(
+    'description' => 'Stores survey template information.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary Key: Unique ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'description' => 'Webform node ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'cid' => array(
+        'description' => 'Webform Component ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who own the record.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'referred' => array(
+        'description' => 'Referred count.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Entity status: 1: in-use, 0: dropped, 2: disabled.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['moha_survey_template_revision'] = array(
+    'description' => 'Stores revisions of survey template.',
+    'fields' => array(
+      'vid' => array(
+        'description' => 'Primary Key: Unique Revision ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'id' => array(
+        'description' => 'Parent ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'description' => 'Webform node ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'cid' => array(
+        'description' => 'Webform Component ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'oid' => array(
+        'description' => 'User ID who own the record.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'User ID who made the creation or update.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'referred' => array(
+        'description' => 'Referred count.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Entity status: 1: in-use, 0: dropped, 2: disabled.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('vid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Create tables for moha survey template.
+ */
+function moha_survey_update_0700() {
+  $schemas = moha_sms_schema();
+
+  foreach ($schemas as $schema_name => $schema_array) {
+    if (!db_table_exists($schema_name)) {
+      db_create_table($schema_name, $schema_array);
+    }
+  }
+}

@@ -14,7 +14,10 @@ function _webform_defaults_moha_ui_rating() {
   $defaults = array(
     'name' => '',
     'form_key' => NULL,
-    'required' => TRUE,
+    'pid' => 0,
+    'weight' => 0,
+    'value' => '',
+    'required' => 0,
     'extra' => array(
       /* Allowed max rating score. */
       'max_score' => 5,
@@ -79,6 +82,7 @@ function _webform_render_moha_ui_rating($component, $value = NULL, $filter = TRU
   $score = empty($value['rating']) ? 0 : $value['rating'];
 
   $max_score = $component['extra']['max_score'];
+
   $rating_items_placeholder = '';
   for ($i = 0; $i < $max_score; $i++) {
     if ($i < $score) {
@@ -96,6 +100,10 @@ RATING_ITEM;
 RATING_ITEM;
     }
   }
+
+  // Pass weight information to render function for correct element order.
+  $elements['#weight'] = $component['weight'];
+  $elements['#required'] = $component['required'];
 
   $elements['rating']['rating_area'] = array(
     '#markup' => <<< RATING_CONTAINER

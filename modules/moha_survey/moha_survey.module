@@ -65,6 +65,35 @@ function moha_survey_theme($existing, $type, $theme, $path) {
  */
 function moha_survey_menu() {
 
+  $items['moha/survey/thanks'] = array(
+    'title' => 'Survey management',
+    'description' => 'Manage surveys, survey templates, survey questions and statistics.',
+    /** @see moha_survey_dashboard */
+    'page callback' => 'moha_survey_dashboard',
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_survey.admin.inc',
+  );
+
+  $items['moha/survey/taken'] = array(
+    'title' => 'Survey management',
+    'description' => 'Manage surveys, survey templates, survey questions and statistics.',
+    /** @see moha_survey_dashboard */
+    'page callback' => 'moha_survey_dashboard',
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_survey.admin.inc',
+  );
+
+  $items['moha/survey/closed'] = array(
+    'title' => 'Survey Closed',
+    /** @see moha_survey_dashboard */
+    'page callback' => 'moha_survey_dashboard',
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
+    'file' => 'moha_survey.admin.inc',
+  );
+
   // Moha Survey management entry.
   $items['admin/moha/survey'] = array(
     'title' => 'Survey management',
@@ -93,10 +122,21 @@ function moha_survey_menu() {
     /** @see moha_survey_edit_form */
     'page arguments' => array('moha_survey_edit_form', 4),
     'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK | MENU_SUGGESTED_ITEM,
+    'file' => 'moha_survey.admin.inc',
+  );
+
+  // Moha Survey delete
+  $items['admin/moha/survey/delete/%node'] = array(
+    'title' => 'Survey delete',
+    'description' => 'Update title and components of a survey.',
+    'page callback' => 'drupal_get_form',
+    /** @see moha_survey_edit_form */
+    'page arguments' => array('moha_survey_edit_form', 4),
+    'access arguments' => array('administer own survey'),
     'type' => MENU_CALLBACK,
     'file' => 'moha_survey.admin.inc',
-    );
-
+  );
 
   // Moha Survey component edit form.
   $items['admin/moha/survey/component/%node/%cid'] = array(
@@ -108,7 +148,7 @@ function moha_survey_menu() {
     'access arguments' => array('administer own survey'),
     'type' => MENU_CALLBACK,
     'file' => 'moha_survey.admin.inc',
-    );
+  );
 
   $items['admin/moha/survey/add'] = array(
     'title' => 'Create a survey',
