@@ -1222,6 +1222,24 @@ function moha_show_exception(Exception $e, $message_type = 'error') {
   drupal_set_message(t('Exception: %msg', array('%msg' => $e->getMessage())), $message_type);
 }
 
+/**
+ * If current version is less than passed $version, prompt message.
+ *
+ * @param $version string
+ *   expected version.
+ * @param $prompt string
+ *  prompt message.
+ */
+function moha_version_prompt($version, $prompt) {
+  $current_version = variable_get('jquery_update_jquery_version', '1.4.4');
+  $compare = version_compare($version, $current_version);
+
+  // If current version is not enough.
+  if ($compare > 0){
+    drupal_set_message($prompt);
+  }
+}
+
 /* Common functions. */
 
 /**

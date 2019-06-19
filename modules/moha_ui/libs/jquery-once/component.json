@@ -1,0 +1,23 @@
+{
+  "name": "jquery-once",
+  "repo": "robloach/jquery-once",
+  "homepage": "http://github.com/robloach/jquery-once",
+  "description": "Act on jQuery elements only once.",
+  "license": "GPL-2.0",
+  "version": "2.2.3",
+  "keywords": [
+    "jquery",
+    "jquery-plugin"
+  ],
+  "dependencies": {
+    "components/jquery": "*"
+  },
+  "main": "jquery.once.js",
+  "scripts": [
+    "jquery.once.js"
+  ],
+  "files": [
+    "jquery.once.js"
+  ],
+  "demo": "http://github.com/robloach/jquery-once"
+}

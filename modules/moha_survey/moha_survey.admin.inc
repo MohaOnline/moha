@@ -144,13 +144,13 @@ function moha_survey_edit_form($form, &$form_state, $node) {
     '#type' => 'submit',
     '#value' => t('New Question'),
   );
+
+  $delete_url = url('admin/moha/survey/delete/' . $node->nid);
   $form['actions']['delete'] = array(
-    '#type' => 'submit',
-    '#value' => t('Delete'),
+    '#markup' => "<a class='button' href='$delete_url'>". t('Delete') . "</a>" ,
   );
 
   $preview_url = url('node/' . $node->nid);
-
   $form['actions']['preview'] = array(
     '#markup' => "<a class='button' href='$preview_url' target='_blank'>Preview</a>" ,
   );
@@ -158,16 +158,15 @@ function moha_survey_edit_form($form, &$form_state, $node) {
   return $form;
 }
 
-
 /**
- * Moha Survey save function.
+ * Moha Survey edit form submission handling.
  *
  * @param $form
  *   The form array of the overview form.
  * @param $form_state
  *   The overview form state which will be used for submitting.
  *
- * @throws
+ * @throws Exception
  */
 function moha_survey_edit_form_submit($form, &$form_state) {
   $values = $form_state['values'];
@@ -185,7 +184,8 @@ function moha_survey_edit_form_submit($form, &$form_state) {
 
       $node->title = $values['title'];
       $node->webform['status'] = $values['status'];
-      $node->is_new_revision = TRUE;
+      $node->revision = TRUE;
+      $node->is_current = TRUE;
 
       foreach ($weights as $cid => $weight) {
         $node->webform['components'][$cid]['weight'] = $weight['weight'];
@@ -198,12 +198,82 @@ function moha_survey_edit_form_submit($form, &$form_state) {
     case $values['question']:
       break;
     case $values['delete']:
+
       break;
     default:
       break;
   }
 
   return;
+}
+
+/**
+ * Moha Survey delete confirm page.
+ *
+ * @param $node
+ *   A Webform node.
+ * @param $form
+ *   The form array of the overview form.
+ * @param $form_state
+ *   The overview form state which will be used for submitting.
+ *
+ * @see drupal_build_form
+ */
+function moha_survey_delete_form($form, &$form_state, $node) {
+
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+
+  $render_array = confirm_form($form,
+    t('Are you sure to delete this survey?'),
+    'admin/moha/survey/edit/' . $node->nid,
+    format_string('Survey: !survey will be deleted, This action cannot be undone.',
+      array(
+        '!survey' => l($node->title, 'node/' . $node->nid,
+          array(
+            'attributes' => array('target' => '_blank')
+          )
+        )
+      )
+    ),
+    t('Delete'),
+    t('Cancel'),
+    $node->title
+  );
+
+  return $render_array;
+}
+
+/**
+ * Moha Survey delete confirm page submission handling.
+ *
+ * @param $form
+ *   The form array of the overview form.
+ * @param $form_state
+ *   The overview form state which will be used for submitting.
+ */
+function moha_survey_delete_form_submit($form, &$form_state) {
+
+  try {
+    $values = $form_state['values'];
+    $nid = $values['nid'];
+
+    $node = node_load($nid);
+    $node->status = 0;
+    node_save($node);
+
+    drupal_set_message(t('Survey has been removed.'));
+    watchdog(__FUNCTION__, 'nid: %nid is unpublished.', array(
+      '%nid' => $values['nid'],
+    ), WATCHDOG_INFO);
+
+    drupal_goto('admin/moha/survey/');
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+  }
 }
 
 /**
@@ -217,6 +287,19 @@ function moha_survey_edit_form_submit($form, &$form_state) {
  * @see drupal_build_form
  */
 function moha_survey_component_edit_form($form, &$form_state, $node, $cid) {
+
+  return $form;
+}
+
+/**
+ * Moha Survey component update handling.
+ *
+ * @param $form
+ *   The form array of the overview form.
+ * @param $form_state
+ *   The overview form state which will be used for submitting.
+ */
+function moha_survey_component_edit_form_submit($form, &$form_state) {
 
   return $form;
 }
