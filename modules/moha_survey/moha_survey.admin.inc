@@ -1,6 +1,8 @@
 <?php
 /**
  * @file
+ *   Survey management page, component, webform component, question are same
+ * meaning in this file.
  */
 
 /**
@@ -101,8 +103,8 @@ function moha_survey_edit_form($form, &$form_state, $node) {
         ),
         array(
           'title' => t('Delete'),
-          'href' => 'admin/moha/survey/component/',
-          'query' => array('destination' => 'admin/moha/survey'),
+          'href' => 'admin/moha/survey/component-delete/' . $node->nid . '/' . $index,
+          'query' => array('destination' => 'admin/moha/survey/edit/' . $node->nid),
         ),
       );
 
@@ -606,3 +608,76 @@ function moha_survey_component_edit_form_submit($form, &$form_state) {
 }
 
 
+
+/**
+ * Moha Survey delete confirm page.
+ *
+ * @param $node
+ *   A Webform node.
+ * @param $form
+ *   The form array of the overview form.
+ * @param $form_state
+ *   The overview form state which will be used for submitting.
+ *
+ * @see drupal_build_form
+ */
+function moha_survey_component_delete_form($form, &$form_state, $node, $cid) {
+
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+
+  $form['cid'] = array(
+    '#type' => 'value',
+    '#value' => $cid,
+  );
+
+  $render_array = confirm_form($form,
+    t('Are you sure to delete this survey?'),
+    'admin/moha/survey/component/' . $node->nid . '/' . $cid,
+    format_string('Question: !question will be deleted, This action cannot be undone.',
+      array(
+        '!question' => $node->webform['components'][$cid]['name'],
+      )
+    ),
+    t('Delete'),
+    t('Cancel'),
+    $node->title
+  );
+
+  return $render_array;
+}
+
+/**
+ * Moha Survey component delete confirm page submission handling.
+ *
+ * @param $form
+ *   The form array of the overview form.
+ * @param $form_state
+ *   The overview form state which will be used for submitting.
+ */
+function moha_survey_component_delete_form_submit($form, &$form_state) {
+  try {
+    $values = $form_state['values'];
+    $nid = $values['nid'];
+
+    $node = node_load($nid);
+    unset($node->webform['components'][$values['cid']]);
+
+    $node->revision = TRUE;
+    $node->is_current = TRUE;
+    node_save($node);
+
+    drupal_set_message(t('Question has been removed.'));
+    watchdog(__FUNCTION__, 'nid: %nid, cid: %cid is removed.', array(
+      '%nid' => $values['nid'],
+      '%cid' => $values['cid'],
+    ), WATCHDOG_INFO);
+
+    drupal_goto('admin/moha/survey/edit/' . $nid);
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+  }
+}

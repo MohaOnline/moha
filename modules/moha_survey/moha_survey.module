@@ -150,6 +150,18 @@ function moha_survey_menu() {
     'file' => 'moha_survey.admin.inc',
   );
 
+  // Moha Survey component delete form.
+  $items['admin/moha/survey/component-delete/%node/%'] = array(
+    'title' => 'Survey question delete',
+    'description' => 'Delete a component from a survey.',
+    'page callback' => 'drupal_get_form',
+    /** @see moha_survey_component_edit_form */
+    'page arguments' => array('moha_survey_component_delete_form', 4, 5),
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK | MENU_SUGGESTED_ITEM,
+    'file' => 'moha_survey.admin.inc',
+  );
+
   $items['admin/moha/survey/add'] = array(
     'title' => 'Create a survey',
     'page callback' => 'moha_survey_create',
