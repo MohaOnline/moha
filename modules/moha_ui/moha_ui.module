@@ -53,6 +53,8 @@ function moha_ui_library() {
     'js' => array(
       MOHA_UI__PATH . '/libs/lodash.js' => array(),
       MOHA_UI__PATH . '/libs/weui.js/dist/weui.js' => array(),
+      MOHA_UI__PATH . '/libs/AdminLTE/bower_components/jquery/dist/jquery.js' => array(),
+      MOHA_UI__PATH . '/libs/jquery-once/jquery.once.js' => array(),
       MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.js' => array(),
@@ -169,6 +171,18 @@ function moha_ui_element_info() {
   );
 
   return $elements;
+}
+
+/**
+ * @param $element
+ * @param $form_state
+ *
+ * @return bool
+ */
+function moha_ui_rating_validate($element, &$form_state) {
+  if ($element['#required'] && $element['rating']['value']['#value'] == 0) {
+    form_error($element, t('%name must be scored.', array('%name' => $element['#webform_component']['name'])));
+  }
 }
 
 /**

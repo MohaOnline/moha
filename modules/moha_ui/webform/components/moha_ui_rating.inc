@@ -105,9 +105,13 @@ RATING_ITEM;
   $elements['#weight'] = $component['weight'];
   $elements['#required'] = $component['required'];
 
+  if ($elements['#required']) {
+    $component_label .= ' <span class="form-required" title="This field is required.">*</span>';
+  }
+
   $elements['rating']['rating_area'] = array(
     '#markup' => <<< RATING_CONTAINER
-      <label>$component_label</label>
+      
       <div class="rating-stars-container">
       $rating_items_placeholder
       </div>
@@ -115,7 +119,7 @@ RATING_CONTAINER
   ,
   );
 
-  $elements['rating']['#prefix'] = "<div class='rating-stars $wrapper_class'>";
+  $elements['rating']['#prefix'] = "<label>$component_label</label><div class='rating-stars $wrapper_class'>";
   $elements['rating']['#suffix'] = "</div>";
 
   $elements['rating']['value'] = array(
@@ -187,6 +191,7 @@ RATINGJS
   );
 
   $elements['#theme_wrapper'] = array('webform_element');
+  $elements['#element_validate'] = array('moha_ui_rating_validate');
 
   return $elements;
 }
@@ -198,9 +203,7 @@ RATINGJS
  */
 function _webform_submit_moha_ui_rating($component, $value) {
 
-  if (!empty($value['rating']['value'])) {
-    $value['rating'] = $value['rating']['value'];
-  }
+  $value['rating'] = $value['rating']['value'];
 
   return $value;
 }
@@ -236,7 +239,7 @@ function _webform_help_moha_ui_rating() {
 /**
  * Implements _webform_theme_component().
  *
- * @see _webform_theme_component
+ * @see _webform_theme_component.
  */
 function _webform_theme_moha_ui_rating() {
 
@@ -254,10 +257,12 @@ function _webform_analysis_moha_ui_rating() {
 /**
  * Implements _webform_table_component().
  *
+ * @inheritdoc
+ *
  * @see _webform_table_component
  */
-function _webform_table_moha_ui_rating() {
-
+function _webform_table_moha_ui_rating($component, $value) {
+  return 0;
 }
 
 /**
