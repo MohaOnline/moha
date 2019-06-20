@@ -4,6 +4,34 @@
 }
 /***/
 
+/** Fix theme seven own issue. */
+textarea {
+  resize: vertical;
+}
+
+/***/
+
+/** Fix styles issue between element - options and system module. */
+.form-item-options .draggable a.tabledrag-handle {
+  margin-left: initial;
+}
+
+div.options-widget table, div.options-widget tbody {
+  border: 1px solid #bebfb9;
+}
+
+div.options-widget table tr {
+  border-style: solid;
+}
+
+div.options-widget table tr.drag {
+  background: #fe7;
+}
+
+div.options-widget table tr.drag-previous {
+  background: #ffb;
+}
+/***/
 
 /** Fix conflict AdminLTE and theme: seven. */
 html {

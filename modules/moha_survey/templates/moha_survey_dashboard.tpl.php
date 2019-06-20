@@ -2,11 +2,11 @@ total survey, template,
 Daily grow,
 
 <div class="row">
-  <div class="col-md-6 col-xs-12">
+  <div class="col-md-12 col-lg-6">
 
     <div class="box box-primary box-solid">
       <div class="box-header">
-        <h3 class="box-title">My Surveys</h3>
+        <h3 class="box-title">Surveys</h3>
         <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
           </button>
@@ -20,29 +20,13 @@ Daily grow,
     </div>
     <!-- /.box -->
 
-
-    <div class="box box-danger box-solid">
-      <div class="box-header">
-        <h3 class="box-title">Hot Surveys</h3>
-        <div class="box-tools pull-right">
-          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-          </button>
-        </div>
-      </div>
-      <!-- /.box-header -->
-      <div class="box-body no-padding">
-
-      </div>
-      <!-- /.box-body -->
-    </div>
-    <!-- /.box -->
 
   </div>
 
-  <div class="col-md-6 col-xs-12">
+  <div class="col-md-12 col-lg-6">
     <div class="box box-success box-solid">
       <div class="box-header">
-        <h3 class="box-title">Hot Templates</h3>
+        <h3 class="box-title">Templates</h3>
         <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
           </button>

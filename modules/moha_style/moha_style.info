@@ -1,4 +1,4 @@
 name = Moha Style
-description = Fix styles from other contribute modules.
+description = Fix styles between core, themes, contribute modules, custom modules, etc.
 core = 7.x
 package = Moha Online

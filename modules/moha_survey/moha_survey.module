@@ -139,14 +139,14 @@ function moha_survey_menu() {
   );
 
   // Moha Survey component edit form.
-  $items['admin/moha/survey/component/%node/%cid'] = array(
+  $items['admin/moha/survey/component/%node/%'] = array(
     'title' => 'Survey component edit',
-    'description' => 'Update component details of a survey.',
+    'description' => 'Add a component or update component details of a survey.',
     'page callback' => 'drupal_get_form',
     /** @see moha_survey_component_edit_form */
     'page arguments' => array('moha_survey_component_edit_form', 4, 5),
     'access arguments' => array('administer own survey'),
-    'type' => MENU_CALLBACK,
+    'type' => MENU_CALLBACK | MENU_SUGGESTED_ITEM,
     'file' => 'moha_survey.admin.inc',
   );
 
@@ -159,6 +159,39 @@ function moha_survey_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Webform type to survey type.
+ *
+ * @param $component
+ *   Component detail array.
+ *
+ * @throws Exception
+ */
+function moha_survey_question_type($component) {
+
+  if (empty($component)) {
+    throw new Exception('Empty component.');
+  }
+
+  if ($component['type'] == 'textfield') {
+    $type = 'Text field';
+  }
+  elseif ($component['type'] == 'moha_ui_rating') {
+    $type = 'Rating';
+  }
+  elseif ($component['type'] == 'select' && isset($component['extra']['multiple']) && $component['extra']['multiple'] == FALSE) {
+    $type = 'Radio box';
+  }
+  elseif ($component['type'] == 'select' && isset($component['extra']['multiple']) && $component['extra']['multiple'] == TRUE) {
+    $type = 'Check box';
+  }
+  else {
+    throw new Exception('Unknown type.');
+  }
+
+  return $type;
 }
 
 function moha_survey_create(){

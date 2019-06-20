@@ -1,0 +1,17 @@
+
+.form-options .remove-default,
+.form-options .form-options-manual,
+.form-options .form-option-add,
+#moha-survey-component-edit-form .form-options .form-radio {
+  display: none;
+}
+
+.form-options .draggable a.tabledrag-handle {
+  float:initial;
+  display: block;
+  margin: auto;
+}
+
+.form-options .draggable a.tabledrag-handle .handle {
+  margin: -0.4em auto;
+}

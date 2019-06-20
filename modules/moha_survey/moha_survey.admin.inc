@@ -82,7 +82,7 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       );
 
       $form['components'][$index]['type'] = array(
-        '#markup' => $component['type'],
+        '#markup' => moha_survey_question_type($component),
       );
 
       $form['components'][$index]['weight'] = array(
@@ -95,7 +95,7 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       $operations = array(
         array(
           'title' => t('Configure'),
-          'href' => 'admin/moha/survey/component/',
+          'href' => 'admin/moha/survey/component/' . $node->nid . '/' . $index,
           'query' => array('destination' => 'admin/moha/survey/edit/' . $node->nid),
         ),
         array(
@@ -140,19 +140,20 @@ function moha_survey_edit_form($form, &$form_state, $node) {
     '#type' => 'submit',
     '#value' => t('Save Survey')
   );
-  $form['actions']['question'] = array(
-    '#type' => 'submit',
-    '#value' => t('New Question'),
+
+  $component_url = url('admin/moha/survey/component/' . $node->nid . '/0', array('query' => array('destination' => 'admin/moha/survey/edit/' . $node->nid)));
+  $form['actions']['component'] = array(
+    '#markup' => "<a class='button' href='$component_url'>" . t('Add Question') . "</a>" ,
   );
 
   $delete_url = url('admin/moha/survey/delete/' . $node->nid);
   $form['actions']['delete'] = array(
-    '#markup' => "<a class='button' href='$delete_url'>". t('Delete') . "</a>" ,
+    '#markup' => "<a class='button' href='$delete_url'>" . t('Delete') . "</a>" ,
   );
 
   $preview_url = url('node/' . $node->nid);
   $form['actions']['preview'] = array(
-    '#markup' => "<a class='button' href='$preview_url' target='_blank'>Preview</a>" ,
+    '#markup' => "<a class='button' href='$preview_url' target='_blank'>" . t('Preview') . "</a>" ,
   );
 
   return $form;
@@ -193,11 +194,6 @@ function moha_survey_edit_form_submit($form, &$form_state) {
 
       node_save($node);
       drupal_set_message(t('Your survey has been saved.'));
-
-      break;
-    case $values['question']:
-      break;
-    case $values['delete']:
 
       break;
     default:
@@ -255,7 +251,6 @@ function moha_survey_delete_form($form, &$form_state, $node) {
  *   The overview form state which will be used for submitting.
  */
 function moha_survey_delete_form_submit($form, &$form_state) {
-
   try {
     $values = $form_state['values'];
     $nid = $values['nid'];
@@ -283,10 +278,138 @@ function moha_survey_delete_form_submit($form, &$form_state) {
  *   The form array of the overview form.
  * @param $form_state
  *   The overview form state which will be used for submitting.
+ * @param $node
+ *   A Webform node.
+ * @param $cid
+ *   Component ID in webform_component table from 1.
+ *
+ * @return mixed
+ *
+ * @throws Exception
  *
  * @see drupal_build_form
  */
-function moha_survey_component_edit_form($form, &$form_state, $node, $cid) {
+function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
+
+  if (empty($node)) {
+    watchdog(__FUNCTION__, 'node does not exist.', array(
+    ), WATCHDOG_WARNING);
+
+    drupal_goto('admin/moha/survey');
+  }
+
+  if ($cid>0 && isset($node->webform['components'][$cid])) {
+    $component = $node->webform['components'][$cid];
+    $component['_type'] = moha_survey_question_type($component);
+  }
+  else {
+    $component['name'] = '';
+    $component['form_key'] = ctools_uuid_generate();
+    $component['required'] = TRUE;
+    $component['weight'] = 999;
+    $component['_type'] = 'rating';
+    $component['extra']['max_score'] = 5;
+    $component['extra']['threshold_score'] = 3;
+  }
+
+  $form['type'] = array(
+    '#title' => t('Question type'),
+    '#type' => 'radios',
+    '#default_value' => $component['_type'],
+    '#options' => array(
+      'rating' => t('Rating'),
+      'radio' => t('Radio box'),
+      'check' => t('Check box'),
+    ),
+  );
+
+  $form['question'] = array(
+    '#title' => t('Question'),
+    '#type' => 'textarea',
+    '#default_value' => $component['name'],
+  );
+
+  $form['required'] = array(
+    '#title' => t('Required'),
+    '#type' => 'checkbox',
+    '#default_value' => $component['required'],
+    '#description' => t('Check when visitor must answer this question.'),
+  );
+
+  $form['rating'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Rating'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="type"]' => array('value' => 'rating'),
+      ),
+    ),
+  );
+
+  $rating = &$form['rating'];
+
+  $rating['max_score'] = array(
+    '#title' => t('Max score'),
+    '#description' => t('Specify allowed max score.'),
+    '#size' => '10',
+    '#type' => 'textfield',
+    '#default_value' => $component['extra']['max_score'],
+  );
+
+  $rating['threshold_score'] = array(
+    '#title' => t('Threshold score'),
+    '#description' => t('Specify a number, when rating is less or equals than the value, details need be provided. '),
+    '#size' => '10',
+    '#type' => 'textfield',
+    '#default_value' => $component['extra']['threshold_score'],
+  );
+
+  $form['options'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Options'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="type"]' => array(
+          array('value' => 'radio'),
+          array('value' => 'check'),
+        ),
+      ),
+    ),
+  );
+
+  $options = &$form['options'];
+  $options['options'] = array(
+    '#type' => 'options',
+    '#multiple' => FALSE,
+    '#options' => array(
+      'foo' => 'foo',
+      'bar' => 'bar',
+      'baz' => 'baz',
+    ),
+    '#key_type' => 'associative',
+    '#default_value_allowed' => FALSE,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  if ($cid > 0) {
+    $form['actions']['save'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save')
+    );
+  }
+  else {
+    $form['actions']['add'] = array(
+      '#type' => 'submit',
+      '#value' => t('Add')
+    );
+  }
+  $form['#attached'] = array(
+    'css' => array(
+      MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
+    ),
+    'js' => array(
+    ),
+  );
 
   return $form;
 }
