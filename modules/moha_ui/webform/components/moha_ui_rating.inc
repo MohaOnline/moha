@@ -263,16 +263,18 @@ function _webform_analysis_moha_ui_rating() {
  */
 function _webform_table_moha_ui_rating($component, $value) {
   if (isset($value['rating'])) {
-    return $value['rating'];
+    $return = $value['rating'] . '<br/>' . $value['details'];
   }
   else {
-    return '-';
+    $return = '-';
   }
+  return $return;
 }
 
 /**
  * Implements _webform_csv_headers_component().
  *
+ * @inheritdoc
  * @see _webform_csv_headers_component
  */
 function _webform_csv_headers_moha_ui_rating($component, $export_options) {
@@ -286,6 +288,7 @@ function _webform_csv_headers_moha_ui_rating($component, $export_options) {
 /**
  * Implements _webform_csv_data_component().
  *
+ * @inheritdoc
  * @see _webform_csv_data_component
  */
 function _webform_csv_data_moha_ui_rating($component, $export_options, $value) {

@@ -681,3 +681,30 @@ function moha_survey_component_delete_form_submit($form, &$form_state) {
     watchdog_exception(__FUNCTION__, $e);
   }
 }
+
+/**
+ * Create a table containing all submitted values for a survey.
+ */
+function moha_survey_results_submissions($node, $pager_count = 0) {
+  module_load_include('inc', 'webform', 'includes/webform.report');
+  return webform_results_table($node, $pager_count);
+}
+
+/**
+ * Menu callback; Download an exported file.
+ */
+function moha_survey_results_download_callback($node){
+  module_load_include('inc', 'webform', 'includes/webform.report');
+  return webform_results_download_callback($node);
+}
+
+/**
+ * Form to configure the download of CSV files.
+ */
+function moha_survey_results_download_form($form, &$form_state, $node) {
+  module_load_include('inc', 'webform', 'includes/webform.report');
+  $form = webform_results_download_form($form, $form_state, $node);
+  $form['#submit'][] = 'webform_results_download_form_submit';
+
+  return $form;
+}

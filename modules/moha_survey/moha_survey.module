@@ -122,8 +122,40 @@ function moha_survey_menu() {
     /** @see moha_survey_edit_form */
     'page arguments' => array('moha_survey_edit_form', 4),
     'access arguments' => array('administer own survey'),
-    'type' => MENU_CALLBACK | MENU_SUGGESTED_ITEM,
+    'type' => MENU_LOCAL_TASK | MENU_SUGGESTED_ITEM,
     'file' => 'moha_survey.admin.inc',
+  );
+
+  $items['admin/moha/survey/edit/%node/submissions'] = array(
+    'title' => 'Submissions',
+    'page callback' => 'moha_survey_results_submissions',
+    'page arguments' => array(4, '50'),
+    'access callback' => 'webform_results_access',
+    'access arguments' => array(4),
+    'file' => 'moha_survey.admin.inc',
+    'weight' => 6,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['admin/moha/survey/edit/%node/download'] = array(
+    'title' => 'Download',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('moha_survey_results_download_form', 4),
+    'access callback' => 'webform_results_access',
+    'access arguments' => array(4),
+    'file' => 'moha_survey.admin.inc',
+    'weight' => 7,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['admin/moha/survey/edit/%node/download-file'] = array(
+    'title' => 'Download',
+    'page callback' => 'moha_survey_results_download_callback',
+    'page arguments' => array(4),
+    'access callback' => 'webform_results_access',
+    'access arguments' => array(4),
+    'file' => 'moha_survey.admin.inc',
+    'type' => MENU_CALLBACK,
   );
 
   // Moha Survey delete
