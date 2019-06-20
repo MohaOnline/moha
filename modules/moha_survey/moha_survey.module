@@ -59,6 +59,10 @@ function moha_survey_theme($existing, $type, $theme, $path) {
       'template' => 'templates/moha_survey_lists',
       'render element' => 'content',
     ),
+    'moha_survey_weui_webform_element_radio' => array(
+      'template' => 'templates/moha_survey_weui_webform_element_radio',
+      'render element' => 'element',
+    ),
   );
 
   return $templates;
@@ -421,4 +425,16 @@ function moha_survey_get_owns(){
   $result = $query->execute()->fetchAll();
 
   return $result;
+}
+
+/**
+ * Implements hook_webform_component_render_alter().
+ */
+function moha_survey_webform_component_render_alter(array &$element, array &$component) {
+  // import weui.css
+  $element['#attached']['css'][] = MOHA_UI__PATH . '/libs/weui/dist/style/weui.css';
+
+  if($element['#type'] == 'radios'){
+    $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_radio';
+  }
 }

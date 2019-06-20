@@ -5,6 +5,6 @@ foreach ($surveys as $key => $survey): ?>
     $edit_path = url('admin/moha/survey/edit/'.$survey->nid);
   ?>
   <div>
-    <span><a href="<?php echo $edit_path ?>" ><?php echo $survey->survey_name; ?></a></span>
+    <span><a href="<?php print $edit_path ?>" ><?php print $survey->survey_name; ?></a></span>
   </div>
 <?php endforeach; ?>
