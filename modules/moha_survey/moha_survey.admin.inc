@@ -336,7 +336,7 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
       }
     }
     $component['name'] = '';
-    $component['form_key'] = ctools_uuid_generate();
+    $component['form_key'] = str_replace('-', '_', ctools_uuid_generate());
     $component['required'] = TRUE;
     $component['weight'] = ++$weight;
     $component['_type'] = 'rating';
