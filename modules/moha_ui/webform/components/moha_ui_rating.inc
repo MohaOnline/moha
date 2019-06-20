@@ -262,7 +262,12 @@ function _webform_analysis_moha_ui_rating() {
  * @see _webform_table_component
  */
 function _webform_table_moha_ui_rating($component, $value) {
-  return 0;
+  if (isset($value['rating'])) {
+    return $value['rating'];
+  }
+  else {
+    return '-';
+  }
 }
 
 /**
@@ -270,8 +275,12 @@ function _webform_table_moha_ui_rating($component, $value) {
  *
  * @see _webform_csv_headers_component
  */
-function _webform_csv_headers_moha_ui_rating() {
+function _webform_csv_headers_moha_ui_rating($component, $export_options) {
+  $header[0] = array('');
+  $header[1] = array($component['name'], '');
+  $header[2] = array('Score', 'Reason');
 
+  return $header;
 }
 
 /**
@@ -279,7 +288,16 @@ function _webform_csv_headers_moha_ui_rating() {
  *
  * @see _webform_csv_data_component
  */
-function _webform_csv_data_moha_ui_rating() {
+function _webform_csv_data_moha_ui_rating($component, $export_options, $value) {
+  if (isset($value['rating'])) {
+    $values[] = $value['rating'];
+    $values[] = $value['details'];
+  }
+  else {
+    $values[] = '';
+    $values[] = '';
+  }
 
+  return $values;
 }
 
