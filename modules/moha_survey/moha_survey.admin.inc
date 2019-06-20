@@ -56,6 +56,7 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       '#description' => t('Specify survey name.'),
       '#size' => '60',
       '#type' => 'textfield',
+      '#required' => TRUE,
       '#default_value' => $node->title,
       '#attributes' => array(
         'class' => array(),
@@ -170,18 +171,23 @@ function moha_survey_edit_form($form, &$form_state, $node) {
  * @throws Exception
  */
 function moha_survey_edit_form_submit($form, &$form_state) {
+
+  if (empty($form_state['values'] || empty($form_state['values']['nid']))) {
+    throw new Exception('No submit values or invalid nid.');
+  }
+
   $values = $form_state['values'];
+  $node = node_load($values['nid']);
 
-  $nid = $values['nid'];
-  $node = node_load($nid);
-
-  $weights = $values['components'];
+  if (empty($node)) {
+    throw new Exception('Invalid nid.');
+  }
 
   switch ($values['op']) {
     case $values['save']:
-      if (empty($node)) {
-        return;
-      }
+
+      // It's to save order of questions.
+      $weights = $values['components'];
 
       $node->title = $values['title'];
       $node->webform['status'] = $values['status'];
@@ -291,8 +297,8 @@ function moha_survey_delete_form_submit($form, &$form_state) {
  */
 function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
 
-  if (empty($node)) {
-    watchdog(__FUNCTION__, 'node does not exist.', array(
+  if (empty($node) || $node->type != 'webform') {
+    watchdog(__FUNCTION__, 'node does not exist, or node is not webform.', array(
     ), WATCHDOG_WARNING);
 
     drupal_goto('admin/moha/survey');
@@ -300,17 +306,62 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
 
   if ($cid>0 && isset($node->webform['components'][$cid])) {
     $component = $node->webform['components'][$cid];
-    $component['_type'] = moha_survey_question_type($component);
+    $component['_type'] = moha_survey_question_type($component, FALSE);
+
+    if (!isset($component['extra']['max_score'])) {
+      $component['extra']['max_score'] = 5;
+    }
+
+    if (!isset($component['extra']['threshold_score'])) {
+      $component['extra']['threshold_score'] = 3;
+    }
+
+    if (isset($component['extra']['items'])){
+      module_load_include('inc', 'webform', 'components/select');
+      $component['extra']['_options'] = _webform_select_options_from_text($component['extra']['items'], FALSE);
+    }
+    else {
+      $component['extra']['_options'] = array();
+    }
   }
   else {
+    $weight = 0;
+    if (count($node->webform['components'])) {
+      foreach($node->webform['components'] as $component) {
+        if ($weight < $component['weight']) {
+          $weight = $component['weight'];
+        }
+      }
+    }
     $component['name'] = '';
     $component['form_key'] = ctools_uuid_generate();
     $component['required'] = TRUE;
-    $component['weight'] = 999;
+    $component['weight'] = ++$weight;
     $component['_type'] = 'rating';
     $component['extra']['max_score'] = 5;
     $component['extra']['threshold_score'] = 3;
+    $component['extra']['_options'] = array();
   }
+
+  $form['cid'] = array(
+    '#type' => 'hidden',
+    '#value' => $cid,
+  );
+
+  $form['nid'] = array(
+    '#type' => 'hidden',
+    '#value' => $node->nid,
+  );
+
+  $form['weight'] = array(
+    '#type' => 'hidden',
+    '#value' => $component['weight'],
+  );
+
+  $form['form_key'] = array(
+    '#type' => 'hidden',
+    '#value' => $component['form_key'],
+  );
 
   $form['type'] = array(
     '#title' => t('Question type'),
@@ -320,12 +371,14 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
       'rating' => t('Rating'),
       'radio' => t('Radio box'),
       'check' => t('Check box'),
+      'textfield' => t('Text field'),
     ),
   );
 
-  $form['question'] = array(
+  $form['name'] = array(
     '#title' => t('Question'),
     '#type' => 'textarea',
+    '#required' => TRUE,
     '#default_value' => $component['name'],
   );
 
@@ -381,28 +434,65 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
   $options['options'] = array(
     '#type' => 'options',
     '#multiple' => FALSE,
-    '#options' => array(
-      'foo' => 'foo',
-      'bar' => 'bar',
-      'baz' => 'baz',
-    ),
-    '#key_type' => 'associative',
+    '#options' => $component['extra']['_options'],
+    '#key_type' => 'mixed',
     '#default_value_allowed' => FALSE,
+    '#states' => array(
+      'required' => array(
+        ':input[name="type"]' => array(
+          array('value' => 'radio'),
+          array('value' => 'check'),
+        ),
+      ),
+    ),
   );
+
+  $options['advanced'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced Options'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $advanced = &$options['advanced'];
+
+  $advanced['template'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Pin these options as template for reuse.'),
+    '#default_value' => 0,
+  );
+
+  $advanced['template_name'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Options template name',
+    '#states' => array(
+      'required' => array(
+        ':input[name="is_enterprise"]' => array('checked' => TRUE),
+      ),
+    ),
+  );
+
+  hide($advanced);
 
   $form['actions'] = array('#type' => 'actions');
   if ($cid > 0) {
     $form['actions']['save'] = array(
       '#type' => 'submit',
-      '#value' => t('Save')
+      '#value' => t('Save Question')
+    );
+
+    $delete_url = url('admin/moha/survey/component-delete/' . $node->nid . '/' . $cid);
+    $form['actions']['delete'] = array(
+      '#markup' => "<a class='button' href='$delete_url'>" . t('Delete') . "</a>" ,
     );
   }
   else {
     $form['actions']['add'] = array(
       '#type' => 'submit',
-      '#value' => t('Add')
+      '#value' => t('Add Question')
     );
   }
+
   $form['#attached'] = array(
     'css' => array(
       MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
@@ -421,10 +511,98 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
  *   The form array of the overview form.
  * @param $form_state
  *   The overview form state which will be used for submitting.
+ *
+ * @throws Exception
  */
 function moha_survey_component_edit_form_submit($form, &$form_state) {
 
-  return $form;
+  if (empty($form_state['values'] || empty($form_state['values']['nid']))) {
+    throw new Exception('No submit values or invalid nid.');
+  }
+
+  $values = $form_state['values'];
+  $node = node_load($values['nid']);
+
+  if (empty($node)) {
+    throw new Exception('Invalid nid.');
+  }
+
+  // Build webform component.
+  $component['name'] = $values['name'];
+  $component['form_key'] = $values['form_key'];
+  $component['required'] = $values['required'];
+  $component['weight'] = $values['weight'];
+  $component['pid'] = 0;
+
+  if (isset($values['options']['options'])) {
+    foreach ($values['options']['options'] as $key => $value) {
+      if (is_numeric($key)) {
+        unset($values['options']['options'][$key]);
+        $values['options']['options'][$value] = $value;
+      }
+    }
+  }
+
+  switch($values['type']) {
+    default:
+      throw new Exception('Invalid question type.');
+      break;
+    case 'rating':
+      $component['type'] = 'moha_ui_rating';
+      $component['extra']['max_score'] = $values['max_score'];
+      $component['extra']['threshold_score'] = $values['threshold_score'];
+      break;
+    case 'radio':
+      $component['type'] = 'select';
+      $component['extra']['multiple'] = FALSE;
+      $component['extra']['aslist'] = FALSE;
+      module_load_include('inc', 'webform', 'components/select');
+      $component['extra']['items'] = _webform_select_options_to_text($values['options']['options']);
+      break;
+    case 'check':
+      $component['type'] = 'select';
+      $component['extra']['multiple'] = TRUE;
+      $component['extra']['aslist'] = FALSE;
+      module_load_include('inc', 'webform', 'components/select');
+      $component['extra']['items'] = _webform_select_options_to_text($values['options']['options']);
+      break;
+    case 'textfield':
+      $component['type'] = 'textfield';
+      break;
+  }
+
+  if (!isset($values['save'])) {
+    $values['save'] = 'save';
+  }
+
+  switch ($values['op']) {
+    case $values['save']:
+
+      $node->revision = TRUE;
+      $node->is_current = TRUE;
+
+      $component['cid'] = $values['cid'];
+      $node->webform['components'][$values['cid']] = $component;
+
+      node_save($node);
+      drupal_set_message(t('Your question has been saved.'));
+      break;
+
+    case $values['add']:
+
+      $node->revision = TRUE;
+      $node->is_current = TRUE;
+
+      $node->webform['components'][] = $component;
+
+      node_save($node);
+      drupal_set_message(t('Your question has been added.'));
+      break;
+    default:
+      break;
+  }
+
+  return;
 }
 
 
