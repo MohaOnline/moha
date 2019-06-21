@@ -67,6 +67,10 @@ function moha_survey_theme($existing, $type, $theme, $path) {
       'template' => 'templates/moha_survey_weui_webform_element_checkboxes',
       'render element' => 'element',
     ),
+    'moha_survey_weui_webform_element_textfield' => array(
+      'template' => 'templates/moha_survey_weui_webform_element_textfield',
+      'render element' => 'element',
+    ),
   );
 
   return $templates;
@@ -441,5 +445,7 @@ function moha_survey_webform_component_render_alter(array &$element, array &$com
     $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_radios';
   } elseif ($element['#type'] == 'checkboxes') {
     $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_checkboxes';
+  } elseif ($element['#type'] == 'textfield') {
+    $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_textfield';
   }
 }
