@@ -16,7 +16,7 @@ Daily grow,
       <div class="box-body no-padding">
          <?php
          $my_surveys = moha_survey_get_owns();
-         echo theme('moha_survey_lists', array('surveys' => $my_surveys));
+         print theme('moha_survey_lists', array('surveys' => $my_surveys));
          ?>
       </div>
       <!-- /.box-body -->
