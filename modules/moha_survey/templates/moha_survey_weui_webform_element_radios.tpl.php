@@ -15,7 +15,7 @@ function moha_survey_weui_radios_labels($element){
           <p>'. $option .'</p>
       </div>
       <div class="weui-cell__ft">
-          <input type="radio" class="weui-check" name="' . $element[$key]['#name'] . '" id="' . $element[$key]['#id'] . '" ' . $default_checked .'>
+          <input type="radio" class="weui-check" name="' . $element[$key]['#name'] . '" id="' . $element[$key]['#id'] . '" value="' . $key .'" ' . $default_checked .'>
           <span class="weui-icon-checked"></span>
       </div>
       </label>';
