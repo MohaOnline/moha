@@ -43,6 +43,13 @@ function moha_survey_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
+      'name' => array(
+        'description' => 'Template Name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
       'oid' => array(
         'description' => 'User ID who own the record.',
         'type' => 'int',
@@ -87,6 +94,9 @@ function moha_survey_schema() {
       ),
     ),
     'primary key' => array('id'),
+    'indexes' => array(
+      'moha_survey_template__name' => array(array('name', 128)),
+    ),
   );
 
   $schema['moha_survey_template_revision'] = array(
@@ -114,6 +124,13 @@ function moha_survey_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
+      ),
+      'name' => array(
+        'description' => 'Template Name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
       ),
       'oid' => array(
         'description' => 'User ID who own the record.',
@@ -166,13 +183,10 @@ function moha_survey_schema() {
 
 /**
  * Create tables for moha survey template.
+ *
+ * @throws Exception
+ *   when tables can't be created successfully.
  */
 function moha_survey_update_0700() {
-  $schemas = moha_sms_schema();
-
-  foreach ($schemas as $schema_name => $schema_array) {
-    if (!db_table_exists($schema_name)) {
-      db_create_table($schema_name, $schema_array);
-    }
-  }
+  moha_schema_create_by_function('moha_survey_schema');
 }

@@ -4,3 +4,9 @@ core = 7.x
 package = Moha Online
 
 dependencies[] = moha_ui
+
+files[] = includes/MohaSurveyTemplateEntity.form.inc
+files[] = includes/MohaSurveyTemplateEntity.php
+files[] = includes/MohaSurveyTemplateEntityAdminController.php
+files[] = includes/MohaSurveyTemplateEntityController.php
+

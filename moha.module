@@ -60,6 +60,11 @@ define('MOHA__URL__RACI_ADMIN_UI', MOHA__URL__ENTITIES . '/raci');
 define('MOHA__PERMISSION__EDIT_ANY_RACI', 'edit any moha raci');
 
 /**
+ * Permission: Site root
+ */
+define('MOHA__PERMISSION__ROOT', 'administer site configuration');
+
+/**
  * JSON encoding options: bitmask.
  */
 define("MOHA__JSON_ENCODING_OPTIONS_BIT_MASK", JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
@@ -345,36 +350,33 @@ function moha_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
-  $items['moha/ckeditor_upload'] = array(
+  $items['moha/ckeditor-upload'] = array(
     'title' => t('Moha Ajax Backend - CKEditor File Uploading'),
     'description' => t('Accept file uploaded by Upload Image plugin of CKEditor.'),
     'page callback' => 'moha_ajax_upload_by_ckeditor',
     'access arguments' => array('post comments'),
     'file' => 'ckeditor/moha.ckeditor.inc',
+    'type' => MENU_CALLBACK,
   );
 
-  $items['admin/moha/ckeditor_upload'] = array(
+  $items['admin/moha/ckeditor-upload'] = array(
     'title' => t('Moha CKEditor File Uploading'),
     'description' => t('Configure storage for files uploaded by CKEditor.'),
     'page callback' => 'drupal_get_form',
     /* @see moha_ckeditor_upload_form() */
     'page arguments' => array('moha_ckeditor_upload_form'),
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
     'file' => 'ckeditor/moha.ckeditor.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
   );
 
-  $items['moha/ajax_upload_file'] = array(
-    'title' => t('Moha UI Ajax Backend - Image Uploading'),
-    'description' => t('Accept uploaded image through Ajax.'),
-    'page callback' => 'moha_ui_ajax_upload_image',
-    'access arguments' => array('post comments'),
-  );
-
-  $items['moha/ajax_upload_weui_uploader'] = array(
-    'title' => t('Moha UI Ajax Backend - Image Uploading'),
-    'description' => t('Accept uploaded image through Ajax.'),
-    'page callback' => 'moha_ui_ajax_upload_weui_uploader',
-    'access arguments' => array('post comments'),
+  $items['admin/moha/db-update'] = array(
+    'title' => t('Moha DB Update'),
+    'description' => t('Perform DB Schema or Table Update'),
+    'page callback' => 'moha_db_update_form',
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
+    'file' => 'ckeditor/moha.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
   );
 
   return $items;
@@ -587,6 +589,7 @@ function moha_entity_access($op, $entity, $account, $entity_type) {
     }
   }
 
+  return FALSE;
 }
 
 /**
@@ -602,6 +605,49 @@ function moha_entity_wrapper_debug($w) {
     $values[$key] = $w->$key->value();
   }
   return $values;
+}
+
+/**
+ * Create DB tables per parameter if they are not ready.
+ *
+ * @param $schemas array
+ *   hook_schema returned array.
+ */
+function moha_schema_create($schemas) {
+  foreach ($schemas as $table_name => $table) {
+    if (!db_table_exists($table_name)) {
+      db_create_table($table_name, $table);
+    }
+    else {
+      $columns = $table['fields'];
+
+      foreach ($columns as $column_name => $column) {
+        if (!db_field_exists($table_name, $column_name)) {
+          db_add_field($table_name, $column_name, $column);
+        };
+      }
+    }
+  }
+}
+
+/**
+ * Create DB tables per parameter if they are not ready.
+ *
+ * @param $hook_schema string
+ *   hook_schema function name.
+ *
+ * @throws
+ *   Passed function is not exist.
+ */
+function moha_schema_create_by_function($hook_schema) {
+  if (function_exists($hook_schema)) {
+
+    $schemas = $hook_schema();
+    moha_schema_create($schemas);
+  }
+  else {
+    throw new Exception("Func: $hook_schema does not exist.");
+  }
 }
 
 /**
@@ -1340,7 +1386,7 @@ function moha_array_key_by_value($value = "", $array = array()) {
   else {
     $key = array_search($value, $array);
     if ($key === false) {
-      throw new InvalidArgumentException($value . " is not contained in array.");
+      throw new InvalidArgumentException("$value is not contained in array.");
     }
     else {
       return $key;

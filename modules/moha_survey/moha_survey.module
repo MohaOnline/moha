@@ -29,6 +29,17 @@ define('MOHA_SURVEY__PATH', drupal_get_path('module', __MOHA_SURVEY));
 define('__MOHA_SURVEY__PATH', base_path() . MOHA_SURVEY__PATH);
 
 /**
+ * Entity machine name.
+ */
+define('__MOHA_SURVEY__ENTITY__TEMPLATE', 'moha_survey_template');
+
+/**
+ * Moha URL: Moha Survey template management page.
+ * @example admin/moha/entities/survey_template
+ */
+define('MOHA_SURVEY__URL__TEMPLATE_ADMIN_UI', MOHA__URL__ENTITIES . '/survey_template');
+
+/**
  * Implements hook_permission().
  */
 function moha_survey_permission() {
@@ -58,6 +69,62 @@ function moha_survey_theme($existing, $type, $theme, $path) {
   );
 
   return $templates;
+}
+
+/**
+ * Implements hook_entity_info().
+ *
+ *
+ */
+function moha_survey_entity_info() {
+
+  $items = array();
+
+  // Stores basic information of an Moha Survey Template.
+  // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
+  $items[__MOHA_SURVEY__ENTITY__TEMPLATE] = array(
+    'label' => t('Moha Survey Template'),
+    'plural label' => t('Moha Survey Templates'),
+    'base table' => __MOHA_SURVEY__ENTITY__TEMPLATE,
+    'revision table' => 'moha_survey_template_revision',
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'id',
+      'revision' => 'vid',
+    ),
+    //
+    'label callback' => 'entity_class_label',
+
+    /** @see entity_crud_hook_entity_info() */
+    'admin ui' => array(
+      /* moha_survey_template management page URL & Class. */
+      'path' => MOHA_SURVEY__URL__TEMPLATE_ADMIN_UI,
+      'controller class' => 'MohaSurveyTemplateEntityAdminController',
+
+      /** @see entity_ui_get_form() */
+      /* moha_survey_template add / edit forms containing file. */
+      'file' => 'includes/MohaSurveyTemplateEntity.form.inc',  //
+    ),
+
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    'module' => __MOHA_SURVEY,
+
+    /** @see entity_access() */
+    'access callback' => 'moha_entity_access',
+
+    'entity class' => 'MohaSurveyTemplateEntity',
+    'controller class' => 'MohaSurveyTemplateEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
+    'uri callback' => 'entity_class_uri',
+
+    // Make entity fieldable; @see field_attach_form to attach added fields.
+    'fieldable' => FALSE,
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
+  );
+
+  return $items;
 }
 
 /**

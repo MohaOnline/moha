@@ -24,6 +24,7 @@ function moha_ckeditor_upload_form($form, &$form_state) {
   foreach (file_get_stream_wrappers(STREAM_WRAPPERS_WRITE_VISIBLE) as $scheme => $stream_wrapper) {
     $scheme_options[$scheme] = $stream_wrapper['name'];
   }
+
   $form['ckeditor_destination'] = array(
     '#type' => 'radios',
     '#title' => t('Upload destination'),
@@ -32,6 +33,7 @@ function moha_ckeditor_upload_form($form, &$form_state) {
     '#description' => t('Public files upload destination is dangerous for forms that are available to anonymous and/or untrusted users. For more information, see <a target="_blank" href="@psa">DRUPAL-PSA-2016-003</a>.', array('@psa' => 'https://www.drupal.org/psa-2016-003')),
     '#access' => count($scheme_options) > 1,
   );
+
   $form['ckeditor_directory'] = array(
     '#type' => 'textfield',
     '#title' => t('Upload directory'),
@@ -71,3 +73,5 @@ function moha_ckeditor_upload_form_submit($form, &$form_state) {
 
   drupal_get_messages(t('Configurations have been saved.'));
 }
+
+

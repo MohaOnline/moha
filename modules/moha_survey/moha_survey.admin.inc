@@ -42,7 +42,7 @@ function moha_survey_dashboard() {
  *
  * @see drupal_build_form
  *
- * @throws \Exception
+ * @throws Exception
  */
 function moha_survey_edit_form($form, &$form_state, $node) {
   if (!isset($node) || $node->type != 'webform') {
@@ -131,11 +131,26 @@ function moha_survey_edit_form($form, &$form_state, $node) {
     '#default_value' => $node->webform['status'],
   );
 
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', __MOHA_SURVEY__ENTITY__TEMPLATE)
+    ->propertyCondition('nid', $node->nid, '=')
+    ->propertyCondition('cid', 0, '=')
+    ->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY), '=');
+
+  $result = $query->execute();
+
+  if (!empty($result[__MOHA_SURVEY__ENTITY__TEMPLATE])) {
+    $template = 1;
+  }
+  else {
+    $template = 0;
+  }
+
   $advanced['template'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Treat this survey as template.'),
+    '#title' => t('Pin this survey as template.'),
     '#description' => 'Check to mark this survey as template.',
-    '#default_value' => 0,
+    '#default_value' => $template,
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -203,6 +218,54 @@ function moha_survey_edit_form_submit($form, &$form_state) {
       node_save($node);
       drupal_set_message(t('Your survey has been saved.'));
 
+      $query = new EntityFieldQuery();
+      $query->entityCondition('entity_type', __MOHA_SURVEY__ENTITY__TEMPLATE)
+        ->propertyCondition('nid', $values['nid'], '=')
+        ->propertyCondition('cid', 0, '=');
+
+      $result = $query->execute();
+
+      global $user;
+
+      if (empty($result[__MOHA_SURVEY__ENTITY__TEMPLATE])) {
+        if ($values['template']) {
+          $entity['nid'] = $values['nid'];
+          $entity['oid'] = $user->uid;
+          $entity['uid'] = $user->uid;
+          $entity['status'] = moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY);
+          $entity['referred'] = 0;
+          $entity['name'] = $values['title'];
+          $entity['cid'] = 0;
+
+          $entity = entity_create(__MOHA_SURVEY__ENTITY__TEMPLATE, $entity);
+          if ($entity) {
+            /** @var $entity MohaSurveyTemplateEntity */
+            $entity->save();
+          }
+        }
+      }
+      else { // If record exists.
+        $result = array_shift($result[__MOHA_SURVEY__ENTITY__TEMPLATE]);
+        $entity = entity_load_single(__MOHA_SURVEY__ENTITY__TEMPLATE, $result->id);
+
+        if ($entity->status != moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY) && $values['template']) {
+          $entity->status = moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY);
+
+          $entity->is_new_revision = TRUE;
+          /** @var $entity MohaSurveyTemplateEntity */
+          $entity->save();
+        }
+        elseif ($entity->status == moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY) && !$values['template']) {
+          $entity->status = moha_array_key_by_value(MOHA__TERM__DISABLED, MOHA__STATUS__ENTITY);
+
+          $entity->is_new_revision = TRUE;
+          /** @var $entity MohaSurveyTemplateEntity */
+          $entity->save();
+        }
+
+
+      }
+
       break;
     default:
       break;
@@ -233,7 +296,7 @@ function moha_survey_delete_form($form, &$form_state, $node) {
   $render_array = confirm_form($form,
     t('Are you sure to delete this survey?'),
     'admin/moha/survey/edit/' . $node->nid,
-    format_string('Survey: !survey will be deleted, This action cannot be undone.',
+    format_string('Survey: !survey will be deleted, this action cannot be undone.',
       array(
         '!survey' => l($node->title, 'node/' . $node->nid,
           array(
@@ -271,6 +334,8 @@ function moha_survey_delete_form_submit($form, &$form_state) {
     watchdog(__FUNCTION__, 'nid: %nid is unpublished.', array(
       '%nid' => $values['nid'],
     ), WATCHDOG_INFO);
+
+    // Template disable.
 
     drupal_goto('admin/moha/survey/');
   }
@@ -607,8 +672,6 @@ function moha_survey_component_edit_form_submit($form, &$form_state) {
   return;
 }
 
-
-
 /**
  * Moha Survey delete confirm page.
  *
@@ -636,7 +699,7 @@ function moha_survey_component_delete_form($form, &$form_state, $node, $cid) {
   $render_array = confirm_form($form,
     t('Are you sure to delete this survey?'),
     'admin/moha/survey/component/' . $node->nid . '/' . $cid,
-    format_string('Question: !question will be deleted, This action cannot be undone.',
+    format_string('Question: !question will be deleted, this action cannot be undone.',
       array(
         '!question' => $node->webform['components'][$cid]['name'],
       )
