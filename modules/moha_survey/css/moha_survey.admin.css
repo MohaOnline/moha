@@ -15,3 +15,24 @@
 .form-options .draggable a.tabledrag-handle .handle {
   margin: -0.4em auto;
 }
+
+/** Dashboard */
+.moha-survey .box-body {
+  min-height: 20rem;
+}
+
+.moha-survey .box-body.no-padding table {
+  margin-bottom: 0;
+}
+
+.page-admin-moha-survey .box-header > .fa,
+.page-admin-moha-survey .box-header > .glyphicon,
+.page-admin-moha-survey .box-header > .ion,
+.page-admin-moha-survey .box-header .box-title {
+  font-size: 1rem;
+}
+
+.page-admin-moha-survey table th {
+  text-transform: capitalize;
+}
+/***/

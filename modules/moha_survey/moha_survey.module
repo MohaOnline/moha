@@ -128,6 +128,89 @@ function moha_survey_entity_info() {
 }
 
 /**
+ * Implements hook_entity_property_info().
+ */
+function moha_survey_entity_property_info() {
+
+  $properties['id'] = array(
+    'label' => t('ID'),
+    'type' => 'integer',
+    'description' => t('Template ID.'),
+    'schema field' => 'id',
+  );
+
+  $properties['name'] = array(
+    'label' => t('Name'),
+    'type' => 'text',
+    'description' => t('Template name.'),
+    'schema field' => 'name',
+  );
+
+  $properties['nid'] = array(
+    'label' => t('Node ID'),
+    'type' => 'node',
+    'bundle' => 'webform',
+    'description' => t('Node ID of related Webform.'),
+    'schema field' => 'nid',
+  );
+
+  $properties['referred'] = array(
+    'label' => t('Referred'),
+    'type' => 'integer',
+    'description' => t('Referred times as template.'),
+    'schema field' => 'referred',
+  );
+
+  /** @see entity_property_verbatim_get */
+  $properties['status'] = array(
+    'label' => t('Status'),
+    'type' => 'text',
+    'description' => t('Template Status.'),
+    'schema field' => 'status',
+    /** @see moha_entity_status_get */
+    'getter callback' => 'moha_entity_status_get',
+  );
+
+  $properties['oid'] = array(
+    'label' => t('Owner'),
+    'type' => 'user',
+    'description' => t('User ID who pinned this template.'),
+    'schema field' => 'oid',
+  );
+
+  $properties['uid'] = array(
+    'label' => t('User'),
+    'type' => 'user',
+    'description' => t('User ID who updated this template.'),
+    'schema field' => 'uid',
+  );
+
+  $properties['created'] = array(
+    'label' => t('Created'),
+    'description' => t('Template created date.'),
+    'type' => 'date',
+    'schema field' => 'created',
+  );
+
+  $properties['updated'] = array(
+    'label' => t('Updated'),
+    'description' => t('Template updated date.'),
+    'type' => 'date',
+    'schema field' => 'updated',
+  );
+
+  $properties['comment'] = array(
+    'label' => t('Comment'),
+    'type' => 'text',
+    'description' => t('Update reason.'),
+    'schema field' => 'comment',
+  );
+
+  $items[__MOHA_SURVEY__ENTITY__TEMPLATE]['properties'] = $properties;
+  return $items;
+}
+
+/**
  * Implements hook_menu().
  */
 function moha_survey_menu() {
@@ -179,7 +262,7 @@ function moha_survey_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -1,
     'file' => 'moha_survey.admin.inc',
-    );
+  );
 
   // Moha Survey edit form.
   $items['admin/moha/survey/edit/%node'] = array(
@@ -190,6 +273,18 @@ function moha_survey_menu() {
     'page arguments' => array('moha_survey_edit_form', 4),
     'access arguments' => array('administer own survey'),
     'type' => MENU_LOCAL_TASK | MENU_SUGGESTED_ITEM,
+    'file' => 'moha_survey.admin.inc',
+  );
+
+  // Moha Survey Clone Jump.
+  $items['admin/moha/survey/clone/%node'] = array(
+    'title' => 'Survey Clone',
+    'description' => 'Forward user to Survey creation page with a template selected.',
+    /** @see moha_survey_clone */
+    'page callback' => 'moha_survey_clone',
+    'page arguments' => array('moha_survey_edit_form', 4),
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
     'file' => 'moha_survey.admin.inc',
   );
 
@@ -270,6 +365,30 @@ function moha_survey_menu() {
   );
 
   return $items;
+}
+
+
+
+/**
+ * Implements hook_views_api().
+ *
+ * Declares location of codes for views.
+ */
+function moha_survey_views_api() {
+  return array(
+    'api' => 3,
+    'path' => MOHA_SURVEY__PATH . '/views',
+    'template path' => MOHA_SURVEY__PATH . '/templates',
+  );
+}
+
+/**
+ * Implements hook_views_pre_render().
+ *
+ * Extract h1 and summary into intro area for moha_clip.
+ */
+function moha_survey_views_pre_render(&$view) {
+
 }
 
 /**

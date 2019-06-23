@@ -54,6 +54,7 @@ function moha_raci_form($form, &$form_state, $raci = NULL) {
       // Can't use form ID as after ajax process, ID will suffixed by '--2'.
       'wrapper' => 'moha-raci-form-eid-wrapper',
       'effect' => 'fade',
+      'file' => 'includes/MohaRACIEntity.form.inc',
     ),
   );
 
@@ -98,6 +99,7 @@ function moha_raci_form($form, &$form_state, $raci = NULL) {
       // Can't use form ID as after ajax process, ID will suffixed by '--2'.
       'wrapper' => 'moha-raci-form-oid-wrapper',
       'effect' => 'fade',
+      'file' => 'includes/MohaRACIEntity.form.inc',
     ),
   );
 
@@ -144,6 +146,42 @@ function moha_raci_form($form, &$form_state, $raci = NULL) {
   );
 
   return $form;
+}
+
+/**
+ * If entity type changed, entity ID need be cleared.
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return mixed
+ */
+function _moha_form_entity_raci_form_entity_type_change_ajax_callback($form, &$form_state) {
+  if (form_get_errors()) {
+    return $form;
+  }
+
+  $form['eid']['#value'] = '';
+
+  return $form['eid'];
+}
+
+/**
+ * If entity type changed, entity ID need be cleared.
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return mixed
+ */
+function _moha_form_entity_raci_form_owner_entity_type_change_ajax_callback($form, &$form_state) {
+  if (form_get_errors()) {
+    return $form;
+  }
+
+  $form['oid']['#value'] = '';
+
+  return $form['oid'];
 }
 
 /**

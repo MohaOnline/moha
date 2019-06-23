@@ -13,10 +13,19 @@
  */
 function moha_survey_dashboard() {
 
+  // We can't use views_embed_view() as we have exposed filter, and we need to
+  // make sure the path is overriden to the current URL.
+  // @see http://drupal.org/node/525592#comment-1968604
+  $view = views_get_view('moha_survey_template', 'survey_dashboard_templates');
+  // $view->set_arguments(array($group_type, $gid));
+  $view->override_url = $_GET['q'];
+  $content['templates'] = $view->preview();
+
   $content['#theme'] = array('moha_survey_dashboard'); /** @see moha_survey_dashboard.tpl.php */
 
   $content['#attached'] = array(
     'css' => array(
+      MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
     ),
     'js' => array(
     ),
@@ -770,4 +779,23 @@ function moha_survey_results_download_form($form, &$form_state, $node) {
   $form['#submit'][] = 'webform_results_download_form_submit';
 
   return $form;
+}
+
+/**
+ * Survey templates list form.
+ */
+function moha_survey_templates_form($form, &$form_state) {
+  $form = array();
+
+  $query = db_select('moha_survey_template');
+  $query->fields('moha_survey_template', array('nid', 'name'));
+
+  $result = $query->execute();
+
+  foreach ($result as $record) {
+     echo 1;
+  }
+
+  return $form;
+
 }

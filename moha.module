@@ -264,6 +264,123 @@ function moha_entity_info() {
 }
 
 /**
+ * Generates entity permission array.
+ *
+ * @param $entity_type
+ *   Entity type name.
+ *
+ * @return array
+ */
+function moha_entity_permission($entity_type) {
+
+  $permissions_array = array(
+    'view own ' . $entity_type => array(
+      'title' => t('View own ' . $entity_type),
+    ),
+    'view any ' . $entity_type => array(
+      'title' => t('View any ' . $entity_type),
+    ),
+    'create ' . $entity_type => array(
+      'title' => t('Create ' . $entity_type),
+    ),
+    'update own ' . $entity_type => array(
+      'title' => t('Update own ' . $entity_type),
+    ),
+    'update any ' . $entity_type => array(
+      'title' => t('Update any ' . $entity_type),
+    ),
+    'delete own ' . $entity_type => array(
+      'title' => t('Delete own ' . $entity_type),
+    ),
+    'delete any ' . $entity_type => array(
+      'title' => t('Delete any ' . $entity_type),
+    ),
+  );
+
+  return $permissions_array;
+}
+
+/**
+ * Determines whether the given user can perform actions on an entity.
+ *
+ * @param $op
+ *   The operation being performed. One of 'view', 'update', 'create' or
+ *   'delete'.
+ * @param $entity_type
+ *   The entity type of the entity to check for.
+ * @param $entity
+ *   Optionally an entity to check access for. If no entity is given, it will be
+ *   determined whether access is allowed for all entities of the given type.
+ * @param $account
+ *   The user to check for. Leave it to NULL to check for the global user.
+ *
+ * @return boolean
+ *   Whether access is allowed or not. If the entity type does not specify any
+ *   access information, NULL is returned.
+ */
+function moha_entity_access($op, $entity, $account, $entity_type) {
+  global $user;
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  // User #1 has all privileges:
+  if ($account->uid == 1) {
+    return TRUE;
+  }
+
+  if ($op == 'view') {
+    if (user_access('view any ' . $entity_type, $account)) {
+      return TRUE;
+    };
+  }
+  elseif ($op == 'create') {
+    return user_access('create ' . $entity_type, $account);
+  }
+  elseif ($op == 'update') {
+    if (user_access('update any ' . $entity_type, $account)) {
+      return TRUE;
+    }
+  }
+  elseif ($op == 'delete') {
+    if (user_access('delete any ' . $entity_type, $account)) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Gets the status property of moha entity.
+ */
+function moha_entity_status_get($data, array $options, $name, $type, $info) {
+  $name = isset($info['schema field']) ? $info['schema field'] : $name;
+
+  if (isset($data[$name])) {
+    return MOHA__STATUS__ENTITY[$name];
+  }
+
+  return 'No Status';
+}
+
+/**
+ * @param $w object
+ *   Entity Wrapper which need be inspected.
+ *
+ * @return array
+ *   key-value pairs of wrapper object.
+ */
+function moha_entity_wrapper_debug($w) {
+  $values = array();
+  foreach ($w->getPropertyInfo() as $key => $val) {
+    $values[$key] = $w->$key->value();
+  }
+  return $values;
+}
+
+/**
  * Permissions administrator should have.
  *
  * @return array
@@ -467,144 +584,6 @@ function moha_node_ajax_save_callback($form, &$form_state){
   $form['changed']['#value'] = $form_state['node']->changed;
 
   return $form['changed'];
-}
-
-/**
- *
- * @param $form
- * @param $form_state
- *
- * @return mixed
- */
-function _moha_form_entity_raci_form_entity_type_change_ajax_callback($form, &$form_state) {
-  if (form_get_errors()) {
-    return $form;
-  }
-
-  $form['eid']['#value'] = '';
-
-  return $form['eid'];
-}
-
-/**
- *
- * @param $form
- * @param $form_state
- *
- * @return mixed
- */
-function _moha_form_entity_raci_form_owner_entity_type_change_ajax_callback($form, &$form_state) {
-  if (form_get_errors()) {
-    return $form;
-  }
-
-  $form['oid']['#value'] = '';
-
-  return $form['oid'];
-}
-
-/**
- * Generates entity permission array.
- *
- * @param $entity_type
- *   Entity type name.
- *
- * @return array
- */
-function moha_entity_permission($entity_type) {
-
-  $permissions_array = array(
-    'view own ' . $entity_type => array(
-      'title' => t('View own ' . $entity_type),
-    ),
-    'view any ' . $entity_type => array(
-      'title' => t('View any ' . $entity_type),
-    ),
-    'create ' . $entity_type => array(
-      'title' => t('Create ' . $entity_type),
-    ),
-    'update own ' . $entity_type => array(
-      'title' => t('Update own ' . $entity_type),
-    ),
-    'update any ' . $entity_type => array(
-      'title' => t('Update any ' . $entity_type),
-    ),
-    'delete own ' . $entity_type => array(
-      'title' => t('Delete own ' . $entity_type),
-    ),
-    'delete any ' . $entity_type => array(
-      'title' => t('Delete any ' . $entity_type),
-    ),
-  );
-
-  return $permissions_array;
-}
-
-/**
- * Determines whether the given user can perform actions on an entity.
- *
- * @param $op
- *   The operation being performed. One of 'view', 'update', 'create' or
- *   'delete'.
- * @param $entity_type
- *   The entity type of the entity to check for.
- * @param $entity
- *   Optionally an entity to check access for. If no entity is given, it will be
- *   determined whether access is allowed for all entities of the given type.
- * @param $account
- *   The user to check for. Leave it to NULL to check for the global user.
- *
- * @return boolean
- *   Whether access is allowed or not. If the entity type does not specify any
- *   access information, NULL is returned.
- */
-function moha_entity_access($op, $entity, $account, $entity_type) {
-  global $user;
-
-  if (!isset($account)) {
-    $account = $user;
-  }
-
-  // User #1 has all privileges:
-  if ($account->uid == 1) {
-    return TRUE;
-  }
-
-  if ($op == 'view') {
-    if (user_access('view any ' . $entity_type, $account)) {
-      return TRUE;
-    };
-  }
-  elseif ($op == 'create') {
-    return user_access('create ' . $entity_type, $account);
-  }
-  elseif ($op == 'update') {
-    if (user_access('update any ' . $entity_type, $account)) {
-      return TRUE;
-    }
-  }
-  elseif ($op == 'delete') {
-    if (user_access('delete any ' . $entity_type, $account)) {
-      return TRUE;
-    }
-  }
-
-  return FALSE;
-}
-
-/**
- * @param $w object
- *   Entity Wrapper which need be inspected.
- *
- * @return array
- *   key-value pairs of wrapper object.
- */
-function moha_entity_wrapper_debug($w) {
-  $values = array();
-  foreach ($w->getPropertyInfo() as $key => $val) {
-    $values[$key] = $w->$key->value();
-  }
-  return $values;
 }
 
 /**
