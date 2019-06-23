@@ -9,6 +9,10 @@ textarea {
   resize: vertical;
 }
 
+body.page-admin a.button {
+  display: inline-block;
+  margin: 5px;
+}
 /***/
 
 /** Fix styles issue between element - options and system module. */

@@ -302,7 +302,7 @@ function moha_survey_delete_form($form, &$form_state, $node) {
     '#value' => $node->nid,
   );
 
-  $render_array = confirm_form($form,
+  $form = confirm_form($form,
     t('Are you sure to delete this survey?'),
     'admin/moha/survey/edit/' . $node->nid,
     format_string('Survey: !survey will be deleted, this action cannot be undone.',
@@ -319,7 +319,7 @@ function moha_survey_delete_form($form, &$form_state, $node) {
     $node->title
   );
 
-  return $render_array;
+  return $form;
 }
 
 /**
@@ -705,7 +705,7 @@ function moha_survey_component_delete_form($form, &$form_state, $node, $cid) {
     '#value' => $cid,
   );
 
-  $render_array = confirm_form($form,
+  $form = confirm_form($form,
     t('Are you sure to delete this survey?'),
     'admin/moha/survey/component/' . $node->nid . '/' . $cid,
     format_string('Question: !question will be deleted, this action cannot be undone.',
@@ -718,7 +718,7 @@ function moha_survey_component_delete_form($form, &$form_state, $node, $cid) {
     $node->title
   );
 
-  return $render_array;
+  return $form;
 }
 
 /**
@@ -782,20 +782,77 @@ function moha_survey_results_download_form($form, &$form_state, $node) {
 }
 
 /**
- * Survey templates list form.
+ * Survey templates clone form.
  */
-function moha_survey_templates_form($form, &$form_state) {
+function moha_survey_clone_form($form, &$form_state, $node) {
   $form = array();
 
-  $query = db_select('moha_survey_template');
-  $query->fields('moha_survey_template', array('nid', 'name'));
 
-  $result = $query->execute();
-
-  foreach ($result as $record) {
-     echo 1;
-  }
 
   return $form;
+}
 
+/**
+ * Survey templates clone submit handling.
+ */
+function moha_survey_clone_form_submit($form, &$form_state) {
+
+}
+
+/**
+ * Survey templates delete form.
+ *
+ * @throws Exception
+ *   when provided template is in invalid.
+ */
+function moha_survey_template_delete_form($form, &$form_state, $template_id) {
+  $form = array();
+
+  $template = entity_load_single(__MOHA_SURVEY__ENTITY__TEMPLATE, $template_id);
+
+  if (empty($template)) { throw new Exception('Invalid survey template id, or template has been removed thoroughly'); }
+
+  $form['id'] = array(
+    '#type' => 'value',
+    '#value' => $template_id,
+  );
+
+  $form = confirm_form($form,
+    t('Are you sure to delete this template?'),
+    'admin/moha/survey/',
+    format_string('Template: %template_name will be deleted, this action cannot be undone.',
+      array(
+        '%template_name' => $template->name,
+        )
+      ),
+    t('Delete'),
+    t('Cancel')
+  );
+
+  return $form;
+}
+
+
+/**
+ * Survey templates delete form.
+ *
+ * @throws Exception
+ *   when provided template is in invalid.
+ */
+function moha_survey_template_delete_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+
+  $template_id = $values['id'];
+  $entity = entity_load_single(__MOHA_SURVEY__ENTITY__TEMPLATE, $template_id);
+  if (empty($entity)) { throw new Exception('Invalid survey template id, or template has been removed thoroughly'); }
+
+  if ($entity->status == moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY)) {
+    $entity->status = moha_array_key_by_value(MOHA__TERM__DELETED, MOHA__STATUS__ENTITY);
+
+    $entity->is_new_revision = TRUE;
+    /** @var $entity MohaSurveyTemplateEntity */
+    $entity->save();
+
+    drupal_set_message(t('Template: @template has been deleted.', array('@template' => $entity->name)));
+  }
 }

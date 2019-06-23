@@ -17,6 +17,16 @@
 }
 
 /** Dashboard */
+.page-admin-moha-survey #page {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.page-admin-moha-survey .content {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .moha-survey .box-body {
   min-height: 20rem;
 }

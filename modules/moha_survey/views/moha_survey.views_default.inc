@@ -28,6 +28,7 @@ function moha_survey_views_default_views() {
   $handler->display->display_options['use_more'] = TRUE;
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'some';
@@ -79,6 +80,7 @@ function moha_survey_views_default_views() {
   $handler->display->display_options['fields']['name']['field'] = 'name';
   $handler->display->display_options['fields']['name']['relationship'] = 'oid';
   $handler->display->display_options['fields']['name']['label'] = 'User';
+  $handler->display->display_options['fields']['name']['exclude'] = TRUE;
   $handler->display->display_options['fields']['name']['link_to_user'] = FALSE;
   /* Field: Moha Survey Template: Referred */
   $handler->display->display_options['fields']['referred']['id'] = 'referred';
@@ -103,8 +105,13 @@ function moha_survey_views_default_views() {
   $handler->display->display_options['fields']['nothing']['table'] = 'views';
   $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
   $handler->display->display_options['fields']['nothing']['label'] = 'Operations';
-  $handler->display->display_options['fields']['nothing']['alter']['text'] = '<a class="button" href="/admin/moha/survey/add/[nid]">Clone</a>
-<a class="button" href="/admin/moha/survey/template-delete/[id]">Delete</a>';
+  $handler->display->display_options['fields']['nothing']['alter']['text'] = '<a class="button" href="/admin/moha/survey/clone/[nid]">Clone</a>
+<a class="button" href="/admin/moha/survey/template-delete/[id]?destination=admin/moha/survey">Delete</a>';
+  /* Filter criterion: Moha Survey Template: Status */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'moha_survey_template';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = '1';
 
   /* Display: Block */
   $handler = $view->new_display('block', 'Block', 'survey_dashboard_templates');
@@ -124,12 +131,15 @@ function moha_survey_views_default_views() {
     t('.'),
     t(','),
     t('Operations'),
-    t('<a class="button" href="/admin/moha/survey/add/[nid]">Clone</a>
-<a class="button" href="/admin/moha/survey/template-delete/[id]">Delete</a>'),
+    t('<a class="button" href="/admin/moha/survey/clone/[nid]">Clone</a>
+<a class="button" href="/admin/moha/survey/template-delete/[id]?destination=admin/moha/survey">Delete</a>'),
     t('Block'),
   );
 
 
+
+
+  // Combine all defined views, don't touch from here.
   $views[$view->name] = $view;
 
   return $views;

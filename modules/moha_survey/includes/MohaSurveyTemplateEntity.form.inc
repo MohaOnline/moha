@@ -58,7 +58,7 @@ function moha_survey_template_form($form, &$form_state, $entity = NULL) {
     '#title' => t('Referred number'),
     '#description' => t('Reuse times of this template.'),
     '#size' => 40,
-    '#default_value' => isset($entity->name)?$entity->name:'',
+    '#default_value' => isset($entity->referred)?$entity->referred:'',
     '#required' => TRUE,
   );
 
@@ -106,14 +106,11 @@ function moha_survey_template_form_validate($node, &$form_state) {
  * Save entity.
  */
 function moha_survey_template_form_submit($form, &$form_state) {
-
   // Build entity from submission.
-  $raci = entity_ui_form_submit_build_entity($form, $form_state);
+  $entity = entity_ui_form_submit_build_entity($form, $form_state);
+  $entity->nid = $entity->nid['entity_id'];
 
-  $raci->eid = $raci->eid['entity_id'];
-  $raci->oid = $raci->oid['entity_id'];
-
-  /** @see \MohaRACIEntityController::save()*/
-  $raci->save();
-  $form_state['redirect'] = MOHA__URL__RACI_ADMIN_UI;
+  /** @see MohaSurveyTemplateEntityController::save()*/
+  $entity->save();
+  $form_state['redirect'] = MOHA_SURVEY__URL__TEMPLATE_ADMIN_UI;
 }

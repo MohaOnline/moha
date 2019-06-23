@@ -272,19 +272,31 @@ function moha_survey_menu() {
     /** @see moha_survey_edit_form */
     'page arguments' => array('moha_survey_edit_form', 4),
     'access arguments' => array('administer own survey'),
-    'type' => MENU_LOCAL_TASK | MENU_SUGGESTED_ITEM,
+    'type' => MENU_CALLBACK | MENU_SUGGESTED_ITEM,
     'file' => 'moha_survey.admin.inc',
   );
 
-  // Moha Survey Clone Jump.
+  // Moha Survey Clone.
   $items['admin/moha/survey/clone/%node'] = array(
     'title' => 'Survey Clone',
     'description' => 'Forward user to Survey creation page with a template selected.',
-    /** @see moha_survey_clone */
-    'page callback' => 'moha_survey_clone',
-    'page arguments' => array('moha_survey_edit_form', 4),
+    /** @see moha_survey_clone_form */
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('moha_survey_clone_form', 4),
     'access arguments' => array('administer own survey'),
     'type' => MENU_CALLBACK,
+    'file' => 'moha_survey.admin.inc',
+  );
+
+  // Moha Survey Template Delete.
+  $items['admin/moha/survey/template-delete/%'] = array(
+    'title' => 'Survey Template Remove',
+    'description' => 'Remove survey template.',
+    /** @see moha_survey_template_delete_form */
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('moha_survey_template_delete_form', 4),
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK | MENU_SUGGESTED_ITEM,
     'file' => 'moha_survey.admin.inc',
   );
 
@@ -308,16 +320,6 @@ function moha_survey_menu() {
     'file' => 'moha_survey.admin.inc',
     'weight' => 7,
     'type' => MENU_LOCAL_TASK,
-  );
-
-  $items['admin/moha/survey/edit/%node/download-file'] = array(
-    'title' => 'Download',
-    'page callback' => 'moha_survey_results_download_callback',
-    'page arguments' => array(4),
-    'access callback' => 'webform_results_access',
-    'access arguments' => array(4),
-    'file' => 'moha_survey.admin.inc',
-    'type' => MENU_CALLBACK,
   );
 
   // Moha Survey delete
@@ -367,8 +369,6 @@ function moha_survey_menu() {
   return $items;
 }
 
-
-
 /**
  * Implements hook_views_api().
  *
@@ -385,10 +385,16 @@ function moha_survey_views_api() {
 /**
  * Implements hook_views_pre_render().
  *
- * Extract h1 and summary into intro area for moha_clip.
+ * Operations control per permission.
  */
 function moha_survey_views_pre_render(&$view) {
+  if ($view->name == 'moha_survey_template') {
+    $rows = $view->result;
 
+    foreach ($rows as $row) {
+
+    }
+  }
 }
 
 /**
