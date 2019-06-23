@@ -11,7 +11,9 @@ textarea {
 
 body.page-admin a.button {
   display: inline-block;
-  margin: 5px;
+  margin: 0.5em;
+  padding: 0 1.25em;
+  font-size: 1em;
 }
 /***/
 

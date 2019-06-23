@@ -272,7 +272,19 @@ function moha_survey_menu() {
     /** @see moha_survey_edit_form */
     'page arguments' => array('moha_survey_edit_form', 4),
     'access arguments' => array('administer own survey'),
-    'type' => MENU_CALLBACK | MENU_SUGGESTED_ITEM,
+    'type' => MENU_LOCAL_TASK | MENU_SUGGESTED_ITEM,
+    'file' => 'moha_survey.admin.inc',
+  );
+
+  // Moha Survey Clone.
+  $items['admin/moha/survey/clone'] = array(
+    'title' => 'Survey Clone',
+    'description' => 'Forward user to Survey creation page without a template selected.',
+    /** @see moha_survey_clone_form */
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('moha_survey_clone_form'),
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
     'file' => 'moha_survey.admin.inc',
   );
 

@@ -116,10 +116,15 @@ function moha_survey_edit_form($form, &$form_state, $node) {
           'query' => array('destination' => 'admin/moha/survey/edit/' . $node->nid),
         ),
       );
+      $operation_html ='';
+      foreach ($operations as $operation) {
+        $operation_html .= l($operation['title'], $operation['href'], array('query'=>$operation['query'], 'attributes' => array('class' => array('button'))));
+      }
 
       $form['components'][$index]['operations'] = array(
-        '#theme' => 'links__ctools_dropbutton',
-        '#links' => $operations,
+        '#markup' => $operation_html,
+//        '#theme' => 'links__ctools_dropbutton',
+//        '#links' => $operations,
       );
     }
   }
@@ -271,8 +276,6 @@ function moha_survey_edit_form_submit($form, &$form_state) {
           /** @var $entity MohaSurveyTemplateEntity */
           $entity->save();
         }
-
-
       }
 
       break;
@@ -784,10 +787,64 @@ function moha_survey_results_download_form($form, &$form_state, $node) {
 /**
  * Survey templates clone form.
  */
-function moha_survey_clone_form($form, &$form_state, $node) {
+function moha_survey_clone_form($form, &$form_state, $node = NULL) {
+
+  if (empty($node)) {
+    $node = new stdClass();
+    $node->nid = '';
+  }
+
   $form = array();
 
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Survey name'),
+    '#description' => t('Please provides survey name which you could use to identify different survey.'),
+    '#size' => 80,
+    '#default_value' => '',
+    '#required' => TRUE,
+  );
 
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', __MOHA_SURVEY__ENTITY__TEMPLATE)
+    ->propertyCondition('cid', 0, '=')
+    ->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY), '=');
+
+  $result = $query->execute();
+
+  if (!empty($result[__MOHA_SURVEY__ENTITY__TEMPLATE])) {
+    foreach ($result[__MOHA_SURVEY__ENTITY__TEMPLATE] as $template) {
+      $template = entity_load_single(__MOHA_SURVEY__ENTITY__TEMPLATE, $template->id);
+      $options[$template->nid] = $template->name;
+    }
+  }
+  else {
+    $options = array();
+  }
+
+  $form['template'] = array(
+    '#type' => 'select',
+    '#title' => t('Template'),
+    '#options' => $options,
+    '#empty_value' => 0,
+    '#default_value' => $node->nid,
+    '#description' => t('Select template you want to copy.'),
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+
+  if (empty($node->title)) {
+    $form['actions']['add'] = array(
+      '#type' => 'submit',
+      '#value' => t('Add Survey')
+    );
+  }
+  else {
+    $form['actions']['clone'] = array(
+      '#type' => 'submit',
+      '#value' => t('Clone Survey')
+    );
+  }
 
   return $form;
 }
@@ -797,6 +854,99 @@ function moha_survey_clone_form($form, &$form_state, $node) {
  */
 function moha_survey_clone_form_submit($form, &$form_state) {
 
+  $values = $form_state['values'];
+
+  if ($values['template'] == 0) {
+
+    global $user;
+
+    //https://www.drupal.org/node/2030697  Programmatically creating a webform
+    $node = new stdClass();
+    $node->type = 'webform';
+    node_object_prepare($node);
+    $node->title = $values['title'];
+    $node->language = LANGUAGE_NONE;
+    $node->body[LANGUAGE_NONE][0]['value']   = '';
+    $node->body[LANGUAGE_NONE][0]['format']  = 'full_html';
+    $node->uid = $user->uid;
+    $node->promote = 0;
+    $node->comment = 0;
+
+    // Attach the webform to the node.
+    $node->webform = array(
+      'confirmation' => '',
+      'confirmation_format' => NULL,
+      'redirect_url' => 'moha/survey/success',
+      'status' => '1',
+      'block' => '0',
+      'teaser' => '0',
+      'allow_draft' => '0',
+      'auto_save' => '0',
+      'submit_notice' => '1',
+      'submit_text' => '',
+      'submit_limit' => '1', // User can submit only once.
+      'submit_interval' => '-1',
+      'total_submit_limit' => '-1',
+      'total_submit_interval' => '-1',
+      'record_exists' => TRUE,
+      'roles' => array(
+        0 => '2', // Only allow login user take survey.
+      ),
+      'progressbar_bar' => FALSE,
+      'components' => array(),
+    );
+
+    $node->revision = TRUE;
+    $node->is_current = TRUE;
+    // Save the node.
+    node_save($node);
+
+    $form_state['redirect'] = 'admin/moha/survey/edit/'. $node->nid;
+  }
+  else {
+    module_load_include('inc', 'clone', 'clone.pages');
+    $original_node = node_load($values['template']);
+    if (isset($original_node->nid) && clone_is_permitted($original_node->type)) {
+      $node = _clone_node_prepare($original_node);
+      // Let other modules do special fixing up.
+      $context = array(
+        'method' => 'save-edit',
+        'original_node' => $original_node
+      );
+      drupal_alter('clone_node', $node, $context);
+      $node->title = $values['title'];
+      $node->revision = TRUE;
+      $node->is_current = TRUE;
+
+      node_save($node);
+
+      if (module_exists('rules')) {
+        rules_invoke_event('clone_node', $node, $original_node);
+      }
+
+      $query = new EntityFieldQuery();
+      $query->entityCondition('entity_type', __MOHA_SURVEY__ENTITY__TEMPLATE)
+        ->propertyCondition('nid', $values['template'], '=')
+        ->propertyCondition('cid', 0, '=')
+        ->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY), '=');
+
+      $result = $query->execute();
+
+      if (!empty($result[__MOHA_SURVEY__ENTITY__TEMPLATE])) {
+        $result = array_shift($result[__MOHA_SURVEY__ENTITY__TEMPLATE]);
+        $entity = entity_load_single(__MOHA_SURVEY__ENTITY__TEMPLATE, $result->id);
+
+        $entity->referred += 1;
+
+        /** @var $entity MohaSurveyTemplateEntity */
+        $entity->save();
+      }
+
+      $form_state['redirect'] = 'admin/moha/survey/edit/'. $node->nid;
+    }
+  }
+
+  return;
 }
 
 /**
