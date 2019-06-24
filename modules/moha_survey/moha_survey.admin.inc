@@ -6,6 +6,59 @@
  */
 
 /**
+ * Moha Survey config form.
+ *
+ * @param $form
+ *   The form array of the overview form.
+ * @param $form_state
+ *   The overview form state which will be used for submitting.
+ *
+ * @see drupal_build_form
+ *
+ * @throws Exception
+ */
+function moha_survey_config_form($form, &$form_state) {
+
+  $form['uid'] = array(
+    '#title' => t('User ID'),
+    '#description' => t('Specify uid who is assumed to preview survey. 0 represents anonymous.'),
+    '#size' => '20',
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#default_value' => moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0),
+    '#attributes' => array(
+      'class' => array(),
+    ),
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['save'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save Configuration')
+  );
+
+  return $form;
+}
+
+/**
+ * Moha Survey config submit handling.
+ *
+ * @param $form
+ *   The form array of the overview form.
+ * @param $form_state
+ *   The overview form state which will be used for submitting.
+ *
+ * @see drupal_build_form
+ *
+ * @throws Exception
+ */
+function moha_survey_config_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+
+  moha_array_variable_set(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, $values['uid']);
+}
+
+/**
  * Survey dashboard entry.
  *
  * @return mixed
@@ -26,7 +79,6 @@ function moha_survey_dashboard() {
   $content['surveys'] = $view->preview();
 
   $content['#theme'] = array('moha_survey_dashboard'); /** @see moha_survey_dashboard.tpl.php */
-
   $content['#attached'] = array(
     'css' => array(
       MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
@@ -187,9 +239,19 @@ function moha_survey_edit_form($form, &$form_state, $node) {
     '#markup' => "<a class='button' href='$delete_url'>" . t('Delete') . "</a>" ,
   );
 
-  $preview_url = url('node/' . $node->nid);
+  $preview_url = l(t('Preview'), 'node/' . $node->nid, array(
+      'query' => array(
+        'preview' => moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0),
+      ),
+
+      'attributes' => array(
+        'class' => array('button'),
+        'target' => '_blank',
+      )
+    )
+  );
   $form['actions']['preview'] = array(
-    '#markup' => "<a class='button' href='$preview_url' target='_blank'>" . t('Preview') . "</a>" ,
+    '#markup' => $preview_url,
   );
 
   return $form;

@@ -19,6 +19,11 @@ define('__MOHA_SURVEY', 'moha_survey');
 define('MOHA_SURVEY__VARIABLES', __MOHA_SURVEY . '__variables');
 
 /**
+ * Variable name: moha_survey__variable__preview_uid.
+ */
+define('MOHA_SURVEY__VARIABLE__PREVIEW_UID', __MOHA_SURVEY . '__variable__preview_uid');
+
+/**
  * sites/all/modules/custom/moha/modules/moha_survey.
  */
 define('MOHA_SURVEY__PATH', drupal_get_path('module', __MOHA_SURVEY));
@@ -276,6 +281,18 @@ function moha_survey_menu() {
     'file' => 'moha_survey.admin.inc',
   );
 
+  // Moha Survey Configuration.
+  $items['admin/moha/survey/config'] = array(
+    'title' => 'Survey Config',
+    'description' => 'Configuration of Moha Survey',
+    'page callback' => 'drupal_get_form',
+    /** @see moha_survey_config_form */
+    'page arguments' => array('moha_survey_config_form'),
+    'access arguments' => array('administer survey config'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'moha_survey.admin.inc',
+  );
+
   // Moha Survey edit form.
   $items['admin/moha/survey/edit/%node'] = array(
     'title' => 'Survey update',
@@ -469,6 +486,7 @@ function moha_survey_question_type($component, $literal = TRUE) {
 }
 
 function moha_survey_create(){
+  drupal_goto('admin/moha/survey/clone');
   return drupal_get_form('moha_survey_add_form');
 }
 
