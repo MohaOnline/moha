@@ -10,4 +10,3 @@ files[] = includes/MohaSurveyTemplateEntity.form.inc
 files[] = includes/MohaSurveyTemplateEntity.php
 files[] = includes/MohaSurveyTemplateEntityAdminController.php
 files[] = includes/MohaSurveyTemplateEntityController.php
-

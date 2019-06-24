@@ -793,6 +793,26 @@ function moha_survey_results_download_form($form, &$form_state, $node) {
  */
 function moha_survey_clone_form($form, &$form_state, $node = NULL) {
 
+  // Prompt user clone depends on node clone module.
+  if (!module_exists('clone')) {
+    $node_clone_link = l('Node Clone', 'https://www.drupal.org/project/node_clone', array(
+      'attributes' => array(
+        'target' => '_blank',
+      )
+    ));
+
+    $enable_link = l(t('enable'), 'admin/modules', array(
+      'query' => array(
+        'filter' => 'clone',
+      ),
+      'attributes' => array(
+        'target' => '_blank',
+      )
+    ));
+
+    drupal_set_message(t("Survey Clone feature needs $node_clone_link module, please install and $enable_link it."), 'error');
+  }
+
   if (empty($node)) {
     $node = new stdClass();
     $node->nid = '';
