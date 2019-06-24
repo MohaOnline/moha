@@ -66,10 +66,6 @@ function moha_survey_theme($existing, $type, $theme, $path) {
       'template' => 'templates/moha_survey_dashboard',
       'render element' => 'content',
     ),
-    'moha_survey_lists' => array(
-      'template' => 'templates/moha_survey_lists',
-      'render element' => 'content',
-    ),
     'moha_survey_weui_webform_element_radios' => array(
       'template' => 'templates/moha_survey_weui_webform_element_radios',
       'render element' => 'element',
@@ -624,20 +620,6 @@ function moha_survey_add_form_submit($form, &$form_state) {
 
 }
 
-function moha_survey_get_owns(){
-  global $user;
-  $query = db_select('node', 'n');
-  $query->join('webform', 'w', 'n.nid=w.nid');
-  $query->fields('w')
-    ->addField('n', 'title', 'survey_name');
-  $query->addField('n', 'created');
-  $query->condition('n.uid', $user->uid, '=')
-    ->condition('n.type', 'webform', '=');
-  $result = $query->execute()->fetchAll();
-
-  return $result;
-}
-
 /**
  * Implements hook_webform_component_render_alter().
  */
@@ -645,11 +627,14 @@ function moha_survey_webform_component_render_alter(array &$element, array &$com
   // import weui.css
   $element['#attached']['css'][] = MOHA_UI__PATH . '/libs/weui/dist/style/weui.css';
 
-  if ($element['#type'] == 'radios') {
-    $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_radios';
-  } elseif ($element['#type'] == 'checkboxes') {
-    $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_checkboxes';
-  } elseif ($element['#type'] == 'textfield') {
-    $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_textfield';
+  if (isset($element['#type'])) {
+    if ($element['#type'] == 'radios') {
+      $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_radios';
+    } elseif ($element['#type'] == 'checkboxes') {
+      $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_checkboxes';
+    } elseif ($element['#type'] == 'textfield') {
+      $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_textfield';
+    }
   }
+
 }
