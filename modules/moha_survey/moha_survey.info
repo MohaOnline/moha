@@ -1,4 +1,4 @@
-name = Moha Survery
+name = Moha Survey
 description = Provides survey function.
 core = 7.x
 package = Moha Online
