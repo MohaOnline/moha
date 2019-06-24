@@ -21,6 +21,10 @@ function moha_survey_dashboard() {
   $view->override_url = $_GET['q'];
   $content['templates'] = $view->preview();
 
+  $view = views_get_view('moha_survey_list', 'survey_dashboard_lists');
+  $view->override_url = $_GET['q'];
+  $content['surveys'] = $view->preview();
+
   $content['#theme'] = array('moha_survey_dashboard'); /** @see moha_survey_dashboard.tpl.php */
 
   $content['#attached'] = array(

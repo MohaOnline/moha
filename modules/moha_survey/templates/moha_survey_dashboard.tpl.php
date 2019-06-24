@@ -12,10 +12,7 @@
       </div>
       <!-- /.box-header -->
       <div class="box-body no-padding">
-         <?php
-         $my_surveys = moha_survey_get_owns();
-         print theme('moha_survey_lists', array('surveys' => $my_surveys));
-         ?>
+        <?php print $content['surveys']; ?>
       </div>
       <!-- /.box-body -->
     </div>
