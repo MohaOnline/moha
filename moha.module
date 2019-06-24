@@ -60,9 +60,19 @@ define('MOHA__URL__RACI_ADMIN_UI', MOHA__URL__ENTITIES . '/raci');
 define('MOHA__PERMISSION__EDIT_ANY_RACI', 'edit any moha raci');
 
 /**
- * Permission: Site root
+ * Permission: Site root.
  */
 define('MOHA__PERMISSION__ROOT', 'administer site configuration');
+
+/**
+ * Permission: Site Preview.
+ */
+define('MOHA__PERMISSION__SITE_PREVIEW', 'moha site preview as user');
+
+/**
+ * Permission: Site Preview.
+ */
+define('MOHA__PERMISSION__SITE_PREVIEW_ANONYMOUS', 'moha site preview as anonymous');
 
 /**
  * JSON encoding options: bitmask.
@@ -407,6 +417,15 @@ function moha_permissions_4_admin() {
  */
 function moha_permission() {
   $permissions = moha_entity_permission(__MOHA_RACI);
+
+  $permissions[MOHA__PERMISSION__SITE_PREVIEW] = array(
+    'title' => t('Moha Site Preview as user'),
+    'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
+  );
+  $permissions[MOHA__PERMISSION__SITE_PREVIEW_ANONYMOUS] = array(
+    'title' => t('Moha Site Preview as anonymous'),
+    'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
+  );
 
   return $permissions;
 }
@@ -1020,15 +1039,40 @@ function moha_draggable_table_data_prepare_for_saving(&$values) {
  * Implements hook_init().
  */
 function moha_init() {
+  moha_preview_handle();
+}
+
+/**
+ * Change current user per passed preview query parameter.
+ */
+function moha_preview_handle() {
   // Return anonymous page for preview.
   $parms = drupal_get_query_parameters();
   if (isset($parms['preview'])) {
-    global $user;
-    drupal_save_session(FALSE);
-    $user = user_load(0);
+    $uid = $parms['preview'];
 
-    // Suppress fancy stuff like admin and admin_menu.module for the preview.
-    module_invoke_all('suppress');
+    if (user_access(MOHA__PERMISSION__SITE_PREVIEW) ||
+      user_access(MOHA__PERMISSION__SITE_PREVIEW_ANONYMOUS)) {
+
+      drupal_save_session(FALSE);
+      global $user;
+      $new_user = NULL;
+
+      // If passed UID is invalid, or user doesn't exist, preview as anonymous.
+      if (user_access(MOHA__PERMISSION__SITE_PREVIEW) && is_numeric($uid)) {
+
+        if ($user->uid == $uid) { return; }
+        $new_user = user_load($uid);
+        if ($new_user) { $user = $new_user; }
+      }
+
+      if (empty($new_user)) {
+        $user = user_load(0);
+      }
+
+      // Suppress fancy stuff like admin and admin_menu.module for the preview.
+      module_invoke_all('suppress');
+    }
   }
 }
 
