@@ -31,6 +31,8 @@ function moha_survey_views_default_views() {
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['exposed_form']['options']['submit_button'] = '应用';
+  $handler->display->display_options['exposed_form']['options']['reset_button_label'] = '重置';
   $handler->display->display_options['pager']['type'] = 'some';
   $handler->display->display_options['pager']['options']['items_per_page'] = '20';
   $handler->display->display_options['pager']['options']['offset'] = '0';
@@ -40,7 +42,6 @@ function moha_survey_views_default_views() {
     'name' => 'name',
     'referred' => 'referred',
   );
-  $handler->display->display_options['style_options']['class'] = '';
   $handler->display->display_options['style_options']['default'] = 'referred';
   $handler->display->display_options['style_options']['info'] = array(
     'template_name' => array(
@@ -93,6 +94,7 @@ function moha_survey_views_default_views() {
   $handler->display->display_options['fields']['nid']['label'] = '';
   $handler->display->display_options['fields']['nid']['exclude'] = TRUE;
   $handler->display->display_options['fields']['nid']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['nid']['separator'] = '';
   /* Field: Moha Survey Template: ID */
   $handler->display->display_options['fields']['id']['id'] = 'id';
   $handler->display->display_options['fields']['id']['table'] = 'moha_survey_template';
