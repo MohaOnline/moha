@@ -24,6 +24,7 @@ function _webform_defaults_moha_ui_rating() {
       /* When rating value is less than this value, details need be provided. */
       /* Use 0 when the low score is not concerned. */
       'threshold_score' => 3,
+      'nps' => false,
       /* Concrete survey question, if empty then use label. */
       'question' => '',
     ),
@@ -47,6 +48,14 @@ function _webform_edit_moha_ui_rating(array $component, array $form, array $form
     '#collapsed' => false,
   );
 
+  $form['extra']['nps'] = array(
+    '#title' => t('NPS'),
+    '#description' => t('Check if this is an NPS survey item.'),
+    '#type' => 'checkbox',
+    '#return_value' => TRUE,
+    '#default_value' => isset($component['extra']['nps'])?$component['extra']['nps']:FALSE,
+  );
+
   $form['extra']['max_score'] = array(
     '#title' => t('Max score'),
     '#description' => t('Specify allowed max score.'),
@@ -57,10 +66,15 @@ function _webform_edit_moha_ui_rating(array $component, array $form, array $form
 
   $form['extra']['threshold_score'] = array(
     '#title' => t('Threshold score'),
-    '#description' => t('Specify a number, when rating is less or equals than the value, details need be provided. '),
+    '#description' => t('Specify a number, when rating is less or equals than the value, low score reason need be provided.'),
     '#size' => '10',
     '#type' => 'textfield',
     '#default_value' => $component['extra']['threshold_score'],
+  );
+  $form['extra']['#attached'] = array(
+    'js' => array(
+      MOHA_UI__PATH. '/webform/components/js/moha_ui_rating.js'
+    ),
   );
 
   return $form;

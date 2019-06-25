@@ -485,6 +485,7 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
     $component['_type'] = 'rating';
     $component['extra']['max_score'] = 5;
     $component['extra']['threshold_score'] = 3;
+    $component['extra']['nps'] = 3;
     $component['extra']['_options'] = array();
   }
 
@@ -535,8 +536,8 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
   );
 
   $form['rating'] = array(
+    '#title' => t('Rating Options'),
     '#type' => 'fieldset',
-    '#title' => t('Rating'),
     '#states' => array(
       'visible' => array(
         ':input[name="type"]' => array('value' => 'rating'),
@@ -546,21 +547,11 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
 
   $rating = &$form['rating'];
 
-  $rating['max_score'] = array(
-    '#title' => t('Max score'),
-    '#description' => t('Specify allowed max score.'),
-    '#size' => '10',
-    '#type' => 'textfield',
-    '#default_value' => $component['extra']['max_score'],
-  );
-
-  $rating['threshold_score'] = array(
-    '#title' => t('Threshold score'),
-    '#description' => t('Specify a number, when rating is less or equals than the value, details need be provided. '),
-    '#size' => '10',
-    '#type' => 'textfield',
-    '#default_value' => $component['extra']['threshold_score'],
-  );
+  module_load_include('inc', __MOHA_UI, 'webform/components/moha_ui_rating');
+  $form_items = _webform_edit_moha_ui_rating($component, array(), array());
+  foreach (element_children($form_items['extra']) as $key) {
+    $rating[$key] = $form_items['extra'][$key];
+  }
 
   $form['options'] = array(
     '#type' => 'fieldset',
@@ -643,6 +634,7 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
       MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
     ),
     'js' => array(
+      MOHA_UI__PATH. '/webform/components/moha_ui_rating.js'
     ),
   );
 
