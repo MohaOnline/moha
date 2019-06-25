@@ -1,5 +1,5 @@
 <?php
-//kpr($element);
+
 function moha_survey_weui_radios_labels($element){
   $options = $element['#options'];
   $default_value = $element['#default_value'];
