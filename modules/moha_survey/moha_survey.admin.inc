@@ -979,6 +979,7 @@ function moha_survey_clone_form_submit($form, &$form_state) {
     // Save the node.
     node_save($node);
 
+    $form_state['node'] = $node;
     $form_state['redirect'] = 'admin/moha/survey/edit/'. $node->nid;
   }
   else {
@@ -1020,6 +1021,7 @@ function moha_survey_clone_form_submit($form, &$form_state) {
         $entity->save();
       }
 
+      $form_state['node'] = $node;
       $form_state['redirect'] = 'admin/moha/survey/edit/'. $node->nid;
     }
   }
