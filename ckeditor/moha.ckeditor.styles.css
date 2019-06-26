@@ -158,13 +158,14 @@ h1, h2, h3, h4, h5, h6 {
 
 }
 
-
-.cke_panel_listItem h4, .cke_editable_themed.cke_show_blocks h4, .node-type-moha-clip div.main-container h4{
+.cke_panel_listItem h4,
+.cke_editable_themed.cke_show_blocks.cke_contents_ltr h4:not([contenteditable=false]):not(.cke_show_blocks_off),
+.node-type-moha-clip div.main-container h4{
   font-size: 1em;
   line-height: normal;
-  background: #e7f2fa;
-  color: #337ab7;
-  border-left: solid 3px #337ab7;
+  background-color: #ddd;
+  color: #333;
+  border-left: solid 3px #666;
   padding: 6px 8px 6px 8px;
 }
 /***/

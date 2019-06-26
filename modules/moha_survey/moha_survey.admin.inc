@@ -514,7 +514,7 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
     '#type' => 'radios',
     '#default_value' => $component['_type'],
     '#options' => array(
-      'rating' => t('Rating'),
+      'rating' => t('Rating ( Score / NPS )'),
       'radio' => t('Radio box'),
       'check' => t('Check box'),
       'textfield' => t('Text field'),
@@ -688,6 +688,7 @@ function moha_survey_component_edit_form_submit($form, &$form_state) {
       $component['type'] = 'moha_ui_rating';
       $component['extra']['max_score'] = $values['max_score'];
       $component['extra']['threshold_score'] = $values['threshold_score'];
+      $component['extra']['nps'] = $values['nps'];
       break;
     case 'radio':
       $component['type'] = 'select';

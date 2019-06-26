@@ -1,3 +1,4 @@
+
 h1.page-header {
   display: none;
 }
@@ -33,7 +34,6 @@ h1.page-header {
     width: auto;
   }
 }
-
 /***/
 
 /** Sidebar definition. */
@@ -109,6 +109,10 @@ div.toc-block {
 
 .white-back-2018 .toc-block {
   border-color: #e0e0e0;
+}
+
+#tocify {
+  overflow-x: hidden;
 }
 
 .white-back-2018 #tocify li.active {

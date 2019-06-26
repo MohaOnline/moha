@@ -5,10 +5,30 @@
 
 /**
  * Implements hook_enable().
+ *
+ * @throws Exception
  */
 function moha_survey_enable() {
   // Disable author and date information.
   variable_set('node_submitted_webform', FALSE);
+  $user = user_load_by_name('moha_survey_preview');
+  if (empty($user)) {
+    $user_fields = array(
+      'name' => 'moha_survey_preview',
+      'pass' => user_password(16),
+      'mail' => 'moha_survey_preview@moha.online',
+      'status' => 1,
+      'init' => __FUNCTION__,
+      'roles' => array(
+        DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+      ),
+    );
+
+    // The first parameter is sent blank so a new user is created.
+    $user = user_save('', $user_fields);
+  }
+
+  moha_array_variable_set(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, $user->uid);
 }
 
 /**

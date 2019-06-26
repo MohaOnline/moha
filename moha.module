@@ -509,7 +509,8 @@ function moha_menu() {
   $items['admin/moha/db-update'] = array(
     'title' => t('Moha DB Update'),
     'description' => t('Perform DB Schema or Table Update'),
-    'page callback' => 'moha_db_update_form',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => 'moha_db_update_form',
     'access arguments' => array(MOHA__PERMISSION__ROOT),
     'file' => 'ckeditor/moha.admin.inc',
     'type' => MENU_NORMAL_ITEM,

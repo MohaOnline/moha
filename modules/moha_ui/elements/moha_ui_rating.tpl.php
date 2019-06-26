@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * template
+ *   template for element.
  */
 ?>
 <div>

@@ -24,7 +24,7 @@ function _webform_defaults_moha_ui_rating() {
       /* When rating value is less than this value, details need be provided. */
       /* Use 0 when the low score is not concerned. */
       'threshold_score' => 3,
-      'nps' => false,
+      'nps' => FALSE,
       /* Concrete survey question, if empty then use label. */
       'question' => '',
     ),
@@ -71,6 +71,7 @@ function _webform_edit_moha_ui_rating(array $component, array $form, array $form
     '#type' => 'textfield',
     '#default_value' => $component['extra']['threshold_score'],
   );
+
   $form['extra']['#attached'] = array(
     'js' => array(
       MOHA_UI__PATH. '/webform/components/js/moha_ui_rating.js'
@@ -264,8 +265,49 @@ function _webform_theme_moha_ui_rating() {
  *
  * @see _webform_analysis_component
  */
-function _webform_analysis_moha_ui_rating() {
+function _webform_analysis_moha_ui_rating($component, $sids = array(), $single = FALSE, $join = NULL) {
+  if (!$single) {
+    /** @link https://jegtnes.com/blog/calculating-a-net-promoter-score-nps-in-sqlite-postgresql-and-mysql/ @endlink */
+    /*
+SELECT CAST(((
+  SUM(CASE WHEN recommendRating BETWEEN 9 AND 10 THEN 1 ELSE 0 END) * 1.0 -
+  SUM(CASE WHEN recommendRating BETWEEN 0 AND 6 THEN 1 ELSE 0 END)
+  ) / COUNT(*) * 100) AS int) NPS FROM exitSurvey
+WHERE recommendRating IS NOT NULL
+     */
 
+    /*
+ p
+SELECT * FROM (
+	SELECT CAST(`data` as signed) Score FROM `webform_submitted_data` WHERE `no` = 'rating'
+) as Rating;
+
+     * */
+
+    // Generate a lookup table of results.
+    $query = db_select('webform_submitted_data')
+      ->fields('webform_submitted_data', array('data'))
+      ->condition('nid', $component['nid'])
+      ->condition('cid', $component['cid'])
+      ->condition('no', 'rating');
+
+    /** @var $query SelectQueryInterface */
+    $query->addExpression('COUNT(sid)', 'datacount');
+
+    if (count($sids)) {
+      $query->condition('sid', $sids, 'IN');
+    }
+
+    if ($join) {
+      $query->innerJoin($join, 'ws2_', 'wsd.sid = ws2_.sid');
+    }
+
+    $result = $query->execute();
+    $counts = array();
+    foreach ($result as $data) {
+      $counts[$data->no][$data->data] = $data->datacount;
+    }
+  }
 }
 
 /**
