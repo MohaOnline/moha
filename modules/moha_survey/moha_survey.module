@@ -407,6 +407,14 @@ function moha_survey_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
+  $items['admin/moha/survey/preview/%'] = array(
+    'title' => 'Survey preview',
+    'page callback' => 'moha_survey_preview',
+    'page arguments' => array(4),
+    'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -654,5 +662,20 @@ function moha_survey_webform_component_render_alter(array &$element, array &$com
       $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_textfield';
     }
   }
+
+}
+
+function moha_survey_preview($nid){
+  $node = node_load($nid);
+  $node_view = node_view($node);
+  return '<div style="width:414px; margin:0 auto;">'.render($node_view).'</div>';
+}
+
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function moha_survey_preprocess_webform_element(&$variables) {
+
 
 }
