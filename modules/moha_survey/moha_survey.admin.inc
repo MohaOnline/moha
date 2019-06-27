@@ -183,76 +183,76 @@ function moha_survey_edit_form($form, &$form_state, $node) {
 //        '#links' => $operations,
       );
     }
-  }
 
-  $form['advanced'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Advanced Options'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
+    $form['advanced'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Advanced Options'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
 
-  $advanced = &$form['advanced'];
+    $advanced = &$form['advanced'];
 
-  $advanced['status'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Keep survey active.'),
-    '#description' => 'Uncheck to close survey and stop collecting data.',
-    '#default_value' => $node->webform['status'],
-  );
+    $advanced['status'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Keep survey active.'),
+      '#description' => 'Uncheck to close survey and stop collecting data.',
+      '#default_value' => $node->webform['status'],
+    );
 
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', __MOHA_SURVEY__ENTITY__TEMPLATE)
-    ->propertyCondition('nid', $node->nid, '=')
-    ->propertyCondition('cid', 0, '=')
-    ->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY), '=');
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', __MOHA_SURVEY__ENTITY__TEMPLATE)
+      ->propertyCondition('nid', $node->nid, '=')
+      ->propertyCondition('cid', 0, '=')
+      ->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY), '=');
 
-  $result = $query->execute();
+    $result = $query->execute();
 
-  if (!empty($result[__MOHA_SURVEY__ENTITY__TEMPLATE])) {
-    $template = 1;
-  }
-  else {
-    $template = 0;
-  }
+    if (!empty($result[__MOHA_SURVEY__ENTITY__TEMPLATE])) {
+      $template = 1;
+    }
+    else {
+      $template = 0;
+    }
 
-  $advanced['template'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Pin this survey as template.'),
-    '#description' => 'Check to mark this survey as template.',
-    '#default_value' => $template,
-  );
+    $advanced['template'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Pin this survey as template.'),
+      '#description' => 'Check to mark this survey as template.',
+      '#default_value' => $template,
+    );
 
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['save'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save Survey')
-  );
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['save'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save Survey')
+    );
 
-  $component_url = url('admin/moha/survey/component/' . $node->nid . '/0', array('query' => array('destination' => 'admin/moha/survey/edit/' . $node->nid)));
-  $form['actions']['component'] = array(
-    '#markup' => "<a class='button' href='$component_url'>" . t('Add Question') . "</a>" ,
-  );
+    $component_url = url('admin/moha/survey/component/' . $node->nid . '/0', array('query' => array('destination' => 'admin/moha/survey/edit/' . $node->nid)));
+    $form['actions']['component'] = array(
+      '#markup' => "<a class='button' href='$component_url'>" . t('Add Question') . "</a>" ,
+    );
 
-  $delete_url = url('admin/moha/survey/delete/' . $node->nid);
-  $form['actions']['delete'] = array(
-    '#markup' => "<a class='button' href='$delete_url'>" . t('Delete') . "</a>" ,
-  );
+    $delete_url = url('admin/moha/survey/delete/' . $node->nid);
+    $form['actions']['delete'] = array(
+      '#markup' => "<a class='button' href='$delete_url'>" . t('Delete') . "</a>" ,
+    );
 
-  $preview_url = l(t('Preview'), 'node/' . $node->nid, array(
-      'query' => array(
-        'preview' => moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0),
-      ),
+    $preview_url = l(t('Preview'), 'node/' . $node->nid, array(
+        'query' => array(
+          'preview' => moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0),
+        ),
 
-      'attributes' => array(
-        'class' => array('button'),
-        'target' => '_blank',
+        'attributes' => array(
+          'class' => array('button'),
+          'target' => '_blank',
+        )
       )
-    )
-  );
-  $form['actions']['preview'] = array(
-    '#markup' => $preview_url,
-  );
+    );
+    $form['actions']['preview'] = array(
+      '#markup' => $preview_url,
+    );
+  }
 
   return $form;
 }
@@ -995,15 +995,16 @@ function moha_survey_clone_form_submit($form, &$form_state) {
       );
       drupal_alter('clone_node', $node, $context);
       $node->title = $values['title'];
+
       $node->revision = TRUE;
       $node->is_current = TRUE;
-
       node_save($node);
 
       if (module_exists('rules')) {
         rules_invoke_event('clone_node', $node, $original_node);
       }
 
+      // Template referred + 1.
       $query = new EntityFieldQuery();
       $query->entityCondition('entity_type', __MOHA_SURVEY__ENTITY__TEMPLATE)
         ->propertyCondition('nid', $values['template'], '=')
@@ -1022,7 +1023,8 @@ function moha_survey_clone_form_submit($form, &$form_state) {
         $entity->save();
       }
 
-      $form_state['node'] = $node;
+      $form_state['node'] = $node; // Cache cloned node for other altered submit use.
+      /** @see moha_survey_edit_form */
       $form_state['redirect'] = 'admin/moha/survey/edit/'. $node->nid;
     }
   }

@@ -267,46 +267,43 @@ function _webform_theme_moha_ui_rating() {
  */
 function _webform_analysis_moha_ui_rating($component, $sids = array(), $single = FALSE, $join = NULL) {
   if (!$single) {
-    /** @link https://jegtnes.com/blog/calculating-a-net-promoter-score-nps-in-sqlite-postgresql-and-mysql/ @endlink */
-    /*
-SELECT CAST(((
-  SUM(CASE WHEN recommendRating BETWEEN 9 AND 10 THEN 1 ELSE 0 END) * 1.0 -
-  SUM(CASE WHEN recommendRating BETWEEN 0 AND 6 THEN 1 ELSE 0 END)
-  ) / COUNT(*) * 100) AS int) NPS FROM exitSurvey
-WHERE recommendRating IS NOT NULL
-     */
-
-    /*
- p
-SELECT * FROM (
-	SELECT CAST(`data` as signed) Score FROM `webform_submitted_data` WHERE `no` = 'rating'
+    if ($component['extra']['nps']) {
+      /** @link https://jegtnes.com/blog/calculating-a-net-promoter-score-nps-in-sqlite-postgresql-and-mysql/ @endlink */
+      $query = <<<QUERY
+SELECT CAST( (SUM(CASE WHEN Score BETWEEN 9 AND 10 THEN 1 ELSE 0 END) * 1.0 - SUM(CASE WHEN Score BETWEEN 0 AND 6 THEN 1 ELSE 0 END)) / COUNT(Score) * 100 AS signed ) score FROM (
+	SELECT CAST(`data` as signed) Score FROM `webform_submitted_data` WHERE `nid` = :nid and `cid` = :cid and `no` = 'rating'
 ) as Rating;
+QUERY;
+      $header[] = 'NPS';
+    }
+    else {
+      $query = <<<QUERY
+SELECT CAST(AVG(`Score`) as unsigned) score FROM (
+	SELECT CAST(`data` as signed) Score FROM `webform_submitted_data` WHERE `nid` = 109 and `cid` = 7 and `no` = 'rating'
+) as Rating;
+QUERY;
+      $header[] = 'Rating';
+    }
+    
+    $record = db_query($query,
+      array(
+        ':nid' => $component['nid'],
+        ':cid' => $component['cid'],
+      )
+    )->fetchAssoc();
 
-     * */
+    if ($record) {
+      $rows[] = array($record['score']);
 
-    // Generate a lookup table of results.
-    $query = db_select('webform_submitted_data')
-      ->fields('webform_submitted_data', array('data'))
-      ->condition('nid', $component['nid'])
-      ->condition('cid', $component['cid'])
-      ->condition('no', 'rating');
-
-    /** @var $query SelectQueryInterface */
-    $query->addExpression('COUNT(sid)', 'datacount');
-
-    if (count($sids)) {
-      $query->condition('sid', $sids, 'IN');
+      return array(
+        'table_header' => $header,
+        'table_rows' => $rows,
+      );
     }
 
-    if ($join) {
-      $query->innerJoin($join, 'ws2_', 'wsd.sid = ws2_.sid');
-    }
+  }
+  else { // not single analysis.
 
-    $result = $query->execute();
-    $counts = array();
-    foreach ($result as $data) {
-      $counts[$data->no][$data->data] = $data->datacount;
-    }
   }
 }
 
