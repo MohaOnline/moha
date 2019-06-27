@@ -462,6 +462,7 @@ function moha_survey_question_type($component, $literal = TRUE) {
   static $type_literals = array(
     'textfield' => 'Text Field',
     'rating' => 'Rating',
+    'nps' => 'NPS',
     'radio' => 'Radio Box',
     'check' => 'Check Box',
   );
@@ -472,6 +473,9 @@ function moha_survey_question_type($component, $literal = TRUE) {
 
   if ($component['type'] == 'textfield') {
     $type = 'textfield';
+  }
+  elseif ($component['type'] == 'moha_ui_rating' && isset($component['extra']['nps']) && $component['extra']['nps'] == TRUE) {
+    $type = 'nps';
   }
   elseif ($component['type'] == 'moha_ui_rating') {
     $type = 'rating';
@@ -487,7 +491,7 @@ function moha_survey_question_type($component, $literal = TRUE) {
   }
 
   if ($literal) {
-    $type = $type_literals[$type];
+    $type = t($type_literals[$type]);
   }
 
   return $type;

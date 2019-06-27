@@ -66,7 +66,7 @@ function _webform_edit_moha_ui_rating(array $component, array $form, array $form
 
   $form['extra']['threshold_score'] = array(
     '#title' => t('Threshold score'),
-    '#description' => t('Specify a number, when rating is less or equals than the value, low score reason need be provided.'),
+    '#description' => t('Specify a number, when rating is less or equals than the value, low score reason need be provided. Specify 0 if you do not care low score reason.'),
     '#size' => '10',
     '#type' => 'textfield',
     '#default_value' => $component['extra']['threshold_score'],
@@ -284,7 +284,7 @@ SELECT CAST(AVG(`Score`) as unsigned) score FROM (
 QUERY;
       $header[] = 'Rating';
     }
-    
+
     $record = db_query($query,
       array(
         ':nid' => $component['nid'],
@@ -300,7 +300,6 @@ QUERY;
         'table_rows' => $rows,
       );
     }
-
   }
   else { // not single analysis.
 

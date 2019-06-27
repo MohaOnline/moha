@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * @Created: 23/02/2018 3:38 AM
+ *   CKeditor related functions.
  */
 
 /**
