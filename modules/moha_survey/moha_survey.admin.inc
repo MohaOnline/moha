@@ -115,7 +115,7 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       '#markup' => t('Invalid survey.'),
     );
   }
-  else {
+  else {  // Valid Webform Node passed.
 
     // Survey title.
     $form['title'] = array(
@@ -253,6 +253,14 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       '#markup' => $preview_url,
     );
   }
+
+  $form['#attached'] = array(
+    'css' => array(
+      MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
+    ),
+    'js' => array(
+    ),
+  );
 
   return $form;
 }
@@ -442,6 +450,29 @@ function moha_survey_delete_form_submit($form, &$form_state) {
  */
 function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
 
+  // Prompt user clone depends on node clone module.
+  $has_options_element = TRUE;
+  if (!module_exists('options_element')) {
+    $has_options_element = FALSE;
+
+    $module_link = l('Options Element', 'https://www.drupal.org/project/options_element', array(
+      'attributes' => array(
+        'target' => '_blank',
+      )
+    ));
+
+    $enable_link = l(t('enable'), 'admin/modules', array(
+      'query' => array(
+        'filter' => 'options_element',
+      ),
+      'attributes' => array(
+        'target' => '_blank',
+      )
+    ));
+
+    drupal_set_message(t("Radio and check box question type needs $module_link module, please install and $enable_link it."), 'warning');
+  }
+
   if (empty($node) || $node->type != 'webform') {
     watchdog(__FUNCTION__, 'node does not exist, or node is not webform.', array(
     ), WATCHDOG_WARNING);
@@ -452,6 +483,9 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
   if ($cid>0 && isset($node->webform['components'][$cid])) {
     $component = $node->webform['components'][$cid];
     $component['_type'] = moha_survey_question_type($component, FALSE);
+    if ($component['_type'] == 'nps') {
+      $component['_type'] = 'rating';
+    }
 
     if (!isset($component['extra']['max_score'])) {
       $component['extra']['max_score'] = 5;
@@ -520,6 +554,11 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
       'textfield' => t('Text field'),
     ),
   );
+
+  if ($has_options_element == FALSE) {
+    unset($form['type']['#options']['radio']);
+    unset($form['type']['#options']['check']);
+  }
 
   $form['name'] = array(
     '#title' => t('Question'),
@@ -817,19 +856,48 @@ function moha_survey_component_delete_form_submit($form, &$form_state) {
 }
 
 /**
- * Create a table containing all submitted values for a survey.
+ * Survey analysis page.
+ * Leverages analysis function from Webform.
+ *
+ * @inheritdoc
  */
-function moha_survey_results_submissions($node, $pager_count = 0) {
+function moha_survey_results_analysis($node, $sids = array(), $analysis_component = NULL) {
   module_load_include('inc', 'webform', 'includes/webform.report');
-  return webform_results_table($node, $pager_count);
+  $content = webform_results_analysis($node, $sids, $analysis_component);
+  $content['#attached'] = array(
+    'css' => array(
+      MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
+    ),
+    'js' => array(
+    ),
+  );
+
+  /** @see webform_analysis_components_form */
+  hide($content['form']['help']);
+
+  return $content;
 }
 
 /**
- * Menu callback; Download an exported file.
+ * Create a table containing all submitted values for a survey.
+ *
+ * @inheritdoc
  */
-function moha_survey_results_download_callback($node){
+function moha_survey_results_submissions($node, $pager_count = 0) {
   module_load_include('inc', 'webform', 'includes/webform.report');
-  return webform_results_download_callback($node);
+  $content['html'] = array(
+    '#markup' => webform_results_table($node, $pager_count),
+  );
+
+  $content['#attached'] = array(
+    'css' => array(
+      MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
+    ),
+    'js' => array(
+    ),
+  );
+
+  return $content;
 }
 
 /**
@@ -839,6 +907,13 @@ function moha_survey_results_download_form($form, &$form_state, $node) {
   module_load_include('inc', 'webform', 'includes/webform.report');
   $form = webform_results_download_form($form, $form_state, $node);
   $form['#submit'][] = 'webform_results_download_form_submit';
+  $form['#attached'] = array(
+    'css' => array(
+      MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
+    ),
+    'js' => array(
+    ),
+  );
 
   return $form;
 }
@@ -850,7 +925,7 @@ function moha_survey_clone_form($form, &$form_state, $node = NULL) {
 
   // Prompt user clone depends on node clone module.
   if (!module_exists('clone')) {
-    $node_clone_link = l('Node Clone', 'https://www.drupal.org/project/node_clone', array(
+    $module_link = l('Node Clone', 'https://www.drupal.org/project/node_clone', array(
       'attributes' => array(
         'target' => '_blank',
       )
@@ -865,7 +940,7 @@ function moha_survey_clone_form($form, &$form_state, $node = NULL) {
       )
     ));
 
-    drupal_set_message(t("Survey Clone feature needs $node_clone_link module, please install and $enable_link it."), 'error');
+    drupal_set_message(t("Survey Clone feature needs $module_link module, please install and $enable_link it."), 'error');
   }
 
   if (empty($node)) {
@@ -955,7 +1030,7 @@ function moha_survey_clone_form_submit($form, &$form_state) {
     $node->webform = array(
       'confirmation' => '',
       'confirmation_format' => NULL,
-      'redirect_url' => 'moha/survey/success',
+      'redirect_url' => 'moha/survey/thanks',
       'status' => '1',
       'block' => '0',
       'teaser' => '0',

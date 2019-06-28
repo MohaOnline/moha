@@ -46,3 +46,13 @@
   text-transform: capitalize;
 }
 /***/
+
+/** Survey edit analysis */
+.page-admin-moha-survey-edit-analysis .webform-analysis-component {
+  width: 100%;
+}
+
+.page-admin-moha-survey-edit-analysis .webform-analysis-component-inner {
+  padding: 0;
+}
+/***/
