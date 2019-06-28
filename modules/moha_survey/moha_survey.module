@@ -20,6 +20,8 @@ define('MOHA_SURVEY__VARIABLES', __MOHA_SURVEY . '__variables');
 
 /**
  * Variable name: moha_survey__variable__preview_uid.
+ * @example moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0)
+ * @example moha_array_variable_set(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, $values['uid']);
  */
 define('MOHA_SURVEY__VARIABLE__PREVIEW_UID', __MOHA_SURVEY . '__variable__preview_uid');
 
@@ -345,14 +347,14 @@ function moha_survey_menu() {
     'type' => MENU_LOCAL_TASK,
   );
   // Moha Survey Clone.
-  $items['admin/moha/survey/clone'] = array(
-    'title' => 'Survey Clone',
+  $items['admin/moha/survey/create'] = array(
+    'title' => 'Survey Creation',
     'description' => 'Forward user to Survey creation page without a template selected.',
     /** @see moha_survey_clone_form */
     'page callback' => 'drupal_get_form',
     'page arguments' => array('moha_survey_clone_form'),
     'access arguments' => array('administer own survey'),
-    'type' => MENU_CALLBACK,
+    'type' => MENU_LOCAL_TASK,
     'file' => 'moha_survey.admin.inc',
   );
 
@@ -407,7 +409,7 @@ function moha_survey_menu() {
   // Moha Survey component delete form.
   $items['admin/moha/survey/component-delete/%node/%'] = array(
     'title' => 'Survey question delete',
-    'description' => 'Delete a component from a survey.',
+    'description' => 'Eleminate a component from a survey.',
     'page callback' => 'drupal_get_form',
     /** @see moha_survey_component_edit_form */
     'page arguments' => array('moha_survey_component_delete_form', 4, 5),
@@ -416,15 +418,7 @@ function moha_survey_menu() {
     'file' => 'moha_survey.admin.inc',
   );
 
-  $items['admin/moha/survey/add'] = array(
-    'title' => 'Create a survey',
-    'page callback' => 'moha_survey_create',
-    // TODO set proper permissions.
-    'access callback' => TRUE,
-    'type' => MENU_LOCAL_TASK,
-  );
-
-  $items['admin/moha/survey/preview/%'] = array(
+  $items['moha/survey/preview/%'] = array(
     'title' => 'Survey preview',
     'page callback' => 'moha_survey_preview',
     'page arguments' => array(4),
@@ -516,155 +510,6 @@ function moha_survey_question_type($component, $literal = TRUE) {
 
 function moha_survey_create(){
   drupal_goto('admin/moha/survey/clone');
-  return drupal_get_form('moha_survey_add_form');
-}
-
-function moha_survey_add_form($form, &$form_state) {
-
-  $form['survey_name'] = array(
-    '#type' => 'textfield',
-    '#title' => 'survey name',
-  );
-
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => 'Add',
-  );
-
-  if (defined('__MOHA_UI')) {
-    $form['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
-    $form['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
-  }
-
-  return $form;
-}
-
-
-function moha_survey_add_form_submit($form, &$form_state) {
-
-  global $user;
-  //https://www.drupal.org/node/2030697  Programmatically creating a webform
-  $node = new stdClass();
-  $node->type = 'webform';
-  node_object_prepare($node);
-  $node->title = $form_state['values']['survey_name'];
-  $node->language = 'en';
-  $node->body[LANGUAGE_NONE][0]['value']   = '';
-  $node->body[LANGUAGE_NONE][0]['format']  = 'full_html';
-  $node->uid = $user->uid;
-  $node->promote = 0;
-  $node->comment = 0;
-
-  $weight = 0;
-  // Create the webform components.
-  $components = array(
-    array(
-      'name' => 'Gender',
-      'form_key' => str_replace('-', '_', ctools_uuid_generate()),
-      'type' => 'select',
-      'mandatory' => 1,
-      'weight' => ++$weight,
-      'pid' => 0, // no field set.
-      'required' => 1,
-      'extra' => array(
-        'title_display' => 'before',
-        'description_above' => 1,
-        'private' => 0,
-        'items' => "0|Mrs\n1|Miss\n2|Mr",
-        'aslist' => 0,
-        'multiple' => 0,
-      ),
-    ),
-    array(
-      'name' => 'Where did you visit?',
-      'form_key' => str_replace('-', '_', ctools_uuid_generate()),
-      'type' => 'select',
-      'mandatory' => 1,
-      'weight' => ++$weight,
-      'pid' => 0,
-      'required' => 1,
-      'extra' => array(
-        'title_display' => 'before',
-        'description_above' => 1,
-        'private' => 0,
-        'items' => "0|Paris\n1|Tokyo\n2|Shanghai\n3|New York",
-        'aslist' => 0,
-        'multiple' => 1,
-      ),
-    ),
-    array(
-      'name' => 'Name',
-      'form_key' => str_replace('-', '_', ctools_uuid_generate()),
-      'type' => 'textfield',
-      'mandatory' => 1,
-      'weight' => ++$weight,
-      'pid' => 0,
-      'extra' => array(
-        'title_display' => 'before',
-        'private' => 0,
-      ),
-    ),
-    array(
-      'name' => 'question1',
-      'form_key' => str_replace('-', '_', ctools_uuid_generate()),
-      'type' => 'moha_ui_rating',
-      'mandatory' => 1,
-      'weight' => ++$weight,
-      'pid' => 0,
-      'extra' => array(
-        'title_display' => 'before',
-        'private' => 0,
-        'max_score' => 5,
-        'threshold_score' => 3,
-      ),
-    ),
-    array(
-      'name' => 'question2',
-      'form_key' => str_replace('-', '_', ctools_uuid_generate()),
-      'type' => 'moha_ui_rating',
-      'mandatory' => 1,
-      'weight' => ++$weight,
-      'pid' => 0,
-      'extra' => array(
-        'title_display' => 'before',
-        'private' => 0,
-        'max_score' => 5,
-        'threshold_score' => 3,
-      ),
-    ),
-  );
-
-  // Attach the webform to the node.
-  $node->webform = array(
-    'confirmation' => '',
-    'confirmation_format' => NULL,
-    'redirect_url' => 'moha/survey/submitted',
-    'status' => '1',
-    'block' => '0',
-    'teaser' => '0',
-    'allow_draft' => '0',
-    'auto_save' => '0',
-    'submit_notice' => '1',
-    'submit_text' => '',
-    'submit_limit' => '1', // User can submit only once.
-    'submit_interval' => '-1',
-    'total_submit_limit' => '-1',
-    'total_submit_interval' => '-1',
-    'record_exists' => TRUE,
-    'roles' => array(
-      0 => '2', // Only allow login user take survey.
-    ),
-    'progressbar_bar' => FALSE,
-    'components' => $components,
-  );
-
-  // todo associated moha_ui_rating component with summit survey question
-
-  // Save the node.
-  node_save($node);
-
-  $form_state['redirect'] = 'admin/moha/survey/edit/'. $node->nid;
-
 }
 
 /**
@@ -690,13 +535,4 @@ function moha_survey_preview($nid){
   $node = node_load($nid);
   $node_view = node_view($node);
   return '<div style="width:414px; margin:0 auto;">'.render($node_view).'</div>';
-}
-
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function moha_survey_preprocess_webform_element(&$variables) {
-
-
 }

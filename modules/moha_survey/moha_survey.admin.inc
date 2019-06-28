@@ -1011,6 +1011,9 @@ function moha_survey_clone_form($form, &$form_state, $node = NULL) {
 
 /**
  * Survey templates clone submit handling.
+ *
+ * @throws Exception
+ *   when webform node can't be saved.
  */
 function moha_survey_clone_form_submit($form, &$form_state) {
 
@@ -1020,7 +1023,7 @@ function moha_survey_clone_form_submit($form, &$form_state) {
 
     global $user;
 
-    //https://www.drupal.org/node/2030697  Programmatically creating a webform
+    /** @link https://www.drupal.org/node/2030697 Programmatically creating a webform @endlink */
     $node = new stdClass();
     $node->type = 'webform';
     node_object_prepare($node);
