@@ -487,6 +487,10 @@ function moha_survey_component_edit_form($form, &$form_state, $node, $cid = 0) {
       $component['_type'] = 'rating';
     }
 
+    if (!isset($component['extra']['analysis'])) {
+      $component['extra']['analysis'] = TRUE;
+    }
+
     if (!isset($component['extra']['max_score'])) {
       $component['extra']['max_score'] = 5;
     }
@@ -874,6 +878,8 @@ function moha_survey_results_analysis($node, $sids = array(), $analysis_componen
 
   /** @see webform_analysis_components_form */
   hide($content['form']['help']);
+  hide($content['form']['components']);
+  hide($content['form']['actions']);
 
   return $content;
 }

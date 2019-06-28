@@ -27,6 +27,7 @@ function _webform_defaults_moha_ui_rating() {
       'nps' => FALSE,
       /* Concrete survey question, if empty then use label. */
       'question' => '',
+      'analysis' => TRUE,
     ),
   );
 
@@ -46,6 +47,11 @@ function _webform_edit_moha_ui_rating(array $component, array $form, array $form
     '#title' => t('Field options'),
     '#collapsible' => true,
     '#collapsed' => false,
+  );
+
+  $form['extra']['analysis'] = array(
+    '#type' => 'value',
+    '#value' => isset($component['extra']['analysis'])?$component['extra']['analysis']:FALSE,
   );
 
   $form['extra']['nps'] = array(
@@ -279,7 +285,7 @@ QUERY;
     else {
       $query = <<<QUERY
 SELECT CAST(AVG(`Score`) as unsigned) score FROM (
-	SELECT CAST(`data` as signed) Score FROM `webform_submitted_data` WHERE `nid` = 109 and `cid` = 7 and `no` = 'rating'
+	SELECT CAST(`data` as signed) Score FROM `webform_submitted_data` WHERE `nid` = :nid and `cid` = :cid and `no` = 'rating'
 ) as Rating;
 QUERY;
       $header[] = 'Rating';
