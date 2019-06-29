@@ -1,0 +1,13 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_enable().
+ *
+ * Needs jquery 1.10 to work correctly.
+ */
+function moha_ui_enable() {
+  variable_set('jquery_update_jquery_admin_version', '1.10');
+}

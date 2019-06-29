@@ -6,7 +6,7 @@
 /**
  * Implements hook_views_default_views().
  *
- * Defines views for Moha Survey.
+ * Defines views for Moha Survey and template.
  */
 function moha_survey_views_default_views() {
 
@@ -23,7 +23,7 @@ function moha_survey_views_default_views() {
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'Moha Survey Templates Block';
+  $handler->display->display_options['title'] = 'Moha Survey Template';
   $handler->display->display_options['use_ajax'] = TRUE;
   $handler->display->display_options['use_more'] = TRUE;
   $handler->display->display_options['use_more_always'] = FALSE;
@@ -31,8 +31,6 @@ function moha_survey_views_default_views() {
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['exposed_form']['options']['submit_button'] = '应用';
-  $handler->display->display_options['exposed_form']['options']['reset_button_label'] = '重置';
   $handler->display->display_options['pager']['type'] = 'some';
   $handler->display->display_options['pager']['options']['items_per_page'] = '20';
   $handler->display->display_options['pager']['options']['offset'] = '0';
@@ -138,46 +136,41 @@ function moha_survey_views_default_views() {
     t('Block'),
   );
 
-
-
-
   // Combine all defined views, don't touch from here.
   $views[$view->name] = $view;
 
   // Moha Survey List View.
-  $view = moha_servey_create_survey_list_view();
+  $view = moha_surveys_view();
   $views[$view->name] = $view;
 
   return $views;
 }
 
-
 /**
+ * Moha Survey views Definition.
+ *
  * @return \view
  */
-function moha_servey_create_survey_list_view () {
+function moha_surveys_view () {
 
-  // Define Moha Survey List View.
   $view = new view();
-  $view->name = 'moha_survey_list';
+  $view->name = 'moha_survey';
   $view->description = '';
   $view->tag = 'default';
   $view->base_table = 'node';
-  $view->human_name = 'Moha Survey List';
+  $view->human_name = 'Moha Survey';
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'moha survey list';
+  $handler->display->display_options['title'] = 'Moha Survey';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['exposed_form']['options']['submit_button'] = '应用';
-  $handler->display->display_options['exposed_form']['options']['reset_button_label'] = '重置';
   $handler->display->display_options['pager']['type'] = 'some';
   $handler->display->display_options['pager']['options']['items_per_page'] = '20';
   $handler->display->display_options['pager']['options']['offset'] = '0';
@@ -188,7 +181,8 @@ function moha_servey_create_survey_list_view () {
     'changed' => 'changed',
     'nothing' => 'nothing',
   );
-  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['class'] = '';
+  $handler->display->display_options['style_options']['default'] = 'changed';
   $handler->display->display_options['style_options']['info'] = array(
     'title' => array(
       'sortable' => 1,
@@ -206,7 +200,7 @@ function moha_servey_create_survey_list_view () {
     ),
     'changed' => array(
       'sortable' => 1,
-      'default_sort_order' => 'asc',
+      'default_sort_order' => 'desc',
       'align' => '',
       'separator' => '',
       'empty_column' => 0,
@@ -217,7 +211,7 @@ function moha_servey_create_survey_list_view () {
       'empty_column' => 0,
     ),
   );
-  /* Field: 内容: Title */
+  /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
   $handler->display->display_options['fields']['title']['field'] = 'title';
@@ -226,17 +220,17 @@ function moha_servey_create_survey_list_view () {
   $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
   $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['title']['link_to_node'] = FALSE;
-  /* Field: 内容: Nid */
+  /* Field: Content: Nid */
   $handler->display->display_options['fields']['nid']['id'] = 'nid';
   $handler->display->display_options['fields']['nid']['table'] = 'node';
   $handler->display->display_options['fields']['nid']['field'] = 'nid';
   $handler->display->display_options['fields']['nid']['exclude'] = TRUE;
-  /* Field: 内容: 更新日期 */
+  /* Field: Content: Updated date */
   $handler->display->display_options['fields']['changed']['id'] = 'changed';
   $handler->display->display_options['fields']['changed']['table'] = 'node';
   $handler->display->display_options['fields']['changed']['field'] = 'changed';
   $handler->display->display_options['fields']['changed']['date_format'] = 'custom';
-  $handler->display->display_options['fields']['changed']['custom_date_format'] = 'Y-m-d H:i:s';
+  $handler->display->display_options['fields']['changed']['custom_date_format'] = 'Y-m-d H:i';
   $handler->display->display_options['fields']['changed']['second_date_format'] = 'long';
   /* Field: Global: Custom text */
   $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
@@ -245,19 +239,14 @@ function moha_servey_create_survey_list_view () {
   $handler->display->display_options['fields']['nothing']['label'] = 'Operations';
   $handler->display->display_options['fields']['nothing']['alter']['text'] = '<a class="button" href="/admin/moha/survey/edit/[nid]">Edit</a>
 <a class="button" href="/node/[nid]">Preview</a>';
-  /* Sort criterion: 内容: Post date */
-  $handler->display->display_options['sorts']['created']['id'] = 'created';
-  $handler->display->display_options['sorts']['created']['table'] = 'node';
-  $handler->display->display_options['sorts']['created']['field'] = 'created';
-  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
-  /* Filter criterion: 内容: Published */
+  /* Filter criterion: Content: Published status */
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'node';
   $handler->display->display_options['filters']['status']['field'] = 'status';
   $handler->display->display_options['filters']['status']['value'] = 1;
   $handler->display->display_options['filters']['status']['group'] = 1;
   $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
-  /* Filter criterion: 内容: 类型 */
+  /* Filter criterion: Content: Type */
   $handler->display->display_options['filters']['type']['id'] = 'type';
   $handler->display->display_options['filters']['type']['table'] = 'node';
   $handler->display->display_options['filters']['type']['field'] = 'type';
@@ -265,24 +254,24 @@ function moha_servey_create_survey_list_view () {
     'webform' => 'webform',
   );
 
-  /* Display: Moha Survey List Block */
-  $handler = $view->new_display('block', 'Moha Survey List Block', 'block');
-  $translatables['moha_survey_list'] = array(
+  /* Display: Block */
+  $handler = $view->new_display('block', 'Block', 'survey_dashboard_surveys');
+  $translatables['moha_survey'] = array(
     t('Master'),
-    t('moha survey list'),
+    t('Moha Survey'),
     t('more'),
-    t('应用'),
-    t('重置'),
+    t('Apply'),
+    t('Reset'),
     t('Sort by'),
     t('Asc'),
     t('Desc'),
     t('Survey Name'),
     t('Nid'),
-    t('更新日期'),
+    t('Updated date'),
     t('Operations'),
     t('<a class="button" href="/admin/moha/survey/edit/[nid]">Edit</a>
 <a class="button" href="/node/[nid]">Preview</a>'),
-    t('Moha Survey List Block'),
+    t('Block'),
   );
 
   return $view;

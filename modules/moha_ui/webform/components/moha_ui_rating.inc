@@ -127,7 +127,7 @@ RATING_ITEM;
   $elements['#required'] = $component['required'];
 
   if ($elements['#required']) {
-    $component_label .= ' <span class="form-required" title="This field is required.">*</span>';
+    $component_label .= '<span class="form-required" title="This field is required.">*</span>';
   }
 
   $elements['rating']['rating_area'] = array(
@@ -298,7 +298,7 @@ QUERY;
       )
     )->fetchAssoc();
 
-    if ($record) {
+    if ($record && $record['score'] != NULL) {
       $rows[] = array($record['score']);
 
       return array(
@@ -310,6 +310,11 @@ QUERY;
   else { // not single analysis.
 
   }
+
+  return array(
+    'table_header' => array(),
+    'table_rows' => array(),
+  );
 }
 
 /**

@@ -68,7 +68,7 @@ function moha_survey_permission() {
  * Implements hook_theme().
  */
 function moha_survey_theme($existing, $type, $theme, $path) {
-  $templates = array(
+  $themes = array(
     'moha_survey_dashboard' => array(
       'template' => 'templates/moha_survey_dashboard',
       'render element' => 'content',
@@ -87,13 +87,27 @@ function moha_survey_theme($existing, $type, $theme, $path) {
     ),
   );
 
-  return $templates;
+  // Declares theme for survey preview page through naming convention, one place configuration.
+  $themes['html__moha__survey__preview'] = array(
+    'render element' => 'elements',
+    'template' => 'templates/html--moha--survey--preview',
+  );
+
+  $themes['page__moha__survey__preview'] = array(
+    'render element' => 'elements',
+    'template' => 'templates/page--moha--survey--preview',
+  );
+
+  $themes['node__webform'] = array(
+    'render element' => 'elements',
+    'template' => 'templates/node--webform',
+  );
+
+  return $themes;
 }
 
 /**
  * Implements hook_entity_info().
- *
- *
  */
 function moha_survey_entity_info() {
 
@@ -418,10 +432,11 @@ function moha_survey_menu() {
     'file' => 'moha_survey.admin.inc',
   );
 
-  $items['moha/survey/preview/%'] = array(
+  $items['moha/survey/preview/%node'] = array(
     'title' => 'Survey preview',
+    /** @see moha_survey_preview */
     'page callback' => 'moha_survey_preview',
-    'page arguments' => array(4),
+    'page arguments' => array(3),
     'access arguments' => array('administer own survey'),
     'type' => MENU_CALLBACK,
   );
@@ -508,31 +523,51 @@ function moha_survey_question_type($component, $literal = TRUE) {
   return $type;
 }
 
-function moha_survey_create(){
-  drupal_goto('admin/moha/survey/clone');
-}
-
 /**
  * Implements hook_webform_component_render_alter().
  */
 function moha_survey_webform_component_render_alter(array &$element, array &$component) {
-  // import weui.css
-  $element['#attached']['css'][] = MOHA_UI__PATH . '/libs/weui/dist/style/weui.css';
 
   if (isset($element['#type'])) {
     if ($element['#type'] == 'radios') {
       $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_radios';
-    } elseif ($element['#type'] == 'checkboxes') {
+    }
+    elseif ($element['#type'] == 'checkboxes') {
       $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_checkboxes';
-    } elseif ($element['#type'] == 'textfield') {
+    }
+    elseif ($element['#type'] == 'textfield') {
       $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_textfield';
     }
   }
 
 }
 
-function moha_survey_preview($nid){
-  $node = node_load($nid);
-  $node_view = node_view($node);
-  return '<div style="width:414px; margin:0 auto;">'.render($node_view).'</div>';
+/**
+ * Survey preview page rendering prepare.
+ *
+ * @param $node
+ *
+ * @return array
+ */
+function moha_survey_preview($node){
+  $content = node_view($node);
+
+  $params = drupal_get_query_parameters();
+  if (isset($params['preview'])) {
+    $content['webform']['#form']['#submit'] = array();
+  }
+
+  $content['#attached']['css'] = array(
+    MOHA_SURVEY__PATH . '/css/moha_survey.css',
+  );
+
+  return $content;
 }
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function moha_survey_preprocess_html(&$variables) {
+
+}
+

@@ -1,0 +1,25 @@
+/**
+ * @file
+ *   Styles for font of Moha Survey.
+ */
+body.page-moha-survey-preview {
+  background-color: #ededed;
+}
+
+body.page-moha-survey-preview h1 {
+  font-size: 1.25em;
+  padding: 0 15px;
+  text-align: center;
+}
+
+/** Fix style conflict between bootstrap and WeUI. */
+div.weui-cell__bd p,
+label.weui-cell.weui-check__label {
+  margin-bottom: 0;
+}
+
+.weui-cells__title {
+  color: #333;
+  font-weight: bold;
+}
+/***/

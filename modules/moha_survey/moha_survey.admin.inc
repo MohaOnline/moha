@@ -66,6 +66,13 @@ function moha_survey_config_form_submit($form, &$form_state) {
  */
 function moha_survey_dashboard() {
 
+  // Check current jQuery version.
+  $version = variable_get('jquery_update_jquery_admin_version', '1.4');
+  if (version_compare($version, '1.10')) {
+    $jquery_update_link = l(t('jQuery Update'), 'admin/config/development/jquery_update');
+    drupal_set_message("Moha Survey needs jQuery 1.10, please go to $jquery_update_link to configure. ", "error");
+  }
+
   // We can't use views_embed_view() as we have exposed filter, and we need to
   // make sure the path is overriden to the current URL.
   // @see http://drupal.org/node/525592#comment-1968604
@@ -74,7 +81,7 @@ function moha_survey_dashboard() {
   $view->override_url = $_GET['q'];
   $content['templates'] = $view->preview();
 
-  $view = views_get_view('moha_survey_list', 'survey_dashboard_lists');
+  $view = views_get_view('moha_survey', 'survey_dashboard_surveys');
   $view->override_url = $_GET['q'];
   $content['surveys'] = $view->preview();
 
@@ -117,8 +124,28 @@ function moha_survey_edit_form($form, &$form_state, $node) {
   }
   else {  // Valid Webform Node passed.
 
+    $form['layout'] = array(
+      '#type' => 'container',
+      '#attributes' => array(
+        'class' => array(
+          'moha-survey-form-layout',
+        ),
+      ),
+    );
+
+    $form['layout']['form_items'] = array(
+      '#type' => 'container',
+      '#attributes' => array(
+        'class' => array(
+          'moha-survey-form-items',
+        ),
+      ),
+    );
+
+    $items = &$form['layout']['form_items'];
+
     // Survey title.
-    $form['title'] = array(
+    $items['title'] = array(
       '#title' => t('Survey name'),
       '#description' => t('Specify survey name.'),
       '#size' => '60',
@@ -130,12 +157,12 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       ),
     );
 
-    $form['nid'] = array(
+    $items['nid'] = array(
       '#type' => 'hidden',
       '#default_value' => $node->nid,
     );
 
-    $form['components'] = array(
+    $items['components'] = array(
       '#tree' => TRUE,
       '#theme' => 'moha_admin_form_2_draggable_table',
     );
@@ -143,17 +170,17 @@ function moha_survey_edit_form($form, &$form_state, $node) {
     $components = $node->webform['components'];
     foreach ($components as $component) {
       $index = $component['cid'];
-      $form['components'][$index]['Question'] = array(
+      $items['components'][$index]['Question'] = array(
         'name' => array(
           '#markup' => $component['name'],
         ),
       );
 
-      $form['components'][$index]['type'] = array(
+      $items['components'][$index]['type'] = array(
         '#markup' => moha_survey_question_type($component),
       );
 
-      $form['components'][$index]['weight'] = array(
+      $items['components'][$index]['weight'] = array(
         '#type' => 'weight',
         '#delta' => 255,
         '#default_value' => $component['weight'],
@@ -177,21 +204,19 @@ function moha_survey_edit_form($form, &$form_state, $node) {
         $operation_html .= l($operation['title'], $operation['href'], array('query'=>$operation['query'], 'attributes' => array('class' => array('button'))));
       }
 
-      $form['components'][$index]['operations'] = array(
+      $items['components'][$index]['operations'] = array(
         '#markup' => $operation_html,
-//        '#theme' => 'links__ctools_dropbutton',
-//        '#links' => $operations,
       );
     }
 
-    $form['advanced'] = array(
+    $items['advanced'] = array(
       '#type' => 'fieldset',
       '#title' => t('Advanced Options'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
     );
 
-    $advanced = &$form['advanced'];
+    $advanced = &$items['advanced'];
 
     $advanced['status'] = array(
       '#type' => 'checkbox',
@@ -200,6 +225,7 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       '#default_value' => $node->webform['status'],
     );
 
+    // Fetch if current node (webform) is temp.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', __MOHA_SURVEY__ENTITY__TEMPLATE)
       ->propertyCondition('nid', $node->nid, '=')
@@ -222,6 +248,25 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       '#default_value' => $template,
     );
 
+    $no_iframe = t('Your browser do not support iframe.');
+    $preview_url = url('moha/survey/preview/' . $node->nid,
+      array(
+        'query' => array(
+          'preview' => moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0),
+        ),
+      )
+    );
+
+    $form['layout']['preview'] = array(
+      '#prefix' => '<div id="moha_preview_wrapper" class="">',
+      '#markup' => <<<PREVIEW
+<iframe name="moha_preview" id="moha_preview" class="" frameborder="0" src="$preview_url"><p>$no_iframe</p></iframe>
+PREVIEW
+    ,
+      '#suffix' => '</div>',
+    );
+
+
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['save'] = array(
       '#type' => 'submit',
@@ -238,20 +283,22 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       '#markup' => "<a class='button' href='$delete_url'>" . t('Delete') . "</a>" ,
     );
 
-    $preview_url = l(t('Preview'), 'node/' . $node->nid, array(
+    $preview_link = l(t('Preview'), 'node/' . $node->nid,
+      array(
         'query' => array(
           'preview' => moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0),
         ),
-
         'attributes' => array(
           'class' => array('button'),
           'target' => '_blank',
         )
       )
     );
+
     $form['actions']['preview'] = array(
-      '#markup' => $preview_url,
+      '#markup' => $preview_link,
     );
+
   }
 
   $form['#attached'] = array(
@@ -259,6 +306,9 @@ function moha_survey_edit_form($form, &$form_state, $node) {
       MOHA_SURVEY__PATH . '/css/moha_survey.admin.css',
     ),
     'js' => array(
+    ),
+    'library' => array(
+      array(__MOHA_UI, __MOHA_UI),
     ),
   );
 

@@ -8,3 +8,4 @@ dependencies[] = moha
 dependencies[] = image
 dependencies[] = webform (>=7.x-4.19)
 dependencies[] = little_helpers
+dependencies[] = jquery_update

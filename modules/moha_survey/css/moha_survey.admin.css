@@ -47,6 +47,19 @@
 }
 /***/
 
+@media (min-width: 1200px) {
+  .page-admin-moha-survey .moha-survey-form-layout {
+    display: -webkit-flex; /* Safari */
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .page-admin-moha-survey .moha-survey-form-items {
+    width: 700px;
+    max-width: 700px;
+  }
+}
+
 /** Survey edit analysis */
 .page-admin-moha-survey-edit-analysis .webform-analysis-component {
   width: 100%;

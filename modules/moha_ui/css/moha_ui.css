@@ -62,3 +62,9 @@ input[type="file"].weui-uploader__input {
 .weui-mask_transparent {
   background-color: rgba(0, 0, 0, 0.5);
 }
+
+/***/
+#moha_preview_wrapper, #moha_preview_wrapper iframe {
+  width: 350px;
+  height: 567px;
+}

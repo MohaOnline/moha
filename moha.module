@@ -1048,9 +1048,9 @@ function moha_init() {
  */
 function moha_preview_handle() {
   // Return anonymous page for preview.
-  $parms = drupal_get_query_parameters();
-  if (isset($parms['preview'])) {
-    $uid = $parms['preview'];
+  $params = drupal_get_query_parameters();
+  if (isset($params['preview'])) {
+    $uid = $params['preview'];
 
     if (user_access(MOHA__PERMISSION__SITE_PREVIEW) ||
       user_access(MOHA__PERMISSION__SITE_PREVIEW_ANONYMOUS)) {
@@ -1093,6 +1093,19 @@ function moha_preprocess_html(&$variables) {
   );
 
   drupal_add_html_head($meta_description, 'no-referrer');
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * @see hook_preprocess_HOOK
+ */
+function moha_preprocess_page(&$variables) {
+  if (isset($variables['node']->type)) {
+    // If the content type's machine name is "my_machine_name" the file
+    // name will be "page--my-machine-name.tpl.php".
+    $variables['theme_hook_suggestions'][] = 'page__' . $variables['node']->type;
+  }
 }
 
 /**

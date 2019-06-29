@@ -53,8 +53,6 @@ function moha_ui_library() {
     'js' => array(
       MOHA_UI__PATH . '/libs/lodash.js' => array(),
       MOHA_UI__PATH . '/libs/weui.js/dist/weui.js' => array(),
-      MOHA_UI__PATH . '/libs/AdminLTE/bower_components/jquery/dist/jquery.js' => array(),
-      MOHA_UI__PATH . '/libs/jquery-once/jquery.once.js' => array(),
       MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.js' => array(),
@@ -84,8 +82,6 @@ function moha_ui_library() {
       MOHA_UI__PATH . '/libs/lodash.js' => array(),
       MOHA_UI__PATH . '/libs/AdminLTE/bower_components/bootstrap/dist/js/bootstrap.js' => array(),
       MOHA_UI__PATH . '/libs/AdminLTE/dist/js/adminlte.js' => array(),
-      MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
-      MOHA_UI__PATH . '/js/moha_ui.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(),
     ),
     'css' => array(
