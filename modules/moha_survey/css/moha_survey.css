@@ -1,7 +1,9 @@
+@charset "UTF-8";
 /**
  * @file
  *   Styles for font of Moha Survey.
  */
+
 body.page-moha-survey-preview {
   background-color: #ededed;
 }

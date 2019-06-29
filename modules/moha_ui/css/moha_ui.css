@@ -64,7 +64,17 @@ input[type="file"].weui-uploader__input {
 }
 
 /***/
-#moha_preview_wrapper, #moha_preview_wrapper iframe {
-  width: 350px;
+
+/** iPhone 6 Preview Window  */
+#moha_ui_preview_wrapper.iphone6 {
+  width: 320px;
+  height: 567px;
+  padding: 85px 22px 90px 25px;
+  background: url(../img/iphone-6.png) no-repeat 0 0;
+}
+
+#moha_ui_preview_wrapper.iphone6 iframe {
+  width: 320px;
   height: 567px;
 }
+/***/

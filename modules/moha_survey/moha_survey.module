@@ -554,7 +554,7 @@ function moha_survey_preview($node){
 
   $params = drupal_get_query_parameters();
   if (isset($params['preview'])) {
-    $content['webform']['#form']['#submit'] = array();
+    hide($content['webform']['#form']['actions']);
   }
 
   $content['#attached']['css'] = array(
