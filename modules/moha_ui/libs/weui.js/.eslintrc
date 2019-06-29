@@ -40,6 +40,9 @@
         "no-func-assign": [
             "off"
         ],
+        "no-useless-escape": [
+            "off"
+        ],
         "no-constant-condition": [
             "off"
         ]
