@@ -65,6 +65,11 @@ define('MOHA__PERMISSION__EDIT_ANY_RACI', 'edit any moha raci');
 define('MOHA__PERMISSION__ROOT', 'administer site configuration');
 
 /**
+ * Permission: Anonymous.
+ */
+define('MOHA__PERMISSION__ANONYMOUS', 'access content');
+
+/**
  * Permission: Site Preview.
  */
 define('MOHA__PERMISSION__SITE_PREVIEW', 'moha site preview as user');

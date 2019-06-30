@@ -29,4 +29,8 @@ label.weui-cell.weui-check__label {
   color: #333;
   font-weight: bold;
 }
+
+.weui-btn {
+  width: 184px;
+}
 /***/

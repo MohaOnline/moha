@@ -260,11 +260,11 @@ function moha_survey_entity_property_info() {
 function moha_survey_menu() {
 
   $items['moha/survey/thanks'] = array(
-    'title' => 'Survey submitted',
-    'description' => 'Manage surveys, survey templates, survey questions and statistics.',
+    'title' => 'Thank you',
+    'description' => 'Thank you page after user submit the data.',
     /** @see moha_survey_dashboard */
-    'page callback' => 'moha_survey_dashboard',
-    'access arguments' => array('administer own survey'),
+    'page callback' => 'moha_survey_thanks',
+    'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
     'file' => 'moha_survey.admin.inc',
   );
@@ -273,7 +273,7 @@ function moha_survey_menu() {
     'title' => 'Survey has submitted',
     'description' => 'Prompt user he/she has submitted this survey.',
     /** @see moha_survey_dashboard */
-    'page callback' => 'moha_survey_dashboard',
+    'page callback' => 'moha_survey_taken',
     'access arguments' => array('administer own survey'),
     'type' => MENU_CALLBACK,
     'file' => 'moha_survey.admin.inc',
@@ -283,7 +283,7 @@ function moha_survey_menu() {
     'title' => 'Survey Closed',
     'description' => 'Prompt user this survey has been closed.',
     /** @see moha_survey_dashboard */
-    'page callback' => 'moha_survey_dashboard',
+    'page callback' => 'moha_survey_closed',
     'access arguments' => array('administer own survey'),
     'type' => MENU_CALLBACK,
     'file' => 'moha_survey.admin.inc',
@@ -623,6 +623,115 @@ function moha_survey_page($node){
   $content['#attached']['css'] = array(
     MOHA_SURVEY__PATH . '/css/moha_survey.css',
   );
+  // Suppress fancy stuff like admin and admin_menu.module for the preview.
+  module_invoke_all('suppress');
+  return $content;
+}
+
+/**
+ * Survey thanks page.
+ *
+ * @example moha/survey/thanks.
+ *
+ * @return array
+ */
+function moha_survey_thanks(){
+
+  $content['msg'] = array(
+    '#markup' => <<<MSG
+<div class="weui-msg">
+        <div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
+        <div class="weui-msg__text-area">
+            <h2 class="weui-msg__title">Success</h2>
+            <p class="weui-msg__desc">Thank you for your participation.</p>
+        </div>
+    </div>
+MSG
+  ,
+  );
+  $content['#attached']['library'] = array(
+    array(__MOHA_UI, __MOHA_UI),
+  );
+  $content['#attached']['css'] = array(
+    MOHA_SURVEY__PATH . '/css/moha_survey.css',
+  );
+
+  // Suppress fancy stuff like admin and admin_menu.module for the preview.
+  module_invoke_all('suppress');
+  return $content;
+}
+
+/**
+ * Survey thanks page.
+ *
+ * @example moha/survey/taken.
+ *
+ * @return array
+ */
+function moha_survey_taken(){
+
+  $content['msg'] = array(
+    '#markup' => <<<MSG
+<div class="weui-msg">
+  <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+  <div class="weui-msg__text-area">
+    <h2 class="weui-msg__title">Thank you</h2>
+    <p class="weui-msg__desc">You should have taken the survey.</p>
+  </div>
+  <div class="weui-msg__opr-area">
+    <p class="weui-btn-area">
+      <a href="javascript:history.back();" class="weui-btn weui-btn_primary">Back</a>
+    </p>
+  </div>
+</div>
+MSG
+  ,
+  );
+  $content['#attached']['library'] = array(
+    array(__MOHA_UI, __MOHA_UI),
+  );
+  $content['#attached']['css'] = array(
+    MOHA_SURVEY__PATH . '/css/moha_survey.css',
+  );
+
+  // Suppress fancy stuff like admin and admin_menu.module for the preview.
+  module_invoke_all('suppress');
+  return $content;
+}
+
+/**
+ * Survey thanks page.
+ *
+ * @example moha/survey/closed.
+ *
+ * @return array
+ */
+function moha_survey_closed(){
+
+  $content['msg'] = array(
+    '#markup' => <<<MSG
+<div class="weui-msg">
+  <div class="weui-msg__icon-area"><i class="weui-icon-warn weui-icon_msg-primary"></i></div>
+  <div class="weui-msg__text-area">
+    <h2 class="weui-msg__title">Survey Closed</h2>
+    <p class="weui-msg__desc">This survey has been closed.</p>
+  </div>
+  <div class="weui-msg__opr-area">
+    <p class="weui-btn-area">
+      <a href="javascript:history.back();" class="weui-btn weui-btn_primary">Back</a>
+    </p>
+  </div>
+</div>
+MSG
+  ,
+  );
+  $content['#attached']['library'] = array(
+    array(__MOHA_UI, __MOHA_UI),
+  );
+  $content['#attached']['css'] = array(
+    MOHA_SURVEY__PATH . '/css/moha_survey.css',
+  );
+
   // Suppress fancy stuff like admin and admin_menu.module for the preview.
   module_invoke_all('suppress');
   return $content;
