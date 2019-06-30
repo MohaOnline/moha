@@ -156,14 +156,63 @@ function moha_ui_element_info() {
   $elements = array(
     /* Element: Moha UI - Rating. */
     'moha_ui_rating' => array(
-      /* Element carries a value. */
+      // Element carries a value.
       '#input' => TRUE,
+
+      // Do not provide autocomplete.
+      '#autocomplete_path' => FALSE,
+
+      // Allow theme('form_element') to control the markup surrounding this
+      // value on output.
+      '#theme_wrappers' => array('form_element'),
+
       '#theme' => array('moha_ui_rating'),
+      '#value_callback' => 'moha_ui_rating_value',
+      '#process' => array('moha_ui_rating_process'),
+      '#element_validate' => array('moha_ui_rating_validate'),
+      '#moha_ui_rating_max_score' => 5,
+      '#moha_ui_rating_threshold_score' => 3,
+      '#default_value' => array(
+        'rating' => 0,    // rating score.
+        'reason' => '',   // low score reason.
+      ),
     ),
+
 
   );
 
   return $elements;
+}
+
+/**
+ * Determines the values for a moha_ui_rating form element.
+ *
+ * @param $element
+ *   The form element whose value is being populated.
+ * @param $input
+ *   The incoming input to populate the form element. If this is FALSE,
+ *   the element's default value should be returned.
+ *
+ * @return array
+ *   rating score and low score reason.
+ */
+function moha_ui_rating_value($element, $input = FALSE, $form_state) {
+  $return = $element['#default_value'];
+
+  if ($input) {
+
+  }
+
+  return $return;
+}
+
+/**
+ * Expands a moha_ui_rating element into rating, details.
+ */
+function moha_ui_rating_process($element) {
+
+
+  return $element;
 }
 
 /**
@@ -175,7 +224,102 @@ function moha_ui_element_info() {
 function moha_ui_rating_validate($element, &$form_state) {
   if ($element['#required'] && $element['rating']['value']['#value'] == 0) {
     form_error($element, t('%name must be scored.', array('%name' => $element['#webform_component']['name'])));
+
+    return FALSE;
   }
+
+  return TRUE;
+}
+
+/**
+ * Renders moha_ui_rating element.
+ *
+ * @param $variables
+ */
+function theme_moha_ui_rating($variables) {
+  $element = $variables['element'];
+  $values = isset($element['#values'])?$element['#values']:array();
+
+  $wrapper_class = drupal_clean_css_identifier($element['#name']);
+
+  $score = isset($element['#values']['rating'])?$element['#values']['rating']:0;
+  $max_score = $element['#moha_ui_rating_max_score'];
+  $threshold_score = $element['#moha_ui_rating_threshold_score'];
+
+  // Recover or initial score.
+  $rating_items_placeholder = '';
+  for ($i = 0; $i < $max_score; $i++) {
+    if ($i < $score) {
+      $rating_items_placeholder .= <<<RATING_ITEM
+        <div class="rating-star is--active">
+           <i class="fa fa-star"></i>
+        </div>
+RATING_ITEM;
+    }
+    else {
+      $rating_items_placeholder .= <<<RATING_ITEM
+        <div class="rating-star">
+           <i class="fa fa-star"></i>
+        </div>
+RATING_ITEM;
+    }
+  }
+
+  $content['rating']['rating_area'] = array(
+    '#markup' => <<< RATING_CONTAINER
+      
+      <div class="$wrapper_class rating-stars"><div class="rating-stars-container">
+      $rating_items_placeholder
+      </div></div>
+RATING_CONTAINER
+  ,
+  );
+
+  $content['rating']['value'] = array(
+    '#name' => $element['#name'] . '[rating]',
+    '#type' => 'hidden',
+    '#default_value' => $score,
+  );
+
+  $reason = empty($values['reason'])?'':$values['reason'];
+
+  $content['rating']['reason'] = array(
+    '#name' => $element['#name'] . '[reason]',
+    '#title' => t('Rating reason'),
+    '#type' => 'textfield',
+    '#id' => $element['#id'] . '-reason',
+    '#default_value' => $reason,
+  );
+
+  /** @see https://www.drupal.org/docs/7/api/javascript-api/managing-javascript-in-drupal-7 */
+  $content['#attached'] = array(
+    'js' => array(
+      MOHA_UI__PATH . '/elements/moha_ui_rating.js',
+      array(
+        'data' => array(
+          __MOHA_UI => array(
+            'mohaUIRatingElements' => array(
+              array(
+                'wrapper' => $wrapper_class,
+                'maxScore' => $max_score,
+                'thresholdScore' => $threshold_score,
+                'required' => $element['#required'],
+              ),
+            ),
+          ),
+        ),
+        'type' => 'setting'
+      ),
+    ),
+    'css' => array(
+      MOHA_UI__PATH . '/elements/moha_ui_rating.css',
+    ),
+    'library' => array(
+      array(__MOHA_UI, __MOHA_UI),
+    ),
+  );
+
+  return drupal_render($content);
 }
 
 /**
@@ -184,7 +328,6 @@ function moha_ui_rating_validate($element, &$form_state) {
 function moha_ui_theme($existing, $type, $theme, $path) {
   $templates = array(
     'moha_ui_rating' => array(
-      'template' => 'elements/moha_ui_rating',
       'render element' => 'element',
     ),
     'moha_ui_image_mobile_uploader_widget_multiple' => array(

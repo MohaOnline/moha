@@ -31,6 +31,30 @@ function moha_survey_config_form($form, &$form_state) {
     ),
   );
 
+  $form['moha_ui_rating'] = array(
+    '#title' => 'NPS',
+    '#type' => 'moha_ui_rating',
+    '#required' => TRUE,
+    '#moha_ui_rating_max_score' => 10,
+    '#moha_ui_rating_threshold_score' => 3,
+    '#default_value' => array(
+      'rating' => 0,
+      'reason' => '',
+    ),
+  );
+
+  $form['moha_ui_rating_neo'] = array(
+    '#title' => 'NEO',
+    '#type' => 'moha_ui_rating',
+    '#required' => TRUE,
+    '#moha_ui_rating_max_score' => 5,
+    '#moha_ui_rating_threshold_score' => 3,
+    '#default_value' => array(
+      'rating' => 3,
+      'reason' => 'No reason',
+    ),
+  );
+
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['save'] = array(
     '#type' => 'submit',

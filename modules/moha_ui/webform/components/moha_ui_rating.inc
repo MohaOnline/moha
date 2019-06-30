@@ -151,7 +151,7 @@ RATING_CONTAINER
   $details = empty($value['details'])?'':$value['details'];
 
   $elements['details'] = array(
-    '#title' => t('Reason'),
+    '#title' => t('Rating reason'),
     '#type' => 'textfield',
     '#default_value' => $details,
   );

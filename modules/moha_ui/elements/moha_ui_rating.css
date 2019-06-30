@@ -1,0 +1,38 @@
+@charset "UTF-8";
+/**
+ * @file
+ *   Style file for moha_ui_rating element.
+ */
+
+.form-type-moha-ui-rating .rating-stars-container .rating-star {
+  display: inline-block;
+  font-size: 30px;
+  color: #555555;
+  cursor: pointer;
+  padding: 5px 5px;
+}
+
+/** Star size for mobile device. */
+@media (max-width: 414px) {
+  .form-type-moha-ui-rating .rating-stars-container {
+    text-align: center;
+  }
+
+  .form-type-moha-ui-rating .rating-stars-container .rating-star {
+    display: inline-block;
+    font-size: 12vw;
+    color: #666;
+    cursor: pointer;
+    padding: 1vw 2.5vw;
+  }
+}
+
+.form-type-moha-ui-rating div.rating-stars-container div.rating-star.is--active,
+.form-type-moha-ui-rating div.rating-stars-container div.rating-star.is--hover {
+  color: #f1c40f;
+}
+
+.weui-cell .form-type-moha-ui-rating .rating-stars-container .rating-star.is--active,
+.weui-cell .form-type-moha-ui-rating .rating-stars-container .rating-star.is--hover {
+  color: #09BB07;
+}
