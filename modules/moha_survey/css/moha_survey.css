@@ -4,11 +4,16 @@
  *   Styles for font of Moha Survey.
  */
 
-body.page-moha-survey-preview {
+body.page-moha-survey {
   background-color: #ededed;
 }
 
-body.page-moha-survey-preview h1 {
+body #page-wrapper {
+  max-width: 500px;
+  margin: auto;
+}
+
+body.page-moha-survey h1 {
   font-size: 1.25em;
   padding: 0 15px;
   text-align: center;

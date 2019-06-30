@@ -47,6 +47,11 @@ define('__MOHA_SURVEY__ENTITY__TEMPLATE', 'moha_survey_template');
 define('MOHA_SURVEY__URL__TEMPLATE_ADMIN_UI', MOHA__URL__ENTITIES . '/survey_template');
 
 /**
+ * Permission definition: submit moha survey.
+ */
+define('MOHA_SURVEY__PERMISSION__SUBMIT', 'submit moha survey');
+
+/**
  * Implements hook_permission().
  */
 function moha_survey_permission() {
@@ -59,6 +64,11 @@ function moha_survey_permission() {
       'title' => t('Administer own survey'),
       'description' => t('Perform administration tasks for own survey.'),
     ),
+  );
+
+  $permissions[MOHA_SURVEY__PERMISSION__SUBMIT] = array(
+    'title' => t('Submit Moha Survey'),
+    'description' => t('User could submit a Moha Survey.'),
   );
 
   return $permissions;
@@ -88,14 +98,14 @@ function moha_survey_theme($existing, $type, $theme, $path) {
   );
 
   // Declares theme for survey preview page through naming convention, one place configuration.
-  $themes['html__moha__survey__preview'] = array(
+  $themes['html__moha__survey'] = array(
     'render element' => 'elements',
-    'template' => 'templates/html--moha--survey--preview',
+    'template' => 'templates/html--moha--survey',
   );
 
-  $themes['page__moha__survey__preview'] = array(
+  $themes['page__moha__survey'] = array(
     'render element' => 'elements',
-    'template' => 'templates/page--moha--survey--preview',
+    'template' => 'templates/page--moha--survey',
   );
 
   $themes['node__webform'] = array(
@@ -125,7 +135,7 @@ function moha_survey_entity_info() {
       'label' => 'id',
       'revision' => 'vid',
     ),
-    //
+    // Entity label extractor function.
     'label callback' => 'entity_class_label',
 
     /** @see entity_crud_hook_entity_info() */
@@ -165,6 +175,7 @@ function moha_survey_entity_info() {
  */
 function moha_survey_entity_property_info() {
 
+  // Define meta explain array then bind to moha_survey_template entity.
   $properties['id'] = array(
     'label' => t('ID'),
     'type' => 'integer',
@@ -360,6 +371,7 @@ function moha_survey_menu() {
     'weight' => 7,
     'type' => MENU_LOCAL_TASK,
   );
+
   // Moha Survey Clone.
   $items['admin/moha/survey/create'] = array(
     'title' => 'Survey Creation',
@@ -438,6 +450,15 @@ function moha_survey_menu() {
     'page callback' => 'moha_survey_preview',
     'page arguments' => array(3),
     'access arguments' => array('administer own survey'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['moha/survey/page/%node'] = array(
+    'title' => 'Moha Survey',
+    /** @see moha_survey_page */
+    'page callback' => 'moha_survey_page',
+    'page arguments' => array(3),
+    'access arguments' => array('moha survey submission'),
     'type' => MENU_CALLBACK,
   );
 
@@ -547,6 +568,8 @@ function moha_survey_webform_component_render_alter(array &$element, array &$com
  *
  * @param $node
  *
+ * @see moha_survey_theme
+ *
  * @return array
  */
 function moha_survey_preview($node){
@@ -561,6 +584,47 @@ function moha_survey_preview($node){
     MOHA_SURVEY__PATH . '/css/moha_survey.css',
   );
 
+  return $content;
+}
+
+/**
+ * Implements hook_custom_theme().
+ */
+function moha_survey_custom_theme() {
+  $path = current_path();
+
+  static $patterns = array(
+    'moha/survey/page/*',
+    'moha/survey/thanks',
+    'moha/survey/taken',
+    'moha/survey/closed',
+  );
+
+  foreach ($patterns as $pattern) {
+    if (drupal_match_path($path, $pattern)) {
+      return 'stark';
+    }
+  }
+}
+
+/**
+ * Survey take page rendering prepare.
+ *
+ * @example moha/survey/page/nid.
+ *
+ * @param $node
+ *
+ * @return array
+ */
+function moha_survey_page($node){
+  $content = node_view($node);
+  drupal_set_title($node->title);
+
+  $content['#attached']['css'] = array(
+    MOHA_SURVEY__PATH . '/css/moha_survey.css',
+  );
+  // Suppress fancy stuff like admin and admin_menu.module for the preview.
+  module_invoke_all('suppress');
   return $content;
 }
 

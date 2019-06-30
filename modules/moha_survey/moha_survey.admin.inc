@@ -258,7 +258,7 @@ function moha_survey_edit_form($form, &$form_state, $node) {
     );
 
     $form['layout']['preview'] = array(
-      '#prefix' => '<div id="moha_ui_preview_wrapper" class="iphone6">',
+      '#prefix' => '<div id="moha_ui_preview_wrapper" class="iphone6-rose">',
       '#markup' => <<<PREVIEW
 <iframe name="moha_preview" id="moha_ui_preview" class="" frameborder="0" src="$preview_url"><p>$no_iframe</p></iframe>
 PREVIEW

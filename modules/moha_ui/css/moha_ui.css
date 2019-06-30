@@ -65,7 +65,7 @@ input[type="file"].weui-uploader__input {
 
 /***/
 
-/** iPhone 6 Preview Window  */
+/** Mobile Preview Window  */
 #moha_ui_preview_wrapper.iphone6 {
   width: 320px;
   height: 567px;
@@ -76,5 +76,17 @@ input[type="file"].weui-uploader__input {
 #moha_ui_preview_wrapper.iphone6 iframe {
   width: 320px;
   height: 567px;
+}
+
+#moha_ui_preview_wrapper.iphone6-rose,
+#moha_ui_preview_wrapper.iphone6-rose iframe {
+  width: 375px;
+  height: 667px;
+}
+
+#moha_ui_preview_wrapper.iphone6-rose {
+  padding: 113px 30px 105px 30px;
+  background: url(../img/iphone-6-rose-glod.png) no-repeat 0 0;
+  background-size: contain;
 }
 /***/
