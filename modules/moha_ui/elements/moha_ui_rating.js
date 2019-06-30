@@ -23,11 +23,12 @@
               starActiveClass: 'is--active',
               starHoverClass: 'is--hover',
               starNoHoverClass: 'is--no-hover',
-              targetFormElementSelector: 'input[name="submitted[$form_key][rating][value]"]'
+              targetFormElementSelector: '.form-item-' + element.wrapper + ' input[type="hidden"]'
             }
           };
 
           $('.' + element.wrapper + '.rating-stars').ratingStars(ratingOptions);
+
 
         }); // moha_ui_rating_element once
 

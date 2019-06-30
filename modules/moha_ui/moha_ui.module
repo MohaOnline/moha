@@ -265,16 +265,16 @@ RATING_ITEM;
     }
   }
 
+  $content['rating']['#prefix'] = "<div class='rating-stars $wrapper_class'>";
+  $content['rating']['#suffix'] = "</div>";
   $content['rating']['rating_area'] = array(
     '#markup' => <<< RATING_CONTAINER
-      
-      <div class="$wrapper_class rating-stars"><div class="rating-stars-container">
+      <div class="rating-stars-container">
       $rating_items_placeholder
-      </div></div>
+      </div>
 RATING_CONTAINER
   ,
   );
-
   $content['rating']['value'] = array(
     '#name' => $element['#name'] . '[rating]',
     '#type' => 'hidden',
@@ -283,7 +283,7 @@ RATING_CONTAINER
 
   $reason = empty($values['reason'])?'':$values['reason'];
 
-  $content['rating']['reason'] = array(
+  $content['reason'] = array(
     '#name' => $element['#name'] . '[reason]',
     '#title' => t('Rating reason'),
     '#type' => 'textfield',
