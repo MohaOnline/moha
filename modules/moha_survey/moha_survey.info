@@ -1,10 +1,11 @@
 name = Moha Survey
-description = Provides survey function.
+description = Provides friendly survey functions.
 core = 7.x
 package = Moha Online
 
 dependencies[] = clone
 dependencies[] = moha_ui
+dependencies[] = options_element
 
 files[] = includes/MohaSurveyTemplateEntity.form.inc
 files[] = includes/MohaSurveyTemplateEntity.php
