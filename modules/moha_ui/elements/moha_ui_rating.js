@@ -27,11 +27,22 @@
             }
           };
 
-          $('.' + element.wrapper + '.rating-stars', context).ratingStars(ratingOptions);
+          const mohaUIRating = $('.' + element.wrapper + '.rating-stars', context).ratingStars(ratingOptions);
 
-          // Submission editing.
-          if (element.score <= 0 | element.thresholdScore <= 0 || element.score > element.thresholdScore) {
-            $('.form-item-' + element.wrapper + ' .form-type-textfield', context).css('display', 'none');
+          // Rating star initial status.
+          if (element.thresholdScore > 0 && element.score <= element.thresholdScore) {
+            $('.form-item-' + element.wrapper + ' .form-type-textfield', context).css('display', 'inherit');
+          }
+
+          if (element.thresholdScore > 0) {
+            mohaUIRating.on("ratingChanged", function (ev, data) {
+              if (data.ratingValue <= element.thresholdScore) {
+                $('.form-item-' + element.wrapper + ' .form-type-textfield', context).css('display', 'inherit');
+              }
+              else {
+                $('.form-item-' + element.wrapper + ' .form-type-textfield', context).css('display', 'none');
+              }
+            });
           }
 
         }); // moha_ui_rating_element once
