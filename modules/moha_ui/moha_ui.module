@@ -196,11 +196,11 @@ function moha_ui_element_info() {
  * @return array
  *   rating score and low score reason.
  */
-function moha_ui_rating_value($element, $input = FALSE, $form_state) {
+function moha_ui_rating_value(&$element, $input = FALSE, $form_state) {
   $return = $element['#default_value'];
 
-  if ($input) {
-
+  if ($input !== FALSE) {
+    $return = $form_state['input'][$element['#name']];
   }
 
   return $return;
@@ -209,40 +209,12 @@ function moha_ui_rating_value($element, $input = FALSE, $form_state) {
 /**
  * Expands a moha_ui_rating element into rating, details.
  */
-function moha_ui_rating_process($element) {
-
-
-  return $element;
-}
-
-/**
- * @param $element
- * @param $form_state
- *
- * @return bool
- */
-function moha_ui_rating_validate($element, &$form_state) {
-  if ($element['#required'] && $element['rating']['value']['#value'] == 0) {
-    form_error($element, t('%name must be scored.', array('%name' => $element['#webform_component']['name'])));
-
-    return FALSE;
-  }
-
-  return TRUE;
-}
-
-/**
- * Renders moha_ui_rating element.
- *
- * @param $variables
- */
-function theme_moha_ui_rating($variables) {
-  $element = $variables['element'];
-  $values = isset($element['#values'])?$element['#values']:array();
+function moha_ui_rating_process($element, &$form_state, $complete_form) {
+  $value = isset($element['#value'])?$element['#value']:array();
 
   $wrapper_class = drupal_clean_css_identifier($element['#name']);
 
-  $score = isset($element['#values']['rating'])?$element['#values']['rating']:0;
+  $score = isset($element['#value']['rating'])?$element['#value']['rating']:0;
   $max_score = $element['#moha_ui_rating_max_score'];
   $threshold_score = $element['#moha_ui_rating_threshold_score'];
 
@@ -265,9 +237,9 @@ RATING_ITEM;
     }
   }
 
-  $content['rating']['#prefix'] = "<div class='rating-stars $wrapper_class'>";
-  $content['rating']['#suffix'] = "</div>";
-  $content['rating']['rating_area'] = array(
+  $element['rating']['#prefix'] = "<div class='rating-stars $wrapper_class'>";
+  $element['rating']['#suffix'] = "</div>";
+  $element['rating']['rating_area'] = array(
     '#markup' => <<< RATING_CONTAINER
       <div class="rating-stars-container">
       $rating_items_placeholder
@@ -275,15 +247,15 @@ RATING_ITEM;
 RATING_CONTAINER
   ,
   );
-  $content['rating']['value'] = array(
+  $element['rating']['value'] = array(
     '#name' => $element['#name'] . '[rating]',
     '#type' => 'hidden',
     '#default_value' => $score,
   );
 
-  $reason = empty($values['reason'])?'':$values['reason'];
+  $reason = empty($value['reason'])?'':$value['reason'];
 
-  $content['reason'] = array(
+  $element['reason'] = array(
     '#name' => $element['#name'] . '[reason]',
     '#title' => t('Rating reason'),
     '#type' => 'textfield',
@@ -292,9 +264,8 @@ RATING_CONTAINER
   );
 
   /** @see https://www.drupal.org/docs/7/api/javascript-api/managing-javascript-in-drupal-7 */
-  $content['#attached'] = array(
+  $element['rating']['#attached'] = array(
     'js' => array(
-      MOHA_UI__PATH . '/elements/moha_ui_rating.js',
       array(
         'data' => array(
           __MOHA_UI => array(
@@ -311,6 +282,7 @@ RATING_CONTAINER
         ),
         'type' => 'setting'
       ),
+      MOHA_UI__PATH . '/elements/moha_ui_rating.js',
     ),
     'css' => array(
       MOHA_UI__PATH . '/elements/moha_ui_rating.css',
@@ -320,7 +292,51 @@ RATING_CONTAINER
     ),
   );
 
-  return drupal_render($content);
+  return $element;
+}
+
+/**
+ * Renders moha_ui_rating element.
+ *
+ * @param $variables
+ */
+function theme_moha_ui_rating($variables) {
+  $element = $variables['element'];
+  $error = form_get_error($element);
+  if ($error) {
+    $element['rating']['#attached']['js'][0]['data'][__MOHA_UI]['mohaUIRatingElements'][0]['error'] = 1;
+    _form_set_class($element);
+  }
+  $output = drupal_render($element['rating']) . drupal_render($element['reason']);
+  return $output;
+}
+
+/**
+ * @param $element
+ * @param $form_state
+ *
+ * @return bool
+ */
+function moha_ui_rating_validate($element, &$form_state) {
+  $require = isset($element['#required']) ? $element['#required'] : FALSE;
+  $threshold_score = isset($element['#moha_ui_rating_threshold_score']) ? $element['#moha_ui_rating_threshold_score'] : 0;
+
+  if ($require && $threshold_score > 0) {
+    $rating = isset($element['#value']['rating']) ? $element['#value']['rating'] : 0;
+    $reason = isset($element['#value']['reason']) ? $element['#value']['reason'] : '';
+
+    if ($rating <= $threshold_score && empty($reason)) {
+      form_error($element, t('Please provide reason why %name is scored with %rating point(s).',
+        array(
+          '%name' => $element['#title'],
+          '%rating' => $rating,
+        )
+      ));
+      return FALSE;
+    }
+  }
+
+  return TRUE;
 }
 
 /**

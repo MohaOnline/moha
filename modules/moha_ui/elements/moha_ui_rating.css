@@ -36,3 +36,9 @@
 .weui-cell .form-type-moha-ui-rating .rating-stars-container .rating-star.is--hover {
   color: #09BB07;
 }
+
+/** Low score reason style. */
+.form-type-moha-ui-rating .form-type-textfield {
+  display: none;
+}
+/***/

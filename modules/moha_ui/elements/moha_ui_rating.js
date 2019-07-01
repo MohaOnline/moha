@@ -35,7 +35,7 @@
           }
 
           if (element.thresholdScore > 0) {
-            mohaUIRating.on("ratingChanged", function (ev, data) {
+            mohaUIRating.on('ratingChanged', function (ev, data) {
               if (data.ratingValue <= element.thresholdScore) {
                 $('.form-item-' + element.wrapper + ' .form-type-textfield', context).css('display', 'inherit');
               }
