@@ -31,30 +31,6 @@ function moha_survey_config_form($form, &$form_state) {
     ),
   );
 
-  $form['moha_ui_rating'] = array(
-    '#title' => 'NPS',
-    '#type' => 'moha_ui_rating',
-    '#required' => TRUE,
-    '#moha_ui_rating_max_score' => 10,
-    '#moha_ui_rating_threshold_score' => 3,
-    '#default_value' => array(
-      'rating' => 0,
-      'reason' => '',
-    ),
-  );
-
-  $form['moha_ui_rating_neo'] = array(
-    '#title' => 'NEO',
-    '#type' => 'moha_ui_rating',
-    '#required' => TRUE,
-    '#moha_ui_rating_max_score' => 5,
-    '#moha_ui_rating_threshold_score' => 3,
-    '#default_value' => array(
-      'rating' => 3,
-      'reason' => 'No reason',
-    ),
-  );
-
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['save'] = array(
     '#type' => 'submit',
@@ -91,8 +67,9 @@ function moha_survey_config_form_submit($form, &$form_state) {
 function moha_survey_dashboard() {
 
   // Check current jQuery version.
-  $version = variable_get('jquery_update_jquery_admin_version', '1.4');
-  if (version_compare($version, '1.10')) {
+  $version_2 = variable_get('jquery_update_jquery_admin_version', '1.4');
+  $version_3 = variable_get('jquery_update_jquery_version', '1.4');
+  if (version_compare($version_2, '1.10') && version_compare($version_3, '1.10')) {
     $jquery_update_link = l(t('jQuery Update'), 'admin/config/development/jquery_update');
     drupal_set_message("Moha Survey needs jQuery 1.10, please go to $jquery_update_link to configure. ", "error");
   }
