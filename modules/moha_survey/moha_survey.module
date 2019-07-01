@@ -19,6 +19,13 @@ define('__MOHA_SURVEY', 'moha_survey');
 define('MOHA_SURVEY__VARIABLES', __MOHA_SURVEY . '__variables');
 
 /**
+ * Variable name: moha_survey__variable__survey_style.
+ * @example moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 'WeUI')
+ * @example moha_array_variable_set(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__SURVEY_STYLE, 'WeUI');
+ */
+define('MOHA_SURVEY__VARIABLE__SURVEY_STYLE', __MOHA_SURVEY . '__variable__survey_style');
+
+/**
  * Variable name: moha_survey__variable__preview_uid.
  * @example moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0)
  * @example moha_array_variable_set(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, $values['uid']);

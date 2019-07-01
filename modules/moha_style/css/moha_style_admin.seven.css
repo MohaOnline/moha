@@ -22,6 +22,14 @@ body.page-admin div.form-actions a.button {
   margin: 1em 1em 0 0;
   font-size: 1.077em;
 }
+
+body div.error {
+  background-image: none;
+}
+
+body div.messages.error {
+  background-image: url(../img/message-24-error.png);
+}
 /***/
 
 /** Fix styles issue between element - options and system module. */

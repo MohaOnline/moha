@@ -42,3 +42,7 @@
   display: none;
 }
 /***/
+
+div.form-type-moha-ui-rating.error {
+  background-image: none;
+}

@@ -162,10 +162,8 @@ function moha_ui_element_info() {
       // Do not provide autocomplete.
       '#autocomplete_path' => FALSE,
 
-      // Allow theme('form_element') to control the markup surrounding this
-      // value on output.
-      '#theme_wrappers' => array('form_element'),
-
+      // Customize wrapper theme to mark error when validation failed.
+      '#theme_wrappers' => array('moha_ui_rating_wrapper'),
       '#theme' => array('moha_ui_rating'),
       '#value_callback' => 'moha_ui_rating_value',
       '#process' => array('moha_ui_rating_process'),
@@ -177,8 +175,6 @@ function moha_ui_element_info() {
         'reason' => '',   // low score reason.
       ),
     ),
-
-
   );
 
   return $elements;
@@ -304,18 +300,96 @@ function theme_moha_ui_rating($variables) {
   $element = $variables['element'];
   $error = form_get_error($element);
   if ($error) {
-    $element['rating']['#attached']['js'][0]['data'][__MOHA_UI]['mohaUIRatingElements'][0]['error'] = 1;
-    _form_set_class($element);
+    $element['rating']['#attached']['js'][0]['data'][__MOHA_UI]['mohaUIRatingElements'][0]['error'] = TRUE;
+
   }
   $output = drupal_render($element['rating']) . drupal_render($element['reason']);
   return $output;
 }
 
 /**
+ * Wrapper moha_ui_rating as form item, append error css class when validation
+ * is failed.
+ *
+ * @inheritdoc
+ *
+ * @see \theme_form_element()
+ */
+function theme_moha_ui_rating_wrapper($variables) {
+  $element = &$variables['element'];
+  _form_set_class($element);
+
+  // This function is invoked as theme wrapper, but the rendered form element
+  // may not necessarily have been processed by form_builder().
+  $element += array(
+    '#title_display' => 'before',
+  );
+
+  // Add element #id for #type 'item'.
+  if (isset($element['#markup']) && !empty($element['#id'])) {
+    $attributes['id'] = $element['#id'];
+  }
+  // Add element's #type and #name as class to aid with JS/CSS selectors.
+  $attributes['class'] = array('form-item');
+  if (!empty($element['#type'])) {
+    $attributes['class'][] = 'form-type-' . strtr($element['#type'], '_', '-');
+  }
+  if (!empty($element['#name'])) {
+    $attributes['class'][] = 'form-item-' . strtr($element['#name'], array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
+  }
+  // Add a class for disabled elements to facilitate cross-browser styling.
+  if (!empty($element['#attributes']['disabled'])) {
+    $attributes['class'][] = 'form-disabled';
+  }
+
+  if (!empty($element['#attributes']['class'])) {
+    $attributes['class'] = drupal_array_merge_deep($attributes['class'], $element['#attributes']['class']);
+  }
+  $output = '<div' . drupal_attributes($attributes) . '>' . "\n";
+
+  // If #title is not set, we don't display any label or required marker.
+  if (!isset($element['#title'])) {
+    $element['#title_display'] = 'none';
+  }
+  $prefix = isset($element['#field_prefix']) ? '<span class="field-prefix">' . $element['#field_prefix'] . '</span> ' : '';
+  $suffix = isset($element['#field_suffix']) ? ' <span class="field-suffix">' . $element['#field_suffix'] . '</span>' : '';
+
+  switch ($element['#title_display']) {
+    case 'before':
+    case 'invisible':
+      $output .= ' ' . theme('form_element_label', $variables);
+      $output .= ' ' . $prefix . $element['#children'] . $suffix . "\n";
+      break;
+
+    case 'after':
+      $output .= ' ' . $prefix . $element['#children'] . $suffix;
+      $output .= ' ' . theme('form_element_label', $variables) . "\n";
+      break;
+
+    case 'none':
+    case 'attribute':
+      // Output no label and no required marker, only the children.
+      $output .= ' ' . $prefix . $element['#children'] . $suffix . "\n";
+      break;
+  }
+
+  if (!empty($element['#description'])) {
+    $output .= '<div class="description">' . $element['#description'] . "</div>\n";
+  }
+
+  $output .= "</div>\n";
+
+  return $output;
+}
+
+/**
+ * Validate rating data.
+ *
  * @param $element
  * @param $form_state
  *
  * @return bool
+ *   returns FALSE if validation is failed.
  */
 function moha_ui_rating_validate($element, &$form_state) {
   $require = isset($element['#required']) ? $element['#required'] : FALSE;
@@ -345,6 +419,9 @@ function moha_ui_rating_validate($element, &$form_state) {
 function moha_ui_theme($existing, $type, $theme, $path) {
   $templates = array(
     'moha_ui_rating' => array(
+      'render element' => 'element',
+    ),
+    'moha_ui_rating_wrapper' => array(
       'render element' => 'element',
     ),
     'moha_ui_image_mobile_uploader_widget_multiple' => array(
