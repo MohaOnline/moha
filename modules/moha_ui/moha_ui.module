@@ -301,6 +301,7 @@ RATING_CONTAINER
             'mohaUIRatingElements' => array(
               array(
                 'wrapper' => $wrapper_class,
+                'score' => $score,
                 'maxScore' => $max_score,
                 'thresholdScore' => $threshold_score,
                 'required' => $element['#required'],

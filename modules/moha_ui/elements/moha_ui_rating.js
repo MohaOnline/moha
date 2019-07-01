@@ -15,7 +15,7 @@
       for (let i=0; i<settings.moha_ui.mohaUIRatingElements.length; i++) {
         const element = settings.moha_ui.mohaUIRatingElements[i];
 
-        $('.form-item-' + element.wrapper + '.form-type-moha-ui-rating', context).once('moha_ui_rating_element', function () {
+        $('.form-item-' + element.wrapper + '.form-type-moha-ui-rating', context).once('moha-ui-rating-element', function () {
           const ratingOptions = {
             selectors: {
               starsSelector: '.' + element.wrapper + '.rating-stars',
@@ -23,12 +23,16 @@
               starActiveClass: 'is--active',
               starHoverClass: 'is--hover',
               starNoHoverClass: 'is--no-hover',
-              targetFormElementSelector: '.form-item-' + element.wrapper + ' input[type="hidden"]'
+              targetFormElementSelector: '.' + element.wrapper + ' input[type="hidden"]'
             }
           };
 
-          $('.' + element.wrapper + '.rating-stars').ratingStars(ratingOptions);
+          $('.' + element.wrapper + '.rating-stars', context).ratingStars(ratingOptions);
 
+          // Submission editing.
+          if (element.score <= 0 | element.thresholdScore <= 0 || element.score > element.thresholdScore) {
+            $('.form-item-' + element.wrapper + ' .form-type-textfield', context).css('display', 'none');
+          }
 
         }); // moha_ui_rating_element once
 
