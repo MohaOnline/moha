@@ -32,7 +32,7 @@
           // Rating star initial status.
           if (element.score > 0 && element.thresholdScore > 0 && element.score <= element.thresholdScore ||
               $('.form-item-' + element.wrapper, context).hasClass('error') && element.thresholdScore > 0 && element.score <= element.thresholdScore ) {
-            
+
             $('.form-item-' + element.wrapper + ' .form-type-textfield', context).css('display', 'inherit');
           }
 
