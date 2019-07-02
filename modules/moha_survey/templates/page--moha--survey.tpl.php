@@ -75,6 +75,7 @@
 ?>
 
 <div id="page-wrapper"><div id="page">
+  <?php print $messages; ?>
   <div id="main-wrapper"><div id="main" class="clearfix">
     <div id="content" class="column"><div class="section">
       <?php print render($page['content']); ?>
