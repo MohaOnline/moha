@@ -30,7 +30,9 @@
           const mohaUIRating = $('.' + element.wrapper + '.rating-stars', context).ratingStars(ratingOptions);
 
           // Rating star initial status.
-          if (element.thresholdScore > 0 && element.score <= element.thresholdScore) {
+          if (element.score > 0 && element.thresholdScore > 0 && element.score <= element.thresholdScore ||
+              $('.form-item-' + element.wrapper, context).hasClass('error') && element.thresholdScore > 0 && element.score <= element.thresholdScore ) {
+            
             $('.form-item-' + element.wrapper + ' .form-type-textfield', context).css('display', 'inherit');
           }
 

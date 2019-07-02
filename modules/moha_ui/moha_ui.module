@@ -147,6 +147,175 @@ function moha_ui_libraries_info() {
 }
 
 /**
+ * Implements hook_theme().
+ */
+function moha_ui_theme($existing, $type, $theme, $path) {
+  $templates = array(
+    'moha_ui_rating' => array(
+      'render element' => 'element',
+    ),
+    'moha_ui_form_element' => array(
+      'render element' => 'element',
+    ),
+    'moha_ui_webform_element' => array(
+      'render element' => 'element',
+    ),
+    'moha_ui_image_mobile_uploader_widget_multiple' => array(
+      'render element' => 'element',
+    ),
+    // Image preview and image uploader widget.
+    'moha_ui_image_mobile_uploader_widget' => array(
+      'render element' => 'element',
+    ),
+    'moha_ui_image_mobile_uploader_formatter' => array(
+      'variables' => array('item' => NULL, 'path' => NULL, 'image_style' => NULL),
+    ),
+  );
+
+  return $templates;
+}
+
+/**
+ * Wrapper moha_ui_rating as form item, append error css class when validation
+ * is failed.
+ *
+ * @inheritdoc
+ *
+ * @see \theme_form_element()
+ */
+function theme_moha_ui_form_element($variables) {
+  $element = &$variables['element'];
+  _form_set_class($element);
+
+  // This function is invoked as theme wrapper, but the rendered form element
+  // may not necessarily have been processed by form_builder().
+  $element += array(
+    '#title_display' => 'before',
+  );
+
+  // Add element #id for #type 'item'.
+  if (isset($element['#markup']) && !empty($element['#id'])) {
+    $attributes['id'] = $element['#id'];
+  }
+  // Add element's #type and #name as class to aid with JS/CSS selectors.
+  $attributes['class'] = array('form-item');
+  if (!empty($element['#type'])) {
+    $attributes['class'][] = 'form-type-' . strtr($element['#type'], '_', '-');
+  }
+  if (!empty($element['#name'])) {
+    $attributes['class'][] = 'form-item-' . strtr($element['#name'], array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
+  }
+  // Add a class for disabled elements to facilitate cross-browser styling.
+  if (!empty($element['#attributes']['disabled'])) {
+    $attributes['class'][] = 'form-disabled';
+  }
+
+  if (!empty($element['#attributes']['class'])) {
+    $attributes['class'] = drupal_array_merge_deep($attributes['class'], $element['#attributes']['class']);
+  }
+  $output = '<div' . drupal_attributes($attributes) . '>' . "\n";
+
+  // If #title is not set, we don't display any label or required marker.
+  if (!isset($element['#title'])) {
+    $element['#title_display'] = 'none';
+  }
+  $prefix = isset($element['#field_prefix']) ? '<span class="field-prefix">' . $element['#field_prefix'] . '</span> ' : '';
+  $suffix = isset($element['#field_suffix']) ? ' <span class="field-suffix">' . $element['#field_suffix'] . '</span>' : '';
+
+  switch ($element['#title_display']) {
+    case 'before':
+    case 'invisible':
+      $output .= ' ' . theme('form_element_label', $variables);
+      $output .= ' ' . $prefix . $element['#children'] . $suffix . "\n";
+      break;
+
+    case 'after':
+      $output .= ' ' . $prefix . $element['#children'] . $suffix;
+      $output .= ' ' . theme('form_element_label', $variables) . "\n";
+      break;
+
+    case 'none':
+    case 'attribute':
+      // Output no label and no required marker, only the children.
+      $output .= ' ' . $prefix . $element['#children'] . $suffix . "\n";
+      break;
+  }
+
+  if (!empty($element['#description'])) {
+    $output .= '<div class="description">' . $element['#description'] . "</div>\n";
+  }
+
+  $output .= "</div>\n";
+
+  return $output;
+}
+
+/**
+ * Replacement for theme_webform_element().
+ *
+ * @see theme_webform_element
+ */
+function theme_moha_ui_webform_element($variables) {
+  $element = $variables['element'];
+  _form_set_class($element);
+
+  $output = '<div ' . drupal_attributes($element['#wrapper_attributes']) . '>' . "\n";
+  $prefix = isset($element['#field_prefix']) ? '<span class="field-prefix">' . webform_filter_xss($element['#field_prefix']) . '</span> ' : '';
+  $suffix = isset($element['#field_suffix']) ? ' <span class="field-suffix">' . webform_filter_xss($element['#field_suffix']) . '</span>' : '';
+
+  // Generate description for above or below the field.
+  $above = !empty($element['#webform_component']['extra']['description_above']);
+  $description = array(
+    FALSE => '',
+    TRUE => !empty($element['#description']) ? ' <div class="description">' . $element['#description'] . "</div>\n" : '',
+  );
+
+  // If #children does not contain an element with a matching @id, do not
+  // include @for in the label.
+  if (isset($variables['element']['#id']) && strpos($element['#children'], ' id="' . $variables['element']['#id'] . '"') === FALSE) {
+    $variables['element']['#id'] = NULL;
+  }
+
+  switch ($element['#title_display']) {
+    case 'inline':
+      $output .= $description[$above];
+      $description[$above] = '';
+    case 'before':
+    case 'invisible':
+    case 'after':
+      $title = ' ' . theme('form_element_label', $variables);
+      break;
+  }
+
+  $children = ' ' . $description[$above] . $prefix . $element['#children'] . $suffix;
+  switch ($element['#title_display']) {
+    case 'inline':
+    case 'before':
+    case 'invisible':
+      $output .= $title;
+      $output .= $children;
+      break;
+
+    case 'after':
+      $output .= $children;
+      $output .= $title;
+      break;
+
+    case 'none':
+    case 'attribute':
+      // Output no label and no required marker, only the children.
+      $output .= $children;
+      break;
+  }
+  $output .= "\n";
+
+  $output .= $description[!$above];
+  $output .= "</div>\n";
+
+  return $output;
+}
+
+/**
  * Implements hook_element_info().
  *
  * @see https://www.drupal.org/node/169815
@@ -163,7 +332,7 @@ function moha_ui_element_info() {
       '#autocomplete_path' => FALSE,
 
       // Customize wrapper theme to mark error when validation failed.
-      '#theme_wrappers' => array('moha_ui_rating_wrapper'),
+      '#theme_wrappers' => array('moha_ui_form_element'),
       '#theme' => array('moha_ui_rating'),
       '#value_callback' => 'moha_ui_rating_value',
       '#process' => array('moha_ui_rating_process'),
@@ -308,81 +477,6 @@ function theme_moha_ui_rating($variables) {
 }
 
 /**
- * Wrapper moha_ui_rating as form item, append error css class when validation
- * is failed.
- *
- * @inheritdoc
- *
- * @see \theme_form_element()
- */
-function theme_moha_ui_rating_wrapper($variables) {
-  $element = &$variables['element'];
-  _form_set_class($element);
-
-  // This function is invoked as theme wrapper, but the rendered form element
-  // may not necessarily have been processed by form_builder().
-  $element += array(
-    '#title_display' => 'before',
-  );
-
-  // Add element #id for #type 'item'.
-  if (isset($element['#markup']) && !empty($element['#id'])) {
-    $attributes['id'] = $element['#id'];
-  }
-  // Add element's #type and #name as class to aid with JS/CSS selectors.
-  $attributes['class'] = array('form-item');
-  if (!empty($element['#type'])) {
-    $attributes['class'][] = 'form-type-' . strtr($element['#type'], '_', '-');
-  }
-  if (!empty($element['#name'])) {
-    $attributes['class'][] = 'form-item-' . strtr($element['#name'], array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
-  }
-  // Add a class for disabled elements to facilitate cross-browser styling.
-  if (!empty($element['#attributes']['disabled'])) {
-    $attributes['class'][] = 'form-disabled';
-  }
-
-  if (!empty($element['#attributes']['class'])) {
-    $attributes['class'] = drupal_array_merge_deep($attributes['class'], $element['#attributes']['class']);
-  }
-  $output = '<div' . drupal_attributes($attributes) . '>' . "\n";
-
-  // If #title is not set, we don't display any label or required marker.
-  if (!isset($element['#title'])) {
-    $element['#title_display'] = 'none';
-  }
-  $prefix = isset($element['#field_prefix']) ? '<span class="field-prefix">' . $element['#field_prefix'] . '</span> ' : '';
-  $suffix = isset($element['#field_suffix']) ? ' <span class="field-suffix">' . $element['#field_suffix'] . '</span>' : '';
-
-  switch ($element['#title_display']) {
-    case 'before':
-    case 'invisible':
-      $output .= ' ' . theme('form_element_label', $variables);
-      $output .= ' ' . $prefix . $element['#children'] . $suffix . "\n";
-      break;
-
-    case 'after':
-      $output .= ' ' . $prefix . $element['#children'] . $suffix;
-      $output .= ' ' . theme('form_element_label', $variables) . "\n";
-      break;
-
-    case 'none':
-    case 'attribute':
-      // Output no label and no required marker, only the children.
-      $output .= ' ' . $prefix . $element['#children'] . $suffix . "\n";
-      break;
-  }
-
-  if (!empty($element['#description'])) {
-    $output .= '<div class="description">' . $element['#description'] . "</div>\n";
-  }
-
-  $output .= "</div>\n";
-
-  return $output;
-}
-
-/**
  * Validate rating data.
  *
  * @param $element
@@ -400,43 +494,19 @@ function moha_ui_rating_validate($element, &$form_state) {
     $reason = isset($element['#value']['reason']) ? $element['#value']['reason'] : '';
 
     if ($rating <= $threshold_score && empty($reason)) {
-      form_error($element, t('Please provide reason why %name is scored with %rating point(s).',
+      form_error($element, t('Please provide reason why @rating point(s) is(are) scored against @name field.',
         array(
-          '%name' => $element['#title'],
-          '%rating' => $rating,
+          '@name' => $element['#title'],
+          '@rating' => $rating,
         )
       ));
+      form_error($element['reason']);
+
       return FALSE;
     }
   }
 
   return TRUE;
-}
-
-/**
- * Implements hook_theme().
- */
-function moha_ui_theme($existing, $type, $theme, $path) {
-  $templates = array(
-    'moha_ui_rating' => array(
-      'render element' => 'element',
-    ),
-    'moha_ui_rating_wrapper' => array(
-      'render element' => 'element',
-    ),
-    'moha_ui_image_mobile_uploader_widget_multiple' => array(
-      'render element' => 'element',
-    ),
-    // Image preview and image uploader widget.
-    'moha_ui_image_mobile_uploader_widget' => array(
-      'render element' => 'element',
-    ),
-    'moha_ui_image_mobile_uploader_formatter' => array(
-      'variables' => array('item' => NULL, 'path' => NULL, 'image_style' => NULL),
-    ),
-  );
-
-  return $templates;
 }
 
 /**
