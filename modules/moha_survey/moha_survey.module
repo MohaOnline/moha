@@ -759,6 +759,10 @@ function theme_moha_survey_weui_webform_element_radios($variables) {
 
   $options = $element['#options'];
   $default_value = $element['#default_value'];
+  if ($element['#required']) {
+    $element['#title'] .= '<span style="color:red"> * </span>';
+  }
+
   $output='
     <div class="weui-cells__title">' . $element['#title'] . '</div>
     <div class="weui-cells weui-cells_radio">';
@@ -796,6 +800,10 @@ function theme_moha_survey_weui_webform_element_checkboxes($variables) {
 
   $options = $element['#options'];
   $default_value = $element['#default_value'];
+  if ($element['#required']) {
+    $element['#title'] .= '<span style="color:red"> * </span>';
+  }
+
   $output='
     <div class="weui-cells__title">' . $element['#title'] . '</div>
     <div class="weui-cells weui-cells_checkbox">';

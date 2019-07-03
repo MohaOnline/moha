@@ -1,4 +1,10 @@
 
+<?php
+  if ($element['#required']) {
+    $element['#title'] .= '<span style="color:red"> * </span>';
+  }
+?>
+
 <div class="weui-cells__title"><?php print $element['#title'] ?></div>
 
 <div class="weui-cells">
