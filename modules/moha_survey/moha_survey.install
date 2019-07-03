@@ -29,6 +29,7 @@ function moha_survey_enable() {
   }
 
   moha_array_variable_set(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, $user->uid);
+  theme_enable(array('stark'));
 }
 
 /**
