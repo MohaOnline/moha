@@ -284,7 +284,7 @@ PREVIEW
       '#markup' => "<a class='button' href='$delete_url'>" . t('Delete') . "</a>" ,
     );
 
-    $preview_link = l(t('Preview'), 'node/' . $node->nid,
+    $preview_link = l(t('Preview'), 'moha/survey/preview/' . $node->nid,
       array(
         'query' => array(
           'preview' => moha_array_variable_get(MOHA_SURVEY__VARIABLES, MOHA_SURVEY__VARIABLE__PREVIEW_UID, 0),
