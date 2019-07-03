@@ -147,6 +147,15 @@ function moha_ui_libraries_info() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function moha_ui_menu_alter(&$items) {
+  if (isset($items['node/%node/clone/%clone_token'])) {
+    $items['node/%node/clone/%clone_token']['type'] = MENU_LOCAL_TASK;
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function moha_ui_theme($existing, $type, $theme, $path) {
