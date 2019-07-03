@@ -625,6 +625,13 @@ function moha_survey_custom_theme() {
  * @return array
  */
 function moha_survey_page($node){
+  module_load_include('inc', 'webform', 'includes/webform.submissions');
+  global $user;
+  $submission_count = webform_get_submission_count($node->nid, $user->uid);
+  if ($submission_count) {
+    drupal_goto('moha/survey/taken');
+  }
+
   $content = node_view($node);
   drupal_set_title($node->title);
 
