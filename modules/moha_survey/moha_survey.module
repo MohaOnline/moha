@@ -585,6 +585,9 @@ function moha_survey_preview($node){
     hide($content['webform']['#form']['actions']);
   }
 
+  $content['#attached']['library'] = array(
+    array(__MOHA_UI, __MOHA_UI),
+  );
   $content['#attached']['css'] = array(
     MOHA_SURVEY__PATH . '/css/moha_survey.css',
   );
@@ -625,6 +628,9 @@ function moha_survey_page($node){
   $content = node_view($node);
   drupal_set_title($node->title);
 
+  $content['#attached']['library'] = array(
+    array(__MOHA_UI, __MOHA_UI),
+  );
   $content['#attached']['css'] = array(
     MOHA_SURVEY__PATH . '/css/moha_survey.css',
   );
