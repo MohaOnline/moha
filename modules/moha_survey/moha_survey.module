@@ -771,20 +771,31 @@ function theme_moha_survey_weui_webform_element_radios($variables) {
   $element = $variables['element'];
 
   $options = $element['#options'];
-  $default_value = $element['#default_value'];
+  if($element['#value']){
+    $checked_option = $element['#value'];
+  } else {
+    $checked_option = $element['#default_value'];
+  }
+
   if ($element['#required']) {
     $element['#title'] .= '<span style="color:red"> * </span>';
   }
 
+  $error = form_get_error($element);
+  $error_class = '';
+  if ($error) {
+    $error_class = 'error';
+  }
+
   $output='
     <div class="weui-cells__title">' . $element['#title'] . '</div>
-    <div class="weui-cells weui-cells_radio">';
+    <div class="weui-cells weui-cells_radio ' . $error_class . '">';
 
   foreach($options as $key => $option){
-    if($default_value == $key){
-      $default_checked = 'checked="checked"';
+    if($checked_option == $key){
+      $checked = 'checked="checked"';
     } else {
-      $default_checked = '';
+      $checked = '';
     }
     $output .= '
       <label class="weui-cell weui-check__label" for="'. $element[$key]['#id'] . '">
@@ -792,7 +803,7 @@ function theme_moha_survey_weui_webform_element_radios($variables) {
             <p>'. $option .'</p>
         </div>
         <div class="weui-cell__ft">
-            <input type="radio" class="weui-check" name="' . $element[$key]['#name'] . '" id="' . $element[$key]['#id'] . '" value="' . $key .'" ' . $default_checked .'>
+            <input type="radio" class="weui-check" name="' . $element[$key]['#name'] . '" id="' . $element[$key]['#id'] . '" value="' . $key .'" ' . $checked .'>
             <span class="weui-icon-checked"></span>
         </div>
       </label>';
@@ -812,25 +823,36 @@ function theme_moha_survey_weui_webform_element_checkboxes($variables) {
   $element = $variables['element'];
 
   $options = $element['#options'];
-  $default_value = $element['#default_value'];
+  if($element['#value']){
+    $checked_option = $element['#value'];
+  } else {
+    $checked_option = $element['#default_value'];
+  }
+
   if ($element['#required']) {
     $element['#title'] .= '<span style="color:red"> * </span>';
   }
 
+  $error = form_get_error($element);
+  $error_class = '';
+  if ($error) {
+    $error_class = 'error';
+  }
+
   $output='
     <div class="weui-cells__title">' . $element['#title'] . '</div>
-    <div class="weui-cells weui-cells_checkbox">';
+    <div class="weui-cells weui-cells_checkbox ' . $error_class . '">';
 
   foreach($options as $key => $option){
-    if(in_array($key,$default_value )){
-      $default_checked = 'checked="checked"';
+    if(in_array($key, $checked_option )){
+      $checked = 'checked="checked"';
     } else {
-      $default_checked = '';
+      $checked = '';
     }
     $output .= '
       <label class="weui-cell weui-check__label" for="'. $element[$key]['#id'] . '">
         <div class="weui-cell__hd">
-            <input type="checkbox" name="' . $element[$key]['#name'] . '" class="weui-check" id="' . $element[$key]['#id'] . '" value="' . $key . '" '.$default_checked. '>
+            <input type="checkbox" name="' . $element[$key]['#name'] . '" class="weui-check" id="' . $element[$key]['#id'] . '" value="' . $key . '" '.$checked. '>
             <i class="weui-icon-checked"></i>
         </div>
         <div class="weui-cell__bd">

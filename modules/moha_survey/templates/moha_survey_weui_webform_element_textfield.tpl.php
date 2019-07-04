@@ -3,11 +3,17 @@
   if ($element['#required']) {
     $element['#title'] .= '<span style="color:red"> * </span>';
   }
+
+  $error = form_get_error($element);
+  $error_class = '';
+  if ($error) {
+    $error_class = 'error';
+  }
 ?>
 
 <div class="weui-cells__title"><?php print $element['#title'] ?></div>
 
-<div class="weui-cells">
+<div class="weui-cells <?php print $error_class ?>">
   <div class="weui-cell">
     <div class="weui-cell__bd">
       <input class="weui-input" type="text" placeholder="请输入文本"

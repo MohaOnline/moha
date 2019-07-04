@@ -34,3 +34,9 @@ label.weui-cell.weui-check__label {
   width: 184px;
 }
 /***/
+
+/** Add red border for survey element **/
+.weui-cells.error {
+  border: 1px solid #ed541d;
+  background-image: unset;
+}
