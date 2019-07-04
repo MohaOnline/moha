@@ -603,6 +603,7 @@ function moha_survey_custom_theme() {
 
   static $patterns = array(
     'moha/survey/page/*',
+    'moha/survey/preview/*',
     'moha/survey/thanks',
     'moha/survey/taken',
     'moha/survey/closed',
