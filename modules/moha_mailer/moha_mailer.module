@@ -1,0 +1,30 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_MAILER', 'Moha Mailer');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_MAILER', 'moha_mailer');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_mailer.
+ */
+define('MOHA_MAILER__PATH', drupal_get_path('module', __MOHA_MAILER));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_mailer.
+ */
+define('__MOHA_MAILER__PATH', base_path() . MOHA_MAILER__PATH);
+
+/**
+ * Module variables name.
+ */
+define('MOHA_MAILER__VARIABLES', __MOHA_MAILER. '__variables');
+

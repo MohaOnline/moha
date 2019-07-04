@@ -156,6 +156,20 @@ function moha_ui_menu_alter(&$items) {
 }
 
 /**
+ * Implements hook_library_alter().
+ *
+ * @inheritdoc
+ */
+function moha_ui_library_alter(&$libraries, $module) {
+
+  /** @link https://www.drupal.org/docs/7/theming/using-newer-versions-of-jquery  @endlink */
+  // Modified System Library.
+  if ($module === 'system') {
+    $libraries['jquery']['js']['misc/jquery.js']['data'] = MOHA_UI__PATH . '/libs/jquery/jquery-1.12.4.js';
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function moha_ui_theme($existing, $type, $theme, $path) {

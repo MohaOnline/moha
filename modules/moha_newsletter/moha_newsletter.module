@@ -368,7 +368,7 @@ function moha_newsletter_form($node, &$form_state) {
   }
 
   // Add collapsible effect to image and video fields.
-  drupal_add_js(__MOHA__PATH . '/js/moha.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
+  drupal_add_js(MOHA__PATH . '/js/moha.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
 
   return node_content_form($node, $form_state);
 }
@@ -482,7 +482,7 @@ function moha_newsletter_node_type_insert($info) {
 function moha_newsletter_theme($existing, $type, $theme, $path) {
   $themes = array();
 
-  // Declare theme for moha_clip through naming convention, one place configuration.
+  // Declare theme for moha_newsletter through naming convention, one place configuration.
   $themes['node__moha_newsletter'] = array(
       'render element' => 'elements',
       'template' => 'templates/node--moha_newsletter',
