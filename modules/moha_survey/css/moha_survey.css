@@ -35,8 +35,8 @@ label.weui-cell.weui-check__label {
 }
 /***/
 
-/** Add red border for survey element **/
+/** Add red border for validated element error **/
 .weui-cells.error {
-  border: 1px solid #ed541d;
+  border: 2px solid red;
   background-image: unset;
 }
