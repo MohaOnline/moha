@@ -9,4 +9,4 @@ dependencies[] = mimemail
 dependencies[] = mimemail_compress
 dependencies[] = just_smtp
 
-files[] = includes/MohaMailerMailSystem.php
+files[] = MohaMailerMailSystem.php
