@@ -85,10 +85,6 @@ function moha_ui_library() {
       MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(),
     ),
     'css' => array(
-      MOHA_UI__PATH . '/libs/font-awesome/css/font-awesome.css' => array(
-        'type' => 'file',
-        'media' => 'screen',
-      ),
       MOHA_UI__PATH . '/libs/AdminLTE/bower_components/bootstrap/dist/css/bootstrap.css' => array(
         'type' => 'file',
         'media' => 'screen',
@@ -113,6 +109,19 @@ function moha_ui_library() {
   );
 
   return $libraries;
+}
+
+/**
+ * Implements hook_library_alter().
+ *
+ * @inheritdoc
+ */
+function moha_ui_library_alter(&$libraries, $module) {
+  /** @link https://www.drupal.org/docs/7/theming/using-newer-versions-of-jquery  @endlink */
+  if ($module === 'system') {
+    // Modified jQuery version to 1.12.4.
+    $libraries['jquery']['js']['misc/jquery.js']['data'] = MOHA_UI__PATH . '/libs/jquery/jquery-1.12.4.js';
+  }
 }
 
 /**
@@ -152,20 +161,6 @@ function moha_ui_libraries_info() {
 function moha_ui_menu_alter(&$items) {
   if (isset($items['node/%node/clone/%clone_token'])) {
     $items['node/%node/clone/%clone_token']['type'] = MENU_LOCAL_TASK;
-  }
-}
-
-/**
- * Implements hook_library_alter().
- *
- * @inheritdoc
- */
-function moha_ui_library_alter(&$libraries, $module) {
-
-  /** @link https://www.drupal.org/docs/7/theming/using-newer-versions-of-jquery  @endlink */
-  // Modified System Library.
-  if ($module === 'system') {
-    $libraries['jquery']['js']['misc/jquery.js']['data'] = MOHA_UI__PATH . '/libs/jquery/jquery-1.12.4.js';
   }
 }
 
