@@ -1,0 +1,29 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Set mail sending class to MohaMailerMailSystem.
+ */
+function moha_mailer_enable() {
+  $configuration = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
+  $configuration['default-system'] = 'MohaMailerMailSystem';
+
+  variable_set('mail_system', $configuration);
+}
+
+/**
+ * Set mail sending class to default.
+ */
+function moha_mailer_disable() {
+  $configuration = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
+  foreach ($configuration as $key => $value) {
+    if ($configuration[$key] == 'MohaMailerMailSystem') {
+      $configuration[$key] = 'DefaultMailSystem';
+    }
+  }
+
+  variable_set('mail_system', $configuration);
+}
+

@@ -5,6 +5,8 @@
 
 /**
  * Class MohaMailerMailSystem
+ *
+ * @see DefaultMailSystem
  */
 class MohaMailerMailSystem implements MailSystemInterface {
 
