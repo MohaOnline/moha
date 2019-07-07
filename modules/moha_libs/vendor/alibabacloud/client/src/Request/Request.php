@@ -2,49 +2,54 @@
 
 namespace AlibabaCloud\Client\Request;
 
+use Exception;
+use ArrayAccess;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Middleware;
+use AlibabaCloud\Client\SDK;
+use GuzzleHttp\HandlerStack;
+use AlibabaCloud\Client\Encode;
 use AlibabaCloud\Client\AlibabaCloud;
-use AlibabaCloud\Client\Credentials\Providers\CredentialsProvider;
+use AlibabaCloud\Client\Filter\Filter;
+use AlibabaCloud\Client\Result\Result;
+use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Promise\PromiseInterface;
+use AlibabaCloud\Client\Filter\ApiFilter;
+use AlibabaCloud\Client\Log\LogFormatter;
+use AlibabaCloud\Client\Traits\HttpTrait;
+use GuzzleHttp\Exception\GuzzleException;
+use AlibabaCloud\Client\Filter\HttpFilter;
+use AlibabaCloud\Client\Traits\RegionTrait;
+use AlibabaCloud\Client\Filter\ClientFilter;
+use AlibabaCloud\Client\Request\Traits\AcsTrait;
+use AlibabaCloud\Client\Traits\ArrayAccessTrait;
+use AlibabaCloud\Client\Traits\ObjectAccessTrait;
+use AlibabaCloud\Client\Request\Traits\RetryTrait;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
-use AlibabaCloud\Client\Filter\ApiFilter;
-use AlibabaCloud\Client\Filter\ClientFilter;
-use AlibabaCloud\Client\Filter\Filter;
-use AlibabaCloud\Client\Filter\HttpFilter;
-use AlibabaCloud\Client\Log\LogFormatter;
-use AlibabaCloud\Client\Request\Traits\AcsTrait;
 use AlibabaCloud\Client\Request\Traits\ClientTrait;
 use AlibabaCloud\Client\Request\Traits\DeprecatedTrait;
-use AlibabaCloud\Client\Request\Traits\MagicTrait;
-use AlibabaCloud\Client\Result\Result;
-use AlibabaCloud\Client\SDK;
-use AlibabaCloud\Client\Traits\ArrayAccessTrait;
-use AlibabaCloud\Client\Traits\HttpTrait;
-use AlibabaCloud\Client\Traits\ObjectAccessTrait;
-use AlibabaCloud\Client\Traits\RegionTrait;
-use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Uri;
+use AlibabaCloud\Client\Credentials\Providers\CredentialsProvider;
 
 /**
  * Class Request
  *
  * @package   AlibabaCloud\Client\Request
  *
- * @method string resolveParameters($credential)
+ * @method string stringToSign()
+ * @method string resolveParameter()
  */
-abstract class Request implements \ArrayAccess
+abstract class Request implements ArrayAccess
 {
     use DeprecatedTrait;
     use HttpTrait;
     use RegionTrait;
-    use MagicTrait;
     use ClientTrait;
     use AcsTrait;
     use ArrayAccessTrait;
     use ObjectAccessTrait;
+    use RetryTrait;
 
     /**
      * Request Connect Timeout
@@ -57,12 +62,7 @@ abstract class Request implements \ArrayAccess
     const TIMEOUT = 10;
 
     /**
-     * @var string
-     */
-    public $scheme = 'http';
-
-    /**
-     * @var string
+     * @var string HTTP Method
      */
     public $method = 'GET';
 
@@ -70,6 +70,11 @@ abstract class Request implements \ArrayAccess
      * @var string
      */
     public $format = 'JSON';
+
+    /**
+     * @var string HTTP Scheme
+     */
+    protected $scheme = 'http';
 
     /**
      * @var string
@@ -85,11 +90,6 @@ abstract class Request implements \ArrayAccess
      * @var array The original parameters of the request.
      */
     public $data = [];
-
-    /**
-     * @var string
-     */
-    protected $stringToBeSigned = '';
 
     /**
      * @var array
@@ -111,12 +111,15 @@ abstract class Request implements \ArrayAccess
         $this->options['http_errors']     = false;
         $this->options['connect_timeout'] = self::CONNECT_TIMEOUT;
         $this->options['timeout']         = self::TIMEOUT;
-        if ($options !== []) {
-            $this->options($options);
-        }
 
+        // Turn on debug mode based on environment variable.
         if (strtolower(\AlibabaCloud\Client\env('DEBUG')) === 'sdk') {
             $this->options['debug'] = true;
+        }
+
+        // Rewrite configuration if the user has a configuration.
+        if ($options !== []) {
+            $this->options($options);
         }
     }
 
@@ -129,12 +132,10 @@ abstract class Request implements \ArrayAccess
      */
     public function appendUserAgent($name, $value)
     {
-        Filter::name($name);
+        $filter_name = Filter::name($name);
 
-        Filter::value($value);
-
-        if (!UserAgent::isGuarded($name)) {
-            $this->userAgent[$name] = $value;
+        if (!UserAgent::isGuarded($filter_name)) {
+            $this->userAgent[$filter_name] = Filter::value($value);
         }
 
         return $this;
@@ -153,7 +154,7 @@ abstract class Request implements \ArrayAccess
     }
 
     /**
-     * Set the response data format.
+     * Set Accept format.
      *
      * @param string $format
      *
@@ -162,9 +163,33 @@ abstract class Request implements \ArrayAccess
      */
     public function format($format)
     {
-        ApiFilter::format($format);
+        $this->format = ApiFilter::format($format);
 
-        $this->format = \strtoupper($format);
+        return $this;
+    }
+
+    /**
+     * @param $contentType
+     *
+     * @return $this
+     * @throws ClientException
+     */
+    public function contentType($contentType)
+    {
+        $this->options['headers']['Content-Type'] = HttpFilter::contentType($contentType);
+
+        return $this;
+    }
+
+    /**
+     * @param string $accept
+     *
+     * @return $this
+     * @throws ClientException
+     */
+    public function accept($accept)
+    {
+        $this->options['headers']['Accept'] = HttpFilter::accept($accept);
 
         return $this;
     }
@@ -179,9 +204,7 @@ abstract class Request implements \ArrayAccess
      */
     public function body($body)
     {
-        HttpFilter::body($body);
-
-        $this->options['body'] = $body;
+        $this->options['body'] = HttpFilter::body($body);
 
         return $this;
     }
@@ -216,10 +239,8 @@ abstract class Request implements \ArrayAccess
      */
     public function scheme($scheme)
     {
-        HttpFilter::scheme($scheme);
-
-        $this->scheme = \strtolower($scheme);
-        $this->uri    = $this->uri->withScheme($this->scheme);
+        $this->scheme = HttpFilter::scheme($scheme);
+        $this->uri    = $this->uri->withScheme($scheme);
 
         return $this;
     }
@@ -234,9 +255,7 @@ abstract class Request implements \ArrayAccess
      */
     public function host($host)
     {
-        HttpFilter::host($host);
-
-        $this->uri = $this->uri->withHost($host);
+        $this->uri = $this->uri->withHost(HttpFilter::host($host));
 
         return $this;
     }
@@ -262,9 +281,7 @@ abstract class Request implements \ArrayAccess
      */
     public function client($clientName)
     {
-        ClientFilter::clientName($clientName);
-
-        $this->client = $clientName;
+        $this->client = ClientFilter::clientName($clientName);
 
         return $this;
     }
@@ -287,29 +304,40 @@ abstract class Request implements \ArrayAccess
     }
 
     /**
+     * @throws ClientException
+     * @throws ServerException
+     */
+    public function resolveOption()
+    {
+        $this->options['headers']['User-Agent'] = UserAgent::toString($this->userAgent);
+
+        $this->cleanQuery();
+        $this->cleanFormParams();
+        $this->resolveHost();
+        $this->resolveParameter();
+
+        if (isset($this->options['form_params'])) {
+            $this->options['form_params'] = \GuzzleHttp\Psr7\parse_query(
+                Encode::create($this->options['form_params'])->toString()
+            );
+        }
+
+        $this->mergeOptionsIntoClient();
+    }
+
+    /**
      * @return Result
      * @throws ClientException
      * @throws ServerException
      */
     public function request()
     {
-        $this->options['headers']['User-Agent'] = UserAgent::toString($this->userAgent);
+        $this->resolveOption();
+        $result = $this->response();
 
-        $this->removeRedundantQuery();
-        $this->removeRedundantHeaders();
-        $this->removeRedundantHFormParams();
-        $this->resolveUri();
-        $this->resolveParameters($this->credential());
-
-        if (isset($this->options['form_params'])) {
-            $this->options['form_params'] = \GuzzleHttp\Psr7\parse_query(
-                self::getPostHttpBody($this->options['form_params'])
-            );
+        if ($this->shouldServerRetry($result)) {
+            return $this->request();
         }
-
-        $this->mergeOptionsIntoClient();
-
-        $result = new Result($this->response(), $this);
 
         if (!$result->isSuccess()) {
             throw new ServerException($result);
@@ -318,62 +346,28 @@ abstract class Request implements \ArrayAccess
         return $result;
     }
 
-    /**
-     * Remove redundant Query
-     *
-     * @codeCoverageIgnore
+    /***
+     * @return PromiseInterface
+     * @throws Exception
      */
-    private function removeRedundantQuery()
+    public function requestAsync()
     {
-        if (isset($this->options['query']) && $this->options['query'] === []) {
-            unset($this->options['query']);
-        }
+        $this->resolveOption();
+
+        return self::createClient($this)->requestAsync(
+            $this->method,
+            (string)$this->uri,
+            $this->options
+        );
     }
 
     /**
-     * Remove redundant Headers
+     * @param Request $request
      *
-     * @codeCoverageIgnore
-     */
-    private function removeRedundantHeaders()
-    {
-        if (isset($this->options['headers']) && $this->options['headers'] === []) {
-            unset($this->options['headers']);
-        }
-    }
-
-    /**
-     * Remove redundant Headers
-     *
-     * @codeCoverageIgnore
-     */
-    private function removeRedundantHFormParams()
-    {
-        if (isset($this->options['form_params']) && $this->options['form_params'] === []) {
-            unset($this->options['form_params']);
-        }
-    }
-
-    /**
-     * @param array $post
-     *
-     * @return bool|string
-     */
-    public static function getPostHttpBody(array $post)
-    {
-        $content = '';
-        foreach ($post as $apiKey => $apiValue) {
-            $content .= "$apiKey=" . urlencode($apiValue) . '&';
-        }
-
-        return substr($content, 0, -1);
-    }
-
-    /**
      * @return Client
      * @throws Exception
      */
-    public static function createClient()
+    public static function createClient(Request $request = null)
     {
         if (AlibabaCloud::hasMock()) {
             $stack = HandlerStack::create(AlibabaCloud::getMock());
@@ -392,9 +386,13 @@ abstract class Request implements \ArrayAccess
             ));
         }
 
-        return new Client([
-                              'handler' => $stack,
-                          ]);
+        $stack->push(Middleware::mapResponse(static function (ResponseInterface $response) use ($request) {
+            return new Result($response, $request);
+        }));
+
+        self::$config['handler'] = $stack;
+
+        return new Client(self::$config);
     }
 
     /**
@@ -404,25 +402,44 @@ abstract class Request implements \ArrayAccess
     private function response()
     {
         try {
-            return self::createClient()->request(
+            return self::createClient($this)->request(
                 $this->method,
                 (string)$this->uri,
                 $this->options
             );
-        } catch (GuzzleException $e) {
+        } catch (GuzzleException $exception) {
+            if ($this->shouldClientRetry($exception)) {
+                return $this->response();
+            }
             throw new ClientException(
-                $e->getMessage(),
+                $exception->getMessage(),
                 SDK::SERVER_UNREACHABLE,
-                $e
+                $exception
             );
         }
     }
 
     /**
-     * @return string
+     * Remove redundant Query
+     *
+     * @codeCoverageIgnore
      */
-    public function stringToBeSigned()
+    private function cleanQuery()
     {
-        return $this->stringToBeSigned;
+        if (isset($this->options['query']) && $this->options['query'] === []) {
+            unset($this->options['query']);
+        }
+    }
+
+    /**
+     * Remove redundant Headers
+     *
+     * @codeCoverageIgnore
+     */
+    private function cleanFormParams()
+    {
+        if (isset($this->options['form_params']) && $this->options['form_params'] === []) {
+            unset($this->options['form_params']);
+        }
     }
 }

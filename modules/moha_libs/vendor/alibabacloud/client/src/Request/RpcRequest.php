@@ -2,12 +2,14 @@
 
 namespace AlibabaCloud\Client\Request;
 
-use AlibabaCloud\Client\Credentials\AccessKeyCredential;
-use AlibabaCloud\Client\Credentials\BearerTokenCredential;
-use AlibabaCloud\Client\Credentials\CredentialsInterface;
+use Exception;
+use RuntimeException;
+use AlibabaCloud\Client\Support\Sign;
+use AlibabaCloud\Client\Support\Arrays;
 use AlibabaCloud\Client\Credentials\StsCredential;
 use AlibabaCloud\Client\Exception\ClientException;
-use RuntimeException;
+use AlibabaCloud\Client\Exception\ServerException;
+use AlibabaCloud\Client\Credentials\BearerTokenCredential;
 
 /**
  * RESTful RPC Request.
@@ -25,58 +27,28 @@ class RpcRequest extends Request
     /**
      * Resolve request parameter.
      *
-     * @param AccessKeyCredential|BearerTokenCredential|StsCredential $credential
-     *
      * @throws ClientException
      */
-    public function resolveParameters($credential)
+    public function resolveParameter()
     {
-        $this->resolveQuery($credential);
-
-        $this->options['query']['Signature'] = $this->signature(
-            $this->options['query'],
-            $credential->getAccessKeySecret()
-        );
-
-        if ($this->method === 'POST') {
-            foreach ($this->options['query'] as $apiParamKey => $apiParamValue) {
-                $this->options['form_params'][$apiParamKey] = $apiParamValue;
-            }
-            unset($this->options['query']);
-        }
+        $this->resolveBoolInParameters();
+        $this->resolveCommonParameters();
+        $this->repositionParameters();
     }
 
     /**
-     * Resolve request query.
-     *
-     * @param AccessKeyCredential|BearerTokenCredential|StsCredential $credential
-     *
-     * @throws ClientException
+     * Convert a Boolean value to a string
      */
-    private function resolveQuery($credential)
+    private function resolveBoolInParameters()
     {
         if (isset($this->options['query'])) {
-            foreach ($this->options['query'] as $key => $value) {
-                $this->options['query'][$key] = self::booleanValueToString($value);
-            }
+            $this->options['query'] = array_map(
+                static function ($value) {
+                    return self::boolToString($value);
+                },
+                $this->options['query']
+            );
         }
-        $signature = $this->httpClient()->getSignature();
-        if ($credential->getAccessKeyId()) {
-            $this->options['query']['AccessKeyId'] = $credential->getAccessKeyId();
-        }
-        $this->options['query']['RegionId']         = $this->realRegionId();
-        $this->options['query']['Format']           = $this->format;
-        $this->options['query']['SignatureMethod']  = $signature->getMethod();
-        $this->options['query']['SignatureVersion'] = $signature->getVersion();
-        if ($signature->getType()) {
-            $this->options['query']['SignatureType'] = $signature->getType();
-        }
-        $this->options['query']['SignatureNonce'] = md5(uniqid(mt_rand(), true));
-        $this->options['query']['Timestamp']      = gmdate($this->dateTimeFormat);
-        $this->options['query']['Action']         = $this->action;
-        $this->options['query']['Version']        = $this->version;
-        $this->resolveSecurityToken($credential);
-        $this->resolveBearerToken($credential);
     }
 
     /**
@@ -86,77 +58,113 @@ class RpcRequest extends Request
      *
      * @return string
      */
-    private static function booleanValueToString($value)
+    public static function boolToString($value)
     {
         if (is_bool($value)) {
-            if ($value) {
-                return 'true';
-            }
-
-            return 'false';
+            return $value ? 'true' : 'false';
         }
 
         return $value;
     }
 
     /**
-     * @param CredentialsInterface $credential
+     * Resolve Common Parameters.
+     *
+     * @throws ClientException
+     * @throws Exception
      */
-    private function resolveSecurityToken(CredentialsInterface $credential)
+    private function resolveCommonParameters()
     {
-        if ($credential instanceof StsCredential && $credential->getSecurityToken()) {
-            $this->options['query']['SecurityToken'] = $credential->getSecurityToken();
+        $signature                                  = $this->httpClient()->getSignature();
+        $this->options['query']['RegionId']         = $this->realRegionId();
+        $this->options['query']['Format']           = $this->format;
+        $this->options['query']['SignatureMethod']  = $signature->getMethod();
+        $this->options['query']['SignatureVersion'] = $signature->getVersion();
+        $this->options['query']['SignatureNonce']   = Sign::uuid($this->product . $this->realRegionId());
+        $this->options['query']['Timestamp']        = gmdate($this->dateTimeFormat);
+        $this->options['query']['Action']           = $this->action;
+        if ($this->credential()->getAccessKeyId()) {
+            $this->options['query']['AccessKeyId'] = $this->credential()->getAccessKeyId();
         }
+        if ($signature->getType()) {
+            $this->options['query']['SignatureType'] = $signature->getType();
+        }
+        if (!isset($this->options['query']['Version'])) {
+            $this->options['query']['Version'] = $this->version;
+        }
+        $this->resolveSecurityToken();
+        $this->resolveBearerToken();
+        $this->options['query']['Signature'] = $this->signature();
     }
 
     /**
-     * @param CredentialsInterface $credential
+     * @throws ClientException
+     * @throws ServerException
      */
-    private function resolveBearerToken(CredentialsInterface $credential)
+    private function resolveSecurityToken()
     {
-        if ($credential instanceof BearerTokenCredential) {
-            $this->options['query']['BearerToken'] = $credential->getBearerToken();
+        if (!$this->credential() instanceof StsCredential) {
+            return;
+        }
+
+        if (!$this->credential()->getSecurityToken()) {
+            return;
+        }
+
+        $this->options['query']['SecurityToken'] = $this->credential()->getSecurityToken();
+    }
+
+    /**
+     * @throws ClientException
+     * @throws ServerException
+     */
+    private function resolveBearerToken()
+    {
+        if ($this->credential() instanceof BearerTokenCredential) {
+            $this->options['query']['BearerToken'] = $this->credential()->getBearerToken();
         }
     }
 
     /**
      * Sign the parameters.
      *
-     * @param array  $parameters
-     * @param string $accessKeySecret
-     *
      * @return mixed
      * @throws ClientException
+     * @throws ServerException
      */
-    private function signature($parameters, $accessKeySecret)
+    private function signature()
     {
-        ksort($parameters);
-        $canonicalizedQuery = '';
-        foreach ($parameters as $key => $value) {
-            $canonicalizedQuery .= '&' . $this->percentEncode($key) . '=' . $this->percentEncode($value);
-        }
-
-        $this->stringToBeSigned = $this->method
-                                  . '&%2F&'
-                                  . $this->percentEncode(substr($canonicalizedQuery, 1));
-
         return $this->httpClient()
                     ->getSignature()
-                    ->sign($this->stringToBeSigned, $accessKeySecret . '&');
+                    ->sign(
+                        $this->stringToSign(),
+                        $this->credential()->getAccessKeySecret() . '&'
+                    );
     }
 
     /**
-     * @param string $string
-     *
-     * @return null|string|string[]
+     * @return string
      */
-    protected function percentEncode($string)
+    public function stringToSign()
     {
-        $result = urlencode($string);
-        $result = str_replace(['+', '*'], ['%20', '%2A'], $result);
-        $result = preg_replace('/%7E/', '~', $result);
+        $query       = isset($this->options['query']) ? $this->options['query'] : [];
+        $form_params = isset($this->options['form_params']) ? $this->options['form_params'] : [];
+        $parameters  = Arrays::merge([$query, $form_params]);
 
-        return $result;
+        return Sign::rpcString($this->method, $parameters);
+    }
+
+    /**
+     * Adjust parameter position
+     */
+    private function repositionParameters()
+    {
+        if ($this->method === 'POST' || $this->method === 'PUT') {
+            foreach ($this->options['query'] as $api_key => $api_value) {
+                $this->options['form_params'][$api_key] = $api_value;
+            }
+            unset($this->options['query']);
+        }
     }
 
     /**
@@ -169,25 +177,25 @@ class RpcRequest extends Request
      */
     public function __call($name, $arguments)
     {
-        if (\strpos($name, 'get') === 0) {
-            $parameterName = $this->propertyNameByMethodName($name);
+        if (strncmp($name, 'get', 3) === 0) {
+            $parameter_name = \mb_strcut($name, 3);
 
-            return $this->__get($parameterName);
+            return $this->__get($parameter_name);
         }
 
-        if (\strpos($name, 'with') === 0) {
-            $parameterName = $this->propertyNameByMethodName($name, 4);
-            $this->__set($parameterName, $arguments[0]);
-            $this->options['query'][$parameterName] = $arguments[0];
+        if (strncmp($name, 'with', 4) === 0) {
+            $parameter_name = \mb_strcut($name, 4);
+            $this->__set($parameter_name, $arguments[0]);
+            $this->options['query'][$parameter_name] = $arguments[0];
 
             return $this;
         }
 
-        if (\strpos($name, 'set') === 0) {
-            $parameterName = $this->propertyNameByMethodName($name);
-            $withMethod    = "with$parameterName";
+        if (strncmp($name, 'set', 3) === 0) {
+            $parameter_name = \mb_strcut($name, 3);
+            $with_method    = "with$parameter_name";
 
-            return $this->$withMethod($arguments[0]);
+            throw new RuntimeException("Please use $with_method instead of $name");
         }
 
         throw new RuntimeException('Call to undefined method ' . __CLASS__ . '::' . $name . '()');

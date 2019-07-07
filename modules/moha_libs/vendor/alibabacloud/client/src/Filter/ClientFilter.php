@@ -2,8 +2,8 @@
 
 namespace AlibabaCloud\Client\Filter;
 
-use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\SDK;
+use AlibabaCloud\Client\Exception\ClientException;
 
 /**
  * Class ClientFilter
@@ -35,7 +35,7 @@ class ClientFilter
             );
         }
 
-        return $regionId;
+        return strtolower($regionId);
     }
 
     /**
@@ -62,6 +62,25 @@ class ClientFilter
         }
 
         return strtolower($clientName);
+    }
+
+    /**
+     * @param $times
+     *
+     * @return string
+     *
+     * @throws ClientException
+     */
+    public static function retry($times)
+    {
+        if (!is_int($times)) {
+            throw new ClientException(
+                'Retry must be a int',
+                SDK::INVALID_ARGUMENT
+            );
+        }
+
+        return $times;
     }
 
     /**
@@ -98,5 +117,23 @@ class ClientFilter
         }
 
         return $timeout;
+    }
+
+    /**
+     * @param int $Milliseconds
+     *
+     * @return mixed
+     * @throws ClientException
+     */
+    public static function milliseconds($Milliseconds)
+    {
+        if (!is_int($Milliseconds)) {
+            throw new ClientException(
+                'Milliseconds must be int',
+                SDK::INVALID_ARGUMENT
+            );
+        }
+
+        return $Milliseconds;
     }
 }

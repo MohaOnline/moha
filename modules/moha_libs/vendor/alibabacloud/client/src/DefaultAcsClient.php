@@ -2,11 +2,11 @@
 
 namespace AlibabaCloud\Client;
 
+use AlibabaCloud\Client\Result\Result;
 use AlibabaCloud\Client\Clients\Client;
+use AlibabaCloud\Client\Request\Request;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
-use AlibabaCloud\Client\Request\Request;
-use AlibabaCloud\Client\Result\Result;
 
 /**
  * Class DefaultAcsClient
@@ -14,6 +14,7 @@ use AlibabaCloud\Client\Result\Result;
  * @package    AlibabaCloud
  *
  * @deprecated deprecated since version 2.0, Use AlibabaCloud instead.
+ * @codeCoverageIgnore
  */
 class DefaultAcsClient
 {

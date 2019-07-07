@@ -2,9 +2,10 @@
 
 namespace AlibabaCloud\Client\Exception;
 
-use AlibabaCloud\Client\Result\Result;
-use AlibabaCloud\Client\SDK;
 use Stringy\Stringy;
+use RuntimeException;
+use AlibabaCloud\Client\SDK;
+use AlibabaCloud\Client\Result\Result;
 
 /**
  * Class ServerException
@@ -45,7 +46,7 @@ class ServerException extends AlibabaCloudException
 
         parent::__construct(
             $this->getMessageString(),
-            $this->result->getResponse()->getStatusCode()
+            $this->result->getStatusCode()
         );
     }
 
@@ -82,7 +83,7 @@ class ServerException extends AlibabaCloudException
     private function distinguishSignatureErrors()
     {
         if ($this->result->getRequest()
-            && Stringy::create($this->errorMessage)->contains($this->result->getRequest()->stringToBeSigned())) {
+            && Stringy::create($this->errorMessage)->contains($this->result->getRequest()->stringToSign())) {
             $this->errorCode    = 'InvalidAccessKeySecret';
             $this->errorMessage = 'Specified Access Key Secret is not valid.';
         }
@@ -94,7 +95,7 @@ class ServerException extends AlibabaCloudException
      */
     private function bodyAsErrorMessage()
     {
-        $body = (string)$this->result->getResponse()->getBody();
+        $body = (string)$this->result->getBody();
         if ($this->errorMessage === SDK::RESPONSE_EMPTY && $body) {
             $this->errorMessage = $body;
         }
@@ -113,8 +114,8 @@ class ServerException extends AlibabaCloudException
             $method  = $this->getResult()->getRequest()->method;
             $uri     = (string)$this->getResult()->getRequest()->uri;
             $message .= " $method \"$uri\"";
-            if ($this->result->getResponse()) {
-                $message .= ' ' . $this->result->getResponse()->getStatusCode();
+            if ($this->result) {
+                $message .= ' ' . $this->result->getStatusCode();
             }
         }
 
@@ -130,17 +131,6 @@ class ServerException extends AlibabaCloudException
     }
 
     /**
-     * @codeCoverageIgnore
-     *
-     * @return string
-     * @deprecated deprecated since version 2.0.
-     */
-    public function getErrorType()
-    {
-        return 'Server';
-    }
-
-    /**
      * @return string
      */
     public function getRequestId()
@@ -150,11 +140,19 @@ class ServerException extends AlibabaCloudException
 
     /**
      * @codeCoverageIgnore
-     * @return int
-     * @deprecated deprecated since version 2.0.
+     * @deprecated
+     */
+    public function getErrorType()
+    {
+        return 'Server';
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @deprecated
      */
     public function getHttpStatus()
     {
-        return $this->getResult()->getResponse()->getStatusCode();
+        return $this->getResult()->getStatusCode();
     }
 }

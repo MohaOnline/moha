@@ -3,8 +3,8 @@
 namespace AlibabaCloud\Client\Log;
 
 use DateTime;
-use DateTimeZone;
 use Exception;
+use DateTimeZone;
 use GuzzleHttp\MessageFormatter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -20,6 +20,7 @@ class LogFormatter extends MessageFormatter
      * @var float
      */
     private static $logStartTime = 0;
+
     /**
      * @var DateTime
      */
@@ -47,14 +48,6 @@ class LogFormatter extends MessageFormatter
     }
 
     /**
-     * @return float|mixed
-     */
-    private static function getCost()
-    {
-        return microtime(true) - self::$logStartTime;
-    }
-
-    /**
      * Returns a formatted message string.
      *
      * @param RequestInterface  $request  Request that was sent
@@ -73,5 +66,13 @@ class LogFormatter extends MessageFormatter
         $this->template = str_replace('{start_time}', self::$ts->format('Y-m-d H:i:s.u'), $this->template);
 
         return (new MessageFormatter($this->template))->format($request, $response, $error);
+    }
+
+    /**
+     * @return float|mixed
+     */
+    private static function getCost()
+    {
+        return microtime(true) - self::$logStartTime;
     }
 }

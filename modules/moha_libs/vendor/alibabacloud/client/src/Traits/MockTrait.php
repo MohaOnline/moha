@@ -3,12 +3,12 @@
 namespace AlibabaCloud\Client\Traits;
 
 use Exception;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Handler\MockHandler;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * Class MockTrait

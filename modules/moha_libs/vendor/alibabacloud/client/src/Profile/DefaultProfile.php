@@ -10,7 +10,7 @@ use AlibabaCloud\Client\Exception\ClientException;
  * Class DefaultProfile
  *
  * @package    AlibabaCloud\Client\Profile
- *
+ * @codeCoverageIgnore
  * @deprecated deprecated since version 2.0, Use AlibabaCloud instead.
  */
 class DefaultProfile

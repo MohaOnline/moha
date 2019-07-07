@@ -3,8 +3,9 @@
 namespace AlibabaCloud\Client\Request;
 
 use AlibabaCloud\Client\AlibabaCloud;
-use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Filter\Filter;
+use AlibabaCloud\Client\Support\Arrays;
+use AlibabaCloud\Client\Exception\ClientException;
 
 /**
  * Class UserAgent
@@ -36,16 +37,16 @@ class UserAgent
     {
         self::defaultFields();
 
-        $os         = \PHP_OS;
-        $os_version = php_uname('r');
-        $os_mode    = php_uname('m');
-        $userAgent  = "AlibabaCloud ($os $os_version; $os_mode) ";
+        $os        = \PHP_OS;
+        $osVersion = php_uname('r');
+        $osMode    = php_uname('m');
+        $userAgent = "AlibabaCloud ($os $osVersion; $osMode) ";
 
         $newUserAgent = [];
 
         $append = self::clean($append);
 
-        $append = \AlibabaCloud\Client\arrayMerge(
+        $append = Arrays::merge(
             [
                 self::$userAgent,
                 $append,

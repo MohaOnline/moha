@@ -4,39 +4,17 @@ namespace AlibabaCloud\Client\Request\Traits;
 
 /**
  * @package    AlibabaCloud\Client\Request\Traits
+ * @codeCoverageIgnore
  */
 trait DeprecatedRoaTrait
 {
-
     /**
-     * @deprecated deprecated since version 2.0, Use pathPattern() instead.
-     *
-     * @param string $pathPattern
+     * @param $name
+     * @param $value
      *
      * @return $this
-     */
-    public function setUriPattern($pathPattern)
-    {
-        return $this->pathPattern($pathPattern);
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0, Use pathPattern instead.
-     *
-     * @return string
-     */
-    public function getUriPattern()
-    {
-        return $this->pathPattern;
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0, Use pathParameter() instead.
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @return $this
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function putPathParameter($name, $value)
     {
@@ -44,9 +22,31 @@ trait DeprecatedRoaTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0, Use pathParameters instead.
+     * @param $pathPattern
      *
+     * @return $this
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function setUriPattern($pathPattern)
+    {
+        return $this->pathPattern($pathPattern);
+    }
+
+    /**
+     * @return string
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function getUriPattern()
+    {
+        return $this->pathPattern;
+    }
+
+    /**
      * @return array
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getPathParameters()
     {

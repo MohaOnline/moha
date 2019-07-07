@@ -1,5 +1,81 @@
 # CHANGELOG
 
+## 1.5.12 - 2019-06-20
+- Fixed Signature for ROA.
+
+
+## 1.5.11 - 2019-06-14
+- Added endpoint rules.
+
+
+## 1.5.10 - 2019-06-13
+- Improved `Resovler`.
+- Updated `endpoints`.
+
+
+## 1.5.9 - 2019-06-04
+- Improved `UUID`.
+
+
+## 1.5.8 - 2019-05-30
+- Improved `Arrays`.
+
+
+## 1.5.7 - 2019-05-29
+- Improved `uuid`.
+
+
+## 1.5.6 - 2019-05-29
+- Fixed `uuid` version lock.
+
+
+## 1.5.5 - 2019-05-23
+- Improved `Signature`.
+
+
+## 1.5.4 - 2019-05-22
+- Updated `Endpoints`.
+- Fixed `Content-Type` in header.
+
+
+## 1.5.3 - 2019-05-13
+- Improved `Endpoint` tips.
+- Improved `Endpoints` for `STS`.
+
+
+## 1.5.2 - 2019-05-10
+- Improved `Result` object.
+
+
+## 1.5.1 - 2019-05-09
+- Supported `Resolver` for Third-party dependencies.
+
+
+## 1.5.0 - 2019-05-07
+- Improved `Resolver` for products.
+
+
+## 1.4.0 - 2019-05-06
+- Support `Retry` and `Asynchronous` for Request.
+
+
+## 1.3.1 - 2019-04-30
+- Allow timeouts to be set in microseconds.
+
+
+## 1.3.0 - 2019-04-18
+- Improved parameters methods.
+- Optimized the logic for body encode.
+
+
+## 1.2.1 - 2019-04-11
+- Improve exception code and message for `Region ID`.
+
+
+## 1.2.0 - 2019-04-11
+- Improve exception message for `Region ID`.
+
+
 ## 1.1.1 - 2019-04-02
 - Added endpoints for `batchcomputenew`, `privatelink`.
 - Improve Region ID tips.

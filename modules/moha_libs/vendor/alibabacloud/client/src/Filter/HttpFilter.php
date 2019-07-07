@@ -2,8 +2,8 @@
 
 namespace AlibabaCloud\Client\Filter;
 
-use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\SDK;
+use AlibabaCloud\Client\Exception\ClientException;
 
 /**
  * Class HttpFilter
@@ -112,5 +112,55 @@ class HttpFilter
         }
 
         return \strtoupper($method);
+    }
+
+    /**
+     * @param $contentType
+     *
+     * @return mixed
+     * @throws ClientException
+     */
+    public static function contentType($contentType)
+    {
+        if (!is_string($contentType)) {
+            throw new ClientException(
+                'Content-Type must be a string',
+                SDK::INVALID_ARGUMENT
+            );
+        }
+
+        if ($contentType === '') {
+            throw new ClientException(
+                'Content-Type cannot be empty',
+                SDK::INVALID_ARGUMENT
+            );
+        }
+
+        return $contentType;
+    }
+
+    /**
+     * @param $accept
+     *
+     * @return mixed
+     * @throws ClientException
+     */
+    public static function accept($accept)
+    {
+        if (!is_string($accept)) {
+            throw new ClientException(
+                'Accept must be a string',
+                SDK::INVALID_ARGUMENT
+            );
+        }
+
+        if ($accept === '') {
+            throw new ClientException(
+                'Accept cannot be empty',
+                SDK::INVALID_ARGUMENT
+            );
+        }
+
+        return $accept;
     }
 }

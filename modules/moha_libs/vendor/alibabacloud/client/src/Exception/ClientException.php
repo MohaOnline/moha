@@ -3,6 +3,7 @@
 namespace AlibabaCloud\Client\Exception;
 
 use Exception;
+use RuntimeException;
 
 /**
  * Class ClientException
@@ -28,9 +29,7 @@ class ClientException extends AlibabaCloudException
 
     /**
      * @codeCoverageIgnore
-     *
-     * @return string
-     * @deprecated deprecated since version 2.0.
+     * @deprecated
      */
     public function getErrorType()
     {

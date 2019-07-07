@@ -3,6 +3,7 @@
 namespace AlibabaCloud\Client\Request\Traits;
 
 use AlibabaCloud\Client\Exception\ClientException;
+use RuntimeException;
 use AlibabaCloud\Client\Request\Request;
 
 /**
@@ -12,10 +13,106 @@ use AlibabaCloud\Client\Request\Request;
  */
 trait DeprecatedTrait
 {
+
     /**
-     * @deprecated deprecated since version 2.0, Use $this->options['body'] instead.
+     * @param $content
      *
-     * @return     string
+     * @return $this
+     * @throws ClientException
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function setContent($content)
+    {
+        return $this->body($content);
+    }
+
+    /**
+     * @param $method
+     *
+     * @return $this
+     * @throws ClientException
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function setMethod($method)
+    {
+        return $this->method($method);
+    }
+
+    /**
+     * @param $scheme
+     *
+     * @return $this
+     * @throws ClientException
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function setProtocol($scheme)
+    {
+        return $this->scheme($scheme);
+    }
+
+    /**
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function getProtocolType()
+    {
+        return $this->uri->getScheme();
+    }
+
+    /**
+     * @param $scheme
+     *
+     * @return $this
+     * @throws ClientException
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function setProtocolType($scheme)
+    {
+        return $this->scheme($scheme);
+    }
+
+    /**
+     * @param $actionName
+     *
+     * @return $this
+     * @throws ClientException
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function setActionName($actionName)
+    {
+        return $this->action($actionName);
+    }
+
+    /**
+     * @param $format
+     *
+     * @return $this
+     * @throws ClientException
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function setAcceptFormat($format)
+    {
+        return $this->format($format);
+    }
+
+    /**
+     * @deprecated
+     * @codeCoverageIgnore
+     */
+    public function getProtocol()
+    {
+        return $this->uri->getScheme();
+    }
+
+    /**
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getContent()
     {
@@ -25,22 +122,8 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0, Use body() instead.
-     *
-     * @param $content
-     *
-     * @return $this
-     * @throws ClientException
-     */
-    public function setContent($content)
-    {
-        return $this->body($content);
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0, Use method instead.
-     *
-     * @return     string
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getMethod()
     {
@@ -48,68 +131,8 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0, Use method() instead.
-     *
-     * @param string $method
-     *
-     * @return $this
-     * @throws ClientException
-     */
-    public function setMethod($method)
-    {
-        return $this->method($method);
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0, Use uri->getScheme() instead.
-     *
-     * @return             string
-     */
-    public function getProtocol()
-    {
-        return $this->uri->getScheme();
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0, Use scheme() instead.
-     *
-     * @param string $scheme
-     *
-     * @return $this
-     * @throws ClientException
-     */
-    public function setProtocol($scheme)
-    {
-        return $this->scheme($scheme);
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0, Use uri->getScheme() instead.
-     *
-     * @return     string
-     */
-    public function getProtocolType()
-    {
-        return $this->uri->getScheme();
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0, Use scheme() instead.
-     *
-     * @param string $scheme
-     *
-     * @return $this
-     * @throws ClientException
-     */
-    public function setProtocolType($scheme)
-    {
-        return $this->scheme($scheme);
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0, Use $this->options['headers'] instead.
-     *
-     * @return     array
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getHeaders()
     {
@@ -119,12 +142,12 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0, Use $this->options['headers'] instead.
-     *
-     * @param string $headerKey
-     * @param string $headerValue
+     * @param $headerKey
+     * @param $headerValue
      *
      * @return $this
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function addHeader($headerKey, $headerValue)
     {
@@ -134,8 +157,8 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0.
-     * @return     array
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getQueryParameters()
     {
@@ -145,12 +168,12 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0.
-     *
-     * @param string       $name
-     * @param string|mixed $value
+     * @param $name
+     * @param $value
      *
      * @return $this
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function setQueryParameters($name, $value)
     {
@@ -160,8 +183,8 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0.
-     * @return     array
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getDomainParameter()
     {
@@ -171,12 +194,12 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0.
-     *
-     * @param string $name
-     * @param string $value
+     * @param $name
+     * @param $value
      *
      * @return $this
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function putDomainParameters($name, $value)
     {
@@ -186,21 +209,8 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0, Use action() instead.
-     *
-     * @param $actionName
-     *
-     * @return self
-     * @throws ClientException
-     */
-    public function setActionName($actionName)
-    {
-        return $this->action($actionName);
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0.
-     * @return     string
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getActionName()
     {
@@ -208,21 +218,8 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0, Use format() instead.
-     *
-     * @param string $format
-     *
-     * @return self
-     * @throws ClientException
-     */
-    public function setAcceptFormat($format)
-    {
-        return $this->format($format);
-    }
-
-    /**
-     * @deprecated deprecated since version 2.0.
-     * @return     string
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getAcceptFormat()
     {
@@ -230,8 +227,8 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0.
-     * @return     string
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getLocationEndpointType()
     {
@@ -239,9 +236,8 @@ trait DeprecatedTrait
     }
 
     /**
-     * @deprecated deprecated since version 2.0.
-     *
-     * @return     string
+     * @deprecated
+     * @codeCoverageIgnore
      */
     public function getLocationServiceCode()
     {

@@ -4,16 +4,17 @@ namespace AlibabaCloud\Client\Request\Traits;
 
 use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Clients\Client;
-use AlibabaCloud\Client\Credentials\AccessKeyCredential;
-use AlibabaCloud\Client\Credentials\BearerTokenCredential;
-use AlibabaCloud\Client\Credentials\CredentialsInterface;
-use AlibabaCloud\Client\Credentials\Providers\CredentialsProvider;
-use AlibabaCloud\Client\Credentials\Requests\AssumeRole;
-use AlibabaCloud\Client\Credentials\Requests\GenerateSessionAccessKey;
+use AlibabaCloud\Client\Support\Arrays;
+use AlibabaCloud\Client\Request\Request;
 use AlibabaCloud\Client\Credentials\StsCredential;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
-use AlibabaCloud\Client\Request\Request;
+use AlibabaCloud\Client\Credentials\AccessKeyCredential;
+use AlibabaCloud\Client\Credentials\Requests\AssumeRole;
+use AlibabaCloud\Client\Credentials\CredentialsInterface;
+use AlibabaCloud\Client\Credentials\BearerTokenCredential;
+use AlibabaCloud\Client\Credentials\Providers\CredentialsProvider;
+use AlibabaCloud\Client\Credentials\Requests\GenerateSessionAccessKey;
 
 /**
  * Trait ClientTrait
@@ -24,6 +25,19 @@ use AlibabaCloud\Client\Request\Request;
  */
 trait ClientTrait
 {
+    /**
+     * @var array
+     */
+    private static $config = [];
+
+    /**
+     * @param array $config
+     */
+    public static function config(array $config)
+    {
+        self::$config = $config;
+    }
+
     /**
      * Return credentials directly if it is an AssumeRole or GenerateSessionAccessKey.
      *
@@ -74,10 +88,10 @@ trait ClientTrait
      */
     public function mergeOptionsIntoClient()
     {
-        $this->options = \AlibabaCloud\Client\arrayMerge(
+        $this->options = Arrays::merge(
             [
                 $this->httpClient()->options,
-                $this->options,
+                $this->options
             ]
         );
     }

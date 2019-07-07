@@ -52,17 +52,17 @@
     },
     {
         "name": "alibabacloud/client",
-        "version": "1.1.1",
-        "version_normalized": "1.1.1.0",
+        "version": "1.5.12",
+        "version_normalized": "1.5.12.0",
         "source": {
             "type": "git",
             "url": "https://github.com/aliyun/openapi-sdk-php-client.git",
-            "reference": "5687188544773b5496c4c2baabba4ca0862576e5"
+            "reference": "d4df3b5b47ac7eae5e1670841c71451ecbcc1e3c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/aliyun/openapi-sdk-php-client/zipball/5687188544773b5496c4c2baabba4ca0862576e5",
-            "reference": "5687188544773b5496c4c2baabba4ca0862576e5",
+            "url": "https://api.github.com/repos/aliyun/openapi-sdk-php-client/zipball/d4df3b5b47ac7eae5e1670841c71451ecbcc1e3c",
+            "reference": "d4df3b5b47ac7eae5e1670841c71451ecbcc1e3c",
             "shasum": ""
         },
         "require": {
@@ -98,13 +98,8 @@
         "suggest": {
             "ext-sockets": "To use client-side monitoring"
         },
-        "time": "2019-04-02T15:21:13+00:00",
+        "time": "2019-06-20T05:31:48+00:00",
         "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0-dev"
-            }
-        },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
@@ -494,35 +489,39 @@
     },
     {
         "name": "guzzlehttp/psr7",
-        "version": "1.5.2",
-        "version_normalized": "1.5.2.0",
+        "version": "1.6.1",
+        "version_normalized": "1.6.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/psr7.git",
-            "reference": "9f83dded91781a01c63574e387eaa769be769115"
+            "reference": "239400de7a173fe9901b9ac7c06497751f00727a"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/psr7/zipball/9f83dded91781a01c63574e387eaa769be769115",
-            "reference": "9f83dded91781a01c63574e387eaa769be769115",
+            "url": "https://api.github.com/repos/guzzle/psr7/zipball/239400de7a173fe9901b9ac7c06497751f00727a",
+            "reference": "239400de7a173fe9901b9ac7c06497751f00727a",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0",
             "psr/http-message": "~1.0",
-            "ralouphie/getallheaders": "^2.0.5"
+            "ralouphie/getallheaders": "^2.0.5 || ^3.0.0"
         },
         "provide": {
             "psr/http-message-implementation": "1.0"
         },
         "require-dev": {
+            "ext-zlib": "*",
             "phpunit/phpunit": "~4.8.36 || ^5.7.27 || ^6.5.8"
         },
-        "time": "2018-12-04T20:46:45+00:00",
+        "suggest": {
+            "zendframework/zend-httphandlerrunner": "Emit PSR-7 responses"
+        },
+        "time": "2019-07-01T23:21:34+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.5-dev"
+                "dev-master": "1.6-dev"
             }
         },
         "installation-source": "dist",
@@ -782,24 +781,24 @@
     },
     {
         "name": "microsoft/azure-storage-blob",
-        "version": "1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Azure/azure-storage-blob-php.git",
-            "reference": "6fcef8b68227b190854296d5d159aa666418873d"
+            "reference": "8310c2ecab488fa325db3dcf2f8723bbcfe58941"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Azure/azure-storage-blob-php/zipball/6fcef8b68227b190854296d5d159aa666418873d",
-            "reference": "6fcef8b68227b190854296d5d159aa666418873d",
+            "url": "https://api.github.com/repos/Azure/azure-storage-blob-php/zipball/8310c2ecab488fa325db3dcf2f8723bbcfe58941",
+            "reference": "8310c2ecab488fa325db3dcf2f8723bbcfe58941",
             "shasum": ""
         },
         "require": {
-            "microsoft/azure-storage-common": "~1.3.0",
+            "microsoft/azure-storage-common": "~1.4",
             "php": ">=5.6.0"
         },
-        "time": "2019-03-26T10:04:16+00:00",
+        "time": "2019-04-26T15:06:52+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -828,24 +827,24 @@
     },
     {
         "name": "microsoft/azure-storage-common",
-        "version": "1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Azure/azure-storage-common-php.git",
-            "reference": "154c2c38203297035fb718689b691b15adfd49ab"
+            "reference": "435adf4d09f0b34375f899b5627d2926bfe317e6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Azure/azure-storage-common-php/zipball/154c2c38203297035fb718689b691b15adfd49ab",
-            "reference": "154c2c38203297035fb718689b691b15adfd49ab",
+            "url": "https://api.github.com/repos/Azure/azure-storage-common-php/zipball/435adf4d09f0b34375f899b5627d2926bfe317e6",
+            "reference": "435adf4d09f0b34375f899b5627d2926bfe317e6",
             "shasum": ""
         },
         "require": {
             "guzzlehttp/guzzle": "~6.0",
             "php": ">=5.6.0"
         },
-        "time": "2019-03-26T09:52:54+00:00",
+        "time": "2019-04-26T15:02:17+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -874,24 +873,24 @@
     },
     {
         "name": "microsoft/azure-storage-file",
-        "version": "1.2.0",
-        "version_normalized": "1.2.0.0",
+        "version": "1.2.1",
+        "version_normalized": "1.2.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Azure/azure-storage-file-php.git",
-            "reference": "93c5a8a12b4215734b3e18106d94554f036feb9f"
+            "reference": "e5e22e0cd61f303926f386f5c5eaab0447f8f4e4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Azure/azure-storage-file-php/zipball/93c5a8a12b4215734b3e18106d94554f036feb9f",
-            "reference": "93c5a8a12b4215734b3e18106d94554f036feb9f",
+            "url": "https://api.github.com/repos/Azure/azure-storage-file-php/zipball/e5e22e0cd61f303926f386f5c5eaab0447f8f4e4",
+            "reference": "e5e22e0cd61f303926f386f5c5eaab0447f8f4e4",
             "shasum": ""
         },
         "require": {
-            "microsoft/azure-storage-common": "~1.3",
+            "microsoft/azure-storage-common": "~1.4",
             "php": ">=5.6.0"
         },
-        "time": "2019-03-26T10:08:59+00:00",
+        "time": "2019-04-26T15:14:26+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -920,24 +919,24 @@
     },
     {
         "name": "microsoft/azure-storage-queue",
-        "version": "1.2.0",
-        "version_normalized": "1.2.0.0",
+        "version": "1.3.0",
+        "version_normalized": "1.3.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Azure/azure-storage-queue-php.git",
-            "reference": "161eda43ec7df150f36648ad7db780fffd8bf3da"
+            "reference": "c7ef31c640f8baa2aa3c1612d1d17be82a28b38f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Azure/azure-storage-queue-php/zipball/161eda43ec7df150f36648ad7db780fffd8bf3da",
-            "reference": "161eda43ec7df150f36648ad7db780fffd8bf3da",
+            "url": "https://api.github.com/repos/Azure/azure-storage-queue-php/zipball/c7ef31c640f8baa2aa3c1612d1d17be82a28b38f",
+            "reference": "c7ef31c640f8baa2aa3c1612d1d17be82a28b38f",
             "shasum": ""
         },
         "require": {
-            "microsoft/azure-storage-common": "~1.3.0",
+            "microsoft/azure-storage-common": "~1.4",
             "php": ">=5.6.0"
         },
-        "time": "2019-03-26T10:07:11+00:00",
+        "time": "2019-04-26T15:12:13+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -966,24 +965,24 @@
     },
     {
         "name": "microsoft/azure-storage-table",
-        "version": "1.1.0",
-        "version_normalized": "1.1.0.0",
+        "version": "1.1.1",
+        "version_normalized": "1.1.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Azure/azure-storage-table-php.git",
-            "reference": "eb00d1fbe12aea6fc4c6a7bf256250683bc37388"
+            "reference": "d2a172d03870c1ab0f08994c5b830845f3fe51c6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Azure/azure-storage-table-php/zipball/eb00d1fbe12aea6fc4c6a7bf256250683bc37388",
-            "reference": "eb00d1fbe12aea6fc4c6a7bf256250683bc37388",
+            "url": "https://api.github.com/repos/Azure/azure-storage-table-php/zipball/d2a172d03870c1ab0f08994c5b830845f3fe51c6",
+            "reference": "d2a172d03870c1ab0f08994c5b830845f3fe51c6",
             "shasum": ""
         },
         "require": {
-            "microsoft/azure-storage-common": "~1.1",
+            "microsoft/azure-storage-common": "~1.4",
             "php": ">=5.6.0"
         },
-        "time": "2018-04-26T07:50:46+00:00",
+        "time": "2019-04-26T15:10:17+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1184,17 +1183,17 @@
     },
     {
         "name": "phpoffice/phpspreadsheet",
-        "version": "1.6.0",
-        "version_normalized": "1.6.0.0",
+        "version": "1.8.1",
+        "version_normalized": "1.8.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-            "reference": "bf00f0cc5f55c354018f9a9ef15e6e3e1a229051"
+            "reference": "352c7002fefe4e4037d02654d853a1b09520946f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/bf00f0cc5f55c354018f9a9ef15e6e3e1a229051",
-            "reference": "bf00f0cc5f55c354018f9a9ef15e6e3e1a229051",
+            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/352c7002fefe4e4037d02654d853a1b09520946f",
+            "reference": "352c7002fefe4e4037d02654d853a1b09520946f",
             "shasum": ""
         },
         "require": {
@@ -1233,7 +1232,7 @@
             "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
             "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
         },
-        "time": "2019-01-02T04:42:54+00:00",
+        "time": "2019-07-01T20:46:51+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1482,27 +1481,27 @@
     },
     {
         "name": "ralouphie/getallheaders",
-        "version": "2.0.5",
-        "version_normalized": "2.0.5.0",
+        "version": "3.0.3",
+        "version_normalized": "3.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/ralouphie/getallheaders.git",
-            "reference": "5601c8a83fbba7ef674a7369456d12f1e0d0eafa"
+            "reference": "120b605dfeb996808c31b6477290a714d356e822"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/5601c8a83fbba7ef674a7369456d12f1e0d0eafa",
-            "reference": "5601c8a83fbba7ef674a7369456d12f1e0d0eafa",
+            "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/120b605dfeb996808c31b6477290a714d356e822",
+            "reference": "120b605dfeb996808c31b6477290a714d356e822",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3"
+            "php": ">=5.6"
         },
         "require-dev": {
-            "phpunit/phpunit": "~3.7.0",
-            "satooshi/php-coveralls": ">=1.0"
+            "php-coveralls/php-coveralls": "^2.1",
+            "phpunit/phpunit": "^5 || ^6.5"
         },
-        "time": "2016-02-11T07:05:27+00:00",
+        "time": "2019-03-08T08:55:37+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
