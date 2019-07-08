@@ -4,13 +4,31 @@
  */
 
 /**
+ * Human name.
+ */
+define('MOHA_ADMIN_MENU', 'Moha Admin Menu');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_ADMIN_MENU', 'moha_admin_menu');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_admin_menu.
+ */
+define('MOHA_ADMIN_MENU__PATH', drupal_get_path('module', __MOHA_ADMIN_MENU));
+
+/**
+ * moha_admin_menu__variable: use non-production admin menu style.
+ */
+define('MOHA_ADMIN_MENU__VARIABLES__NON_PRD', __MOHA_ADMIN_MENU . '__variable__non_prd');
+
+/**
  * Implements hook_admin_menu_output_build().
  *
  * Invoked before cached in @see admin_menu_output();
  *
- * Similar logic from @see _custom_menu_toolbar_get_menu_for_current_user().
- *
- *
+ * Leverage logic from @see _custom_menu_toolbar_get_menu_for_current_user().
  */
 function moha_admin_menu_admin_menu_output_build(&$content) {
 
@@ -101,3 +119,24 @@ function moha_admin_menu_custom_menu_toolbar_menu_settings_form_submit(&$form, &
   admin_menu_flush_caches();
 }
 
+/**
+ * Implements hook_page_build().
+ * Inject style to change admin menu background color for non production environment.
+ *
+ * @inheritdoc
+ */
+function moha_admin_menu_page_build(&$page) {
+  global $base_url; $prefix = substr($base_url, 0, 11 );
+
+  if (moha_cache_get(MOHA_ADMIN_MENU__VARIABLES__NON_PRD)) {
+    $page['page_bottom']['#attached']['css'][] = MOHA_ADMIN_MENU__PATH . '/css/moha_admin_menu.non-prd.css';
+
+  }
+  elseif (substr($base_url, 0, 11 ) === "http://dev." ||
+    substr($base_url, 0, 11 ) === "http://stg." ||
+    substr($base_url, 0, 11 ) === "http://stg-" ) {
+
+    $page['page_bottom']['#attached']['css'][] = MOHA_ADMIN_MENU__PATH . '/css/moha_admin_menu.non-prd.css';
+    moha_cache_set(MOHA_ADMIN_MENU__VARIABLES__NON_PRD, TRUE);
+  }
+}

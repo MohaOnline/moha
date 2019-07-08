@@ -3,7 +3,6 @@ description = Basic piece of Moha Online.
 core = 7.x
 package = Moha Online
 
-dependencies[] = moha
 dependencies[] = taxonomy
 dependencies[] = text
 dependencies[] = image
@@ -13,4 +12,6 @@ dependencies[] = video_ui
 dependencies[] = media
 dependencies[] = field_collection
 dependencies[] = tocify
+dependencies[] = moha
+dependencies[] = moha_ui
 

@@ -1,0 +1,25 @@
+@charset "UTF-8";
+/**
+ * @file
+ *   Styles for font of Moha Admin Menu.
+ */
+
+/**
+ * If menu items need be styled, use below selectors:
+ *
+ *   body.adminimal-menu #admin-menu .dropdown li li
+ *   body.adminimal-menu #admin-menu #admin-menu-wrapper .dropdown li li.expandable
+ */
+body.adminimal-menu div#admin-menu {
+  background-color: darkgreen;
+}
+
+body.adminimal-menu div#admin-menu:after {
+  content: 'non-prd';
+  display: inline-block;
+  padding: 5px 10px;
+  color: darkgreen;
+  font-size: 16px;
+  font-weight: bold;
+  background: rgba(0,255,0, 0.25);
+}

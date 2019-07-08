@@ -19,14 +19,14 @@ define('__MOHA_CLIP', 'moha_clip');
 define('MOHA_CLIP__VARIABLES', __MOHA_CLIP . '__variables');
 
 /**
- * /sites/all/modules/custom/moha/modules/moha_clip.
- */
-define('__MOHA_CLIP__PATH', base_path() . drupal_get_path('module', __MOHA_CLIP));
-
-/**
  * sites/all/modules/custom/moha/modules/moha_clip.
  */
 define('MOHA_CLIP__PATH', drupal_get_path('module', __MOHA_CLIP));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_clip.
+ */
+define('__MOHA_CLIP__PATH', base_path() . drupal_get_path('module', __MOHA_CLIP));
 
 /**
  * Permission: view moha_clip content.
@@ -481,6 +481,8 @@ PREVIEW
  * Implements hook_view().
  */
 function moha_clip_view($node, $view_mode, $langcode = NULL) {
+
+
   if ($node->type == __MOHA_CLIP) {
     $node->content['#attached']['css'][] = MOHA_UI__PATH . '/libs/swiper/dist/css/swiper.min.css';
     $node->content['#attached']['js'][] = MOHA_UI__PATH . '/libs/swiper/dist/js/swiper.min.js';

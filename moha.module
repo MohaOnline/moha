@@ -1311,25 +1311,53 @@ function moha_show_exception(Exception $e, $message_type = 'error') {
 }
 
 /**
- * If current version is less than passed $version, prompt message.
+ * Get cached data by ID.
  *
- * @param $version string
- *   expected version.
- * @param $prompt string
- *  prompt message.
+ * @param $cid string
+ *   Cache ID.
+ *
+ * @param $default
+ *   Default value.
  */
-function moha_version_prompt($version, $prompt) {
-  $current_version = variable_get('jquery_update_jquery_version', '1.4.4');
-  $compare = version_compare($version, $current_version);
-
-  // If current version is not enough.
-  if ($compare > 0){
-    drupal_set_message($prompt);
+function moha_cache_get($cid, $default = FALSE) {
+  $data = &drupal_static(__MOHA);
+  if (!isset($data[$cid])) {
+    if ($cache = cache_get($cid)) {
+      $data[$cid] = $cache->data;
+    }
+    else {
+      $data[$cid] = $default;
+    }
   }
+
+  return $data[$cid];
+}
+
+/**
+ * Cache the data by ID.
+ *
+ * @param $cid
+ *   Cache ID.
+ *
+ * @param $data
+ *   Data which need be cached.
+ *
+ * @param $expire_in_seconds
+ *   seconds, @see CACHE_PERMANENT, @see CACHE_TEMPORARY
+ */
+function moha_cache_set($cid, $data, $expire_in_seconds = CACHE_PERMANENT) {
+  $data = &drupal_static(__MOHA);
+  $data[$cid] = $data;
+  if ($expire_in_seconds > 0) {
+    $expire = time() + $expire_in_seconds;
+  }
+  else {
+    $expire = $expire_in_seconds;
+  }
+  cache_set($cid, $data, 'cache', $expire);
 }
 
 /* Common functions. */
-
 /**
  * Generates and returns nonce string
  *
