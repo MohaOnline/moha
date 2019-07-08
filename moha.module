@@ -1174,12 +1174,12 @@ function moha_create_taxonomies($taxonomies = array()) {
  *
  * @param $term_name
  *
- * @param $vocabulary
+ * @param $vocabulary_name
  *
  * @return bool
  */
-function moha_tid_by_term_name($term_name, $vocabulary = NULL){
-  $terms = taxonomy_get_term_by_name($term_name, $vocabulary);
+function moha_tid_by_term_name($term_name, $vocabulary_name = NULL){
+  $terms = taxonomy_get_term_by_name($term_name, $vocabulary_name);
   if (empty($terms)){
     return FALSE;
   }

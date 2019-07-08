@@ -409,35 +409,48 @@ function moha_newsletter_form_moha_newsletter_node_form_alter(&$form, &$form_sta
  * @return array fields & instance parameter array.
  */
 function _moha_newsletter_fields_and_instances() {
-  $fields_and_instances = array();
 
-  $fields_and_instances['category'] = array(
-    'label' => t('Category'),
-    'field_name' => 'technology',
-    'description' => t('Input category this Moha Newsletter belonged.'),
+  $field_name = variable_get('simplenews_category_field', 'field_simplenews_term');
+  $fields_and_instances['field_simplenews_term'] = array(
+    'field_name' => $field_name,
     'type' => 'taxonomy_term_reference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'entity_type' => 'node',
-    'bundle' => __MOHA_NEWSLETTER,
+    'cardinality' => 1,
+    'translatable' => TRUE,
     'settings' => array(
-      'max_length' => 260,
       'allowed_values' => array(
         array(
-          'vocabulary' => 'newsletter_categories',
+          'parent' => 0,
+          'vocabulary' => 'newsletter',
         ),
       ),
     ),
+    'label' => t('Newsletter category'),
+    'bundle' => __MOHA_NEWSLETTER,
+    'entity_type' => 'node',
+    'required' => TRUE,
     'widget' => array(
-      'type' => 'taxonomy_autocomplete',
+      'type' => 'options_buttons',
     ),
     'display' => array(
       'default' => array(
         'label' => 'hidden',
-        'type' => 'taxonomy_term_reference_plain',
+        'type' => 'hidden',
       ),
       'teaser' => array(
         'label' => 'hidden',
-        'type' => 'taxonomy_term_reference_plain',
+        'type' => 'hidden',
+      ),
+      'email_plain' => array(
+        'label' => 'hidden',
+        'type' => 'hidden',
+      ),
+      'email_html' => array(
+        'label' => 'hidden',
+        'type' => 'hidden',
+      ),
+      'email_textalt' => array(
+        'label' => 'hidden',
+        'type' => 'hidden',
       ),
     ),
   );
@@ -458,15 +471,7 @@ function moha_newsletter_node_type_insert($info) {
     // Save our changes to the body field instance.
     field_update_instance($body_instance);
 
-    foreach (_moha_newsletter_fields_and_instances() as $field) {
-      // Only if field is not created, create it.
-      $prior_field = field_read_field($field['field_name'], array('include_inactive' => TRUE));
-      if (empty($prior_field)) {
-        field_create_field($field);
-      }
-
-      field_create_instance($field);
-    }
+    moha_create_fields_and_instances('_moha_newsletter_fields_and_instances');
 
     // Hide comments function.
     variable_set('comment_' . __MOHA_NEWSLETTER, COMMENT_NODE_HIDDEN);

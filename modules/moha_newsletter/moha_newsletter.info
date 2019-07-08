@@ -3,11 +3,10 @@ description = Newsletter support of Moha Online.
 core = 7.x
 package = Moha Online
 
-dependencies[] = moha
 dependencies[] = taxonomy
 dependencies[] = text
 dependencies[] = media
-dependencies[] = mimemail
 dependencies[] = simplenews
 dependencies[] = pathologic
+dependencies[] = moha
 dependencies[] = moha_mailer

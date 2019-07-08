@@ -4,14 +4,6 @@
  */
 
 function moha_newsletter_install() {
-  // Create a vocabulary named "Newsletter Category", enabled for the 'moha_newsletter' content type.
-  $vocabulary = (object) array(
-    'name' => t('Newsletter Categories'),
-    'description' => t('Use <em>Newsletter Category</em> to group moha_newsletter by categories.'),
-    'machine_name' => 'newsletter_categories',
-  );
-
-  taxonomy_vocabulary_save($vocabulary);
 
   // Create Roles.
   _moha_newsletter_prepare_roles_and_permissions();
@@ -24,4 +16,10 @@ function moha_newsletter_install() {
 
   // Create CKEditor profile.
   _moha_newsletter_prepare_ckeditor_profile();
+
+  // Turns default newsletter category to send by html.
+  $tid = moha_tid_by_term_name(t('@site_name newsletter', array('@site_name' => variable_get('site_name', 'Drupal'))), 'newsletter');
+  $category = simplenews_category_load($tid);
+  $category->format = 'html';
+  simplenews_category_save($category);
 }
