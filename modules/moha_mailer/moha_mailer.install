@@ -4,13 +4,15 @@
  */
 
 /**
- * Set mail sending class to MohaMailerMailSystem.
+ * Set mail sending class to MohaMailerMailSystem. Turns on Just SMTP module.
  */
 function moha_mailer_enable() {
   $configuration = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
   $configuration['default-system'] = 'MohaMailerMailSystem';
+  $configuration['mimemail'] = 'MohaMailerMailSystem';
 
   variable_set('mail_system', $configuration);
+  variable_set('just_smtp_on', TRUE);
 }
 
 /**
