@@ -54,6 +54,17 @@ div.options-widget table tr.drag-previous {
 }
 /***/
 
+/** Fix help text style in inline container. */
+.container-inline .form-item div.description {
+  display: block;
+}
+
+.container-inline label {
+  min-width: 10em;
+  display: inline-block;
+}
+/***/
+
 /** Fix conflict AdminLTE and theme: seven. */
 html {
   font-size: 16px;

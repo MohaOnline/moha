@@ -29,6 +29,20 @@ define('__MOHA_MAILER__PATH', base_path() . MOHA_MAILER__PATH);
 define('MOHA_MAILER__VARIABLES', __MOHA_MAILER. '__variables');
 
 /**
+ * Module variables name: moha_mailer__var__manual_to.
+ *
+ * Reuse mail to data collected from manual sending form.
+ */
+define('MOHA_MAILER__VARIABLE__MANUAL_TO', __MOHA_MAILER. '__var__manual_to');
+
+/**
+ * Module variables name: moha_mailer__var__manual_from.
+ *
+ * Reuse mail from data collected from manual sending form.
+ */
+define('MOHA_MAILER__VARIABLE__MANUAL_FROM', __MOHA_MAILER. '__var__manual_from');
+
+/**
  * Implements hook_menu().
  */
 function moha_mailer_menu() {
@@ -36,19 +50,40 @@ function moha_mailer_menu() {
     'title' => 'Moha Mailer',
     'description' => t('Moha Mail enhancement system.'),
     'page callback' => 'system_admin_menu_block_page',
-    'weight' => -10,
+    'weight' => 10,
     'file' => 'system.admin.inc',
     'file path' => drupal_get_path('module', 'system'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
   );
 
+  $items['admin/moha/mailer/dashboard'] = array(
+    'title' => 'Moha mailer dashboard',
+    'description' => t('Moha mail statistics / dashboard.'),
+    'page callback' => 'drupal_get_form',
+    /* @see moha_mailer_dashboard_form() */
+    'page arguments' => array('moha_mailer_dashboard_form'),
+    'file' => 'moha_mailer.admin.inc',
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
+  );
+
   $items['admin/moha/mailer/manual'] = array(
-    'title' => 'Moha mailer manual sending',
+    'title' => 'Moha mail manual sending',
     'description' => t('Manual mail sending function.'),
     'page callback' => 'drupal_get_form',
     /* @see moha_mailer_manual_form() */
     'page arguments' => array('moha_mailer_manual_form'),
+    'file' => 'moha_mailer.admin.inc',
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
+  );
+
+  $items['admin/moha/mailer/config'] = array(
+    'title' => 'Moha mailer configuration',
+    'description' => t('Moha mailer configuration.'),
+    'page callback' => 'drupal_get_form',
+    /* @see moha_mailer_config_form() */
+    'page arguments' => array('moha_mailer_config_form'),
+    'file' => 'moha_mailer.admin.inc',
     'access arguments' => array(MOHA__PERMISSION__ROOT),
   );
 
@@ -70,30 +105,3 @@ function moha_mailer_mail($key, &$message, $params) {
   }
 }
 
-/**
- * Configure storage for uploaded files by CKEditor.
- *
- * @param $form
- *   Nested array of form elements that comprise the form.
- *
- * @param $form_state
- *   A keyed array containing the current state of the form. The arguments
- *   that drupal_get_form() was originally called with are available in the
- *   array $form_state['build_info']['args'].
- *
- * @see \form_builder()
- */
-function moha_mailer_manual_form($form, &$form_state) {
-  global $language;
-
-  $node = node_load(1);
-  $params['subject'] = $node->title;
-  $content = node_view($node);
-  $params['body'][] = drupal_render($content['body']);
-  drupal_mail(__MOHA_MAILER, __FUNCTION__, variable_get('moha_mailer_manual_to'), $language, $params, variable_get('moha_mailer_manual_from'));
-
-
-//  $params['subject'] = t('Drupal SMTP test e-mail');
-//  $params['body'] = array(t('<body>If you receive this message it means your site is capable of using SMTP to send e-mail.</body>'));
-//  drupal_mail(__MOHA_MAILER, __FUNCTION__, variable_get('moha_mailer_manual_to'), $language, $params, variable_get('moha_mailer_manual_from'));
-}
