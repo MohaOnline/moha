@@ -11,6 +11,7 @@
 class MohaMailerMailSystem implements MailSystemInterface {
 
   protected $htmlFormatClass;
+  /** @var JustSmtpMailSystem $mailClass */
   protected $mailClass;
 
   public function __construct() {
