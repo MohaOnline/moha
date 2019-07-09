@@ -85,7 +85,15 @@ function moha_mailer_mail($key, &$message, $params) {
  */
 function moha_mailer_manual_form($form, &$form_state) {
   global $language;
-  $params['subject'] = t('Drupal SMTP test e-mail');
-  $params['body'] = array(t('<body>If you receive this message it means your site is capable of using SMTP to send e-mail.</body>'));
-  drupal_mail(__MOHA_MAILER, __FUNCTION__, '502238958@ge.com', $language, $params, 'Dawang Support <mailer@tanan.net.cn>');
+
+  $node = node_load(1);
+  $params['subject'] = $node->title;
+  $content = node_view($node);
+  $params['body'][] = drupal_render($content['body']);
+  drupal_mail(__MOHA_MAILER, __FUNCTION__, variable_get('moha_mailer_manual_to'), $language, $params, variable_get('moha_mailer_manual_from'));
+
+
+//  $params['subject'] = t('Drupal SMTP test e-mail');
+//  $params['body'] = array(t('<body>If you receive this message it means your site is capable of using SMTP to send e-mail.</body>'));
+//  drupal_mail(__MOHA_MAILER, __FUNCTION__, variable_get('moha_mailer_manual_to'), $language, $params, variable_get('moha_mailer_manual_from'));
 }
