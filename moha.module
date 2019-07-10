@@ -848,11 +848,30 @@ function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
 function moha_form_element_prompt_imce_usage() {
   $element = array(
     '#prefix' => '<div class="moha-admin-form-hint">',
-    '#markup' => 'Hint: Assets may be uploaded in <a target="_blank" href="/imce">imce</a>, private assets could be uploaded in <a target="_blank" href="/imce/private">imce/private</a>.',
-    '#suffix' => '</div>'
+    '#markup' => 'Hint: Public assets could be uploaded in <a target="_blank" href="/imce">imce</a>, private assets could be uploaded in <a target="_blank" href="/imce/private">imce/private</a>.',
+    '#suffix' => '</div>',
+    '#weight' => -99,
   );
 
   return $element;
+}
+
+/**
+ * Set text_format to specified value.
+ *
+ * @param $element
+ *   Form element.
+ * @param $text_format
+ *   Text format.
+ */
+function moha_text_format_set(&$element, $text_format) {
+  if (isset($element[LANGUAGE_NONE]) && !empty($text_format)) {
+    foreach (element_children($element[LANGUAGE_NONE]) as $index) {
+      if ($element[LANGUAGE_NONE][$index]['#type'] == 'text_format' && $element[LANGUAGE_NONE][$index]['#format'] == NULL) {
+        $element[LANGUAGE_NONE][$index]['#format'] = $text_format;
+      }
+    }
+  }
 }
 
 /**

@@ -4,6 +4,8 @@
  */
 
 /**
+ * Implements hook_enable().
+ *
  * Set mail sending class to MohaMailerMailSystem. Turns on Just SMTP module.
  */
 function moha_mailer_enable() {
@@ -13,9 +15,20 @@ function moha_mailer_enable() {
 
   variable_set('mail_system', $configuration);
   variable_set('just_smtp_on', TRUE);
+
+  // Set Mimemail default format to an HTML format.
+  $formats = filter_formats();
+  foreach ($formats as $format) {
+    if ($format->$format == 'full_html') {
+      variable_set('mimemail_format', 'full_html');
+      break;
+    }
+  }
 }
 
 /**
+ * Implements hook_disable().
+ *
  * Set mail sending class to default.
  */
 function moha_mailer_disable() {

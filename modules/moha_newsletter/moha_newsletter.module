@@ -59,6 +59,16 @@ define('MOHA_NEWSLETTER__PERMISSION__DELETE_OWN', 'delete own ' . __MOHA_NEWSLET
 define('MOHA_NEWSLETTER__PERMISSION__DELETE_ANY', 'delete any ' . __MOHA_NEWSLETTER . ' content');
 
 /**
+ * Permission: change format of any moha_newsletter content.
+ */
+define('MOHA_NEWSLETTER__PERMISSION__CHANGE_FORMAT_ANY', 'change format of any' . __MOHA_NEWSLETTER . ' content');
+
+/**
+ * Permission: change format of own moha_newsletter content.
+ */
+define('MOHA_NEWSLETTER__PERMISSION__CHANGE_FORMAT_OWN', 'change format of own' . __MOHA_NEWSLETTER . ' content');
+
+/**
  * moha_newsletter__role__manager.
  */
 define('MOHA_NEWSLETTER__ROLE__MANAGER', __MOHA_NEWSLETTER . '__role__manager');
@@ -86,11 +96,13 @@ function _moha_newsletter_prepare_roles_and_permissions() {
   $admin_permissions[] = MOHA_NEWSLETTER__PERMISSION__CREATE;
   $admin_permissions[] = MOHA_NEWSLETTER__PERMISSION__EDIT_ANY;
   $admin_permissions[] = MOHA_NEWSLETTER__PERMISSION__DELETE_ANY;
+  $admin_permissions[] = MOHA_NEWSLETTER__PERMISSION__CHANGE_FORMAT_ANY;
 
   $manager_permissions = array();
   $manager_permissions[] = MOHA_NEWSLETTER__PERMISSION__CREATE;
-  $manager_permissions[] = MOHA_NEWSLETTER__PERMISSION__EDIT_OWN;
   $manager_permissions[] = MOHA_NEWSLETTER__PERMISSION__EDIT_ANY;
+  $manager_permissions[] = MOHA_NEWSLETTER__PERMISSION__DELETE_OWN;
+  $admin_permissions[] = MOHA_NEWSLETTER__PERMISSION__CHANGE_FORMAT_OWN;
 
   $user_permissions = array();
   $user_permissions[] = MOHA_NEWSLETTER__PERMISSION__VIEW;
@@ -101,7 +113,7 @@ function _moha_newsletter_prepare_roles_and_permissions() {
 
 
 /**
- * Create IMCE profile for Moha Clip Manager and Moha Clip Admin.
+ * Create IMCE profile for Moha Newsletter Manager and Moha Newsletter Admin.
  */
 function _moha_newsletter_prepare_imce_profile() {
 
@@ -202,9 +214,11 @@ function moha_newsletter_element_info_alter(&$type) {
 
 /**
  * Hides help link, hides guidelines, hides text format select drop-down menu.
+ *
+ * @param $element
+ *   format element.
  */
 function _moha_newsletter__text_format_process($element) {
-  // TODO don't check format, check node bundle.
   if ($element['#format'] != MOHA_NEWSLETTER__TEXT_FORMAT) {
     return $element;
   }
@@ -218,20 +232,18 @@ function _moha_newsletter__text_format_process($element) {
   }
 
   if ( $element['#entity_type'] == "node" && ( $element['#bundle'] == 'simplenews' || $element['#bundle'] == __MOHA_NEWSLETTER ) ) {
-
-  // Remove type: fieldset, which causes 1px grey border.
-  unset($element['format']['#type']);
-  unset($element['format']['format']['#title']);
-//  $element['format']['format']['#access'] = FALSE;
-  $element['format']['help']['#access'] = FALSE;
-  $element['format']['guidelines']['#access'] = FALSE;
-
+    if (!user_access(MOHA_NEWSLETTER__PERMISSION__CHANGE_FORMAT_ANY)) {
+      hide($element['format']['format']);
+    }
+    hide($element['format']['help']);
+    hide($element['format']['guidelines']);
   }
+
   return $element;
 }
 
 /**
- * Create CKEditor profile for Moha Clip.
+ * Create CKEditor profile for Moha Newsletter.
  */
 function _moha_newsletter_prepare_ckeditor_profile() {
 
@@ -350,11 +362,11 @@ function moha_newsletter_node_info() {
 /**
  * Implements hook_form().
  *
- * Moha Clip node add / edit form.
+ * Moha Newsletter node add / edit form.
  *
- * Drupal needs for us to provide a form that lets the user
+ * Drupal needs us to provide a form that lets the user
  * add content. This is the form that the user will see if
- * they go to node/add/moha-clip.
+ * they go to node/add/moha-newsletter.
  *
  * You can get fancy with this form, or you can just punt
  * and return the default form that node_content will provide.
@@ -370,7 +382,9 @@ function moha_newsletter_form($node, &$form_state) {
   // Add collapsible effect to image and video fields.
   drupal_add_js(MOHA__PATH . '/js/moha.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
 
-  return node_content_form($node, $form_state);
+  $form = node_content_form($node, $form_state);
+
+  return $form;
 }
 
 /**
@@ -380,6 +394,10 @@ function moha_newsletter_form($node, &$form_state) {
  */
 function moha_newsletter_form_moha_newsletter_node_form_alter(&$form, &$form_state, $form_id) {
 
+  // Set default format to module shipped text format.
+  moha_text_format_set($form['body'], MOHA_NEWSLETTER__TEXT_FORMAT);
+  $form['body']['hint'] = moha_form_element_prompt_imce_usage();
+  
   // Ajax saving function hasn't supported node-adding form.
   if ($form['nid']['#value'] != null) {
     $form['changed']['#prefix'] = '<div id="moha-node-changed-form-wrapper">';
