@@ -266,7 +266,7 @@ config.templates_replaceContent = false;
     'ss' => 2,
     'toolbar' => "[
     ['Templates'],
-    ['Styles', 'TextColor', 'Bold', 'Italic', 'Underline', 'NumberedList', 'BulletedList', 'Blockquote', '-','RemoveFormat'],
+    ['Styles','Font','FontSize', 'TextColor', '-', 'Bold', 'Italic', 'Underline', 'NumberedList', 'BulletedList', 'Blockquote', '-', 'RemoveFormat'],
     ['Image', 'HorizontalRule', 'Link', 'Unlink'], ['Maximize', 'Source']
 ]",
     'expand' => 't',
@@ -496,6 +496,9 @@ function moha_newsletter_node_type_insert($info) {
 
     // Don't prompt to front.
     variable_set('node_options_' . __MOHA_NEWSLETTER, array('status'));
+
+    // Hide author anc created date information.
+    variable_set('node_submitted_' . __MOHA_NEWSLETTER, FALSE);
 
     // Let this content type could be treated as newsletter.
     variable_set('simplenews_content_type_' . __MOHA_NEWSLETTER, TRUE);

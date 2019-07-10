@@ -19,7 +19,7 @@ function moha_mailer_enable() {
   // Set Mimemail default format to an HTML format.
   $formats = filter_formats();
   foreach ($formats as $format) {
-    if ($format->$format == 'full_html') {
+    if ($format->format == 'full_html') {
       variable_set('mimemail_format', 'full_html');
       break;
     }

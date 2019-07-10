@@ -6,7 +6,6 @@ package = Moha Online
 
 dependencies[] = moha
 dependencies[] = mimemail
-dependencies[] = mimemail_compress
 dependencies[] = just_smtp
 
 files[] = MohaMailerMailSystem.php

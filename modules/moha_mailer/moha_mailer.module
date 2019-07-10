@@ -60,19 +60,10 @@ function moha_mailer_menu() {
   $items['admin/moha/mailer/dashboard'] = array(
     'title' => 'Moha mailer dashboard',
     'description' => t('Moha mail statistics / dashboard.'),
+    'weight' => -99,
     'page callback' => 'drupal_get_form',
     /* @see moha_mailer_dashboard_form() */
     'page arguments' => array('moha_mailer_dashboard_form'),
-    'file' => 'moha_mailer.admin.inc',
-    'access arguments' => array(MOHA__PERMISSION__ROOT),
-  );
-
-  $items['admin/moha/mailer/manual'] = array(
-    'title' => 'Moha mail manual sending',
-    'description' => t('Manual mail sending function.'),
-    'page callback' => 'drupal_get_form',
-    /* @see moha_mailer_manual_form() */
-    'page arguments' => array('moha_mailer_manual_form'),
     'file' => 'moha_mailer.admin.inc',
     'access arguments' => array(MOHA__PERMISSION__ROOT),
   );
@@ -83,6 +74,16 @@ function moha_mailer_menu() {
     'page callback' => 'drupal_get_form',
     /* @see moha_mailer_config_form() */
     'page arguments' => array('moha_mailer_config_form'),
+    'file' => 'moha_mailer.admin.inc',
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
+  );
+
+  $items['admin/moha/mailer/manual'] = array(
+    'title' => 'Moha mail manual sending',
+    'description' => t('Manual mail sending function.'),
+    'page callback' => 'drupal_get_form',
+    /* @see moha_mailer_manual_form() */
+    'page arguments' => array('moha_mailer_manual_form'),
     'file' => 'moha_mailer.admin.inc',
     'access arguments' => array(MOHA__PERMISSION__ROOT),
   );
