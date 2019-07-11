@@ -165,6 +165,39 @@ function moha_mailer_mail($key, &$message, $params) {
  * Implements hook_cron().
  */
 function moha_mailer_cron() {
+  $is_pending = moha_cache_get(MOHA_MAILER__VARIABLE__PENDING, FALSE);
+  if ($is_pending) return;
 
+  // Get queued mails, then send.
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', __MOHA_MAILER_MAIL);
+  $query->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY));
+  $query->range(0, moha_array_variable_get(MOHA_MAILER__VARIABLES, MOHA_MAILER__VARIABLE__THRESHOLD, 20));
+  $results = $query->execute();
+
+  $ids = isset($results[__MOHA_MAILER_MAIL]) ? array_keys($results[__MOHA_MAILER_MAIL]) : array();
+  $entities = $ids ? entity_load(__MOHA_MAILER_MAIL, $ids) : array();
+
+  global $language;
+
+  foreach ($entities as $entity) {
+    $mail_to = $entity->mail_to;
+    $mail_from = $entity->mail_from;
+
+    $node = node_load($entity->nid);
+    $params['subject'] = $entity->subject;
+    $content = node_view($node);
+    $params['body'][] = drupal_render($content['body']);
+    $message = drupal_mail(__MOHA_MAILER, 'moha_mailer_manual', $mail_to, $language, $params, $mail_from);
+
+    if ($message['send'] === TRUE && $message['result'] === TRUE) {
+      $entity->status = moha_array_key_by_value(MOHA__TERM__SUCCESS, MOHA__STATUS__ENTITY);
+    }
+    else {
+      $entity->status = moha_array_key_by_value(MOHA__TERM__PROCESSED, MOHA__STATUS__ENTITY);
+    }
+
+    $entity->result = serialize($message);
+    $entity->save();
+  }
 }
-

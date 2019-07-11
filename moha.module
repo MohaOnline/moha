@@ -182,14 +182,14 @@ define('MOHA__TERM__PENDING', 'Pending');
 define('MOHA__TERM__SUSPENDED', 'Suspended');
 
 /**
- * Moha Status: Fail.
- */
-define('MOHA__TERM__FAILURE', 'Failure');
-
-/**
  * Moha Status: Success.
  */
 define('MOHA__TERM__SUCCESS', 'Success');
+
+/**
+ * Moha Status: Fail.
+ */
+define('MOHA__TERM__FAILURE', 'Failure');
 
 /**
  * Moha Status array: entity.
@@ -201,6 +201,7 @@ define('MOHA__STATUS__ENTITY', array(
   3 => MOHA__TERM__QUEUED,
   4 => MOHA__TERM__PENDING,
   6 => MOHA__TERM__SUCCESS,
+  100 => MOHA__TERM__PROCESSED,
   -900 => MOHA__TERM__SUSPENDED,
   -999 => MOHA__TERM__FAILURE,
 ));
