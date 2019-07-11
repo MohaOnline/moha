@@ -185,6 +185,7 @@ function moha_mailer_cron() {
     $mail_from = $entity->mail_from;
 
     $node = node_load($entity->nid);
+    $params = array();
     $params['subject'] = $entity->subject;
     $content = node_view($node);
     $params['body'][] = drupal_render($content['body']);
