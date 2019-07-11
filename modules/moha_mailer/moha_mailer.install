@@ -3,6 +3,205 @@
  * @file
  */
 
+function moha_mailer_schema() {
+  // @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
+  $schema['moha_mailer_mail'] = array(
+    'description' => 'Mails to be sent.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Unique entity ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'subject' => array(
+        'description' => 'Subject of the mail.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'mail_from' => array(
+        'description' => 'Mail address of sender.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'mail_to' => array(
+        'description' => 'Address which this mail need be sent to.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'nid' => array(
+        'description' => 'Node ID which need be sent as mail.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'eid' => array(
+        'description' => 'Entity ID associated with the mail.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'eid_type' => array(
+        'description' => 'Entity type.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => 'The status of this record.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 3,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'result' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Mail sending result',
+        'not null' => FALSE,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'moha_mailer_mail_status' => array('status'),
+      'moha_mailer_mail_to' => array(array('mail_to', 64)),
+      'moha_mailer_mail_updated' => array('updated'),
+      'moha_mailer_mail_created' => array('created'),
+    ),
+  );
+
+  $schema['moha_mailer_mail_revision'] = array(
+    'description' => 'Mails to be sent.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Unique entity ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'subject' => array(
+        'description' => 'Subject of the mail.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'mail_from' => array(
+        'description' => 'Mail sender.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'mail_to' => array(
+        'description' => 'Address which this mail need be sent to.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'nid' => array(
+        'description' => 'Node ID which need be sent as mail.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'eid' => array(
+        'description' => 'Entity ID associated with the mail.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'eid_type' => array(
+        'description' => 'Entity type.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => 'The status of this record.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the account was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the account was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'result' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Mail sending result',
+        'not null' => FALSE,
+      ),
+      'comment' => array(
+        'type' => 'text', // Can't have default value.
+        'size' => 'big',
+        'description' => 'Update reason.',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('vid'),
+    'indexes' => array(
+      'moha_mailer_mail_revision_status' => array('status'),
+      'moha_mailer_mail_revision_to' => array(array('mail_to', 64)),
+      'moha_mailer_mail_revision_updated' => array('updated'),
+      'moha_mailer_mail_revision_created' => array('created'),
+    ),
+  );
+
+  return $schema;
+}
+
 /**
  * Implements hook_enable().
  *

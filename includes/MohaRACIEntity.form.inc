@@ -19,15 +19,7 @@ function moha_raci_form($form, &$form_state, $raci = NULL) {
     '#value' => !empty($raci->id)?$raci->id:'',
   );
 
-  $entity_options = array();
-  $entities = entity_get_info();
-
-  foreach ($entities as $entity_name => $entity) {
-    if ($entity_name == __MOHA_RACI) {
-      continue;
-    }
-    $entity_options[$entity_name] = $entity['label'];
-  }
+  $entity_options = moha_form_options_from_entity(__MOHA_RACI);
 
   if (!empty($form_state['values']['entity'])) {
     $entity_type = $form_state['values']['entity'];

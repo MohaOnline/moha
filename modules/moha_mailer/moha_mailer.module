@@ -14,6 +14,16 @@ define('MOHA_MAILER', 'Moha Mailer');
 define('__MOHA_MAILER', 'moha_mailer');
 
 /**
+ * Entity Machine name.
+ */
+define('__MOHA_MAILER_MAIL', 'moha_mailer_mail');
+
+/**
+ * Entity Human name.
+ */
+define('MOHA_MAILER_MAIL', 'Moha Mailer Mail');
+
+/**
  * sites/all/modules/custom/moha/modules/moha_mailer.
  */
 define('MOHA_MAILER__PATH', drupal_get_path('module', __MOHA_MAILER));
@@ -31,7 +41,7 @@ define('MOHA_MAILER__VARIABLES', __MOHA_MAILER. '__variables');
 /**
  * Module variables name: moha_mailer__var__manual_to.
  *
- * Reuse mail to data collected from manual sending form.
+ * Reuse mail to data collected from manual sending to.
  */
 define('MOHA_MAILER__VARIABLE__MANUAL_TO', __MOHA_MAILER. '__var__manual_to');
 
@@ -41,6 +51,51 @@ define('MOHA_MAILER__VARIABLE__MANUAL_TO', __MOHA_MAILER. '__var__manual_to');
  * Reuse mail from data collected from manual sending form.
  */
 define('MOHA_MAILER__VARIABLE__MANUAL_FROM', __MOHA_MAILER. '__var__manual_from');
+
+/**
+ * Module variables name: moha_mailer__var__threshold.
+ *
+ * How many mail
+ */
+define('MOHA_MAILER__VARIABLE__THRESHOLD', __MOHA_MAILER. '__var__threshold');
+
+/**
+ * Module variables name: moha_mailer__var__pending.
+ *
+ * TRUE to pend mail sending.
+ */
+define('MOHA_MAILER__VARIABLE__PENDING', __MOHA_MAILER. '__var__pending');
+
+/**
+ * Moha Mailer URL: Moha Mailer mail management page.
+ */
+define('MOHA_MAILER__URL__MAIL_ADMIN_UI', MOHA__URL__ENTITIES . '/mailer-mail');
+
+/**
+ * Implements hook_entity_info().
+ */
+function moha_mailer_entity_info() {
+
+  $items[__MOHA_MAILER_MAIL] = moha_define_entity(
+    __MOHA_MAILER,
+    __MOHA_MAILER_MAIL,
+    MOHA_MAILER_MAIL,
+    'MohaMailerMail',
+    MOHA_MAILER__URL__MAIL_ADMIN_UI
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function moha_mailer_permission() {
+  // Declare entity permissions.
+  $permissions = moha_entity_permission(__MOHA_MAILER_MAIL);
+
+  return $permissions;
+}
 
 /**
  * Implements hook_menu().
@@ -104,5 +159,12 @@ function moha_mailer_mail($key, &$message, $params) {
   else {
     mimemail_mail($key, $message, $params);
   }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function moha_mailer_cron() {
+
 }
 

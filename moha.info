@@ -13,7 +13,7 @@ dependencies[] = jquery_update
 dependencies[] = libraries
 dependencies[] = entityreference_autocomplete
 
-files[] = includes/MohaRACIEntity.form.inc
 files[] = includes/MohaRACIEntity.php
 files[] = includes/MohaRACIEntityAdminController.php
 files[] = includes/MohaRACIEntityController.php
+files[] = includes/MohaCommonEntityController.php

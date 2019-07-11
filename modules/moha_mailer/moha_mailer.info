@@ -9,3 +9,6 @@ dependencies[] = mimemail
 dependencies[] = just_smtp
 
 files[] = MohaMailerMailSystem.php
+files[] = includes/MohaMailerMailEntity.php
+files[] = includes/MohaMailerMailEntityAdminController.php
+files[] = includes/MohaMailerMailEntityController.php

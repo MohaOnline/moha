@@ -162,12 +162,47 @@ define('MOHA__TERM__ACTIVE', 'Active');
 define('MOHA__TERM__DISABLED', 'Disabled');
 
 /**
+ * Moha Status: Processed.
+ */
+define('MOHA__TERM__PROCESSED', 'Processed');
+
+/**
+ * Moha Status: Queued.
+ */
+define('MOHA__TERM__QUEUED', 'Queued');
+
+/**
+ * Moha Status: Pending.
+ */
+define('MOHA__TERM__PENDING', 'Pending');
+
+/**
+ * Moha Status: Suspended.
+ */
+define('MOHA__TERM__SUSPENDED', 'Suspended');
+
+/**
+ * Moha Status: Fail.
+ */
+define('MOHA__TERM__FAILURE', 'Failure');
+
+/**
+ * Moha Status: Success.
+ */
+define('MOHA__TERM__SUCCESS', 'Success');
+
+/**
  * Moha Status array: entity.
  */
 define('MOHA__STATUS__ENTITY', array(
   0 => MOHA__TERM__DELETED,
   1 => MOHA__TERM__ACTIVE,
   2 => MOHA__TERM__DISABLED,
+  3 => MOHA__TERM__QUEUED,
+  4 => MOHA__TERM__PENDING,
+  6 => MOHA__TERM__SUCCESS,
+  -900 => MOHA__TERM__SUSPENDED,
+  -999 => MOHA__TERM__FAILURE,
 ));
 
 /**
@@ -211,6 +246,52 @@ function moha_theme($existing, $type, $theme, $path) {
   );
 
   return $themes;
+}
+
+function moha_define_entity($module, $machine_name, $human_name, $class_prefix, $admin_url) {
+  $entity_definition = array(
+    'label' => t($human_name),
+    'plural label' => t($human_name . 's'), // Moha Mailer Mails
+    'base table' => $machine_name,
+    'revision table' => $machine_name . '_revision',
+    'entity keys' => array(
+      'id' => 'id',
+      'label' => 'id',
+      'revision' => 'vid',
+    ),
+    // Refer label from $entity['entity keys']['label].
+    'label callback' => 'entity_class_label',
+
+    /** @see entity_crud_hook_entity_info() */
+    'admin ui' => array(
+      /* Entity management page URL & Class. */
+      'path' => $admin_url,
+      'controller class' => $class_prefix . 'EntityAdminController',
+
+      /** @see entity_ui_get_form() */
+      /* Entity add / edit forms containing file. */
+      'file' => 'includes/' . $class_prefix . 'Entity.form.inc',  //
+    ),
+
+    // Declares which module contains related Class information, like Admin UI Class, etc.
+    'module' => $module,
+    'access callback' => 'moha_entity_access',
+
+    'entity class' => $class_prefix . 'Entity',
+    'controller class' => 'MohaCommonEntityController',
+    // Uses defaultUri method of entity class to generate entity URL.
+    'uri callback' => 'entity_class_uri',
+
+    // Make entity un-fieldable;
+    /** @see field_attach_form to attach added fields. */
+    'fieldable' => FALSE,
+    'bundles' => array(),
+
+    // Views support.
+    'views controller class' => 'EntityDefaultViewsController',
+  );
+
+  return $entity_definition;
 }
 
 /**
@@ -880,9 +961,10 @@ function moha_text_format_set(&$element, $text_format) {
  * @param $form
  *   form element.
  */
-function moha_form_set_inline_container(&$form) {
+function &moha_form_set_inline_container(&$form) {
   $form['#type'] = 'container';
   $form['#attributes'] = array('class' => array('container-inline'));
+  return $form;
 }
 
 /**
@@ -935,6 +1017,35 @@ function moha_form_options_from_vocabulary($vocabulary_name = '') {
   }
 
   return $options;
+}
+
+/**
+ * Returns options array of entity types as form options.
+ *
+ * @param $excludes
+ *   entity types which need be excluded from options.
+ *
+ * @return array
+ */
+function moha_form_options_from_entity($excludes) {
+
+  if (!is_array($excludes)) {
+    $excludes = array($excludes);
+  }
+
+  $entity_options = array();
+  $entities = entity_get_info();
+
+  foreach ($entities as $entity_name => $entity) {
+    foreach ($excludes as $exclude) {
+      if ($entity_name == $exclude) {
+        continue 2;
+      }
+    }
+    $entity_options[$entity_name] = $entity['label'];
+  }
+
+  return $entity_options;
 }
 
 
