@@ -8,6 +8,7 @@ dependencies[] = mimemail
 dependencies[] = just_smtp
 dependencies[] = moha
 dependencies[] = moha_style
+dependencies[] = moha_fonts
 dependencies[] = moha_composer
 
 files[] = includes/MohaMailerMailSystem.php

@@ -969,6 +969,50 @@ function moha_form_element_prompt_imce_usage() {
 }
 
 /**
+ * Add default configuration for a Radio form element.
+ *
+ * @param $form
+ *   Form element.
+ *
+ * @param $default
+ *   Radio default value.
+ *
+ * @param array $options
+ *   Options definitions.
+ *
+ * @return array
+ *   Form element.
+ */
+function moha_form_radio(&$form, $default, array $options = array(1 => 'Yes', 0 => 'No')) {
+  $form['#type'] = 'radios';
+  $form['#options'] = $options;
+  $form['#default_value'] = $default ? 1 : 0;
+
+  return $form;
+}
+
+/**
+ * Generate form actions per passed buttons definition.
+ *
+ * @param $form
+ * @param array $buttons
+ *
+ * @return mixed
+ */
+function moha_form_actions(&$form, array $buttons = array('Save')) {
+  $form['actions'] = array('#type' => 'actions');
+
+  foreach ($buttons as $button) {
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t($button),
+    );
+  }
+
+  return $form;
+}
+
+/**
  * Set text_format to specified value.
  *
  * @param $element
@@ -1441,26 +1485,39 @@ function moha_variable_set($key, $value = ""){
 
 /**
  * Get cached data by ID.
- * Don't use to check a non request persistent variable.
  *
  * @param $cid string
  *   Cache ID.
  *
  * @param $default
  *   Default value.
+ *
+ * @param $use_static
+ *   True to further cache value per request.
+ *
+ * @return mixed
  */
-function moha_cache_get($cid, $default = FALSE) {
-  $static = &drupal_static(__MOHA);
-  if (!isset($static[$cid])) {
-    if ($cache = cache_get($cid)) {
-      $static[$cid] = $cache->data;
-    }
-    else {
-      $static[$cid] = $default;
-    }
+function moha_cache_get($cid, $default = FALSE, $use_static = TRUE) {
+  if ($use_static) {
+    $static = &drupal_static(__MOHA);
+  }
+  else {
+    $static = array();
   }
 
-  return $static[$cid];
+  if (!isset($static[$cid])) {
+    if ($cache = cache_get($cid)) {
+      $ret = $static[$cid] = $cache->data;
+    }
+    else {
+      $ret = $default;
+    }
+  }
+  else {
+    $ret = $static[$cid];
+  }
+
+  return $ret;
 }
 
 /**
@@ -1544,11 +1601,10 @@ function moha_response_error(Exception $e = NULL, $status_code = 503) {
  *   if passed variable is set to TRUE.
  */
 function moha_throw_exception_per_variable($suspend_variable_name, $default = FALSE) {
-  // Can't use moha_cache_get as
-  $exception = cache_get($suspend_variable_name, $default);
+  $exception = moha_cache_get($suspend_variable_name, $default, FALSE);
 
   if ($exception) {
-    throw new Exception(__FUNCTION__ . " $suspend_variable_name is TRUE");
+    throw new Exception(" $suspend_variable_name is TRUE");
   }
 }
 

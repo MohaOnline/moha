@@ -108,7 +108,7 @@ function moha_mailer_menu() {
   );
 
   $items['admin/moha/mailer/dashboard'] = array(
-    'title' => 'Moha mailer dashboard',
+    'title' => 'Dashboard',
     'description' => t('Moha mail statistics / dashboard.'),
     'weight' => -99,
     'page callback' => 'drupal_get_form',
@@ -119,7 +119,7 @@ function moha_mailer_menu() {
   );
 
   $items['admin/moha/mailer/config'] = array(
-    'title' => 'Moha mailer configuration',
+    'title' => 'Configuration',
     'description' => t('Moha mailer configuration.'),
     'page callback' => 'drupal_get_form',
     /* @see moha_mailer_config_form() */
@@ -129,7 +129,7 @@ function moha_mailer_menu() {
   );
 
   $items['admin/moha/mailer/manual'] = array(
-    'title' => 'Moha mail manual sending',
+    'title' => 'Send mail',
     'description' => t('Manual mail sending function.'),
     'page callback' => 'drupal_get_form',
     /* @see moha_mailer_manual_form() */
@@ -162,8 +162,8 @@ function moha_mailer_mail($key, &$message, $params) {
  * Implements hook_cron().
  */
 function moha_mailer_cron() {
-  try {
 
+  try {
     moha_throw_exception_per_variable(MOHA_MAILER__VARIABLE__SUSPEND);
 
     // Get queued mails, then send.
@@ -179,6 +179,8 @@ function moha_mailer_cron() {
     global $language;
 
     foreach ($entities as $entity) {
+      moha_throw_exception_per_variable(MOHA_MAILER__VARIABLE__SUSPEND);
+
       $mail_to = $entity->mail_to;
       $mail_from = $entity->mail_from;
 
@@ -188,7 +190,6 @@ function moha_mailer_cron() {
       $content = node_view($node);
       $params['body'][] = drupal_render($content['body']);
 
-      moha_throw_exception_per_variable(MOHA_MAILER__VARIABLE__SUSPEND);
       $message = drupal_mail(__MOHA_MAILER, 'moha_mailer_manual', $mail_to, $language, $params, $mail_from);
 
       if ($message['send'] === TRUE && $message['result'] === TRUE) {
@@ -200,9 +201,11 @@ function moha_mailer_cron() {
 
       $entity->result = serialize($message);
       $entity->save();
-    }
+
+      sleep(6);
+    } // Foreach.
   }
   catch (Exception $e) {
-    watchdog(__FUNCTION__, $e);
+    watchdog_exception(__FUNCTION__, $e);
   }
 }
