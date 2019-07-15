@@ -157,6 +157,23 @@ function moha_mailer_mail($key, &$message, $params) {
 }
 
 /**
+ * Implements hook_libraries_info_alter().
+ */
+function moha_mailer_libraries_info_alter(&$libraries) {
+  // Guide Just SMTP to use shipped PHPMailer libraries.
+  if (isset($libraries['PHPMailer'])) {
+    $libraries['PHPMailer']['library path'] = MOHA_COMPOSER__PATH . '/vendor';
+    $libraries['PHPMailer']['version arguments']['file'] = '/phpmailer/phpmailer/VERSION';
+    $libraries['PHPMailer']['version arguments']['lines'] = 1;
+    $libraries['PHPMailer']['version arguments']['pattern'] = '/(\d\.\d\.\d)/';
+
+    $libraries['PHPMailer']['files']['php'] = array(
+      'autoload.php',
+    );
+  }
+}
+
+/**
  * Sends queued mails through cron per entity moha_mailer_mail.
  *
  * Implements hook_cron().
