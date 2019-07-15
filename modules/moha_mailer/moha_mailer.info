@@ -4,11 +4,12 @@ core = 7.x
 
 package = Moha Online
 
-dependencies[] = moha
 dependencies[] = mimemail
 dependencies[] = just_smtp
+dependencies[] = moha
+dependencies[] = moha_libs
 
-files[] = MohaMailerMailSystem.php
+files[] = includes/MohaMailerMailSystem.php
+
 files[] = includes/MohaMailerMailEntity.php
 files[] = includes/MohaMailerMailEntityAdminController.php
-files[] = includes/MohaMailerMailEntityController.php

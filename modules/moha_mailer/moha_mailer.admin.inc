@@ -51,6 +51,10 @@ function moha_mailer_manual_form($form, &$form_state) {
     '#era_bundles' => array('page'),
   );
 
+  if (module_exists(__MOHA_NEWSLETTER)) {
+    $mail['node']['#era_bundles'][] = __MOHA_NEWSLETTER;
+  }
+
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
@@ -88,13 +92,11 @@ function moha_mailer_manual_form_submit($form, &$form_state) {
   $params['subject'] = $node->title;
   $content = node_view($node);
   $params['body'][] = drupal_render($content['body']);
+  libraries_load(__MOHA_LIBS);
   $message = drupal_mail(__MOHA_MAILER, __FUNCTION__, $mail_to, $language, $params, $mail_from);
 
   if ($message['send'] === TRUE && $message['result'] === TRUE) {
     drupal_set_message(t('Specified node has been mailed out.'));
   }
 
-  //  $params['subject'] = t('Drupal SMTP test e-mail');
-  //  $params['body'] = array(t('<body>If you receive this message it means your site is capable of using SMTP to send e-mail.</body>'));
-  //  drupal_mail(__MOHA_MAILER, __FUNCTION__, variable_get('moha_mailer_manual_to'), $language, $params, variable_get('moha_mailer_manual_from'));
 }

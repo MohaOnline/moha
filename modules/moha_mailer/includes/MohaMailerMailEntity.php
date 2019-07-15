@@ -6,6 +6,23 @@
 class MohaMailerMailEntity extends Entity {
 
   /**
+   * @var integer
+   */
+  public $nid;
+
+  /**
+   * @var integer
+   */
+  public $eid;
+
+  /**
+   * Entity type.
+   *
+   * @var string
+   */
+  public $eid_type;
+
+  /**
    * @return array
    */
   protected function defaultUri() {

@@ -120,7 +120,7 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
       '#theme' => 'table',
       '#header' => $this->overviewTableHeaders($conditions, $rows),
       '#rows' => $rows,
-      '#empty' => t('None.'),
+      '#empty' => t('No data.'),
     );
 
     return $render;

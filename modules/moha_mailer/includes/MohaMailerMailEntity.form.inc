@@ -143,13 +143,14 @@ function moha_mailer_mail_form_validate($node, &$form_state) {
 function moha_mailer_mail_form_submit($form, &$form_state) {
 
   // Build entity from submission.
+  /** @var MohaMailerMailEntity $entity */
   $entity = entity_ui_form_submit_build_entity($form, $form_state);
 
   $entity->nid = $entity->nid['entity_id'];
   $entity->eid = $entity->eid['entity_id'];
   $entity->eid_type = 'user';
 
-  /** @see \MohaMailerMailEntityController::save()*/
+  /** @see \MohaCommonEntityController::save()*/
   $entity->save();
 
   $form_state['redirect'] = MOHA_MAILER__URL__MAIL_ADMIN_UI;
