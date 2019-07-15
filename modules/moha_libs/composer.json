@@ -8,6 +8,8 @@
         "phpmailer/phpmailer": "^6.0",
         "psr/log": "^1.1",
         "alibabacloud/client": "^1.0",
-        "simplesamlphp/simplesamlphp": "^1.17"
+        "simplesamlphp/simplesamlphp": "^1.17",
+        "knplabs/github-api": "^2.11",
+        "php-http/guzzle6-adapter": "^1.1"
     }
 }

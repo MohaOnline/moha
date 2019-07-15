@@ -148,10 +148,10 @@ $translations = new Gettext\Translations();
 $translations[] = new Gettext\Translation('comments', 'One comment', '%s comments');
 
 //Or using the "insert" method
-$insertedTranslation = $translations->insert('comments', 'One comments', '%s comments');
+$insertedTranslation = $translations->insert('comments', 'One comment', '%s comments');
 
 //Find a specific translation
-$translation = $translations->find('comments', 'One comments');
+$translation = $translations->find('comments', 'One comment');
 
 //Edit headers, domain, etc
 $translations->setHeader('Last-Translator', 'Oscar Otero');
@@ -227,7 +227,7 @@ $translations = Gettext\Translations::fromPhpCodeFile('templates/index.php');
 $translations->toPoFile('locales/en.po');
 
 //Export to a po string
-$content = $translatons->toPoString();
+$content = $translations->toPoString();
 file_put_contents('locales/en.po', $content);
 ```
 

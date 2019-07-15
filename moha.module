@@ -1384,6 +1384,82 @@ function moha_array_variable_set($variable_name, $key, $value = ""){
 }
 
 /**
+ * Get drupal variable which is stored in variables array of MOHA.
+ *
+ * @param $key
+ *   Variable key name in array.
+ * @param $default mixed
+ *   Default value if variable hasn't been set.
+ *
+ * @return mixed
+ */
+function moha_variable_get($key, $default = "") {
+  return moha_array_variable_get(MOHA__VARIABLES, $key, $default);
+}
+
+/**
+ * Set drupal variable which is stored in variables array of MOHA.
+ *
+ * @param $key
+ *   Variable key name in array.
+ * @param $value
+ *   Value which will be set to $key.
+ */
+function moha_variable_set($key, $value = ""){
+  moha_array_variable_set(MOHA__VARIABLES, $key, $value);
+}
+
+/**
+ * Get cached data by ID.
+ *
+ * @param $cid string
+ *   Cache ID.
+ *
+ * @param $default
+ *   Default value.
+ */
+function moha_cache_get($cid, $default = FALSE) {
+  $static = &drupal_static(__MOHA);
+  if (!isset($static[$cid])) {
+    if ($cache = cache_get($cid)) {
+      $static[$cid] = $cache->data;
+    }
+    else {
+      $static[$cid] = $default;
+    }
+  }
+
+  return $static[$cid];
+}
+
+/**
+ * Cache the data by ID.
+ *
+ * @param $cid string
+ *   Cache ID.
+ *
+ * @param $value mixed
+ *   Data which need be cached.
+ *
+ * @param $expire_in_seconds
+ *   Number in unit of seconds, could be set as Cache constant as well.
+ *
+ * @see CACHE_PERMANENT
+ * @see CACHE_TEMPORARY
+ */
+function moha_cache_set($cid, $value, $expire_in_seconds = CACHE_PERMANENT) {
+  $static = &drupal_static(__MOHA);
+  $static[$cid] = $value;
+  if ($expire_in_seconds > 0) {
+    $expire = time() + $expire_in_seconds;
+  }
+  else {
+    $expire = $expire_in_seconds;
+  }
+  cache_set($cid, $value, 'cache', $expire);
+}
+
+/**
  * Return block translated string.
  *
  * @param $variable_name
@@ -1439,53 +1515,6 @@ function moha_response_error(Exception $e = NULL, $status_code = 503) {
  */
 function moha_show_exception(Exception $e, $message_type = 'error') {
   drupal_set_message(t('Exception: %msg', array('%msg' => $e->getMessage())), $message_type);
-}
-
-/**
- * Get cached data by ID.
- *
- * @param $cid string
- *   Cache ID.
- *
- * @param $default
- *   Default value.
- */
-function moha_cache_get($cid, $default = FALSE) {
-  $data = &drupal_static(__MOHA);
-  if (!isset($data[$cid])) {
-    if ($cache = cache_get($cid)) {
-      $data[$cid] = $cache->data;
-    }
-    else {
-      $data[$cid] = $default;
-    }
-  }
-
-  return $data[$cid];
-}
-
-/**
- * Cache the data by ID.
- *
- * @param $cid
- *   Cache ID.
- *
- * @param $data
- *   Data which need be cached.
- *
- * @param $expire_in_seconds
- *   seconds, @see CACHE_PERMANENT, @see CACHE_TEMPORARY
- */
-function moha_cache_set($cid, $data, $expire_in_seconds = CACHE_PERMANENT) {
-  $data = &drupal_static(__MOHA);
-  $data[$cid] = $data;
-  if ($expire_in_seconds > 0) {
-    $expire = time() + $expire_in_seconds;
-  }
-  else {
-    $expire = $expire_in_seconds;
-  }
-  cache_set($cid, $data, 'cache', $expire);
 }
 
 /* Common functions. */
