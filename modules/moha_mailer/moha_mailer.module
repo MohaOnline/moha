@@ -34,11 +34,6 @@ define('MOHA_MAILER__PATH', drupal_get_path('module', __MOHA_MAILER));
 define('__MOHA_MAILER__PATH', base_path() . MOHA_MAILER__PATH);
 
 /**
- * Module variables name.
- */
-define('MOHA_MAILER__VARIABLES', __MOHA_MAILER. '__variables');
-
-/**
  * Module variables name: moha_mailer__var__manual_to.
  *
  * Reuse mail to data collected from manual sending to.
@@ -60,11 +55,11 @@ define('MOHA_MAILER__VARIABLE__MANUAL_FROM', __MOHA_MAILER. '__var__manual_from'
 define('MOHA_MAILER__VARIABLE__THRESHOLD', __MOHA_MAILER. '__var__threshold');
 
 /**
- * Module variables name: moha_mailer__var__pending.
+ * Module variables name: moha_mailer__var__suspend.
  *
- * TRUE to pend mail sending.
+ * TRUE to suspend mail sending.
  */
-define('MOHA_MAILER__VARIABLE__PENDING', __MOHA_MAILER. '__var__pending');
+define('MOHA_MAILER__VARIABLE__SUSPEND', __MOHA_MAILER. '__var__suspend');
 
 /**
  * Moha Mailer URL: Moha Mailer mail management page.
@@ -162,43 +157,52 @@ function moha_mailer_mail($key, &$message, $params) {
 }
 
 /**
+ * Sends queued mails through cron per entity moha_mailer_mail.
+ *
  * Implements hook_cron().
  */
 function moha_mailer_cron() {
-  $is_pending = moha_cache_get(MOHA_MAILER__VARIABLE__PENDING, FALSE);
-  if ($is_pending) return;
+  try {
 
-  // Get queued mails, then send.
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', __MOHA_MAILER_MAIL);
-  $query->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY));
-  $query->range(0, moha_array_variable_get(MOHA_MAILER__VARIABLES, MOHA_MAILER__VARIABLE__THRESHOLD, 20));
-  $results = $query->execute();
+    moha_throw_exception_per_variable(MOHA_MAILER__VARIABLE__SUSPEND);
 
-  $ids = isset($results[__MOHA_MAILER_MAIL]) ? array_keys($results[__MOHA_MAILER_MAIL]) : array();
-  $entities = $ids ? entity_load(__MOHA_MAILER_MAIL, $ids) : array();
+    // Get queued mails, then send.
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', __MOHA_MAILER_MAIL);
+    $query->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY));
+    $query->range(0, moha_variable_get(MOHA_MAILER__VARIABLE__THRESHOLD, 20));
+    $results = $query->execute();
 
-  global $language;
+    $ids = isset($results[__MOHA_MAILER_MAIL]) ? array_keys($results[__MOHA_MAILER_MAIL]) : array();
+    $entities = $ids ? entity_load(__MOHA_MAILER_MAIL, $ids) : array();
 
-  foreach ($entities as $entity) {
-    $mail_to = $entity->mail_to;
-    $mail_from = $entity->mail_from;
+    global $language;
 
-    $node = node_load($entity->nid);
-    $params = array();
-    $params['subject'] = $entity->subject;
-    $content = node_view($node);
-    $params['body'][] = drupal_render($content['body']);
-    $message = drupal_mail(__MOHA_MAILER, 'moha_mailer_manual', $mail_to, $language, $params, $mail_from);
+    foreach ($entities as $entity) {
+      $mail_to = $entity->mail_to;
+      $mail_from = $entity->mail_from;
 
-    if ($message['send'] === TRUE && $message['result'] === TRUE) {
-      $entity->status = moha_array_key_by_value(MOHA__TERM__SUCCESS, MOHA__STATUS__ENTITY);
+      $node = node_load($entity->nid);
+      $params = array();
+      $params['subject'] = $entity->subject;
+      $content = node_view($node);
+      $params['body'][] = drupal_render($content['body']);
+
+      moha_throw_exception_per_variable(MOHA_MAILER__VARIABLE__SUSPEND);
+      $message = drupal_mail(__MOHA_MAILER, 'moha_mailer_manual', $mail_to, $language, $params, $mail_from);
+
+      if ($message['send'] === TRUE && $message['result'] === TRUE) {
+        $entity->status = moha_array_key_by_value(MOHA__TERM__SUCCESS, MOHA__STATUS__ENTITY);
+      }
+      else {
+        $entity->status = moha_array_key_by_value(MOHA__TERM__PROCESSED, MOHA__STATUS__ENTITY);
+      }
+
+      $entity->result = serialize($message);
+      $entity->save();
     }
-    else {
-      $entity->status = moha_array_key_by_value(MOHA__TERM__PROCESSED, MOHA__STATUS__ENTITY);
-    }
-
-    $entity->result = serialize($message);
-    $entity->save();
+  }
+  catch (Exception $e) {
+    watchdog(__FUNCTION__, $e);
   }
 }

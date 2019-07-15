@@ -1411,6 +1411,7 @@ function moha_variable_set($key, $value = ""){
 
 /**
  * Get cached data by ID.
+ * Don't use to check a non request persistent variable.
  *
  * @param $cid string
  *   Cache ID.
@@ -1460,7 +1461,7 @@ function moha_cache_set($cid, $value, $expire_in_seconds = CACHE_PERMANENT) {
 }
 
 /**
- * Return block translated string.
+ * Returns block translated string.
  *
  * @param $variable_name
  * @param $module
@@ -1498,6 +1499,27 @@ function moha_response_error(Exception $e = NULL, $status_code = 503) {
   }
 
   drupal_exit();
+}
+
+/**
+ * Checks suspend flag, if TRUE is assigned, through an exception.
+ *
+ * @param $suspend_variable_name
+ *   if variable is true, throws exception.
+ *
+ * @param $default
+ *   Default value is variable hasn't been set.
+ *
+ * @throws Exception
+ *   if passed variable is set to TRUE.
+ */
+function moha_throw_exception_per_variable($suspend_variable_name, $default = FALSE) {
+  // Can't use moha_cache_get as
+  $exception = cache_get($suspend_variable_name, $default);
+
+  if ($exception) {
+    throw new Exception(__FUNCTION__ . " $suspend_variable_name is TRUE");
+  }
 }
 
 /**

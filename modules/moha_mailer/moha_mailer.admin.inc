@@ -27,7 +27,7 @@ function moha_mailer_manual_form($form, &$form_state) {
     '#title' => t('From'),
     '#description' => t('Specify mail address of the sender, format: DISPLAY_NAME MAIL_ADDRESS.'),
     '#size' => 40,
-    '#default_value' => moha_array_variable_get(MOHA_MAILER__VARIABLES, MOHA_MAILER__VARIABLE__MANUAL_FROM, ''),
+    '#default_value' => moha_variable_get(MOHA_MAILER__VARIABLE__MANUAL_FROM, ''),
     '#required' => TRUE,
   );
 
@@ -36,7 +36,7 @@ function moha_mailer_manual_form($form, &$form_state) {
     '#title' => t('To'),
     '#description' => t('Specify mail address of recipients.'),
     '#size' => 40,
-    '#default_value' => moha_array_variable_get(MOHA_MAILER__VARIABLES, MOHA_MAILER__VARIABLE__MANUAL_TO, ''),
+    '#default_value' => moha_variable_get(MOHA_MAILER__VARIABLE__MANUAL_TO, ''),
     '#required' => TRUE,
   );
 
@@ -82,10 +82,10 @@ function moha_mailer_manual_form_submit($form, &$form_state) {
   $values = $form_state['values'];
 
   $mail_to = $values['to'];
-  moha_array_variable_set(MOHA_MAILER__VARIABLES, MOHA_MAILER__VARIABLE__MANUAL_TO, $mail_to);
+  moha_variable_set(MOHA_MAILER__VARIABLE__MANUAL_TO, $mail_to);
 
   $mail_from = $values['from'];
-  moha_array_variable_set(MOHA_MAILER__VARIABLES, MOHA_MAILER__VARIABLE__MANUAL_FROM, $mail_from);
+  moha_variable_set(MOHA_MAILER__VARIABLE__MANUAL_FROM, $mail_from);
 
 
   $node = node_load($values['node']['entity_id']);
