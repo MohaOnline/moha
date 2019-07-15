@@ -1,0 +1,7 @@
+name = Moha Composer
+description = PHP libraries integrated through composer.
+core = 7.x
+
+package = Moha Online
+
+dependencies[] = moha

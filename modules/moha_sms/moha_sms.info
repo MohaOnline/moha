@@ -1,11 +1,10 @@
 name = Moha SMS
-description = Provides short message servicces.
+description = Provides short message services.
 core = 7.x
 package = Moha Online
 
 dependencies[] = moha
-dependencies[] = moha_libs
+dependencies[] = moha_composer
 
 files[] = includes/MohaSMSAliyunRequestEntity.php
 files[] = includes/MohaSMSAliyunRequestEntityAdminController.php
-files[] = includes/MohaSMSAliyunRequestEntityController.php

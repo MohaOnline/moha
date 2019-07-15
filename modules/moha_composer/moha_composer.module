@@ -1,0 +1,39 @@
+<?php
+/**
+ * @file
+ *   Hook entry file of the module.
+ */
+
+/**
+ * Human name.
+ */
+define('MOHA_COMPOSER', 'Moha Composer');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_COMPOSER', 'moha_composer');
+
+/**
+ * sites/all/modules/custom/moha/modules/moha_composer
+ */
+define('MOHA_COMPOSER__PATH', drupal_get_path('module', __MOHA_COMPOSER));
+
+
+/**
+ * Implements hook_libraries_info().
+ */
+function moha_composer_libraries_info() {
+  $libraries[__MOHA_COMPOSER] = array(
+    'name' => MOHA_COMPOSER,
+    'library path' => MOHA_COMPOSER__PATH . '/vendor',
+    'version' => '1.0',
+    'files' => array(
+      'js' => array(),
+      'css' => array(),
+      'php' => array('autoload.php'),
+    ),
+  );
+
+  return $libraries;
+}

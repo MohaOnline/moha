@@ -96,57 +96,13 @@ function moha_sms_entity_info() {
 
   // Stores basic information of a company / group company.
   // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
-  $items[__MOHA_SMS_ALIYUN_REQUEST] = [
-    'label' => t(MOHA_SMS_ALIYUN_REQUEST),
-    'plural label' => t(MOHA_SMS_ALIYUN_REQUEST . 's'),
-    // Moha ITS Groups
-    'base table' => __MOHA_SMS_ALIYUN_REQUEST,
-    'revision table' => __MOHA_SMS_ALIYUN_REQUEST . '_revision',
-    'entity keys' => array(
-      'id' => 'id',
-      'label' => 'id',
-      'revision' => 'vid',
-    ),
-    //
-    'label callback' => 'entity_class_label',
-
-    /** @see entity_crud_hook_entity_info() */
-    "admin ui" => array(
-      /* Moha SMS Aliyun Request management page URL & Class. */
-      "path" => MOHA_SMS__URL__ALIYUN_REQUEST_ADMIN_UI,
-      "controller class" => "MohaSMSAliyunRequestEntityAdminController",
-
-      /** @see entity_ui_get_form() */
-      /* Moha SMS Aliyun Request add / edit forms containing file. */
-      "file" => "includes/MohaSMSAliyunRequestEntity.form.inc",  //
-    ),
-
-    // Declares which module contains related Class information, like Admin UI Class, etc.
-    "module" => __MOHA_SMS,
-
-    "access callback" => '_moha_sms_entity_admin_access_callback',
-
-    'entity class' => 'MohaSMSAliyunRequestEntity',
-    'controller class' => 'MohaSMSAliyunRequestEntityController',
-    // Uses defaultUri method of entity class to generate entity URL.
-    'uri callback' => 'entity_class_uri',
-
-    // Make entity fieldable; @see field_attach_form to attach added fields.
-    'fieldable' => TRUE,
-    'bundles' => array(
-      __MOHA_SMS_ALIYUN_REQUEST => array(
-        'label' => t(MOHA_SMS_ALIYUN_REQUEST),
-        'plural label' => t(MOHA_SMS_ALIYUN_REQUEST . 's'),
-        'admin' => array(
-          'path' => MOHA_SMS__URL__ALIYUN_REQUEST_ADMIN_UI,
-          'access arguments' => array(MOHA_SMS__PERMISSION__EDIT_ANY_ALIYUN_REQUEST),
-        ),
-      ),
-    ),
-
-    // Views support.
-    'views controller class' => 'EntityDefaultViewsController',
-  ];
+  $items[__MOHA_SMS_ALIYUN_REQUEST] = moha_define_entity(
+    __MOHA_SMS,
+    __MOHA_SMS_ALIYUN_REQUEST,
+    MOHA_SMS_ALIYUN_REQUEST,
+    'MohaSMSAliyunRequest',
+    MOHA_SMS__URL__ALIYUN_REQUEST_ADMIN_UI
+  );
 
   return $items;
 }
@@ -284,7 +240,7 @@ function _moha_sms_send_form_validate($form, &$form_state) {
 function _moha_sms_send_form_submit($form, &$form_state) {
   // Download：https://github.com/aliyun/openapi-sdk-php-client
   // Usage：https://github.com/aliyun/openapi-sdk-php-client/blob/master/README-CN.md
-  libraries_load(__MOHA_LIBS);
+  libraries_load(__MOHA_COMPOSER);
 
   $values = $form_state['values'];
 

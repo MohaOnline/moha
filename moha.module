@@ -249,10 +249,40 @@ function moha_theme($existing, $type, $theme, $path) {
   return $themes;
 }
 
+/**
+ * Generates and returns entity define array.
+ *
+ * @param $module
+ *   Module machine name.
+ *
+ * @param $machine_name
+ *   Entity machine name.
+ *
+ * @param $human_name
+ *   Entity human name.
+ *
+ * @param $class_prefix
+ *   Entity class prefix.
+ *
+ * @param $admin_url
+ *   Entities admin URL.
+ *
+ * @example
+ *   moha_define_entity(
+ *   __MOHA_MAILER,
+ *   __MOHA_MAILER_MAIL,
+ *   MOHA_MAILER_MAIL,
+ *   'MohaMailerMail',
+ *   MOHA_MAILER__URL__MAIL_ADMIN_UI
+ * );
+ *
+ * @return array
+ *
+ */
 function moha_define_entity($module, $machine_name, $human_name, $class_prefix, $admin_url) {
   $entity_definition = array(
     'label' => t($human_name),
-    'plural label' => t($human_name . 's'), // Moha Mailer Mails
+    'plural label' => t($human_name . 's'),
     'base table' => $machine_name,
     'revision table' => $machine_name . '_revision',
     'entity keys' => array(

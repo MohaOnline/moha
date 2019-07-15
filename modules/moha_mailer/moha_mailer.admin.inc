@@ -92,7 +92,7 @@ function moha_mailer_manual_form_submit($form, &$form_state) {
   $params['subject'] = $node->title;
   $content = node_view($node);
   $params['body'][] = drupal_render($content['body']);
-  libraries_load(__MOHA_LIBS);
+  libraries_load(__MOHA_COMPOSER);
   $message = drupal_mail(__MOHA_MAILER, __FUNCTION__, $mail_to, $language, $params, $mail_from);
 
   if ($message['send'] === TRUE && $message['result'] === TRUE) {
