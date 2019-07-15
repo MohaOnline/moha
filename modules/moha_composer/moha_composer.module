@@ -31,7 +31,7 @@ function moha_composer_libraries_info() {
     'files' => array(
       'js' => array(),
       'css' => array(),
-      'php' => array('autoload.php'),
+      'php' => array('autoload.php', 'helper.php'),
     ),
   );
 

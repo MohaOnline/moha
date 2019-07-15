@@ -169,6 +169,7 @@ function moha_mailer_libraries_info_alter(&$libraries) {
 
     $libraries['PHPMailer']['files']['php'] = array(
       'autoload.php',
+      'helper.php',
     );
   }
 }
