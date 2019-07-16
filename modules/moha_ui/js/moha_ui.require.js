@@ -1,0 +1,10 @@
+/**
+ * @file
+ */
+
+/**
+ *
+ */
+requirejs(['swiper'], function(){
+
+});

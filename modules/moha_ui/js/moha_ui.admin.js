@@ -7,7 +7,6 @@
 /* globals Drupal:object, jQuery:object */
 var moha = moha || {};
 
-
 (function ($) {
   Drupal.behaviors.mohaUIAdmin = {
 
