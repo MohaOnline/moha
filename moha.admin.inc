@@ -5,7 +5,7 @@
  */
 
 /**
- *
+ * Collect schema function name.
  *
  * @param $form
  *   Nested array of form elements that comprise the form.
@@ -32,6 +32,7 @@ function moha_db_update_form ($form, &$form_state) {
 }
 
 /**
+ * Execute DB Update or re-deploy schema, only missing structure will be deployed.
  *
  * @param $form
  *   Nested array of form elements that comprise the form.
@@ -52,6 +53,10 @@ function moha_db_update_form_submit($form, &$form_state) {
     }
     else {
       $module_name = str_replace('_schema', '', $hook_schema);
+
+      if (!module_exists($module_name)) {
+        drupal_set_message("$hook_schema is not a function, or $module_name is not enabled.", "error");
+      }
       module_load_include('install', $module_name, $module_name);
       moha_schema_create_by_function($hook_schema);
 
