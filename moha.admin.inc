@@ -17,21 +17,18 @@
  */
 function moha_db_update_form ($form, &$form_state) {
 
-  //
   $form['hook_schema'] = array(
     '#type' => 'textfield',
     '#title' => t('hook_schema'),
     '#default_value' => '',
-    '#description' => t('Specify your hook_schema function name.'),
+    '#size' => 40,
+    '#description' => t('Specify your hook_schema function name to re-deploy or DB update function name to execute.'),
     '#field_suffix' => '()',
   );
 
-  $form['actions'] = array('#type' => 'actions');
+  moha_form_actions($form, t('Execute'));
 
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Execute'),
-  );
+  return $form;
 }
 
 /**
@@ -47,13 +44,20 @@ function moha_db_update_form ($form, &$form_state) {
 function moha_db_update_form_submit($form, &$form_state) {
   try {
     $values = $form_state['values'];
-
     $hook_schema = $values['hook_schema'];
-    $module_name = str_replace('_schema', '', $hook_schema);
-    module_load_include('install', $module_name, $module_name);
-    moha_schema_create_by_function($hook_schema);
 
-    drupal_set_message("$hook_schema provided schemas have been deployed.");
+    if (function_exists($hook_schema)) {
+      $hook_schema();
+      drupal_set_message("$hook_schema provided DB Update have been performed.");
+    }
+    else {
+      $module_name = str_replace('_schema', '', $hook_schema);
+      module_load_include('install', $module_name, $module_name);
+      moha_schema_create_by_function($hook_schema);
+
+      drupal_set_message("$hook_schema provided schemas have been deployed.");
+    }
+
   }
   catch (Exception $e){
     watchdog_exception(__FUNCTION__, $e);

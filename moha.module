@@ -625,11 +625,12 @@ function moha_menu() {
 
   $items['admin/moha/db-update'] = array(
     'title' => t('Moha DB Update'),
-    'description' => t('Perform DB Schema or Table Update'),
+    'description' => t('Perform DB Schema / Table Update, or specified function.'),
     'page callback' => 'drupal_get_form',
-    'page arguments' => 'moha_db_update_form',
+    /* @see moha_ckeditor_upload_form() */
+    'page arguments' => array('moha_db_update_form'),
     'access arguments' => array(MOHA__PERMISSION__ROOT),
-    'file' => 'ckeditor/moha.admin.inc',
+    'file' => 'moha.admin.inc',
     'type' => MENU_NORMAL_ITEM,
   );
 
@@ -995,17 +996,23 @@ function moha_form_radio(&$form, $default, array $options = array(1 => 'Yes', 0 
  * Generate form actions per passed buttons definition.
  *
  * @param $form
- * @param array $buttons
+ *   Form array.
+ *
+ * @param $buttons
  *
  * @return mixed
  */
-function moha_form_actions(&$form, array $buttons = array('Save')) {
+function moha_form_actions(&$form, $buttons = array('Save')) {
   $form['actions'] = array('#type' => 'actions');
+
+  if (is_string($buttons)) {
+    $buttons = array($buttons);
+  }
 
   foreach ($buttons as $button) {
     $form['actions']['submit'] = array(
       '#type' => 'submit',
-      '#value' => t($button),
+      '#value' => $button,
     );
   }
 
