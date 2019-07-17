@@ -166,6 +166,7 @@ function moha_survey_edit_form($form, &$form_state, $node) {
     $items['components'] = array(
       '#tree' => TRUE,
       '#theme' => 'moha_admin_form_2_draggable_table',
+      '#empty' => t('No question yet, click below <em>Add Question</em> button to add one.'),
     );
 
     $components = $node->webform['components'];

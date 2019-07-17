@@ -1151,9 +1151,9 @@ function theme_moha_admin_form_2_draggable_table($variables) {
 
   if (empty($element_keys)){
     return theme('table', array(
-      'header' => array(
-        'content'=> 'No content available.',
-      ),
+      'header' => array(),
+      'rows' => array(),
+      'empty' => $element['#empty'],
       'attributes' => array('id' => $element['#id'] . '-draggable-table'),
     ));
   }

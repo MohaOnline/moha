@@ -9,10 +9,11 @@ dependencies[] = block
 dependencies[] = entity
 dependencies[] = views
 dependencies[] = views_data_export
-dependencies[] = moha
 dependencies[] = entityreference
 dependencies[] = entityreference_autocomplete
 dependencies[] = date_popup
+dependencies[] = moha
+dependencies[] = moha_ui
 
 files[] = includes/MohaITSEffortEntity.php
 files[] = includes/MohaITSEffortEntityAdminController.php

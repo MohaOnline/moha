@@ -229,7 +229,7 @@ function _moha_clip_prepare_ckeditor_profile() {
 config.startupOutlineBlocks = true;
 config.extraPlugins = \'codesnippet\';
 config.extraPlugins = \'codemirror\';
-config.codeSnippet_theme = \'monokai_sublime\';
+config.codeSnippet_theme = \'monokai-sublime\';
 config.extraPlugins = \'autogrow\';
 config.autoGrow_maxHeight = 0;
 config.autoGrow_onStartup = true;
@@ -403,6 +403,7 @@ function moha_clip_form($node, &$form_state) {
   $form = node_content_form($node, $form_state);
 
   $form['hint'] = moha_form_element_prompt_imce_usage();
+  $form['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
 
   return $form;
 }
@@ -483,8 +484,7 @@ PREVIEW
 function moha_clip_view($node, $view_mode, $langcode = NULL) {
 
   if ($node->type == __MOHA_CLIP) {
-    $node->content['#attached']['css'][] = MOHA_UI__PATH . '/libs/swiper/dist/css/swiper.min.css';
-    $node->content['#attached']['js'][] = MOHA_UI__PATH . '/libs/swiper/dist/js/swiper.min.js';
+    $node->content['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
   }
   return $node;
 }

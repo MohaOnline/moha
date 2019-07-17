@@ -1,0 +1,15 @@
+{
+  "name": "framework7",
+  "homepage": "https://github.com/nolimits4web/Framework7",
+  "version": "4.4.6",
+  "_release": "4.4.6",
+  "_resolution": {
+    "type": "version",
+    "tag": "v4.4.6",
+    "commit": "f85ba05a044011eac23387a5787568147262c52d"
+  },
+  "_source": "https://github.com/nolimits4web/Framework7.git",
+  "_target": "^4.4.6",
+  "_originalSource": "framework7",
+  "_direct": true
+}

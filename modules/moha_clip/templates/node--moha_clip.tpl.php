@@ -100,9 +100,6 @@ drupal_add_css(MOHA_CLIP__PATH . '/ckeditor/styles.css', array('group' => CSS_TH
 /** @var $content array */
 ?>
 
-<link  href="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css" rel="stylesheet" />
-<script src="/sites/all/libraries/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js"></script>
-
 <script>hljs.initHighlightingOnLoad();</script>
 
 <article id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>

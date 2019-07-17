@@ -50,21 +50,20 @@ function moha_ui_library() {
     'title' => MOHA_UI,
     'website' => 'https://www.moha.online/',
     'version' => '1.0',
-    'js' => array(
-      MOHA_UI__PATH . '/libs/lodash.js' => array(),
-      MOHA_UI__PATH . '/libs/weui.js/dist/weui.js' => array(),
-      MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
-      MOHA_UI__PATH . '/node_modules/requirejs/require.js' => array(),
-      MOHA_UI__PATH . '/js/moha_ui.require.js' => array(),
-      MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
-      MOHA_UI__PATH . '/js/moha_ui.js' => array(),
-    ),
     'css' => array(
-      MOHA_UI__PATH . '/libs/weui/dist/style/weui.css' => array(
+      MOHA_UI__PATH . '/bower_components/font-awesome/css/font-awesome.css' => array(
         'type' => 'file',
         'media' => 'screen',
       ),
-      MOHA_UI__PATH . '/libs/font-awesome/css/font-awesome.css' => array(
+      MOHA_UI__PATH . '/bower_components/weui/dist/style/weui.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+      MOHA_UI__PATH . '/bower_components/swiper/dist/css/swiper.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+      MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai-sublime.css' => array(
         'type' => 'file',
         'media' => 'screen',
       ),
@@ -73,6 +72,15 @@ function moha_ui_library() {
         'media' => 'screen',
       ),
     ),
+    'js' => array(
+      MOHA_UI__PATH . '/bower_components/lodash/dist/lodash.js' => array(),
+      MOHA_UI__PATH . '/libs/weui.js/dist/weui.js' => array(),
+      MOHA_UI__PATH . '/bower_components/swiper/dist/js/swiper.js' => array(),
+      MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
+      MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.js' => array(),
+    ),
   );
 
   /** @example  drupal_add_library(__MOHA_UI, __MOHA_UI); */
@@ -80,25 +88,20 @@ function moha_ui_library() {
     'title' => 'Moha UI Admin',
     'website' => 'https://www.moha.online/admin/',
     'version' => '1.0',
-    'js' => array(
-      MOHA_UI__PATH . '/libs/AdminLTE/bower_components/bootstrap/dist/js/bootstrap.js' => array(),
-      MOHA_UI__PATH . '/libs/AdminLTE/dist/js/adminlte.js' => array(),
-      MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(),
-    ),
     'css' => array(
-      MOHA_UI__PATH . '/libs/AdminLTE/bower_components/bootstrap/dist/css/bootstrap.css' => array(
+      MOHA_UI__PATH . '/bower_components/bootstrap/dist/css/bootstrap.css' => array(
         'type' => 'file',
         'media' => 'screen',
       ),
-      MOHA_UI__PATH . '/libs/AdminLTE/bower_components/bootstrap/dist/css/bootstrap-theme.css' => array(
+      MOHA_UI__PATH . '/bower_components/bootstrap/dist/css/bootstrap-theme.css' => array(
         'type' => 'file',
         'media' => 'screen',
       ),
-      MOHA_UI__PATH . '/libs/AdminLTE/dist/css/AdminLTE.css' => array(
+      MOHA_UI__PATH . '/bower_components/admin-lte/dist/css/AdminLTE.css' => array(
         'type' => 'file',
         'media' => 'screen',
       ),
-      MOHA_UI__PATH . '/libs/AdminLTE/dist/css/skins/skin-blue.css' => array(
+      MOHA_UI__PATH . '/bower_components/admin-lte/dist/css/skins/skin-blue.css' => array(
         'type' => 'file',
         'media' => 'screen',
       ),
@@ -106,6 +109,12 @@ function moha_ui_library() {
         'type' => 'file',
         'media' => 'screen',
       ),
+    ),
+    'js' => array(
+//      MOHA_UI__PATH . '/bower_components/jquery/dist/jquery.js' => array(),
+      MOHA_UI__PATH . '/bower_components/bootstrap/dist/js/bootstrap.js' => array(),
+      MOHA_UI__PATH . '/bower_components/admin-lte/dist/js/adminlte.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(),
     ),
   );
 

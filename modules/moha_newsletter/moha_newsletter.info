@@ -5,9 +5,9 @@ package = Moha Online
 
 dependencies[] = taxonomy
 dependencies[] = text
-dependencies[] = ckeditor
 dependencies[] = media
 dependencies[] = simplenews
 dependencies[] = pathologic
 dependencies[] = moha
 dependencies[] = moha_mailer
+dependencies[] = moha_ui

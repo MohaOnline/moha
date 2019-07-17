@@ -383,6 +383,7 @@ function moha_newsletter_form($node, &$form_state) {
   drupal_add_js(MOHA__PATH . '/js/moha.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
 
   $form = node_content_form($node, $form_state);
+  $form['hint'] = moha_form_element_prompt_imce_usage();
 
   return $form;
 }

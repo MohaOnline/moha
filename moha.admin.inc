@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Administrative page for handling moha root functions.
+ *   Administrative page for the module.
  */
 
 /**
@@ -22,7 +22,7 @@ function moha_db_update_form ($form, &$form_state) {
     '#title' => t('hook_schema'),
     '#default_value' => '',
     '#size' => 40,
-    '#description' => t('Specify your hook_schema function name to re-deploy or DB update function name to execute.'),
+    '#description' => t('Specify hook_schema function name to deploy missing DB structure, or DB update function name to execute.'),
     '#field_suffix' => '()',
   );
 

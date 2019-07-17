@@ -8,6 +8,23 @@
  *
  * Needs jquery 1.10 to work correctly.
  */
-function moha_ui_enable() {
+function moha_ui_install() {
   variable_set('jquery_update_jquery_admin_version', '1.10');
+
+  $global_profile = ckeditor_profile_load('CKEditor Global Profile');
+  $global_profile->settings['ckeditor_path'] = '%b/' . MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full';
+  $global_profile->settings['ckeditor_local_path'] = MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full';
+  $global_profile->settings['ckeditor_plugins_path'] = '%b/' . MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full/plugins';
+  $global_profile->settings['ckeditor_plugins_local_path'] = MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full/plugins';
+
+  $settings = serialize($global_profile->settings);
+  db_merge('ckeditor_settings')
+    ->key(array(
+      "name" => $global_profile->name,
+    ))
+    ->fields(array(
+      "name" => $global_profile->name,
+      "settings" => $settings
+    ))
+    ->execute();
 }

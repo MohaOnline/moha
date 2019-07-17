@@ -4,8 +4,10 @@ core = 7.x
 
 package = Moha Online
 
-dependencies[] = moha
 dependencies[] = image
+dependencies[] = ckeditor
 dependencies[] = webform (>=7.x-4.19)
 dependencies[] = little_helpers
 dependencies[] = jquery_update
+dependencies[] = moha
+dependencies[] = moha_style
