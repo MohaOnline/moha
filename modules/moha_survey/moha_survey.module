@@ -100,6 +100,12 @@ function moha_survey_theme($existing, $type, $theme, $path) {
       'template' => 'templates/moha_survey_weui_webform_element_textfield',
       'render element' => 'element',
     ),
+    'moha_survey_weui_moha_ui_reason_textfield' => array(
+      'render element' => 'element',
+    ),
+    'moha_survey_weui_moha_ui_rating_title' => array(
+      'render element' => 'element',
+    ),
   );
 
   // Declares theme for survey preview page through naming convention, one place configuration.
@@ -564,6 +570,9 @@ function moha_survey_webform_component_render_alter(array &$element, array &$com
     elseif ($element['#type'] == 'textfield') {
       $element['#theme_wrappers'][] = 'moha_survey_weui_webform_element_textfield';
     }
+    elseif ($element['#type'] == 'moha_ui_rating') {
+      $element['#theme_wrappers'][] = 'moha_survey_weui_moha_ui_rating_title';
+    }
   }
 
 }
@@ -863,6 +872,133 @@ function theme_moha_survey_weui_webform_element_checkboxes($variables) {
   }
 
   $output .= '</div>';
+
+  return $output;
+}
+
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function moha_survey_element_info_alter(&$type) {
+  $type['moha_ui_rating']['#process'][] = 'moha_survey_moha_ui_rating_process';
+  /* @see moha_survey_webform_component_render_alter */
+  //$element['moha_ui_rating']['#theme_wrappers'] = 'moha_survey_weui_moha_ui_rating_title';
+}
+
+/**
+ * element process callback
+ *
+ * Modify the reason in $element['moha_ui_rating']
+ */
+function moha_survey_moha_ui_rating_process($element, &$form_state, $complete_form){
+  $element['reason']['#theme'] = 'moha_survey_weui_moha_ui_reason_textfield';
+  $element['reason']['#theme_wrappers'][] = 'moha_survey_weui_moha_ui_rating_title';
+  return $element;
+}
+
+/**
+ * @param $variables
+ *
+ * @return string
+ *
+ * Use weui style for the reason element in moha_ui_rating.
+ */
+function theme_moha_survey_weui_moha_ui_reason_textfield($variables) {
+  $element = $variables['element'];
+  if ($element['#required']) {
+    $element['#title'] .= '<span style="color:red"> * </span>';
+  }
+  $error = form_get_error($element);
+  $error_class = '';
+  if ($error) {
+    $error_class = 'error';
+  }
+
+  $output = '<div class="weui-cells'.  $error_class . '">
+    <div class="weui-cell">
+      <div class="weui-cell__bd">
+        <input class="weui-input" type="text" placeholder="请输入文本"
+          id="'.$element['#id'].'" name="'.$element['#name'] .'"
+          value="'.$element['#value'] .'" size="'. $element['#size'] .'"
+          maxlength="'.$element['#maxlength'] .'">
+      </div>
+    </div>
+  </div>';
+
+  return $output;
+}
+
+/**
+ * @param $variables
+ *
+ * @return string
+ *
+ * Use weui style for the title of rating or reason.
+ */
+function theme_moha_survey_weui_moha_ui_rating_title($variables) {
+  $element = &$variables['element'];
+  _form_set_class($element);
+
+  // This function is invoked as theme wrapper, but the rendered form element
+  // may not necessarily have been processed by form_builder().
+  $element += array(
+    '#title_display' => 'before',
+  );
+
+  // Add element #id for #type 'item'.
+  if (isset($element['#markup']) && !empty($element['#id'])) {
+    $attributes['id'] = $element['#id'];
+  }
+  // Add element's #type and #name as class to aid with JS/CSS selectors.
+  $attributes['class'] = array('form-item');
+  if (!empty($element['#type'])) {
+    $attributes['class'][] = 'form-type-' . strtr($element['#type'], '_', '-');
+  }
+  if (!empty($element['#name'])) {
+    $attributes['class'][] = 'form-item-' . strtr($element['#name'], array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
+  }
+  // Add a class for disabled elements to facilitate cross-browser styling.
+  if (!empty($element['#attributes']['disabled'])) {
+    $attributes['class'][] = 'form-disabled';
+  }
+
+  if (!empty($element['#attributes']['class'])) {
+    $attributes['class'] = drupal_array_merge_deep($attributes['class'], $element['#attributes']['class']);
+  }
+  $output = '<div' . drupal_attributes($attributes) . '>' . "\n";
+
+  // If #title is not set, we don't display any label or required marker.
+  if (!isset($element['#title'])) {
+    $element['#title_display'] = 'none';
+  }
+  $prefix = isset($element['#field_prefix']) ? '<span class="field-prefix">' . $element['#field_prefix'] . '</span> ' : '';
+  $suffix = isset($element['#field_suffix']) ? ' <span class="field-suffix">' . $element['#field_suffix'] . '</span>' : '';
+
+  switch ($element['#title_display']) {
+    case 'before':
+    case 'invisible':
+      $output .= ' ' . '<div class="weui-cells__title">' . $element['#title'] . '</div>';
+      $output .= ' ' . $prefix . $element['#children'] . $suffix . "\n";
+      break;
+
+    case 'after':
+      $output .= ' ' . $prefix . $element['#children'] . $suffix;
+      $output .= ' ' . '<div class="weui-cells__title">' . $element['#title'] . '</div>' . "\n";
+      break;
+
+    case 'none':
+    case 'attribute':
+      // Output no label and no required marker, only the children.
+      $output .= ' ' . $prefix . $element['#children'] . $suffix . "\n";
+      break;
+  }
+
+  if (!empty($element['#description'])) {
+    $output .= '<div class="description">' . $element['#description'] . "</div>\n";
+  }
+
+  $output .= "</div>\n";
 
   return $output;
 }
