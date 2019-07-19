@@ -1006,3 +1006,12 @@ function theme_moha_survey_weui_moha_ui_rating_title($variables) {
 
   return $output;
 }
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function moha_survey_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
+  // use weui style for webform submit button
+  $form['actions']['submit']['#attributes']['class'][] = 'weui-btn';
+  $form['actions']['submit']['#attributes']['class'][] ='weui-btn_primary';
+}
