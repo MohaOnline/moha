@@ -158,6 +158,8 @@ function moha_mailer_mail($key, &$message, $params) {
 
 /**
  * Implements hook_libraries_info_alter().
+ *
+ * @inheritdoc
  */
 function moha_mailer_libraries_info_alter(&$libraries) {
   // Guide Just SMTP to use shipped PHPMailer libraries.
@@ -203,22 +205,47 @@ function moha_mailer_libraries_info_alter(&$libraries) {
  */
 function moha_mailer_push_mail($subject, $mail_from, $mail_to, $nid, $eid, $eid_type = 'user', $force = FALSE) {
 
-  if ($force) {
-    $mail = entity_create(__MOHA_MAILER_MAIL, array(
-      'subject' => '1st reminder',
-      'mail_from' => 'Sender <sender@mail.com>',
-      'mail_to' => 'test@abc.com',
-      'nid' => 1,
-      'eid' => 2,
-      'eid_type' => 'user',
-      'status' => moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY),
-    ));
+  try {
+    if (!$force) {
+      // Get queued mails, then send.
+      $query = new EntityFieldQuery();
+      $query->entityCondition('entity_type', __MOHA_MAILER_MAIL);
+      $query->propertyCondition('$mail_to', $mail_to);
+      $query->propertyCondition('$nid', $nid);
+      $results = $query->execute();
 
-    /** @see MohaCommonEntityController::save() */
-    $mail->save();
+      $ids = isset($results[__MOHA_MAILER_MAIL]) ? array_keys($results[__MOHA_MAILER_MAIL]) : array();
+
+      if (empty($ids)) {
+        $force = TRUE;
+      }
+      else {
+        watchdog(__FUNCTION__, t('Mail exists: @nid to @mail_to', array(
+          '@nid' => $nid,
+          '@mail_to' => $mail_to,
+        )));
+      }
+    }
+
+    if ($force){
+      $mail = entity_create(__MOHA_MAILER_MAIL, array(
+        'subject' => $subject,
+        'mail_from' => $mail_from,
+        'mail_to' => $mail_to,
+        'nid' => $nid,
+        'eid' => $eid,
+        'eid_type' => $eid_type,
+        'status' => moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY),
+      ));
+
+      /** @var Entity $mail */
+      /** @see MohaCommonEntityController::save() */
+      $mail->save();
+    }
   }
-  else {
-
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    return FALSE;
   }
 
   return TRUE;
