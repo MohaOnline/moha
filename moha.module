@@ -80,6 +80,11 @@ define('MOHA__PERMISSION__SITE_PREVIEW', 'moha site preview as user');
 define('MOHA__PERMISSION__SITE_PREVIEW_ANONYMOUS', 'moha site preview as anonymous');
 
 /**
+ * moha__role__admin.
+ */
+define('MOHA__ROLE__ADMIN', __MOHA . '__role__admin');
+
+/**
  * JSON encoding options: bitmask.
  */
 define("MOHA__JSON_ENCODING_OPTIONS_BIT_MASK", JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
@@ -398,7 +403,7 @@ function moha_entity_info() {
  *
  * @return array
  */
-function moha_permissions_per_entity($entity_type) {
+function moha_entity_permissions_generator($entity_type) {
 
   $permissions_array = array(
     'view own ' . $entity_type => array(
@@ -533,7 +538,7 @@ function moha_permissions_4_admin() {
  * Implements hook_permission().
  */
 function moha_permission() {
-  $permissions = moha_permissions_per_entity(__MOHA_RACI);
+  $permissions = moha_entity_permissions_generator(__MOHA_RACI);
 
   $permissions[MOHA__PERMISSION__SITE_PREVIEW] = array(
     'title' => t('Moha Site Preview as user'),
@@ -552,8 +557,8 @@ function moha_permission() {
  * Create necessary roles and permissions.
  */
 function _moha_prepare_roles_and_permissions() {
-  $manager_permission = array();
-
+  $admin_permission = array(MOHA__PERMISSION__SITE_PREVIEW);
+  moha_grant_permissions_2_role_with_creation(MOHA__ROLE__ADMIN, $admin_permission);
 }
 
 /**

@@ -8,6 +8,7 @@
  * Implements hook_install().
  */
 function moha_install() {
+  _moha_prepare_roles_and_permissions();
   moha_update_0700();
 }
 
