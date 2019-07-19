@@ -1,8 +1,14 @@
 <?php
 /**
  * @file
+ *   Install file of the module.
  */
 
+/**
+ * Implements hook_schema().
+ *
+ * @inheritdoc
+ */
 function moha_mailer_schema() {
   // @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
   $schema['moha_mailer_mail'] = array(
@@ -203,17 +209,17 @@ function moha_mailer_schema() {
 }
 
 /**
- * Implements hook_enable().
+ * Implements hook_install().
  *
  * Set mail sending class to MohaMailerMailSystem. Turns on Just SMTP module.
  */
-function moha_mailer_enable() {
+function moha_mailer_install() {
+  variable_set('just_smtp_on', TRUE);
+
   $configuration = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
   $configuration['default-system'] = 'MohaMailerMailSystem';
   $configuration['mimemail'] = 'MohaMailerMailSystem';
-
   variable_set('mail_system', $configuration);
-  variable_set('just_smtp_on', TRUE);
 
   // Set Mimemail default format to an HTML format.
   $formats = filter_formats();
