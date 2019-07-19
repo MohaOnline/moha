@@ -493,10 +493,10 @@ function moha_its_group_entity_exists($value){
  * Returns permissions array for entities.
  */
 function moha_its_permission() {
-  $permissions = moha_entity_permission(__MOHA_ITS_SERVICE)
-    + moha_entity_permission(__MOHA_ITS_EFFORT)
-    + moha_entity_permission(__MOHA_ITS_GROUP)
-    + moha_entity_permission(__MOHA_ITS_INFRASTRUCTURE)
+  $permissions = moha_permissions_per_entity(__MOHA_ITS_SERVICE)
+    + moha_permissions_per_entity(__MOHA_ITS_EFFORT)
+    + moha_permissions_per_entity(__MOHA_ITS_GROUP)
+    + moha_permissions_per_entity(__MOHA_ITS_INFRASTRUCTURE)
   ;
   return $permissions;
 }

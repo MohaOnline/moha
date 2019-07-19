@@ -398,7 +398,7 @@ function moha_entity_info() {
  *
  * @return array
  */
-function moha_entity_permission($entity_type) {
+function moha_permissions_per_entity($entity_type) {
 
   $permissions_array = array(
     'view own ' . $entity_type => array(
@@ -533,12 +533,13 @@ function moha_permissions_4_admin() {
  * Implements hook_permission().
  */
 function moha_permission() {
-  $permissions = moha_entity_permission(__MOHA_RACI);
+  $permissions = moha_permissions_per_entity(__MOHA_RACI);
 
   $permissions[MOHA__PERMISSION__SITE_PREVIEW] = array(
     'title' => t('Moha Site Preview as user'),
     'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
   );
+
   $permissions[MOHA__PERMISSION__SITE_PREVIEW_ANONYMOUS] = array(
     'title' => t('Moha Site Preview as anonymous'),
     'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),

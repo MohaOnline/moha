@@ -1,6 +1,7 @@
 <?php
 /**
  * @file
+ *   Hook entry file of the module.
  */
 
 /**
@@ -87,7 +88,7 @@ function moha_mailer_entity_info() {
  */
 function moha_mailer_permission() {
   // Declare entity permissions.
-  $permissions = moha_entity_permission(__MOHA_MAILER_MAIL);
+  $permissions = moha_permissions_per_entity(__MOHA_MAILER_MAIL);
 
   return $permissions;
 }
