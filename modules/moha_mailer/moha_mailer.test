@@ -1,20 +1,32 @@
 <?php
 /**
- *
+ * @file
+ * Test cases for testing the module.
  */
 
 /**
- * Test mail queue function.
+ * Functional tests for the module.
+ *
+ * @ingroup moha_mailer
  */
-function testMailEntities(){
+class MohaMailerTestCase extends DrupalWebTestCase {
 
-  // Existing recipient mail address and Node ID will be ignored by default.
-  moha_mailer_push_mail(
-    '1st reminder',
-    'Sender <sender@mail.com>',
-    'test@abc.com',  // recipient mail address
-    1, // Mail content Node ID
-    2  // recipient user ID
-  );
+  /**
+   * Test mail queue function.
+   */
+  function testMailEntities(){
 
+    // Existing recipient mail address and Node ID will be ignored by default.
+    moha_mailer_push_mail(
+      '1st reminder',
+      'Sender <sender@mail.com>',
+      'test@abc.com',  // recipient mail address
+      1,  // Mail content Node ID
+      2,  // Recipient user ID
+      'user', // Recipient type: user, group, mail list, etc.
+      'cc@mail.com',
+      'bcc@mail.com'
+    );
+
+  }
 }

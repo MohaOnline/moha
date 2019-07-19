@@ -42,6 +42,20 @@ define('__MOHA_MAILER__PATH', base_path() . MOHA_MAILER__PATH);
 define('MOHA_MAILER__VARIABLE__MANUAL_TO', __MOHA_MAILER. '__var__manual_to');
 
 /**
+ * Module variables name: moha_mailer__var__manual_cc.
+ *
+ * Reuse mail cc data collected from manual sending form.
+ */
+define('MOHA_MAILER__VARIABLE__MANUAL_CC', __MOHA_MAILER. '__var__manual_cc');
+
+/**
+ * Module variables name: moha_mailer__var__manual_bcc.
+ *
+ * Reuse mail bcc data collected from manual sending form.
+ */
+define('MOHA_MAILER__VARIABLE__MANUAL_BCC', __MOHA_MAILER. '__var__manual_bcc');
+
+/**
  * Module variables name: moha_mailer__var__manual_from.
  *
  * Reuse mail from data collected from manual sending form.
@@ -61,6 +75,13 @@ define('MOHA_MAILER__VARIABLE__THRESHOLD', __MOHA_MAILER. '__var__threshold');
  * TRUE to suspend mail sending.
  */
 define('MOHA_MAILER__VARIABLE__SUSPEND', __MOHA_MAILER. '__var__suspend');
+
+/**
+ * Module variables name: moha_mailer__var__ignore_cc.
+ *
+ * TRUE to ignore Cc recipients.
+ */
+define('MOHA_MAILER__VARIABLE__IGNORE_CC', __MOHA_MAILER. '__var__ignore_cc');
 
 /**
  * Moha Mailer URL: Moha Mailer mail management page.
@@ -199,12 +220,21 @@ function moha_mailer_libraries_info_alter(&$libraries) {
  * @param $eid_type
  *   Mail related entity Type.
  *
+ * @param $cc
+ *   Mail addresses will be cc-ed when mail sending, multiple address should be separated by comma.
+ *
+ * @param $bcc
+ *   Mail addresses will be bcc-ed when mail sending, multiple address should be separated by comma.
+ *
+ * @param $weight
+ *   Priority of the mail, less value should be sent earlier.
+ *
  * @param $force
  *   If force to push this mail.
  *
  * @return boolean
  */
-function moha_mailer_push_mail($subject, $mail_from, $mail_to, $nid, $eid, $eid_type = 'user', $force = FALSE) {
+function moha_mailer_push_mail($subject, $mail_from, $mail_to, $nid, $eid, $eid_type = 'user', $cc = '', $bcc = '', $weight = 500, $force = FALSE) {
 
   try {
     if (!$force) {
@@ -236,12 +266,21 @@ function moha_mailer_push_mail($subject, $mail_from, $mail_to, $nid, $eid, $eid_
         'nid' => $nid,
         'eid' => $eid,
         'eid_type' => $eid_type,
+        'mail_cc' => $cc,
+        'mail_bcc' => $bcc,
+        'weight' => $weight,
         'status' => moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY),
       ));
 
-      /** @var Entity $mail */
+      /** @var MohaMailerMailEntity $mail */
       /** @see MohaCommonEntityController::save() */
       $mail->save();
+
+      watchdog(__FUNCTION__, t('Mail @id is queued: @nid to @mail_to', array(
+        '@id' => $mail->identifier(),
+        '@nid' => $nid,
+        '@mail_to' => $mail_to,
+      )));
     }
   }
   catch (Exception $e) {
@@ -266,6 +305,7 @@ function moha_mailer_cron() {
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', __MOHA_MAILER_MAIL);
     $query->propertyCondition('status', moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY));
+    $query->propertyOrderBy('weight');
     $query->range(0, moha_variable_get(MOHA_MAILER__VARIABLE__THRESHOLD, 20));
     $results = $query->execute();
 
@@ -275,16 +315,37 @@ function moha_mailer_cron() {
     global $language;
 
     foreach ($entities as $entity) {
+      /** @var MohaMailerMailEntity $entity */
       moha_throw_exception_per_variable(MOHA_MAILER__VARIABLE__SUSPEND);
 
       $mail_to = $entity->mail_to;
       $mail_from = $entity->mail_from;
+      if ($entity->eid_type == 'user') {
+        $mail_context = user_load($entity->eid);
+        $params['context']['user'] = $mail_context;
+      }
+
+      $params = array();
 
       $node = node_load($entity->nid);
-      $params = array();
       $params['subject'] = $entity->subject;
+      $params['context']['subject'] = $node->title;
+
       $content = node_view($node);
-      $params['body'][] = drupal_render($content['body']);
+      $mail_body = drupal_render($content['body']);
+      $params['body'][] = $mail_body;
+      $params['context']['body'] = $mail_body;
+      $params['plaintext'] = drupal_html_to_text($mail_body);
+
+      if (!moha_cache_get(MOHA_MAILER__VARIABLE__IGNORE_CC, FALSE, FALSE)) {
+        if (!empty($entity->mail_cc)) {
+          $params['headers']['Cc'] = $entity->mail_cc;
+        }
+
+        if (!empty($entity->mail_bcc)) {
+          $params['headers']['Bcc'] = $entity->mail_bcc;
+        }
+      }
 
       $message = drupal_mail(__MOHA_MAILER, 'moha_mailer_manual', $mail_to, $language, $params, $mail_from);
 

@@ -6,6 +6,8 @@ package = Moha Online
 
 dependencies[] = mimemail
 dependencies[] = just_smtp
+dependencies[] = token
+dependencies[] = entity_token
 dependencies[] = moha
 dependencies[] = moha_style
 dependencies[] = moha_fonts

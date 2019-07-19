@@ -68,6 +68,26 @@ function moha_mailer_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'mail_cc' => array(
+        'description' => 'Address which this mail need be cc-ed to.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'mail_bcc' => array(
+        'description' => 'Address which this mail need be bcc-ed to.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'weight' => array(
+        'description' => 'The weight of this record, less value means higher priority.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 300,
+      ),
       'status' => array(
         'description' => 'The status of this record.',
         'type' => 'int',
@@ -102,7 +122,11 @@ function moha_mailer_schema() {
     'primary key' => array('id'),
     'indexes' => array(
       'moha_mailer_mail_status' => array('status'),
+      'moha_mailer_mail_weight' => array('weight'),
       'moha_mailer_mail_to' => array(array('mail_to', 64)),
+      'moha_mailer_mail_to_nid' => array(array('mail_to', 64), 'nid'),
+      'moha_mailer_mail_cc' => array(array('mail_cc', 64)),
+      'moha_mailer_mail_bcc' => array(array('mail_bcc', 64)),
       'moha_mailer_mail_updated' => array('updated'),
       'moha_mailer_mail_created' => array('created'),
     ),
@@ -165,6 +189,26 @@ function moha_mailer_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'mail_cc' => array(
+        'description' => 'Address which this mail need be cc-ed to.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'mail_bcc' => array(
+        'description' => 'Address which this mail need be bcc-ed to.',
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'weight' => array(
+        'description' => 'The weight of this record, less value means higher priority.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 300,
+      ),
       'status' => array(
         'description' => 'The status of this record.',
         'type' => 'int',
@@ -200,6 +244,7 @@ function moha_mailer_schema() {
     'indexes' => array(
       'moha_mailer_mail_revision_status' => array('status'),
       'moha_mailer_mail_revision_to' => array(array('mail_to', 64)),
+      'moha_mailer_mail_revision_to_nid' => array(array('mail_to', 64), 'nid'),
       'moha_mailer_mail_revision_updated' => array('updated'),
       'moha_mailer_mail_revision_created' => array('created'),
     ),

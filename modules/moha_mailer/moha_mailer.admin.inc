@@ -31,11 +31,18 @@ function moha_mailer_config_form($form, &$form_state) {
   );
 
   $config['suspend'] = array(
-    '#title' => t('Suspend queued mail sending.'),
+    '#title' => t('Suspend queued mail sending'),
     '#description' => t('Choose Yes to suspend queued mail sending.'),
     '#required' => TRUE,
   );
-  moha_form_radio($config['suspend'], moha_cache_get(MOHA_MAILER__VARIABLE__SUSPEND, FALSE, FALSE));
+  moha_form_radio($config['suspend'], moha_cache_get(MOHA_MAILER__VARIABLE__SUSPEND, moha_variable_get(MOHA_MAILER__VARIABLE__SUSPEND, FALSE), FALSE));
+
+  $config['ignore_cc'] = array(
+    '#title' => t('Ignore passed Cc recipients'),
+    '#description' => t('Choose Yes to ignore passed Cc recipients when mail sending through cron.'),
+    '#required' => TRUE,
+  );
+  moha_form_radio($config['ignore_cc'], moha_cache_get(MOHA_MAILER__VARIABLE__IGNORE_CC, moha_variable_get(MOHA_MAILER__VARIABLE__IGNORE_CC, FALSE), FALSE));
 
   moha_form_actions($form);
 
@@ -75,14 +82,10 @@ function moha_mailer_config_form_validate($form, &$form_state) {
 function moha_mailer_config_form_submit($form, &$form_state) {
   $values = $form_state['values'];
 
-  if ($values['suspend']) {
-    moha_cache_set(MOHA_MAILER__VARIABLE__SUSPEND, TRUE);
-  }
-  else {
-    moha_cache_set(MOHA_MAILER__VARIABLE__SUSPEND, FALSE);
-  }
-
   moha_variable_set(MOHA_MAILER__VARIABLE__THRESHOLD, $values['threshold']);
+
+  moha_form_radio_cache_save($values['suspend'], MOHA_MAILER__VARIABLE__SUSPEND);
+  moha_form_radio_cache_save($values['ignore_cc'], MOHA_MAILER__VARIABLE__IGNORE_CC);
 
   drupal_set_message(t('Configurations have been saved.'));
 }
@@ -124,6 +127,22 @@ function moha_mailer_manual_form($form, &$form_state) {
     '#required' => TRUE,
   );
 
+  $mail['cc'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Cc'),
+    '#description' => t('Specify mail address of cc-ed recipients.'),
+    '#size' => 40,
+    '#default_value' => moha_variable_get(MOHA_MAILER__VARIABLE__MANUAL_CC, ''),
+  );
+
+  $mail['bcc'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Bcc'),
+    '#description' => t('Specify mail address of bcc-ed recipients.'),
+    '#size' => 40,
+    '#default_value' => moha_variable_get(MOHA_MAILER__VARIABLE__MANUAL_BCC, ''),
+  );
+
   $mail['node'] = array(
     '#title' => t('Node'),
     '#type' => 'entityreference',
@@ -139,6 +158,17 @@ function moha_mailer_manual_form($form, &$form_state) {
     $mail['node']['#era_bundles'] = array(__MOHA_NEWSLETTER);
     $mail['node']['#description'] = t("Select a %type which will be sent as mail.", array('%type' => MOHA_NEWSLETTER));
   }
+
+  $mail['user'] = array(
+    '#title' => t('User'),
+    '#type' => 'entityreference',
+    '#size' => 40,
+    '#description' => t('Select who this mail will be sent to.'),
+    '#default_value' => '',
+    '#era_entity_type' => 'user',
+    '#era_cardinality' => 1,
+    '#era_bundles' => array('user'),
+  );
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -166,18 +196,43 @@ function moha_mailer_manual_form_submit($form, &$form_state) {
   global $language;
   $values = $form_state['values'];
 
-  $mail_to = $values['to'];
-  moha_variable_set(MOHA_MAILER__VARIABLE__MANUAL_TO, $mail_to);
-
   $mail_from = $values['from'];
   moha_variable_set(MOHA_MAILER__VARIABLE__MANUAL_FROM, $mail_from);
 
+  $mail_to = $values['to'];
+  moha_variable_set(MOHA_MAILER__VARIABLE__MANUAL_TO, $mail_to);
+
+  $mail_cc = $values['cc'];
+  if (!empty($mail_cc)) {
+    $params['headers']['Cc'] = $mail_cc;
+    moha_variable_set(MOHA_MAILER__VARIABLE__MANUAL_CC, $mail_cc);
+  }
+
+  $mail_bcc = $values['bcc'];
+  if (!empty($mail_bcc)) {
+    $params['headers']['Bcc'] = $mail_bcc;
+    moha_variable_set(MOHA_MAILER__VARIABLE__MANUAL_BCC, $mail_bcc);
+  }
+
+  $mail_user = $values['user'];
+  if ($mail_user) {
+    $mail_user = user_load($mail_user['entity_id']);
+    $params['context']['user'] = $mail_user;
+  }
+  $params['attachments'] = '';
 
   $node = node_load($values['node']['entity_id']);
+
   $params['subject'] = $node->title;
+  $params['context']['subject'] = $node->title;
+
   $content = node_view($node);
-  $params['body'][] = drupal_render($content['body']);
-  $message = drupal_mail(__MOHA_MAILER, __FUNCTION__, $mail_to, $language, $params, $mail_from);
+  $body = drupal_render($content['body']);
+  $params['body'][] = $body;
+  $params['context']['body'] = $body;
+  $params['plaintext'] = drupal_html_to_text($body);
+
+  $message = drupal_mail(__MOHA_MAILER, 'formal', $mail_to, $language, $params, $mail_from);
 
   if ($message['send'] === TRUE && $message['result'] === TRUE) {
     drupal_set_message(t('Specified contents have been mailed out.'));
