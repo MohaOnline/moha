@@ -884,6 +884,8 @@ function moha_survey_element_info_alter(&$type) {
   $type['moha_ui_rating']['#process'][] = 'moha_survey_moha_ui_rating_process';
   /* @see moha_survey_webform_component_render_alter */
   //$element['moha_ui_rating']['#theme_wrappers'] = 'moha_survey_weui_moha_ui_rating_title';
+  //remove the maxlength limit of textfield
+  unset($type['textfield']['#maxlength']);
 }
 
 /**
@@ -921,7 +923,7 @@ function theme_moha_survey_weui_moha_ui_reason_textfield($variables) {
         <input class="weui-input" type="text" placeholder="请输入文本"
           id="'.$element['#id'].'" name="'.$element['#name'] .'"
           value="'.$element['#value'] .'" size="'. $element['#size'] .'"
-          maxlength="'.$element['#maxlength'] .'">
+        >
       </div>
     </div>
   </div>';
