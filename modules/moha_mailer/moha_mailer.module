@@ -175,6 +175,56 @@ function moha_mailer_libraries_info_alter(&$libraries) {
 }
 
 /**
+ * Push mail to mail queue, if same $mail_to and $nid pair exists,
+ * mail will be ignored by default; set $force to TRUE, could skip this logic.
+ *
+ * @param $subject string
+ *   Mail subject
+ *
+ * @param $mail_from
+ *   Mail sender information, format: SENDER_NAME <SENDER_MAIL_ADDRESS>
+ *
+ * @param $mail_to
+ *   Mail address of receipt.
+ *
+ * @param $nid
+ *   Node ID which contains mail content.
+ *
+ * @param $eid
+ *   Mail related entity ID.
+ *
+ * @param $eid_type
+ *   Mail related entity Type.
+ *
+ * @param $force
+ *   If force to push this mail.
+ *
+ * @return boolean
+ */
+function moha_mailer_push_mail($subject, $mail_from, $mail_to, $nid, $eid, $eid_type = 'user', $force = FALSE) {
+
+  if ($force) {
+    $mail = entity_create(__MOHA_MAILER_MAIL, array(
+      'subject' => '1st reminder',
+      'mail_from' => 'Sender <sender@mail.com>',
+      'mail_to' => 'test@abc.com',
+      'nid' => 1,
+      'eid' => 2,
+      'eid_type' => 'user',
+      'status' => moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY),
+    ));
+
+    /** @see MohaCommonEntityController::save() */
+    $mail->save();
+  }
+  else {
+
+  }
+
+  return TRUE;
+}
+
+/**
  * Sends queued mails through cron per entity moha_mailer_mail.
  *
  * Implements hook_cron().

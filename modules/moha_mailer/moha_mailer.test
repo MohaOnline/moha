@@ -7,16 +7,14 @@
  * Test mail queue function.
  */
 function testMailEntities(){
-  $mail = entity_create(__MOHA_MAILER_MAIL, array(
-    'subject' => '1st reminder',
-    'mail_from' => 'Sender <sender@mail.com>',
-    'mail_to' => 'test@abc.com',
-    'nid' => 1,
-    'eid' => 2,
-    'eid_type' => 'user',
-    'status' => moha_array_key_by_value(MOHA__TERM__QUEUED, MOHA__STATUS__ENTITY),
-  ));
 
-  /** @see MohaCommonEntityController::save() */
-  $mail->save();
+  // Existing recipient mail address and Node ID will be ignored by default.
+  moha_mailer_push_mail(
+    '1st reminder',
+    'Sender <sender@mail.com>',
+    'test@abc.com',  // recipient mail address
+    1, // Mail content Node ID
+    2  // recipient user ID
+  );
+
 }
