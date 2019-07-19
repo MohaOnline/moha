@@ -915,7 +915,7 @@ function theme_moha_survey_weui_moha_ui_reason_textfield($variables) {
     $error_class = 'error';
   }
 
-  $output = '<div class="weui-cells'.  $error_class . '">
+  $output = '<div class="weui-cells '.  $error_class . '">
     <div class="weui-cell">
       <div class="weui-cell__bd">
         <input class="weui-input" type="text" placeholder="请输入文本"
@@ -939,6 +939,10 @@ function theme_moha_survey_weui_moha_ui_reason_textfield($variables) {
 function theme_moha_survey_weui_moha_ui_rating_title($variables) {
   $element = &$variables['element'];
   _form_set_class($element);
+
+  if ($element['#required']) {
+    $element['#title'] .= '<span style="color:red"> * </span>';
+  }
 
   // This function is invoked as theme wrapper, but the rendered form element
   // may not necessarily have been processed by form_builder().

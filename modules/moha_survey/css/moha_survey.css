@@ -38,6 +38,9 @@ label.weui-cell.weui-check__label {
 /** Add red border for validated element error **/
 .weui-cells.error {
   border: 2px solid red;
+}
+
+div.error{
   background-image: unset;
 }
 
