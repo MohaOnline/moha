@@ -884,6 +884,8 @@ function moha_survey_element_info_alter(&$type) {
   $type['moha_ui_rating']['#process'][] = 'moha_survey_moha_ui_rating_process';
   /* @see moha_survey_webform_component_render_alter */
   //$element['moha_ui_rating']['#theme_wrappers'] = 'moha_survey_weui_moha_ui_rating_title';
+  //remove the maxlength limit of textfield
+  unset($type['textfield']['#maxlength']);
 }
 
 /**
@@ -915,13 +917,13 @@ function theme_moha_survey_weui_moha_ui_reason_textfield($variables) {
     $error_class = 'error';
   }
 
-  $output = '<div class="weui-cells'.  $error_class . '">
+  $output = '<div class="weui-cells '.  $error_class . '">
     <div class="weui-cell">
       <div class="weui-cell__bd">
         <input class="weui-input" type="text" placeholder="请输入文本"
           id="'.$element['#id'].'" name="'.$element['#name'] .'"
           value="'.$element['#value'] .'" size="'. $element['#size'] .'"
-          maxlength="'.$element['#maxlength'] .'">
+        >
       </div>
     </div>
   </div>';
@@ -939,6 +941,10 @@ function theme_moha_survey_weui_moha_ui_reason_textfield($variables) {
 function theme_moha_survey_weui_moha_ui_rating_title($variables) {
   $element = &$variables['element'];
   _form_set_class($element);
+
+  if ($element['#required']) {
+    $element['#title'] .= '<span style="color:red"> * </span>';
+  }
 
   // This function is invoked as theme wrapper, but the rendered form element
   // may not necessarily have been processed by form_builder().
@@ -1001,4 +1007,13 @@ function theme_moha_survey_weui_moha_ui_rating_title($variables) {
   $output .= "</div>\n";
 
   return $output;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function moha_survey_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
+  // use weui style for webform submit button
+  $form['actions']['submit']['#attributes']['class'][] = 'weui-btn';
+  $form['actions']['submit']['#attributes']['class'][] ='weui-btn_primary';
 }
