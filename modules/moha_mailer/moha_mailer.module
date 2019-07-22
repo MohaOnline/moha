@@ -25,6 +25,11 @@ define('__MOHA_MAILER_MAIL', 'moha_mailer_mail');
 define('MOHA_MAILER_MAIL', 'Moha Mailer Mail');
 
 /**
+ * Entity Admin UI Filter.
+ */
+define('MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO', __MOHA_MAILER_MAIL . '__admin_ui_filter__to');
+
+/**
  * sites/all/modules/custom/moha/modules/moha_mailer.
  */
 define('MOHA_MAILER__PATH', drupal_get_path('module', __MOHA_MAILER));

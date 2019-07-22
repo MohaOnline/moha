@@ -749,6 +749,15 @@ function moha_schema_create($schemas) {
           db_add_field($table_name, $column_name, $column);
         };
       }
+
+      $indexes = $table['indexes'];
+
+      foreach ($indexes as $index_name => $index) {
+        if(!db_index_exists($table_name, $index_name)) {
+          db_add_index($table_name, $index_name, $index);
+        }
+
+      }
     }
   }
 }
@@ -1034,9 +1043,9 @@ function moha_form_actions(&$form, $buttons = array('Save')) {
   }
 
   foreach ($buttons as $button) {
-    $form['actions']['submit'] = array(
+    $form['actions'][$button] = array(
       '#type' => 'submit',
-      '#value' => $button,
+      '#value' => t($button),
     );
   }
 

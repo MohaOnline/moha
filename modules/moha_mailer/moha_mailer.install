@@ -245,6 +245,8 @@ function moha_mailer_schema() {
       'moha_mailer_mail_revision_status' => array('status'),
       'moha_mailer_mail_revision_to' => array(array('mail_to', 64)),
       'moha_mailer_mail_revision_to_nid' => array(array('mail_to', 64), 'nid'),
+      'moha_mailer_mail_revision_cc' => array(array('mail_cc', 64)),
+      'moha_mailer_mail_revision_bcc' => array(array('mail_bcc', 64)),
       'moha_mailer_mail_revision_updated' => array('updated'),
       'moha_mailer_mail_revision_created' => array('created'),
     ),

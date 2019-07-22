@@ -20,35 +20,19 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
       '#collapsible' => TRUE,
     );
 
-    $form['filter']['user'] = array(
-      '#title' => t('Owner name'),
-      '#type' => 'entityreference',
+    $form['filter']['mail_to'] = array(
+      '#title' => t('Mail to'),
+      '#type' => 'textfield',
       '#description' => 'Filter by group or company representative, enter representative\'s name then choose from drop-down menu.',
       '#required' => FALSE,
-     // '#default_value' => isset($_SESSION[__MOHA_ITS_GROUP . '_FILTER_USER'])?$_SESSION[__MOHA_ITS_GROUP . '_FILTER_USER']:'',
-      '#era_entity_type' => 'user',
-      '#era_cardinality' => 1,
-      '#era_bundles' => array('user'),
+      '#default_value' => isset($_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO])?$_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO]:'',
     );
 
     $form['filter']['actions'] = array(
       '#type' => 'actions',
     );
 
-    $form['filter']['actions']['filter'] = array(
-      '#type' => 'submit',
-      '#value' => 'Filter',
-    );
-
-    $form['filter']['actions']['reset'] = array(
-      '#type' => 'submit',
-      '#value' => 'Reset Filter',
-    );
-
-    $form['filter']['actions']['download'] = array(
-      '#type' => 'submit',
-      '#value' => 'Exports All',
-    );
+    moha_form_actions($form['filter'], array('Filter', 'Reset Filter'));
 
     return parent::overviewForm($form, $form_state);
   }
@@ -67,18 +51,15 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
     $op = $values['op'];
     $op_key = array_search($op, $values);
 
-    if($op_key == 'reset'){
-      $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER] = '';
-    }
-    else if ($op_key == 'filter') {
-      $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER] = isset($values['user']['entity_id'])?$values['user']['entity_id']:'';
-    }
-    else if ($op_key == 'download') {
-
-      $configurations = variable_get(MOHA_ITS__VARIABLES, array());
-      $order_export_url = isset($configurations['order_export_url'])?$configurations['order_export_url']:'moha/commerce/order/export/csv';
-
-      drupal_goto($order_export_url);
+    switch ($op_key) {
+      case 'Filter':
+        $_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO] = isset($values['mail_to'])?$values['mail_to']:'';
+        break;
+      case 'Reset Filter':
+        $_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO] = '';
+        break;
+      default:
+        break;
     }
   }
 
@@ -89,9 +70,9 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
    */
   public function overviewTable($conditions = []) {
 
-//    if (!empty($_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER])) {
-//      $conditions['rid'] = $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER];
-//    }
+    if (!empty($_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO])) {
+      $conditions['mail_to'] = $_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO];
+    }
 
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', $this->entityType);
@@ -138,6 +119,7 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
     $additional_header[] = t('Subject');
     $additional_header[] = t('From');
     $additional_header[] = t('To');
+    $additional_header[] = t('Cc');
     $additional_header[] = t('Node');
     $additional_header[] = t('User');
     $additional_header[] = t('Status');
@@ -160,10 +142,16 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
     $additional_cols[] = $entity->subject;
     $additional_cols[] = check_plain($entity->mail_from);
     $additional_cols[] = check_plain($entity->mail_to);
+    $additional_cols[] = check_plain($entity->mail_cc);
     $node = node_load($entity->nid);
-    $additional_cols[] = $node->title;
-    $user = user_load($entity->eid);
-    $additional_cols[] = $user->name;
+    $additional_cols[] = l($node->title, 'node/'. $node->nid);
+    if ($entity->eid_type == 'user') {
+      $user = user_load($entity->eid);
+      $additional_cols[] = l($user->name, 'user/' . $user->uid);
+    }
+    else {
+      $additional_cols[] = check_plain($entity->eid) . ':' . $entity->eid;
+    }
     $additional_cols[] = MOHA__STATUS__ENTITY[$entity->status];
 
     // Order updated and created time.

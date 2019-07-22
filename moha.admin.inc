@@ -26,13 +26,14 @@ function moha_db_update_form ($form, &$form_state) {
     '#field_suffix' => '()',
   );
 
-  moha_form_actions($form, t('Execute'));
+  moha_form_actions($form, 'Execute');
 
   return $form;
 }
 
 /**
  * Execute DB Update or re-deploy schema, only missing structure will be deployed.
+ * If specified function exists, execute directory.
  *
  * @param $form
  *   Nested array of form elements that comprise the form.

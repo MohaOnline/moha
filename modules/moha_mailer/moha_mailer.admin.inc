@@ -170,7 +170,7 @@ function moha_mailer_manual_form($form, &$form_state) {
     '#era_bundles' => array('user'),
   );
 
-  moha_form_actions($form, t('Send Mail'));
+  moha_form_actions($form, 'Send Mail');
 
   return $form;
 }

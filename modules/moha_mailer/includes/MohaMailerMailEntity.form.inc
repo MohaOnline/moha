@@ -124,7 +124,7 @@ function moha_mailer_mail_form($form, &$form_state, $entity = NULL) {
     );
   }
 
-  moha_form_actions($form, isset($entity->is_new) ? t('Add') : t('Save'));
+  moha_form_actions($form, isset($entity->is_new) ? 'Add' : 'Save');
 
   return $form;
 }
