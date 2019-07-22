@@ -57,16 +57,16 @@
         },
         {
             "name": "alibabacloud/client",
-            "version": "1.5.12",
+            "version": "1.5.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aliyun/openapi-sdk-php-client.git",
-                "reference": "d4df3b5b47ac7eae5e1670841c71451ecbcc1e3c"
+                "reference": "68b4fb1d436907d2fbf545e67c37d9ed181818d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aliyun/openapi-sdk-php-client/zipball/d4df3b5b47ac7eae5e1670841c71451ecbcc1e3c",
-                "reference": "d4df3b5b47ac7eae5e1670841c71451ecbcc1e3c",
+                "url": "https://api.github.com/repos/aliyun/openapi-sdk-php-client/zipball/68b4fb1d436907d2fbf545e67c37d9ed181818d7",
+                "reference": "68b4fb1d436907d2fbf545e67c37d9ed181818d7",
                 "shasum": ""
             },
             "require": {
@@ -134,7 +134,7 @@
                 "sdk",
                 "tool"
             ],
-            "time": "2019-06-20T05:31:48+00:00"
+            "time": "2019-07-18T05:43:13+00:00"
         },
         {
             "name": "clagiordano/weblibs-configmanager",

@@ -54,7 +54,14 @@ div.options-widget table tr.drag-previous {
 }
 /***/
 
-/** Fix help text style in inline container. */
+/** Adjust style in inline container, items should be inline one by one, instead of inline all items. */
+.container-inline div.form-item {
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+
+/* Fix help text style in inline container. */
 .container-inline .form-item div.description {
   display: block;
 }

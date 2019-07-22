@@ -320,16 +320,17 @@ function moha_mailer_cron() {
 
       $mail_to = $entity->mail_to;
       $mail_from = $entity->mail_from;
+
+      $params = array();
+
       if ($entity->eid_type == 'user') {
         $mail_context = user_load($entity->eid);
         $params['context']['user'] = $mail_context;
       }
 
-      $params = array();
-
       $node = node_load($entity->nid);
       $params['subject'] = $entity->subject;
-      $params['context']['subject'] = $node->title;
+      $params['context']['subject'] = $entity->subject;
 
       $content = node_view($node);
       $mail_body = drupal_render($content['body']);
@@ -347,7 +348,9 @@ function moha_mailer_cron() {
         }
       }
 
-      $message = drupal_mail(__MOHA_MAILER, 'moha_mailer_manual', $mail_to, $language, $params, $mail_from);
+      $params['attachments'] = '';
+
+      $message = drupal_mail(__MOHA_MAILER, __FUNCTION__, $mail_to, $language, $params, $mail_from);
 
       if ($message['send'] === TRUE && $message['result'] === TRUE) {
         $entity->status = moha_array_key_by_value(MOHA__TERM__SUCCESS, MOHA__STATUS__ENTITY);

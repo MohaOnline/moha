@@ -55,8 +55,24 @@ function moha_mailer_mail_form($form, &$form_state, $entity = NULL) {
     '#size' => 60,
     '#maxlength' => 512,
     '#required' => TRUE,
-    '#description' => t('Please specify mail address of recipients.'),
     '#default_value' => isset($entity->mail_to)?$entity->mail_to:'',
+  );
+
+  $mail['mail_cc'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Cc'),
+    '#size' => 60,
+    '#maxlength' => 512,
+    '#default_value' => isset($entity->mail_cc)?$entity->mail_cc:'',
+  );
+
+  $mail['mail_bcc'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Bcc'),
+    '#size' => 60,
+    '#maxlength' => 512,
+    '#description' => t('Please specify mail address of recipients, cc and bcc-ed recipients.'),
+    '#default_value' => isset($entity->mail_bcc)?$entity->mail_bcc:'',
   );
 
   $mail['nid'] = array(
@@ -91,7 +107,6 @@ function moha_mailer_mail_form($form, &$form_state, $entity = NULL) {
     '#attributes' => array('class' => array('container-inline')),
   );
 
-
   moha_form_add_vertical_tab($form,'properties');
 
   $form['properties']['status'] = array(
@@ -103,13 +118,13 @@ function moha_mailer_mail_form($form, &$form_state, $entity = NULL) {
   );
   moha_form_apply_inline_wrapper($form['properties']['status']);
 
-  $form['actions'] = array(
-    '#type' => 'actions',
-    'submit' => array(
-      '#type' => 'submit',
-      '#value' => isset($entity->is_new)?'Add':'Save',
-    ),
-  );
+  if (isset($entity->result)) {
+    $form['result'] = array(
+      '#markup' => filter_xss($entity->result),
+    );
+  }
+
+  moha_form_actions($form, isset($entity->is_new) ? t('Add') : t('Save'));
 
   return $form;
 }
