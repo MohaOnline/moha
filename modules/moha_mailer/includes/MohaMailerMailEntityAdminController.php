@@ -25,7 +25,7 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
       '#type' => 'entityreference',
       '#description' => 'Filter by group or company representative, enter representative\'s name then choose from drop-down menu.',
       '#required' => FALSE,
-      '#default_value' => isset($_SESSION[__MOHA_ITS_GROUP . '_FILTER_USER'])?$_SESSION[__MOHA_ITS_GROUP . '_FILTER_USER']:'',
+     // '#default_value' => isset($_SESSION[__MOHA_ITS_GROUP . '_FILTER_USER'])?$_SESSION[__MOHA_ITS_GROUP . '_FILTER_USER']:'',
       '#era_entity_type' => 'user',
       '#era_cardinality' => 1,
       '#era_bundles' => array('user'),
@@ -89,9 +89,9 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
    */
   public function overviewTable($conditions = []) {
 
-    if (!empty($_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER])) {
-      $conditions['rid'] = $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER];
-    }
+//    if (!empty($_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER])) {
+//      $conditions['rid'] = $_SESSION[MOHA_ITS_GROUP__ADMIN_UI_FILTER__OWNER];
+//    }
 
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', $this->entityType);
