@@ -59,7 +59,7 @@ function moha_admin_menu_admin_menu_output_build(&$content) {
   if ($user->uid == 1 && $menu_name != 'management') {
     $content['menu'] = admin_menu_links_menu($function('management'));
     $content['menu'][$menu_name] = admin_menu_links_menu($function($menu_name));
-    $content['menu'][$menu_name]['#title'] = moha_ucfirst($menu_name);
+    $content['menu'][$menu_name]['#title'] = drupal_ucfirst($menu_name);
   }
   else {
     $content['menu'] = admin_menu_links_menu($function($menu_name));
@@ -68,7 +68,6 @@ function moha_admin_menu_admin_menu_output_build(&$content) {
   $content['menu']['#wrapper_attributes']['id'] = 'admin-menu-menu';
   // Ensure the menu tree is rendered between the icon and user links.
   $content['menu']['#weight'] = 0;
-
 }
 
 /**

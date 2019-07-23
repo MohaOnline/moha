@@ -2,6 +2,9 @@
 /**
  * @file
  * Test cases for testing the module.
+ *
+ * @link http://drupal.org/node/890654 Simpletest Testing tutorial (Drupal 7) @endlink
+ * @link admin/config/development/testing Testing UI @endlink
  */
 
 /**
@@ -9,24 +12,117 @@
  *
  * @ingroup moha_mailer
  */
-class MohaMailerTestCase extends DrupalWebTestCase {
+class MohaMailerWebTestCase extends DrupalWebTestCase {
 
   /**
-   * Test mail queue function.
+   * Simulated user who will perform the test cases.
+   *
+   * @var object $privilegedUser
    */
-  function testMailEntities(){
+  protected $privilegedUser;
+
+  /**
+   * User object.
+   *
+   * @var object
+   */
+  protected $recipient;
+
+  /**
+   * Mail content node object.
+   *
+   * @var object
+   */
+  protected $node;
+
+  /**
+   * Give display information to the SimpleTest system.
+   *
+   * getInfo() returns a keyed array of information for SimpleTest to show.
+   *
+   * It's a good idea to organize your tests consistently using the 'group'
+   * key.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Moha Mailer Functional Testings',
+      'description' => 'Ensure that the Moha Mailer provided functions properly.',
+      'group' => 'Moha',
+    );
+  }
+
+  /**
+   * Set up the test environment.
+   *
+   * This method is called once per test method, before the test is executed.
+   * It gives you a chance to control the setup of the test environment.
+   *
+   * If you need a different test environment, then you should create another
+   * test class which overloads DrupalWebTestCase::setUp() differently.
+   */
+  public function setUp() {
+    parent::setUp(__MOHA_MAILER);
+
+    $this->recipient = $this->drupalCreateUser();
+
+    $permissions = moha_mailer_permission();
+    $this->privilegedUser = $this->drupalCreateUser(array_keys($permissions));
+    $this->drupalLogin($this->privilegedUser);
+
+    $this->node = $this->drupalCreateNode();
+  }
+
+  /**
+   * Test mail push function.
+   */
+  function testPushMail() {
 
     // Existing recipient mail address and Node ID will be ignored by default.
     moha_mailer_push_mail(
-      '1st reminder',
+      $this->node->title,     // Mail subject
       'Sender <sender@mail.com>',
-      'test@abc.com',  // recipient mail address
-      1,  // Mail content Node ID
-      2,  // Recipient user ID
-      'user', // Recipient type: user, group, mail list, etc.
+      'to@mail.com',           // recipient mail address
+      $this->node->nid,       // Mail content Node ID
+      $this->recipient->uid,  // Recipient user ID
+      'user',                 // Recipient type: user, group, mail list, etc.
       'cc@mail.com',
       'bcc@mail.com'
     );
 
+    $this->drupalGet(MOHA_MAILER__URL__MAIL_ADMIN_UI);
+    $this->assertText(check_plain('Sender <sender@mail.com>'), 'sender info is found');
+    $this->assertText(check_plain('to@mail.com'), 'recipient mail address is found');
+    $this->assertText('cc@mail.com', 'cc-ed mail address is found');
+    $this->assertLink($this->node->title);
+
+    /** Run corn to send mail. */
+    moha_mailer_cron();
+    $this->assertMail('subject', $this->node->title);
   }
+
+  /**
+   * Function test for mail manual sending.
+   */
+  function testSendMail() {
+    $edit['from'] = 'Sender <sender@mail.com>';
+    $edit['to'] = 'to@mail.com';
+    $edit['cc'] = 'cc@mail.com';
+    $edit['bcc'] = 'bcc@mail.com';
+    $edit['node'] = format_string('!name (!id)', array(
+      '!name' => $this->node->title,
+      '!id' => $this->node->nid
+    ));
+
+    $edit['user'] = format_string('!name (!id)' , array(
+      '!name' => $this->privilegedUser->name,
+      '!id' => $this->privilegedUser->uid
+    ));
+
+    $this->drupalPost('admin/moha/mailer/manual', $edit, t('Send Mail'));
+    $this->assertMail('subject', $this->node->title, 'Manual sending is OK');
+  }
+}
+
+class MohaMailerUnitTestCase extends DrupalUnitTestCase {
+
 }

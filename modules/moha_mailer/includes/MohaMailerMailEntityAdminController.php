@@ -20,12 +20,14 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
       '#collapsible' => TRUE,
     );
 
-    $form['filter']['mail_to'] = array(
+    $filter = &moha_form_set_inline_container($form['filter']['container']);
+
+    $filter['mail_to'] = array(
       '#title' => t('Mail to'),
       '#type' => 'textfield',
-      '#description' => 'Filter by group or company representative, enter representative\'s name then choose from drop-down menu.',
+      '#description' => t("Filter by recipient's mail address"),
       '#required' => FALSE,
-      '#default_value' => isset($_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO])?$_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO]:'',
+      '#default_value' => isset($_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO]) ? $_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO] : '',
     );
 
     $form['filter']['actions'] = array(
@@ -53,7 +55,7 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
 
     switch ($op_key) {
       case 'Filter':
-        $_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO] = isset($values['mail_to'])?$values['mail_to']:'';
+        $_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO] = isset($values['mail_to']) ? trim($values['mail_to']) : '';
         break;
       case 'Reset Filter':
         $_SESSION[MOHA_MAILER_MAIL__ADMIN_UI_FILTER__TO] = '';
@@ -64,9 +66,9 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
   }
 
   /**
-   * {@inheritdoc}
+   * Renders whole management page independently.
    *
-   *  Renders whole management page independently.
+   * @inheritdoc
    */
   public function overviewTable($conditions = []) {
 
@@ -79,8 +81,13 @@ class MohaMailerMailEntityAdminController extends EntityDefaultUIController {
     $query->propertyOrderBy('updated','DESC');
 
     // Add all conditions to query.
-    foreach ($conditions as $key => $value) {
-      $query->propertyCondition($key, $value);
+    foreach ($conditions as $key => $condition) {
+      if (is_array($condition)) {
+        $query->propertyCondition($key, $condition['value'], $condition['operator']);
+      }
+      else {
+        $query->propertyCondition($key, $condition);
+      }
     }
 
     if ($this->overviewPagerLimit) {

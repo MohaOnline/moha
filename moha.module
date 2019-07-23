@@ -1773,15 +1773,21 @@ function moha_array_key_by_value($value = "", $array = array()) {
 }
 
 /**
- * Capitalizes the first letter of a UTF-8 string.
+ * Uppercase the first character of each word in a string.
  *
  * @param $text
  *
- * @return string
+ * @return mixed
  */
-function moha_ucfirst($text) {
-  // Note: no mbstring equivalent!
-  return drupal_strtoupper(drupal_substr($text, 0, 1)) . drupal_substr($text, 1);
+function moha_ucwords($text) {
+  global $multibyte;
+
+  if ($multibyte == UNICODE_MULTIBYTE) {
+    return mb_convert_case($text, MB_CASE_TITLE);
+  }
+  else {
+    return ucwords($text);
+  }
 }
 
 /**

@@ -17,3 +17,5 @@ files[] = includes/MohaMailerMailSystem.php
 
 files[] = includes/MohaMailerMailEntity.php
 files[] = includes/MohaMailerMailEntityAdminController.php
+; Function and unit test cases.
+files[] = moha_mailer.test

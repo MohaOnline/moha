@@ -3,10 +3,11 @@ description = Base module for Moha Online.
 core = 7.x
 package = Moha Online
 
-dependencies[] = imce
-dependencies[] = ctools
+dependencies[] = drupal:system (>= 7.40)
 dependencies[] = entity
+dependencies[] = ctools
 dependencies[] = token
+dependencies[] = imce
 dependencies[] = profile2
 dependencies[] = field_collection
 dependencies[] = jquery_update
@@ -16,4 +17,5 @@ dependencies[] = entityreference_autocomplete
 files[] = includes/MohaRACIEntity.php
 files[] = includes/MohaRACIEntityAdminController.php
 files[] = includes/MohaRACIEntityController.php
+; Common Entity Controller Class.
 files[] = includes/MohaCommonEntityController.php

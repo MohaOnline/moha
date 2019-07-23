@@ -30,6 +30,11 @@ body div.error {
 body div.messages.error {
   background-image: url(../img/message-24-error.png);
 }
+
+/* fieldset has set padding already. */
+.fieldset-wrapper .form-actions {
+  margin-bottom: 0;
+}
 /***/
 
 /** Fix styles issue between element - options and system module. */
@@ -51,24 +56,6 @@ div.options-widget table tr.drag {
 
 div.options-widget table tr.drag-previous {
   background: #ffb;
-}
-/***/
-
-/** Adjust style in inline container, items should be inline one by one, instead of inline all items. */
-.container-inline div.form-item {
-  display: block;
-  padding: 0;
-  margin: 0;
-}
-
-/* Fix help text style in inline container. */
-.container-inline .form-item div.description {
-  display: block;
-}
-
-.container-inline label {
-  min-width: 10em;
-  display: inline-block;
 }
 /***/
 

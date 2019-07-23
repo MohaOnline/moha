@@ -94,6 +94,11 @@ define('MOHA_MAILER__VARIABLE__IGNORE_CC', __MOHA_MAILER. '__var__ignore_cc');
 define('MOHA_MAILER__URL__MAIL_ADMIN_UI', MOHA__URL__ENTITIES . '/mailer-mail');
 
 /**
+ * Permission: Administer Moha Mailer.
+ */
+define('MOHA_MAILER__PERMISSION__ADMIN', 'administer moha mailer');
+
+/**
  * Implements hook_entity_info().
  */
 function moha_mailer_entity_info() {
@@ -115,6 +120,12 @@ function moha_mailer_entity_info() {
 function moha_mailer_permission() {
   // Declare entity permissions.
   $permissions = moha_entity_permissions_generator(__MOHA_MAILER_MAIL);
+
+  // Add permission for restrict privilege of admin configuration.
+  $permissions[MOHA_MAILER__PERMISSION__ADMIN] = array(
+    'title' => t(moha_ucwords(MOHA_MAILER__PERMISSION__ADMIN)),
+    'description' => t("Allows the user to configure Moha Mailer."),
+  );
 
   return $permissions;
 }
@@ -162,7 +173,7 @@ function moha_mailer_menu() {
     /* @see moha_mailer_manual_form() */
     'page arguments' => array('moha_mailer_manual_form'),
     'file' => 'moha_mailer.admin.inc',
-    'access arguments' => array(MOHA__PERMISSION__ROOT),
+    'access arguments' => array(MOHA_MAILER__PERMISSION__ADMIN),
   );
 
   return $items;

@@ -154,7 +154,7 @@ function moha_mailer_manual_form($form, &$form_state) {
     '#era_bundles' => array('page'),
   );
 
-  if (module_exists(__MOHA_NEWSLETTER)) {
+  if (module_exists('moha_newsletter')) {
     $mail['node']['#era_bundles'] = array(__MOHA_NEWSLETTER);
     $mail['node']['#description'] = t("Select a %type which will be sent as mail.", array('%type' => MOHA_NEWSLETTER));
   }
