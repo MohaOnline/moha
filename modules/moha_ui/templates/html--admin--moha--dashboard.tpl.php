@@ -53,6 +53,18 @@
   <?php print $styles; ?>
   <?php print $scripts; ?>
 </head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to get the desired effect
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | fixed                                   |
+|               | layout-boxed                            |
+|               | layout-top-nav                          |
+|               | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
 <body class="skin-blue sidebar-mini <?php print $classes; ?>" <?php print $attributes;?>>
   <div id="skip-link">
     <a href="#main-content" class="element-invisible element-focusable"><?php print t('Skip to main content'); ?></a>

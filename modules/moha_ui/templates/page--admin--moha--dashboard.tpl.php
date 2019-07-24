@@ -2,39 +2,90 @@
 /**
  * @var string $breadcrumb
  * @var array $secondary_local_tasks
+ * @var array $page
  */
 ?>
-  <div id="branding" class="clearfix">
-    <?php print $breadcrumb; ?>
-    <?php print render($title_prefix); ?>
-    <?php if ($title): ?>
-      <h1 class="page-title"><?php print $title; ?></h1>
-    <?php endif; ?>
-    <?php print render($title_suffix); ?>
-    <?php print render($primary_local_tasks); ?>
-  </div>
+<div id="branding" class="clearfix">
+  <?php print $breadcrumb; ?>
+  <?php print render($title_prefix); ?>
+  <?php if ($title): ?>
+    <h1 class="page-title"><?php print $title; ?></h1>
+  <?php endif; ?>
+  <?php print render($title_suffix); ?>
+  <?php print render($primary_local_tasks); ?>
+</div>
 
-  <div id="page">
-    <?php if ($secondary_local_tasks): ?>
-      <div class="tabs-secondary clearfix"><?php print render($secondary_local_tasks); ?></div>
-    <?php endif; ?>
+<div class="wrapper">
+  <header class="main-header">
 
-    <div id="content" class="clearfix">
-      <div class="element-invisible"><a id="main-content"></a></div>
-      <?php if ($messages): ?>
-        <div id="console" class="clearfix"><?php print $messages; ?></div>
-      <?php endif; ?>
-      <?php if ($page['help']): ?>
-        <div id="help">
-          <?php print render($page['help']); ?>
-        </div>
-      <?php endif; ?>
-      <?php if ($action_links): ?><ul class="action-links"><?php print render($action_links); ?></ul><?php endif; ?>
+  <!-- Logo -->
+  <a href="/admin/moha/dashboard" class="logo">
+    <!-- mini logo for sidebar mini 50x50 pixels -->
+    <span class="logo-mini"><b>M</b>oha</span>
+    <!-- logo for regular state and mobile devices -->
+    <span class="logo-lg"><b>Moha</b> Dashboard</span>
+  </a>
+
+  <!-- Header Navbar -->
+  <nav class="navbar navbar-static-top" role="navigation">
+    <!-- Sidebar toggle button-->
+    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+      <span class="sr-only">Toggle navigation</span>
+    </a>
+
+
+    <!-- Navbar Right Menu -->
+    <div class="navbar-custom-menu">
+      <!-- branding of seven toggle button-->
+      <a href="#" class="seven-branding-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle branding</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content container-fluid">
       <?php print render($page['content']); ?>
-    </div>
-
-    <div id="footer">
-      <?php print $feed_icons; ?>
-    </div>
-
+    </section>
+    <!-- /.content -->
   </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <!-- To the right -->
+    <div class="pull-right hidden-xs">
+
+    </div>
+    <!-- Default to the left -->
+    <strong>Copyleft &copy; 2017-2019</strong>
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="main-sidebar">
+
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+
+      <!-- Sidebar Menu -->
+      <ul class="sidebar-menu" data-widget="tree">
+        <li class="header">Features</li>
+        <!-- Optionally, you can add icons to the links -->
+        <!-- https://fontawesome.com/v4.7.0/cheatsheet/ -->
+        <li><a href="#"><i class="fa fa-microchip"></i> <span>IT Steward</span></a></li>
+        <li><a href="#"><i class="fa fa-scribd"></i> <span>Survey</span></a></li>
+        <li><a href="#"><i class="fa fa-envelope"></i> <span>Mailer</span></a></li>
+      </ul>
+      <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+  </aside>
+  <!-- /.control-sidebar -->
+  <!-- Add the sidebar's background. This div must be placed
+  immediately after the control sidebar -->
+  <div class="control-sidebar-bg"></div>
+
+</div> <!-- class="wrapper" -->
