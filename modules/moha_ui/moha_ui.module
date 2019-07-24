@@ -115,7 +115,6 @@ function moha_ui_library() {
       ),
     ),
     'js' => array(
-//      MOHA_UI__PATH . '/bower_components/jquery/dist/jquery.js' => array(),
       MOHA_UI__PATH . '/bower_components/bootstrap/dist/js/bootstrap.js' => array(),
       MOHA_UI__PATH . '/bower_components/admin-lte/dist/js/adminlte.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(),
@@ -247,6 +246,45 @@ function moha_ui_page_alter(&$page) {
   if (substr($path, 0, 20) === 'admin/moha/dashboard') {
     $page['content']['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
     $page['content']['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
+
+    $html5shiv = array(
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#value' => '',
+      '#weight' => 999,
+      '#attributes' => array( // Set up an array of attributes inside the tag
+        'type' => 'text/javascript',
+        'src' =>  url(MOHA_UI__PATH . '/bower_components/html5shiv/dist/html5shiv.js'),
+      ),
+      '#prefix' => '<!--[if lte IE 9]>',
+      '#suffix' => '<![endif]-->',
+    );
+
+    $respond = array(
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#value' => '',
+      '#weight' => 999,
+      '#attributes' => array( // Set up an array of attributes inside the tag
+        'type' => 'text/javascript',
+        'src' =>  url(MOHA_UI__PATH . '/bower_components/respond/dist/respond.min.js'),
+      ),
+      '#prefix' => '<!--[if lte IE 9]>',
+      '#suffix' => '<![endif]-->',
+    );
+
+    drupal_add_html_head($html5shiv, 'html5shiv');
+    drupal_add_html_head($respond, 'respond');
+  }
+}
+
+/**
+ * Implements hook_html_head_alter().
+ */
+function moha_ui_html_head_alter(&$head_elements) {
+  $generator = moha_variable_get('moha_ui__var__generator', t('Moha Online (https://www.moha.online)'));
+  if(isset($head_elements['system_meta_generator']) && !empty($generator)) {
+    $head_elements['system_meta_generator']['#attributes']['content'] = $generator;
   }
 }
 
