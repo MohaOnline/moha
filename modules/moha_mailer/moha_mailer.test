@@ -46,7 +46,7 @@ class MohaMailerWebTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
       'name' => 'Moha Mailer Functional Testings',
-      'description' => 'Ensure that the Moha Mailer provided functions properly.',
+      'description' => 'Ensure that the Moha Mailer provided functions work properly.',
       'group' => 'Moha',
     );
   }
@@ -61,6 +61,7 @@ class MohaMailerWebTestCase extends DrupalWebTestCase {
    * test class which overloads DrupalWebTestCase::setUp() differently.
    */
   public function setUp() {
+    // Module enable.
     parent::setUp(__MOHA_MAILER);
 
     $this->recipient = $this->drupalCreateUser();

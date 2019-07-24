@@ -10,6 +10,8 @@
         "alibabacloud/client": "^1.0",
         "simplesamlphp/simplesamlphp": "^1.17",
         "knplabs/github-api": "^2.11",
-        "php-http/guzzle6-adapter": "^1.1"
+        "php-http/guzzle6-adapter": "^1.1",
+        "phpseclib/phpseclib": "~2.0",
+        "jumbojett/openid-connect-php": "^0.8.0"
     }
 }
