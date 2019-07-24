@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Administrative page for the module.
+ * Administrative page for the module.
  */
 
 /**
@@ -15,7 +15,7 @@
  *   that drupal_get_form() was originally called with are available in the
  *   array $form_state['build_info']['args'].
  */
-function moha_db_update_form ($form, &$form_state) {
+function moha_db_update_form($form, &$form_state) {
 
   $form['hook_schema'] = array(
     '#type' => 'textfield',

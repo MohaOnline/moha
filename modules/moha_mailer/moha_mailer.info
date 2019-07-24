@@ -9,8 +9,7 @@ dependencies[] = just_smtp
 dependencies[] = token
 dependencies[] = entity_token
 dependencies[] = moha
-dependencies[] = moha_style
-dependencies[] = moha_fonts
+dependencies[] = moha_ui
 dependencies[] = moha_composer
 
 files[] = includes/MohaMailerMailSystem.php

@@ -67,4 +67,19 @@ html {
 .breadcrumb {
   background-color: #e0e0d8;
 }
+
+.page-admin h1,
+.page-admin h2,
+.page-admin h3,
+.page-admin h4,
+.page-admin h5,
+.page-admin h6,
+.page-admin .h1,
+.page-admin .h2,
+.page-admin .h3,
+.page-admin .h4,
+.page-admin .h5,
+.page-admin .h6 {
+  font-family: inherit;
+}
 /***/

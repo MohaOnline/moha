@@ -55,6 +55,10 @@ function moha_ui_library() {
         'type' => 'file',
         'media' => 'screen',
       ),
+      MOHA_UI__PATH . '/bower_components/Ionicons/css/ionicons.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
       MOHA_UI__PATH . '/bower_components/weui/dist/style/weui.css' => array(
         'type' => 'file',
         'media' => 'screen',
@@ -166,6 +170,26 @@ function moha_ui_libraries_info() {
 }
 
 /**
+ * Implements hook_menu().
+ */
+function moha_ui_menu() {
+
+  $items['admin/moha/dashboard'] = array(
+    'title' => 'Dashboard',
+    'weight' => -99,
+    'description' => t('Dashboard of Moha module.'),
+    'page callback' => 'drupal_get_form',
+    /* @see moha_dashboard_form() */
+    'page arguments' => array('moha_ui_dashboard_form'),
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
+    'file' => 'moha_ui.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
  * Implements hook_menu_alter().
  */
 function moha_ui_menu_alter(&$items) {
@@ -178,7 +202,7 @@ function moha_ui_menu_alter(&$items) {
  * Implements hook_theme().
  */
 function moha_ui_theme($existing, $type, $theme, $path) {
-  $templates = array(
+  $themes = array(
     'moha_ui_rating' => array(
       'render element' => 'element',
     ),
@@ -200,7 +224,30 @@ function moha_ui_theme($existing, $type, $theme, $path) {
     ),
   );
 
-  return $templates;
+  // Declare common templates.
+  $themes['html__admin__moha__dashboard'] = array(
+    'render element' => 'elements',
+    'template' => 'templates/html--admin--moha--dashboard',
+  );
+
+  $themes['page__admin__moha__dashboard'] = array(
+    'render element' => 'elements',
+    'template' => 'templates/page--admin--moha--dashboard',
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_page_alter().
+ */
+function moha_ui_page_alter(&$page) {
+  $path = request_path();
+
+  if (substr($path, 0, 20) === 'admin/moha/dashboard') {
+    $page['content']['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
+    $page['content']['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
+  }
 }
 
 /**

@@ -134,6 +134,17 @@ function moha_mailer_permission() {
  * Implements hook_menu().
  */
 function moha_mailer_menu() {
+  $items['admin/moha/dashboard/mailer'] = array(
+    'title' => 'Dashboard',
+    'description' => t('Moha mail statistics / dashboard.'),
+    'page callback' => 'drupal_get_form',
+    /* @see moha_mailer_dashboard_form() */
+    'page arguments' => array('moha_mailer_dashboard_form'),
+    'file' => 'moha_mailer.admin.inc',
+    'access arguments' => array(MOHA_MAILER__PERMISSION__ADMIN),
+    'type' => MENU_CALLBACK,
+  );
+
   $items['admin/moha/mailer'] = array(
     'title' => 'Moha Mailer',
     'description' => t('Moha Mail enhancement system.'),
@@ -141,7 +152,7 @@ function moha_mailer_menu() {
     'weight' => 10,
     'file' => 'system.admin.inc',
     'file path' => drupal_get_path('module', 'system'),
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array(MOHA_MAILER__PERMISSION__ADMIN),
     'type' => MENU_NORMAL_ITEM,
   );
 
@@ -149,11 +160,11 @@ function moha_mailer_menu() {
     'title' => 'Dashboard',
     'description' => t('Moha mail statistics / dashboard.'),
     'weight' => -99,
-    'page callback' => 'drupal_get_form',
-    /* @see moha_mailer_dashboard_form() */
-    'page arguments' => array('moha_mailer_dashboard_form'),
+    /* @see moha_mailer_dashboard_jump() */
+    'page callback' => 'moha_mailer_dashboard_jump',
     'file' => 'moha_mailer.admin.inc',
-    'access arguments' => array(MOHA__PERMISSION__ROOT),
+    'access arguments' => array(MOHA_MAILER__PERMISSION__ADMIN),
+    'type' => MENU_NORMAL_ITEM,
   );
 
   $items['admin/moha/mailer/config'] = array(
@@ -163,7 +174,7 @@ function moha_mailer_menu() {
     /* @see moha_mailer_config_form() */
     'page arguments' => array('moha_mailer_config_form'),
     'file' => 'moha_mailer.admin.inc',
-    'access arguments' => array(MOHA__PERMISSION__ROOT),
+    'access arguments' => array(MOHA_MAILER__PERMISSION__ADMIN),
   );
 
   $items['admin/moha/mailer/manual'] = array(

@@ -9,5 +9,5 @@ dependencies[] = media
 dependencies[] = simplenews
 dependencies[] = pathologic
 dependencies[] = moha
-dependencies[] = moha_mailer
 dependencies[] = moha_ui
+dependencies[] = moha_mailer
