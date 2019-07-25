@@ -3,11 +3,11 @@
 }
 
 .main-header .sidebar-toggle:before {
-  content: "\f100";
+  /*content: "\f100";*/
 }
 
 .main-header .seven-branding-toggle:before {
-  content: "\f102";
+  content: "\f151";
 }
 
 .skin-blue .main-header .navbar .seven-branding-toggle {
