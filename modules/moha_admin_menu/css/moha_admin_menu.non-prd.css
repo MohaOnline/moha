@@ -17,6 +17,7 @@ body.adminimal-menu div#admin-menu {
 body.adminimal-menu div#admin-menu:after {
   content: 'non-prd';
   display: inline-block;
+  position: absolute;
   padding: 5px 10px;
   color: darkgreen;
   font-family: -apple-system, 'microsoft yahei', 'PingFang SC', system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", tahoma, arial, 'helvetica neue', 'hiragino sans gb', sans-serif;
