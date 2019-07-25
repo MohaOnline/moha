@@ -11,11 +11,6 @@ define('MOHA_QR', 'Moha QR');
 define('__MOHA_QR', 'moha_qr');
 
 /**
- * moha_qr__variables.
- */
-define('MOHA_QR__VARIABLES', __MOHA_QR . '__variables');
-
-/**
  * sites/all/modules/custom/moha/modules/moha_qr.
  */
 define('MOHA_QR__PATH', drupal_get_path('module', __MOHA_QR));
@@ -45,25 +40,6 @@ function moha_qr_menu() {
   return $items;
 }
 
-/**
- * Implements hook_node_info().
- *
- * Declares content types: moha_qr.
- */
-function moha_qr_node_info() {
-  $items = array(
-    __MOHA_QR => array(
-      'name' => t(MOHA_QR),
-      'base' => __MOHA_QR, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
-      'description' => t('Use <i>Moha QR</i> to store one QR information.'),
-      'title_label' => t('QR Name'),
-      'has_title' => TRUE,
-      'locked' => FALSE,
-    ),
-  );
-
-  return $items;
-}
 
 
 

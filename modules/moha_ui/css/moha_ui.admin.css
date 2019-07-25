@@ -1,13 +1,16 @@
-.page-admin-moha-dashboard .main-header {
-  z-index: 900;
+body.page-admin-moha-dashboard.admin-menu.adminimal-menu:before {
+  display: none;
 }
 
-.main-header .sidebar-toggle:before {
-  /*content: "\f100";*/
+body.page-admin-moha-dashboard #branding {
+  display: none;
+}
+
+.page-admin-moha-dashboard .main-header {
 }
 
 .main-header .seven-branding-toggle:before {
-  content: "\f151";
+  content: "\f150";
 }
 
 .skin-blue .main-header .navbar .seven-branding-toggle {
@@ -23,5 +26,5 @@
   background-color: transparent;
   background-image: none;
   padding: 15px 15px;
-  font-family: fontAwesome;
+  font-family: fontAwesome, sans-serif;
 }

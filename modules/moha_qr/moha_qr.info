@@ -3,4 +3,5 @@ description = Provides servicces for generating QR code.
 core = 7.x
 package = Moha Online
 
+dependencies[] = shurly
 dependencies[] = moha
