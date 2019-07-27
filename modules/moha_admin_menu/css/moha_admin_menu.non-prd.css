@@ -10,7 +10,7 @@
  *   body.adminimal-menu #admin-menu .dropdown li li
  *   body.adminimal-menu #admin-menu #admin-menu-wrapper .dropdown li li.expandable
  */
-body.adminimal-menu div#admin-menu {
+body.adminimal-menu .slicknav_menu, body.adminimal-menu div#admin-menu {
   background-color: darkgreen;
 }
 

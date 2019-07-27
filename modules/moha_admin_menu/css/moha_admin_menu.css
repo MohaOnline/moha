@@ -1,6 +1,31 @@
 @charset "UTF-8";
 /**
  * @file
- *   Styles for font of Moha Admin Menu.
+ * Styles for font of Moha Admin Menu.
  */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  body .slicknav_menu {
+    display: none;
+  }
+  body #admin-menu, body #admin-menu-menu, body #admin-menu-search, body #admin-menu-users  {
+    display: block!important;
+  }
+  #admin-menu #admin-menu-account, #admin-menu .shortcut-toolbar {
+    display: none;
+  }
+  body.admin-menu.adminimal-menu:before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 29px;
+    top: 0;
+    left: 0;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  body .slicknav_menu {
+    display: block;
+  }
+}
 

@@ -1,12 +1,15 @@
 <?php
 /**
  * @file
+ * Install file of the module.
  */
 
 /**
  * Implements hook_enable().
  *
  * Needs jquery 1.10 to work correctly.
+ *
+ * @throws InvalidMergeQueryException
  */
 function moha_ui_install() {
   variable_set('jquery_update_jquery_admin_version', '1.10');

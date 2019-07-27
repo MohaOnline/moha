@@ -1,9 +1,34 @@
-body.page-admin-moha-dashboard.admin-menu.adminimal-menu:before {
+@charset "UTF-8";
+/**
+ * @file
+ */
+body.page-admin-moha-dashboard.drupal-admin-ui-off .seven-branding-toggle:before {
+  content: "\f150";
+}
+
+body.page-admin-moha-dashboard.drupal-admin-ui-off.admin-menu.adminimal-menu:before {
+  max-height: 0;
+}
+
+body.page-admin-moha-dashboard.drupal-admin-ui-off .slicknav_menu,
+body.page-admin-moha-dashboard.drupal-admin-ui-off #branding {
   display: none;
 }
 
-body.page-admin-moha-dashboard #branding {
-  display: none;
+body.page-admin-moha-dashboard.drupal-admin-ui-on .seven-branding-toggle:before {
+  content: "\f151";
+}
+
+body.page-admin-moha-dashboard.drupal-admin-ui-on.admin-menu.adminimal-menu:before {
+  max-height: inherit;
+}
+
+body.page-admin-moha-dashboard.drupal-admin-ui-on #branding {
+  display: block;
+}
+
+body.page-admin-moha-dashboard a:hover {
+  text-decoration: none;
 }
 
 .page-admin-moha-dashboard .main-header {
