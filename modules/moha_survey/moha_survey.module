@@ -1017,3 +1017,17 @@ function moha_survey_form_webform_client_form_alter(&$form, &$form_state, $form_
   $form['actions']['submit']['#attributes']['class'][] = 'weui-btn';
   $form['actions']['submit']['#attributes']['class'][] ='weui-btn_primary';
 }
+
+
+
+/**
+ * Implements hook_moha_ui_dashboard_sidebar().
+ */
+function moha_survey_moha_ui_dashboard_sidebar() {
+  $items['features']['admin/moha/dashboard/survey'] = array(
+    '#markup' => l('<i class="fa fa-scribd"></i> <span>' . t('Survey') . '</span>', 'admin/moha/dashboard/survey', array('html' => TRUE)),
+    '#weight' => 0,
+  );
+
+  return $items;
+}

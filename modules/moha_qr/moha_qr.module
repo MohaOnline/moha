@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * The hook entry of the module.
+ */
 
 /**
  * Human name.
@@ -25,27 +29,41 @@ define('__MOHA_QR__PATH', base_path() . MOHA_QR__PATH);
  */
 function moha_qr_menu() {
 
-  $items[__MOHA . '/qr/list'] = array(
-
-  );
-
-  $items[__MOHA . '/qr/detail/%node'] = array(
-    'title' => t('Web Demo: Input Box'),
-    'description' => t('Style input box'),
-    'page callback' => '_moha_qr_generate',
-    'access callback' => TRUE,
-    'type' => MENU_NORMAL_ITEM,
+  $items['moha/qr/code/%'] = array(
+    'title' => 'QR Code',
+    'description' => t('QR code generator.'),
+    'weight' => 0,
+    'page callback' => 'moha_qr_code',
+    'page arguments' => array(3),
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
 }
 
 /**
+ * @param $id
  *
+ * @link http://phpqrcode.sourceforge.net/examples/index.php @endlink
+ * @link https://www.cnblogs.com/yimingwang/p/10027612.html @endlink
  */
-function _moha_qr_generate() {
+function moha_qr_code($id) {
   require_once DRUPAL_ROOT . '/' . MOHA_QR__PATH . '/libs/phpqrcode/phpqrcode.php';
 
+  QRcode::png(MOHA_QR);
+}
+
+/**
+ * Implements hook_moha_ui_dashboard_sidebar().
+ */
+function moha_qr_moha_ui_dashboard_sidebar() {
+  $items['features']['admin/moha/dashboard/qr'] = array(
+    '#markup' => l('<i class="fa fa-qrcode"></i> <span>' . t('QR Code') . '</span>', 'admin/moha/dashboard/qr', array('html' => TRUE)),
+    '#weight' => 0,
+  );
+
+  return $items;
 }
 
 

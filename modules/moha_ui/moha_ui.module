@@ -279,6 +279,52 @@ function moha_ui_page_alter(&$page) {
 }
 
 /**
+ * Generates and returns dashboard sidebar HTML.
+ *
+ * @return string rendered HTML.
+ *
+ * @link https://fontawesome.com/v4.7.0/icons/ @endlink
+ */
+function moha_ui_dashboard_sidebar_build() {
+  $render = array();
+  foreach (module_implements('moha_ui_dashboard_sidebar') as $module) {
+    $function = $module . '_moha_ui_dashboard_sidebar';
+    $item = $function();
+    $render = drupal_array_merge_deep($render, $item);
+  }
+
+  $output = '';
+  $current_path = current_path();
+  foreach ($render as $section_name => $items) {
+    $section_name = drupal_ucfirst($section_name);
+    $output .= "<li class='header'>$section_name</li>";
+    uasort($items, 'element_sort');
+    foreach ($items as $path => $item) {
+      if ($current_path == $path) {
+        $output .= '<li class="active">' . drupal_render($item) . '</li>';
+      }
+      else {
+        $output .= '<li>' . drupal_render($item) . '</li>';
+      }
+    }
+  }
+
+  return $output;
+}
+
+/**
+ * Implements hook_moha_ui_dashboard_sidebar().
+ */
+function moha_ui_moha_ui_dashboard_sidebar() {
+  $items['features']['admin/moha/dashboard'] = array(
+    '#markup' => l('<i class="fa fa-tachometer"></i> <span>' . t('Overview') . '</span>', 'admin/moha/dashboard', array('html' => TRUE)),
+    '#weight' => -99,
+  );
+
+  return $items;
+}
+
+/**
  * Implements hook_html_head_alter().
  */
 function moha_ui_html_head_alter(&$head_elements) {

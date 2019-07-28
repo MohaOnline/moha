@@ -37,7 +37,7 @@
     <!-- Navbar Right Menu -->
     <div class="navbar-custom-menu">
       <!-- branding of seven toggle button-->
-      <a href="#" class="seven-branding-toggle" data-toggle="toggle-class" data-toggle-class="drupal-admin-ui" role="button">
+      <a href="#" class="moha-toggle-class" data-toggle="toggle-class" data-toggle-class="drupal-admin-ui" role="button">
         <span class="sr-only">Toggle Drupal admin UI</span>
       </a>
     </div>
@@ -72,12 +72,8 @@
 
       <!-- Sidebar Menu -->
       <ul class="sidebar-menu" data-widget="tree">
-        <li class="header">Features</li>
         <!-- Optionally, you can add icons to the links -->
-        <!-- https://fontawesome.com/v4.7.0/cheatsheet/ -->
-        <li><a href="#"><i class="fa fa-microchip"></i> <span>IT Steward</span></a></li>
-        <li><a href="#"><i class="fa fa-scribd"></i> <span>Survey</span></a></li>
-        <li><a href="#"><i class="fa fa-envelope"></i> <span>Mailer</span></a></li>
+        <?php echo moha_ui_dashboard_sidebar_build(); ?>
       </ul>
       <!-- /.sidebar-menu -->
     </section>

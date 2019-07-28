@@ -45,7 +45,23 @@ moha.toFahrenheit = function (degree) {
     attach: function(context, settings) {
       $('body', context).once('moha-ui-body-attach', function () {
 
+        Drupal.behaviors.mohaUI.toggleClass = function (className) {
+          const body = $('body', context);
+          const isOn = body.hasClass(className + '-on');
 
+          if (!isOn) {
+            body.removeClass('moha-toggle-class-off').addClass('moha-toggle-class-on').removeClass(className + '-off').addClass(className + '-on');
+          }
+          else {
+            body.removeClass('moha-toggle-class-on').addClass('moha-toggle-class-off').removeClass(className + '-on').addClass(className + '-off');
+          }
+        };
+
+        $(context).on('click', '[data-toggle="toggle-class"]', function (e) {
+          e.preventDefault();
+          const toggleClassName = $(this).data('toggle-class');
+          Drupal.behaviors.mohaUI.toggleClass.call($(this), toggleClassName);
+        });
 
         // once body finished.
       });

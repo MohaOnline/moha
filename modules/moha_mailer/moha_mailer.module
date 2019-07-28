@@ -396,3 +396,14 @@ function moha_mailer_cron() {
     watchdog_exception(__FUNCTION__, $e);
   }
 }
+
+/**
+ * Implements hook_moha_ui_dashboard_sidebar().
+ */
+function moha_mailer_moha_ui_dashboard_sidebar() {
+  $items['features']['admin/moha/dashboard/mailer'] = array(
+    '#markup' => l('<i class="fa fa-envelope"></i> <span>' . t('Mailer') . '</span>', 'admin/moha/dashboard/mailer', array('html'=>true)),
+  );
+
+  return $items;
+}

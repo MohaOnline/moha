@@ -1,7 +1,0 @@
-name = Moha Dashboard
-description = Provides customized layout for dashboard.
-core = 7.x
-package = Moha Online
-
-
-dependencies[] = dashboard

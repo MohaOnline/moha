@@ -560,3 +560,15 @@ function moha_its_fields_and_instances() {
 
   return $fields_and_instances;
 }
+
+/**
+ * Implements hook_moha_ui_dashboard_sidebar().
+ */
+function moha_its_moha_ui_dashboard_sidebar() {
+  $items['features']['admin/moha/dashboard/its'] = array(
+    '#markup' => l('<i class="fa fa-microchip"></i> <span>' . t('IT Steward') . '</span>', 'admin/moha/dashboard/its', array('html' => TRUE)),
+    '#weight' => 0,
+  );
+
+  return $items;
+}

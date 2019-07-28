@@ -1,3 +1,6 @@
+/**
+ * @file
+ */
 .moha_ui_hide {
   display: none;
 }
@@ -88,5 +91,33 @@ input[type="file"].weui-uploader__input {
   padding: 113px 30px 105px 30px;
   background: url(../img/iphone-6-rose-glod.png) no-repeat 0 0;
   background-size: contain;
+}
+/***/
+
+
+/** toggle-class styles */
+.moha-toggle-class {
+  float: left;
+  background-color: transparent;
+  background-image: none;
+  padding: 15px 10px;
+  font-family: fontAwesome, sans-serif;
+}
+
+.moha-toggle-class-off .moha-toggle-class:before {
+  content: "\f204";
+}
+
+.moha-toggle-class-on .moha-toggle-class:before {
+  content: "\f205";
+}
+
+.skin-blue .main-header .navbar .moha-toggle-class {
+  color: #ffffff;
+  font-size: 1.5em;
+}
+
+.skin-blue .main-header .navbar .moha-toggle-class:hover {
+  background-color: #367fa9;
 }
 /***/
