@@ -1699,7 +1699,7 @@ function moha_n2e($variable, $default = '') {
     return $variable;
   }
   else {
-    return '';
+    return $default;
   }
 }
 

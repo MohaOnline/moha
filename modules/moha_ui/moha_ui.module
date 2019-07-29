@@ -130,10 +130,17 @@ function moha_ui_library() {
  * @inheritdoc
  */
 function moha_ui_library_alter(&$libraries, $module) {
-  /** @link https://www.drupal.org/docs/7/theming/using-newer-versions-of-jquery  @endlink */
+  /** @link https://www.drupal.org/docs/7/theming/using-newer-versions-of-jquery @endlink */
   if ($module === 'system') {
-    // Modified jQuery version to 1.12.4.
-    $libraries['jquery']['js']['misc/jquery.js']['data'] = MOHA_UI__PATH . '/libs/jquery/jquery-1.12.4.js';
+    // Modified jQuery version to 1.12.4 to support fancy dashboard.
+    global $theme_key;
+
+    $version_2 = variable_get('jquery_update_jquery_admin_version', '1.4');
+    $version_3 = theme_get_setting('jquery_update_jquery_version', $theme_key);
+    $version_3 = moha_n2e($version_3, variable_get('jquery_update_jquery_version', '1.4'));
+    if (version_compare($version_2, '1.10') >= 0 || $version_3 != 'default' && version_compare($version_3, '1.10') >= 0) {
+      $libraries['jquery']['js']['misc/jquery.js']['data'] = MOHA_UI__PATH . '/libs/jquery/jquery-1.12.4.js';
+    }
   }
 }
 

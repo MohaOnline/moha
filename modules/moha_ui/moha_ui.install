@@ -12,7 +12,19 @@
  * @throws InvalidMergeQueryException
  */
 function moha_ui_install() {
-  variable_set('jquery_update_jquery_admin_version', '1.10');
+  $version_2 = variable_get('jquery_update_jquery_admin_version', '');
+  if (!empty($version_2)) {
+    variable_set('jquery_update_jquery_admin_version', '1.10');
+  }
+  else {
+    $admin_theme_key = variable_get('admin_theme', 'seven');
+    theme_get_setting('jquery_update_jquery_version', $admin_theme_key);
+    $theme_settings = drupal_static('theme_get_setting', array());
+
+    // Set the jQuery version.
+    $theme_settings[$admin_theme_key]['jquery_update_jquery_version'] = '1.10';
+    variable_set('theme_' . $admin_theme_key . '_settings', $theme_settings[$admin_theme_key]);
+  }
 
   $global_profile = ckeditor_profile_load('CKEditor Global Profile');
   $global_profile->settings['ckeditor_path'] = '%b/' . MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full';
