@@ -97,7 +97,6 @@ function moha_mailer_mail_form($form, &$form_state, $entity = NULL) {
     '#size' => 30,
     '#description' => t('Please select recipient user ID.'),
     '#era_entity_type' => 'user',
-    '#required' => TRUE,
     '#era_cardinality' => 1,
     '#era_query_settings' => array(
       'property_conditions' => array(
