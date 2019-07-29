@@ -11,5 +11,4 @@ dependencies[] = little_helpers
 dependencies[] = moha
 dependencies[] = moha_style
 dependencies[] = moha_fonts
-dependencies[] = moha_admin_menu
 
