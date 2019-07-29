@@ -247,7 +247,7 @@ function moha_ui_theme($existing, $type, $theme, $path) {
  * Implements hook_page_alter().
  */
 function moha_ui_page_alter(&$page) {
-  $path = request_path();
+  $path = current_path();
 
   if (substr($path, 0, 20) === 'admin/moha/dashboard') {
     $page['content']['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
