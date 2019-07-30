@@ -273,7 +273,7 @@ function moha_survey_menu() {
   $items['moha/survey/thanks'] = array(
     'title' => 'Thank you',
     'description' => 'Thank you page after user submit the data.',
-    /** @see moha_survey_dashboard */
+    /** @see moha_survey_thanks */
     'page callback' => 'moha_survey_thanks',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -283,7 +283,7 @@ function moha_survey_menu() {
   $items['moha/survey/taken'] = array(
     'title' => 'Survey has submitted',
     'description' => 'Prompt user he/she has submitted this survey.',
-    /** @see moha_survey_dashboard */
+    /** @see moha_survey_taken */
     'page callback' => 'moha_survey_taken',
     'access arguments' => array('administer own survey'),
     'type' => MENU_CALLBACK,
@@ -293,7 +293,7 @@ function moha_survey_menu() {
   $items['moha/survey/closed'] = array(
     'title' => 'Survey Closed',
     'description' => 'Prompt user this survey has been closed.',
-    /** @see moha_survey_dashboard */
+    /** @see moha_survey_closed */
     'page callback' => 'moha_survey_closed',
     'access arguments' => array('administer own survey'),
     'type' => MENU_CALLBACK,

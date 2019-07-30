@@ -97,7 +97,7 @@ function moha_survey_dashboard() {
     ),
   );
 
-  if (defined('__MOHA_UI')) {
+  if (module_exists('moha_ui')) {
     $content['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
     $content['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
   }

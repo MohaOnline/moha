@@ -94,7 +94,6 @@ input[type="file"].weui-uploader__input {
 }
 /***/
 
-
 /** toggle-class styles */
 .moha-toggle-class {
   float: left;
@@ -110,6 +109,10 @@ input[type="file"].weui-uploader__input {
 
 .moha-toggle-class-on .moha-toggle-class:before {
   content: "\f205";
+}
+
+.moha-toggle-class-on header.main-header {
+  z-index: 900;
 }
 
 .skin-blue .main-header .navbar .moha-toggle-class {

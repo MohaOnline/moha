@@ -39,14 +39,14 @@ define('MOHA_BLOCK__VARIABLE__FOOTER_POLICE_TEXT', __MOHA_BLOCK . '__variable__f
 define('MOHA_BLOCK__VARIABLE__FOOTER_POLICE_URL', __MOHA_BLOCK . '__variable__footer_police_URL');
 
 /**
- * /sites/all/modules/custom/moha/modules/moha_block.
- */
-define('__MOHA_BLOCK__PATH', base_path() . drupal_get_path('module', __MOHA_BLOCK));
-
-/**
  * sites/all/modules/custom/moha/modules/moha_block.
  */
 define('MOHA_BLOCK__PATH', drupal_get_path('module', __MOHA_BLOCK));
+
+/**
+ * /sites/all/modules/custom/moha/modules/moha_block.
+ */
+define('__MOHA_BLOCK__PATH', base_path() . drupal_get_path('module', __MOHA_BLOCK));
 
 /**
  * Block: Footer - Copyright
@@ -62,6 +62,11 @@ define('MOHA_BLOCK__FOOTER_ICP', 'moha_block__footer_icp');
  * Block: Footer - Police
  */
 define('MOHA_BLOCK__FOOTER_POLICE', 'moha_block__footer_police');
+
+/**
+ * Block Service: Conversion
+ */
+define('MOHA_BLOCK__SERVICE_CONVERSION', 'moha_block__service_conversion');
 
 /**
  * Implements hook_block_info().
@@ -85,13 +90,19 @@ function moha_block_block_info() {
     'cache' => DRUPAL_CACHE_GLOBAL,
   );
 
+  $blocks[MOHA_BLOCK__SERVICE_CONVERSION] = array(
+    'info' => t('Service Block: Conversion'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
   return $blocks;
 }
 
 /**
  * Implements hook_block_view().
+ * @inheritDoc
  *
- * Return HTML contents of block.
+ * Returns HTML contents of the block.
  */
 function moha_block_block_view($delta = '') {
   $block = array();
@@ -110,6 +121,10 @@ function moha_block_block_view($delta = '') {
       case MOHA_BLOCK__FOOTER_POLICE:
         $block['subject'] = NULL;
         $block['content'] = _moha_block_footer_police_contents();
+        break;
+      case MOHA_BLOCK__SERVICE_CONVERSION:
+        $block['subject'] = NULL;
+        $block['content'] = _moha_block_service_conversion_contents();
         break;
     }
   }
@@ -176,6 +191,26 @@ function _moha_block_footer_police_contents() {
   $contents['#attached'] = array(
     'css' => array(
       MOHA_BLOCK__PATH . '/css/' . MOHA_BLOCK__FOOTER_POLICE . '.css',
+    ),
+  );
+
+  $contents['#cache'] = TRUE;
+
+  return $contents;
+}
+
+/**
+ *
+ */
+function _moha_block_service_conversion_contents() {
+  $contents = array();
+
+  $contents['#theme'] = array(MOHA_BLOCK__SERVICE_CONVERSION);
+
+  $contents['#attached'] = array(
+    'css' => array(),
+    'js' => array(),
+    'library' => array(
     ),
   );
 
@@ -292,6 +327,11 @@ function moha_block_theme($existing, $type, $theme, $path) {
       'template' => 'templates/' . MOHA_BLOCK__FOOTER_POLICE,
       'render element' => 'contents',
     ),
+  );
+
+  $templates[MOHA_BLOCK__SERVICE_CONVERSION] = array(
+    'template' => 'templates/' . MOHA_BLOCK__SERVICE_CONVERSION,
+    'render element' => 'contents',
   );
 
   return $templates;

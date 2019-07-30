@@ -1,5 +1,5 @@
 name = Moha Admin Menu
-description = Provides for diffrent admin menu for different role.
+description = Provides different admin menus to different roles.
 core = 7.x
 package = Moha Online
 

@@ -19,7 +19,7 @@ function moha_db_update_form($form, &$form_state) {
 
   $form['hook_schema'] = array(
     '#type' => 'textfield',
-    '#title' => t('hook_schema'),
+    '#title' => t('hook_schema / function'),
     '#default_value' => '',
     '#size' => 40,
     '#description' => t('Specify hook_schema function name to deploy missing DB structure, or DB update function name to execute.'),
@@ -57,6 +57,7 @@ function moha_db_update_form_submit($form, &$form_state) {
 
       if (!module_exists($module_name)) {
         drupal_set_message("$hook_schema is not a function, or $module_name is not enabled.", "error");
+        return;
       }
       module_load_include('install', $module_name, $module_name);
       moha_schema_create_by_function($hook_schema);

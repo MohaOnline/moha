@@ -4,6 +4,6 @@ core = 7.x
 package = Moha Online
 
 dependencies[] = block
-dependencies[] = jquery_update
 dependencies[] = i18n
 dependencies[] = i18n_block
+dependencies[] = moha_ui

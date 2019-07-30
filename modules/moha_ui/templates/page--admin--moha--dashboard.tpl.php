@@ -37,7 +37,7 @@
     <!-- Navbar Right Menu -->
     <div class="navbar-custom-menu">
       <!-- branding of seven toggle button-->
-      <a href="#" class="moha-toggle-class" data-toggle="toggle-class" data-toggle-class="drupal-admin-ui" role="button">
+      <a title="Toggle Drupal Admin Menu" href="#" class="moha-toggle-class" data-toggle="toggle-class" data-toggle-class="drupal-admin-ui" role="button">
         <span class="sr-only">Toggle Drupal admin UI</span>
       </a>
     </div>

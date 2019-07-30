@@ -178,11 +178,21 @@ function moha_ui_libraries_info() {
  * Implements hook_menu().
  */
 function moha_ui_menu() {
+  $items['moha/homepage'] = array(
+    'title' => 'Homepage',
+    'weight' => -399,
+    'description' => t('Homepage of the site.'),
+    /* @see moha_ui_homepage() */
+    'page callback' => 'moha_ui_homepage',
+    'access arguments' => array('access content'),
+    'file' => 'moha_ui.home.inc',
+    'type' => MENU_CALLBACK,
+  );
 
   $items['admin/moha/dashboard'] = array(
     'title' => 'Dashboard',
     'weight' => -99,
-    'description' => t('Dashboard of Moha module.'),
+    'description' => t('Dashboard of Moha modules.'),
     'page callback' => 'drupal_get_form',
     /* @see moha_dashboard_form() */
     'page arguments' => array('moha_ui_dashboard_form'),
@@ -240,11 +250,23 @@ function moha_ui_theme($existing, $type, $theme, $path) {
     'template' => 'templates/page--admin--moha--dashboard',
   );
 
+  $themes['moha_ui__tpl__page'] = array(
+    'render element' => 'elements',
+    'template' => 'templates/page--moha',
+  );
+
+  $themes['moha_ui__tpl__homepage_contents'] = array(
+    'render element' => 'element',
+    'template' => 'templates/page--moha-ui--homepage-contents',
+  );
+
   return $themes;
 }
 
 /**
  * Implements hook_page_alter().
+ *
+ * Add frontend libraries for dashboard.
  */
 function moha_ui_page_alter(&$page) {
   $path = current_path();
