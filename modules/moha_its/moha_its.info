@@ -23,7 +23,6 @@ files[] = includes/MohaITSGroupEntityAdminController.php
 files[] = includes/MohaITSGroupEntityController.php
 files[] = includes/MohaITSInfrastructureEntity.php
 files[] = includes/MohaITSInfrastructureEntityAdminController.php
-files[] = includes/MohaITSInfrastructureEntityController.php
 files[] = includes/MohaITSServiceEntity.php
 files[] = includes/MohaITSServiceEntityAdminController.php
 files[] = includes/MohaITSServiceEntityController.php

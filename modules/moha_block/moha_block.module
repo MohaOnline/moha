@@ -200,23 +200,27 @@ function _moha_block_footer_police_contents() {
 }
 
 /**
- *
+ * Block contents for conversion service.
  */
 function _moha_block_service_conversion_contents() {
-  $contents = array();
+  $element = array();
 
-  $contents['#theme'] = array(MOHA_BLOCK__SERVICE_CONVERSION);
+  $element['#theme'] = array(MOHA_BLOCK__SERVICE_CONVERSION);
 
-  $contents['#attached'] = array(
-    'css' => array(),
-    'js' => array(),
+  $element['#attached'] = array(
+    'css' => array(
+      MOHA_BLOCK__PATH . '/css/moha_block.css',
+    ),
+    'js' => array(
+      MOHA_BLOCK__PATH . '/js/moha_block.js',
+    ),
     'library' => array(
     ),
   );
 
-  $contents['#cache'] = TRUE;
+  $element['#cache'] = TRUE;
 
-  return $contents;
+  return $element;
 }
 
 /**
@@ -290,7 +294,7 @@ function moha_block_block_configure($delta = '') {
  *
  * @inheritdoc
  */
-function moha_block_block_save($delta = '', $edit = []) {
+function moha_block_block_save($delta = '', $edit = array()) {
   switch ($delta) {
     default:
     case MOHA_BLOCK__FOOTER_COPYRIGHT:
@@ -331,7 +335,7 @@ function moha_block_theme($existing, $type, $theme, $path) {
 
   $templates[MOHA_BLOCK__SERVICE_CONVERSION] = array(
     'template' => 'templates/' . MOHA_BLOCK__SERVICE_CONVERSION,
-    'render element' => 'contents',
+    'render element' => 'element',
   );
 
   return $templates;

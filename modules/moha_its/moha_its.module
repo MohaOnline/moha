@@ -1,6 +1,7 @@
 <?php
 /**
  * @file
+ * Hooks entry file of the module.
  */
 
 // TODO
@@ -102,6 +103,16 @@ define('MOHA_ITS_EFFORT', 'Moha ITS Effort');
 define('__MOHA_ITS_EFFORT', 'moha_its_effort');
 
 /**
+ * Entity human name: Moha ITS Azure China Expense.
+ */
+define('MOHA_ITS_AZURE_CHINA_EXPENSE', 'Moha ITS Azure China Expense');
+
+/**
+ * Entity machine name: moha_its_azure_china_expense.
+ */
+define('__MOHA_ITS_AZURE_CHINA_EXPENSE', 'moha_its_azure_china_expense');
+
+/**
  * Entity human name: Moha ITS Status.
  */
 define('MOHA_ITS_STATUS', 'Moha ITS Status');
@@ -197,6 +208,27 @@ define('MOHA_ITS__VOCABULARY__SERVICE_TYPES', 'moha_its__vocabulary__service_typ
 define('MOHA_ITS__VOCABULARY__EFFORT_TYPES', 'moha_its__vocabulary__effort_types');
 
 /**
+* Moha ITS Block: Azure expense summary.
+ */
+define('MOHA_ITS__BLOCK__AZURE_EXPENSE_SUMMARY', 'MOHA_ITS__AZURE_CN_EXPENSE_S_');
+
+/**
+ * Moha ITS Block: Azure China expense details.
+ */
+define('MOHA_ITS__BLOCK__AZURE_CHINA_EXPENSE_DETAILS', 'MOHA_ITS__AZURE_CN_EXPENSE_D_');
+
+/**
+ * Azure China Expense API endpoint.
+ * Month -- the month of the report. Should be in the format of yyyy-MM. if not specified, default to current month.
+ * @param string type
+ *   the type of the report, should be Summary / Detail / StoreCharge / PriceSheet.
+ *   If not specified, default to Summary.
+ * @param string fmt
+ *   the format of the report, should be CSV or JSON, default to CSV.
+ */
+define('MOHA_ITS__AZURE_CHINA_API__EXPENSE', 'https://ea.azure.cn/rest/!enrollment_id/usage-report?month=!month&type=!type&fmt=!format');
+
+/**
  * Implements hook_entity_info().
  */
 function moha_its_entity_info() {
@@ -258,54 +290,15 @@ function moha_its_entity_info() {
     'views controller class' => 'EntityDefaultViewsController',
   );
 
-  $items[__MOHA_ITS_INFRASTRUCTURE] = array(
-    'label' => t(MOHA_ITS_INFRASTRUCTURE),
-    'plural label' => t(MOHA_ITS_INFRASTRUCTURE . 's'), // Moha ITS Infrastructures
-    'base table' => __MOHA_ITS_INFRASTRUCTURE,
-    'revision table' => __MOHA_ITS_INFRASTRUCTURE . '_revision',
-    'entity keys' => array(
-      'id' => 'id',
-      'label' => 'full_name',
-      'revision' => 'vid',
-    ),
-    //
-    'label callback' => 'entity_class_label',
-
-    /** @see entity_crud_hook_entity_info() */
-    'admin ui' => array(
-      /* Moha ITS Infrastructure management page URL & Class. */
-      'path' => MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI,
-      'controller class' => 'MohaITSInfrastructureEntityAdminController',
-
-      /** @see entity_ui_get_form() */
-      /* Moha ITS Infrastructure add / edit forms containing file. */
-      'file' => 'includes/MohaITSInfrastructureEntity.form.inc',  //
-    ),
-
-    // Declares which module contains related Class information, like Admin UI Class, etc.
-    'module' => __MOHA_ITS,
-    'access callback' => 'moha_entity_access',
-    'entity class' => 'MohaITSInfrastructureEntity',
-    'controller class' => 'MohaITSInfrastructureEntityController',
-    // Uses defaultUri method of entity class to generate entity URL.
-    'uri callback' => 'entity_class_uri',
-
-    // Make entity fieldable; @see field_attach_form to attach added fields.
-    'fieldable' => TRUE,
-    'bundles' => array(
-      __MOHA_ITS_INFRASTRUCTURE => array(
-        'label' => t(MOHA_ITS_INFRASTRUCTURE),
-        'plural label' => t(MOHA_ITS_INFRASTRUCTURE . 's'),
-        'admin' => array(
-          'path' => MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI,
-          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_INFRASTRUCTURE),
-        ),
-      ),
-    ),
-
-    // Views support.
-    'views controller class' => 'EntityDefaultViewsController',
+  $items[__MOHA_ITS_INFRASTRUCTURE] = moha_define_entity(
+    __MOHA_ITS,
+    __MOHA_ITS_INFRASTRUCTURE,
+    MOHA_ITS_INFRASTRUCTURE,
+    'MohaITSInfrastructure',
+    MOHA_ITS__URL__INFRASTRUCTURE_ADMIN_UI,
+    TRUE
   );
+  $items[__MOHA_ITS_INFRASTRUCTURE]['entity keys']['label'] = 'full_name';
 
   $items[__MOHA_ITS_SERVICE] = array(
     'label' => t(MOHA_ITS_SERVICE),
@@ -414,41 +407,39 @@ function moha_its_entity_info() {
  * Implements hook_menu().
  */
 function moha_its_menu() {
+  $items["admin/moha/dashboard/its"] = array(
+    'title' => 'Moha ITS Dashboard',
+    'description' => 'The dashboard of Moha IT Steward.',
+    'page callback' => 'moha_its_admin_dashboard',
+    'page arguments' => array(),
+    'file' => 'moha_its.admin.inc',
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
+    'type' => MENU_CALLBACK,
+  );
+
   $items["admin/moha/its"] = array(
     'title' => 'Moha ITS',
-    'description' => t('Moha IT Steward.'),
+    'description' => 'Moha IT Steward.',
     'page callback' => 'system_admin_menu_block_page',
     'weight' => -10,
     'file' => 'system.admin.inc',
     'file path' => drupal_get_path('module', 'system'),
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items["admin/moha/its/dashboard"] = array(
+    'title' => 'Dashboard',
+    'description' => 'The dashboard of Moha IT Steward.',
+    'weight' => -10,
+    /* @see moha_mailer_dashboard_jump() */
+    'page callback' => 'moha_its_dashboard_jump',
+    'file' => 'moha_its.admin.inc',
+    'access arguments' => array(MOHA__PERMISSION__ROOT),
     'type' => MENU_NORMAL_ITEM,
   );
 
   return $items;
-}
-
-/**
- * Judge if user has permission to access Group management page.
- *
- * @param $op
- * @param $entity object
- * @param $account object
- *
- * @return bool
- */
-function _moha_its_group_entity_admin_access_callback($op, $entity = NULL, $account = NULL) {
-  global $user;
-
-  if ($user->uid == 1) {
-    return TRUE;
-  }
-
-  if (user_access(MOHA_ITS__PERMISSION__EDIT_ANY_GROUP, $account)) {
-    return TRUE;
-  }
-
-  return FALSE;
 }
 
 /**
@@ -533,6 +524,73 @@ function moha_its_fields_and_instances() {
 
   $fields_and_instances = moha_generate_description_fields_and_instances($types);
 
+//  $fields_and_instances['moha_its_infra_enrollment_id'] = array(
+//    'label'       => t('Enrollment ID'),
+//    'field_name'  => 'moha_its_infra_enrollment_id',
+//    'description' => t('ID issued by infra platform.'),
+//    'module'      => 'number',
+//    'type'        => 'number_integer',
+//    'cardinality' => 1,
+//    'entity_type' => __MOHA_ITS_INFRASTRUCTURE,
+//    'bundle'      => __MOHA_ITS_INFRASTRUCTURE,
+//    'indexes'     => array(),
+//    'required'    => FALSE,
+//    'widget' => array(
+//      'module'  => 'number',
+//      'type'    => 'number',
+//    ),
+//    'settings' => array(
+//      'max'     => '',
+//      'min'     => '',
+//      'prefix'  => '',
+//      'suffix'  => '',
+//      'user_register_form' => FALSE,
+//    ),
+//    'display' => array(
+//      'default' => array(
+//        'label'   => 'inline',
+//        'module'  => 'number',
+//        'type'    => 'number_integer',
+//        'settings' => array(
+//          'decimal_separator' => '.',
+//          'prefix_suffix' => TRUE,
+//          'scale' => 0,
+//          'thousand_separator' => '',
+//        ),
+//      ),
+//      'teaser' => array(
+//        'label' => 'inline',
+//        'type'  => 'hidden',
+//      ),
+//    ),
+//  );
+
+  $fields_and_instances['moha_its_infra_enrollment_id'] = array(
+    'field_name'  => 'moha_its_infra_enrollment_id',
+    'label'       => t('Enrollment ID'),
+    'description' => t('ID issued by infra platform to identify legal entity.'),
+    'type'        => 'text',
+    'cardinality' => 1,
+    'entity_type' => __MOHA_ITS_INFRASTRUCTURE,
+    'bundle' => __MOHA_ITS_INFRASTRUCTURE,
+    'settings' => array(
+      'max_length' => 64,
+    ),
+    'widget' => array(
+      'type' => 'text_textfield',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'type'  => 'hidden',
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'type'  => 'hidden',
+      ),
+    ),
+  );
+
   $fields_and_instances['moha_its_infra_expense_token'] = array(
     'label'       => t('Expense Token'),
     'field_name'  => 'moha_its_infra_expense_token',
@@ -542,18 +600,45 @@ function moha_its_fields_and_instances() {
     'entity_type' => __MOHA_ITS_INFRASTRUCTURE,
     'bundle' => __MOHA_ITS_INFRASTRUCTURE,
     'settings' => array(
-      'max_length' => 2048  ,
+      'max_length' => 2048,
     ),
     'widget' => array(
       'type' => 'text_textfield',
-      'weight' => -100,
     ),
     'display' => array(
       'default' => array(
-        'label' => 'hidden',
+        'label' => 'above',
+        'type'  => 'hidden',
       ),
       'teaser' => array(
-        'label' => 'hidden',
+        'label' => 'above',
+        'type'  => 'hidden',
+      ),
+    ),
+  );
+
+  $fields_and_instances['moha_its_infra_expense_from'] = array(
+    'field_name'  => 'moha_its_infra_expense_from',
+    'label'       => t('Expense From'),
+    'description' => t('From when expense could be fetched, format: YYYY-MM.'),
+    'type'        => 'text',
+    'cardinality' => 1,
+    'entity_type' => __MOHA_ITS_INFRASTRUCTURE,
+    'bundle' => __MOHA_ITS_INFRASTRUCTURE,
+    'settings' => array(
+      'max_length' => 64,
+    ),
+    'widget' => array(
+      'type' => 'text_textfield',
+    ),
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'type'  => 'hidden',
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'type'  => 'hidden',
       ),
     ),
   );
@@ -571,4 +656,577 @@ function moha_its_moha_ui_dashboard_sidebar() {
   );
 
   return $items;
+}
+
+/**
+ * Fetch latest day when expense of Azure China was fetched.
+ *
+ * @param $enrollment_id
+ *
+ * @retrun string
+ *   YYYY-MM
+ */
+function moha_its_azure_china_expense_latest_fetched_date($enrollment_id) {
+  $date = db_query("SELECT DATE_FORMAT(MAX(date), '%Y-%m') FROM `moha_its_azure_china_expense` WHERE `enrollment_id` = :enrollment_id;",
+    array(
+      ':enrollment_id' => $enrollment_id,
+    )
+  )->fetchField();
+
+  watchdog( __FUNCTION__,
+    "Latest expenses: @date",
+    array(
+      '@date' => $date,
+    ),
+    WATCHDOG_INFO
+  );
+
+  return $date;
+}
+
+/**
+ * Fetch expenses per passed information, then store to DB.
+ *
+ * @param string $enrollment_id
+ * @param string $expense_token
+ * @param string $period
+ * @param string $type
+ *
+ * @throws Exception
+ *   If data can't be fetched.
+ */
+function moha_its_azure_china_fetch_expense($enrollment_id, $expense_token, $period, $type = 'detail') {
+
+  if (empty($enrollment_id) || empty($expense_token) || empty($period)) {
+    throw new Exception(format_string('Bad params, $enrollment_id: @enrollment_id, $expense_token: @token, $period: @period.',
+      array(
+        '@enrollment_id' => $enrollment_id,
+        '@token' => $expense_token,
+        '@period' => $period,
+    )));
+  }
+
+  // Expecting headers to DB columns mapping, 31 columns in header.
+  static $cn_headers_map = array(
+    "账户所有者 Live Id (AccountOwnerId)" => "AccountOwnerId",
+    "账户名称 (Account Name)" => "AccountName",
+    "服务管理员 Live Id (ServiceAdministratorId)" => "ServiceAdministratorId",
+    "订阅 Id (SubscriptionId)" => "SubscriptionId",
+    "订阅 Guid (SubscriptionGuid)" => "SubscriptionGuid",
+    "订阅名称 (Subscription Name)" => "SubscriptionName",
+    "日期 (Date)" => "Date",
+    "月 (Month)" => "Month",
+    "日 (Day)" => "Day",
+    "年 (Year)" => "Year",
+    "产品 (Product)" => "Product",
+    "资源 GUID (Meter ID)" => "MeterId",
+    "服务 (Meter Category)" => "MeterCategory",
+    "服务类型 (Meter Sub-Category)" => "MeterSubCategory",
+    "服务区域 (Meter Region)" => "MeterRegion",
+    "服务资源 (Meter Name)" => "MeterName",
+    "已消耗资源数量 (Consumed Quantity)" => "ConsumedQuantity",
+    "资源费率 (ResourceRate)" => "ResourceRate",
+    "扩展的成本 (ExtendedCost)" => "ExtendedCost",
+    "服务子区域 (Resource Location)" => "ResourceLocation",
+    "服务信息 (Consumed Service)" => "ConsumedService",
+    "组件 (Instance ID)" => "InstanceId",
+    "服务信息 1 (ServiceInfo1)" => "ServiceInfo1",
+    "服务信息 2 (ServiceInfo2)" => "ServiceInfo2",
+    "附加信息 (AdditionalInfo)" => "AdditionalInfo",
+    "(Tags)" => "Tags",
+    "(Store Service Identifier)" => "StoreServiceIdentifier",
+    "(Department Name)" => "DepartmentName",
+    "(Cost Center)" => "CostCenter",
+    "(Unit of Measure)" => "UnitOfMeasure",
+    "(Resource Group)" => "ResourceGroup",
+  );
+
+  /** @var $response string */
+  $response = moha_api_get(
+    format_string(MOHA_ITS__AZURE_CHINA_API__EXPENSE, array(
+      '!enrollment_id' => $enrollment_id,
+      '!type' => $type,
+      '!month' => $period,
+      '!format' => 'csv',
+    )),
+    array(
+      'headers' => array(
+        'authorization' => 'bearer ' . $expense_token,
+      ),),
+    'csv'
+  );
+
+  // Process azure returned csv expense.
+  $expenses = explode("\r\n", $response);
+
+  watchdog( __FUNCTION__,
+    '@num records in @period of @enrollment_id fetched.',
+    array(
+      '@num' => count($expenses),
+      '@enrollment_id' => $enrollment_id,
+      '@period' => $period,
+    ),
+    WATCHDOG_INFO
+  );
+
+  // Walk through expenses data.
+  $transaction = db_transaction();
+  $fetched_header = array();
+
+  try {
+    foreach ($expenses as $expense) {
+      $details = str_getcsv($expense);
+
+      // Ignore decorate lines.
+      if (count($details) < 3) {
+        watchdog(__FUNCTION__,
+          "Line ignored: @line",
+          array(
+            '@line' => print_r($expense, TRUE),
+          ),
+          WATCHDOG_INFO
+        );
+        continue;
+      }
+      // Prepare header to map data to related columns.
+      else {
+        if (empty($fetched_header)) {
+          watchdog(__FUNCTION__,
+            "Header fetched: @line",
+            array(
+              '@line' => print_r($expense, TRUE),
+            ),
+            WATCHDOG_INFO
+          );
+          $fetched_header = $details;
+
+          // Clean empty column in fetched header from tail.
+          for (end($fetched_header); ($currentKey = key($fetched_header)) !== NULL; prev($fetched_header)) {
+            $currentElement = current($fetched_header);
+            if (empty($currentElement)) {
+              unset($fetched_header[$currentKey]);
+            }
+            else {
+              break;
+            }
+          }
+
+          // Check if header is matched expectation.
+          $expecting_length = count($cn_headers_map);
+          $fetched_length = count($fetched_header);
+          if ($expecting_length != $fetched_length) {
+            watchdog( __FUNCTION__,
+              "$fetched_length != $expecting_length, fetched headers don't match expectation: @header",
+              array(
+                '@header' => print_r($fetched_header, TRUE),
+              ),
+              WATCHDOG_ERROR
+            );
+
+            throw new Exception("$fetched_length != $expecting_length, fetched headers don't match expectation");
+          }
+          else {
+            watchdog( __FUNCTION__,
+              "$fetched_length, fetched headers match expectation: @header",
+              array(
+                '@header' => print_r($fetched_header, TRUE),
+              ),
+              WATCHDOG_INFO
+            );
+          }
+        }
+        else {
+          // Store fetched expense to DB.
+          $fields['enrollment_id'] = $enrollment_id;
+          $fields['status'] = moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY);
+          $fields['created'] = $fields['updated'] = REQUEST_TIME;
+
+          foreach ($details as $key => $value) {
+            // Ignore empty column
+            if (empty($value)) {
+              continue;
+            }
+
+            $fields[$cn_headers_map[$fetched_header[$key]]] = $value;
+
+            // Convert date string format as MySQL acceptable format.
+            if ($cn_headers_map[$fetched_header[$key]] == 'Date') {
+              $fields[$cn_headers_map[$fetched_header[$key]]] = DateTime::createFromFormat('m/d/Y', $value)->format(MOHA__DATETIME_FORMAT__SHORT);
+            }
+          }
+
+          /** @link https://www.drupal.org/docs/7/api/database-api/insert-queries @endlink */
+          db_insert(__MOHA_ITS_AZURE_CHINA_EXPENSE)
+            ->fields($fields)
+            ->execute();
+        }
+      }
+    } // Walk through expenses.
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
+    watchdog_exception(__FUNCTION__, $e);
+  }
+}
+
+/**
+ * Clean incomplete expenses data.
+ *
+ * @param $enrollment_id
+ * @param $year
+ * @param $month
+ */
+function moha_its_azure_china_clear_expense($enrollment_id, $year, $month) {
+
+  $num_deleted = db_delete(__MOHA_ITS_AZURE_CHINA_EXPENSE)
+    ->condition('enrollment_id', $enrollment_id)
+    ->condition('Year', $year)
+    ->condition('Month', $month)
+    ->execute();
+
+  watchdog( __FUNCTION__,
+    "$num_deleted records in $year-$month of $enrollment_id removed.",
+    array(
+    ),
+    WATCHDOG_INFO
+  );
+}
+
+/**
+ * Explode string to year and month.
+ *
+ * @param $date
+ *
+ * @return array
+ */
+function moha_its_azure_china_expense_period_expload($date) {
+  $explode = explode('-', $date);
+
+  $year = $explode[0];
+  $month = $explode[1];
+
+  return array($year, $month);
+}
+
+/**
+ * Sync expenses data for infrastructures on Azure China.
+ *
+ * @param $entity
+ *
+ * @throws Exception
+ */
+function moha_its_azure_china_expense_sync($entity) {
+
+  $wrapper = entity_metadata_wrapper(__MOHA_ITS_INFRASTRUCTURE, $entity);
+  $enrollment_id = $wrapper->moha_its_infra_enrollment_id->value();
+  $expense_token = $wrapper->moha_its_infra_expense_token->value();
+
+  if (empty($enrollment_id) || empty($expense_token)) {
+    watchdog( __FUNCTION__,
+      "Enrollment: $enrollment_id, Token length: @length, ignored",
+      array(
+        '@length' => strlen(trim($expense_token)),
+      ),
+      WATCHDOG_ERROR
+    );
+
+    return;
+  }
+
+  $latest = moha_its_azure_china_expense_latest_fetched_date($enrollment_id);
+
+  if (empty($latest)) {
+    // YYYY-MM from when expense could be fetched.
+    $from = $wrapper->moha_its_infra_expense_from->value();
+    moha_its_azure_china_fetch_expense($enrollment_id, $expense_token, $from);
+  }
+  else {
+    $current = date(MOHA__DATETIME_FORMAT__AZURE_EXPENSE);
+
+    list($latest_year, $latest_month) = moha_its_azure_china_expense_period_expload($latest);
+    list($current_year, $current_month) = moha_its_azure_china_expense_period_expload($current);
+
+    if ($latest_year != $current_year || $latest_month != $current_month) {
+      $date = strtotime($latest);
+      $from = date(MOHA__DATETIME_FORMAT__AZURE_EXPENSE, strtotime("+1 month", $date));
+      moha_its_azure_china_fetch_expense($enrollment_id, $expense_token, $from);
+    }
+    else {
+
+      // Re-fetch expense in previous month if
+      $day = date('j');
+      if ($day < 6) {
+        $previous = date(MOHA__DATETIME_FORMAT__AZURE_EXPENSE, strtotime("-1 month"));
+        list($previous_year, $previous_month) = moha_its_azure_china_expense_period_expload($previous);
+
+        moha_its_azure_china_clear_expense($enrollment_id, $previous_year, $previous_month);
+        moha_its_azure_china_fetch_expense($enrollment_id, $expense_token, $previous);
+
+        watchdog( __FUNCTION__,
+          "Day $day, overwrite data of previous month.",
+          array(
+          ),
+          WATCHDOG_INFO
+        );
+      }
+
+      // Overwrite expense in current month.
+      moha_its_azure_china_clear_expense($enrollment_id, $current_year, $current_month);
+      moha_its_azure_china_fetch_expense($enrollment_id, $expense_token, $current);
+
+      watchdog( __FUNCTION__,
+        "Overwrote data of $current.",
+        array(
+        ),
+        WATCHDOG_INFO
+      );
+    }
+  }
+
+  if (isset($from)) {
+    watchdog( __FUNCTION__,
+      "Fetched expense of $from.",
+      array(
+      ),
+      WATCHDOG_INFO
+    );
+  }
+
+}
+
+/**
+ * Go through all infrastructures to fetch expenses.
+ *
+ * @throws Exception
+ *   if Azure expense couldn't be fetched.
+ */
+function moha_its_fetch_all_infra_expense() {
+  // Fetch all active infrastructures.
+  $entities = moha_entity_fetch(__MOHA_ITS_INFRASTRUCTURE);
+
+  foreach ($entities as $entity) {
+    $platform = moha_term_name_by_tid($entity->tid);
+
+    if ($platform == MOHA_ITS__TERM__AZURE_CHINA) {
+      moha_its_azure_china_expense_sync($entity);
+    }
+  }
+}
+
+/**
+ * Go through all infrastructures, returns enrollment IDs of Azure China platform.
+ *
+ * @throws Exception
+ *   if Azure expense couldn't be fetched.
+ */
+function moha_its_azure_china_enrollment_ids() {
+  $enrollment_ids = array();
+
+  // Fetch all active infrastructures.
+  $entities = moha_entity_fetch(__MOHA_ITS_INFRASTRUCTURE);
+
+  foreach ($entities as $entity) {
+    $platform = moha_term_name_by_tid($entity->tid);
+
+    if ($platform == MOHA_ITS__TERM__AZURE_CHINA) {
+      $wrapper = entity_metadata_wrapper(__MOHA_ITS_INFRASTRUCTURE, $entity);
+      $enrollment_id = $wrapper->moha_its_infra_enrollment_id->value();
+
+      $enrollment_ids[$enrollment_id] = array(
+        'enrollment_id' => $enrollment_id,
+        'from' => $wrapper->moha_its_infra_expense_from->value(),
+        'name' => $wrapper->name->value(),
+        'full_name' => $wrapper->full_name->value(),
+      );
+    }
+  }
+
+  return $enrollment_ids;
+}
+
+/**
+ * Fetch available expense details of Azure China.
+ * By default, data will be cached 10 minutes.
+ *
+ * @return array
+ *   Associative array keyed by $enrollment_id, array item keys:
+ *     name
+ *     full_name
+ *     from
+ *     details
+ *     previous2_cycle
+ *     previous_cycle
+ *     current_cycle
+ *     previous_week
+ *     current_week
+ *
+ * @throws \Exception
+ */
+function moha_its_azure_china_expense_details() {
+  $expenses = moha_cache_get(__FUNCTION__, array());
+  if (!empty($expenses)) {
+    return $expenses;
+  }
+
+  $enrollment_ids = moha_its_azure_china_enrollment_ids();
+
+  foreach ($enrollment_ids as $enrollment_id => $group) {
+    $expense = db_query("SELECT SUM(`ExtendedCost`) AS Cost, CONCAT(Year, '-', Month, '-', Day) AS Date, Year, Month, Day FROM moha_its_azure_china_expense WHERE `enrollment_id` = :enrollment_id group by `Year`, `Month`, `Day`;",
+      array(
+        ':enrollment_id' => $enrollment_id,
+      )
+    )->fetchAllAssoc('Date');
+
+    $expenses[$enrollment_id] = array(
+      'name' => $group['name'],
+      'full_name' => $group['full_name'],
+      'from' => $group['from'],
+      'details' => $expense,
+    );
+  }
+
+  moha_cache_set(__FUNCTION__, $expenses, 60*10);
+
+  return $expenses;
+}
+
+/**
+ * Implements hook_cron().
+ */
+function moha_its_cron() {
+  try {
+    moha_its_fetch_all_infra_expense();
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+  }
+}
+
+/**
+ * Implements hook_cronapi().
+ *
+ */
+function moha_its_cronapi($op, $job = NULL) {
+  # Rule.
+  # +---------------- minute (0 - 59)
+  # |  +------------- hour (0 - 23)
+  # |  |  +---------- day of month (1 - 31)
+  # |  |  |  +------- month (1 - 12)
+  # |  |  |  |  +---- day of week (0 - 6) (Sunday=0)
+  # |  |  |  |  |
+  # *  *  *  *  *  command to be executed
+
+  $items['moha_its_cron'] = array(
+    'description' => 'Moha ITS housekeeping and data sync.',
+    'rule' => '0 2 * * *',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function moha_its_block_info() {
+
+  $blocks[MOHA_ITS__BLOCK__AZURE_CHINA_EXPENSE_DETAILS] = array(
+    'info' => t('Moha ITS Block: Azure expense details'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * @inheritDoc
+ */
+function moha_its_block_view($delta = '') {
+  $block = array();
+
+  try {
+    switch ($delta) {
+      case MOHA_ITS__BLOCK__AZURE_CHINA_EXPENSE_DETAILS:
+        $block['subject'] = NULL;
+        $block['content'] = moha_its_block_view_azure_cn_expenses();
+        break;
+    }
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+  }
+
+  return $block;
+}
+
+/**
+ * Block
+ *
+ * @return mixed
+ *
+ * @throws Exception
+ */
+function moha_its_block_view_azure_cn_expenses() {
+  $data = array();
+  $expenses = moha_its_azure_china_expense_details();
+  foreach ($expenses as $expense) {
+
+    $name = $expense['name'];
+    $full_name = $expense['full_name'];
+
+    $dates = $costs = array();
+    if (!empty($expense['details'])) {
+      foreach ($expense['details'] as $date => $detail) {
+        $dates[] = $date;
+        $costs[] = round($detail->Cost);
+      }
+    }
+
+    $data[] = array(
+      'name' => $name,
+      'full_name' => $full_name,
+//      'dataset' => $expense['details'],
+      'dates' => $dates,
+      'costs' => $costs,
+    );
+  }
+
+  $footer_html = <<< FOOTER_HTML
+      <div class="col-sm-3 col-xs-6">
+        <div class="description-block border-right">
+          <h5 class="description-header"></h5>
+          <span class="description-text">Balance</span>
+        </div>
+      </div>
+      <div class="col-sm-3 col-xs-6">
+        <div class="description-block border-right">
+          <h5 class="description-header"></h5>
+          <span class="description-text">Cycle: </span>
+        </div>
+      </div>
+      <div class="col-sm-3 col-xs-6">
+        <div class="description-block border-right">
+          <h5 class="description-header"></h5>
+          <span class="description-text">Cycle: </span>
+        </div>
+      </div>
+      <div class="col-sm-3 col-xs-6">
+        <div class="description-block">
+          <h5 class="description-header"></h5>
+          <span class="description-text">Cycle: </span>
+        </div>
+      </div>
+FOOTER_HTML;
+
+  $content['azure_china_expenses'] = array(
+    '#title' => 'Azure China Expenses',
+    '#type' => 'moha_ui_dashboard_chart_expense',
+   // '#data' => $data,
+    '#footer' => $footer_html,
+    '#prefix' => '<div class="row"><div class="col-md-12">',
+    '#suffix' => '</div></div>',
+  );
+
+  return $content;
 }

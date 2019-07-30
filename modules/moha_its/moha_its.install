@@ -346,7 +346,7 @@ function moha_its_schema() {
   );
 
   // Entity storing table: Moha ITS Service.
-  $schema['moha_its_service'] = array(
+  $schema[__MOHA_ITS_SERVICE] = array(
     'description' => 'Stores service information of IT assets.',
     'fields' => array(
       'id' => array(
@@ -516,7 +516,7 @@ function moha_its_schema() {
         'default' => 0,
       ),
       'status' => array(
-        'description' => 'Service status.',
+        'description' => 'Entity status.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 1,
@@ -758,6 +758,271 @@ function moha_its_schema() {
     ),
     'primary key' => array('vid'),
   );
+
+  /**
+   * @link https://www.drupal.org/docs/7/api/schema-api/data-types @endlink
+   */
+  $schema[__MOHA_ITS_AZURE_CHINA_EXPENSE] = array(
+    'description' => 'Stores revisions of operation information.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary Key: Unique ID.',
+        'type' => 'serial',
+        'size' => 'big', // tiny / small / medium / normal / big
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'Revision ID.',
+        'type' => 'int',
+        'size' => 'big', // tiny / small / medium / normal / big
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'enrollment_id' => array(
+        'description' => 'Azure issued contract no to identify different companies.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ),
+      'AccountOwnerId' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'AccountName' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ServiceAdministratorId' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'SubscriptionId' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'SubscriptionGuid' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'SubscriptionName' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'Date' => array(
+        'description' => 'Date time of the expense occurred',
+        'type' => 'datetime',
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'VARCHAR',
+        'sqlsrv_type' => 'smalldatetime',
+        'not null' => FALSE,
+        'sortable' => TRUE,
+        'default' => NULL,
+      ),
+      'Month' => array(
+        'type' => 'int',
+        'size' => 'small', // tiny / small / medium / normal / big
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'Day' => array(
+        'type' => 'int',
+        'size' => 'small', // tiny / small / medium / normal / big
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'Year' => array(
+        'type' => 'int',
+        'size' => 'small', // tiny / small / medium / normal / big
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'Product' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'MeterId' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'MeterCategory' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'MeterSubCategory' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'MeterRegion' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'MeterName' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ConsumedQuantity' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ResourceRate' => array(
+        'type' => 'numeric',
+        'precision' => 48,        /* Total digits. */
+        'scale' => 30,            /* Total digits following the decimal point. */
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'ExtendedCost' => array(
+        'type' => 'numeric',
+        'precision' => 48,        /* Total digits. */
+        'scale' => 30,            /* Total digits following the decimal point. */
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'ResourceLocation' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ConsumedService' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'InstanceId' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ServiceInfo1' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ServiceInfo2' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'AdditionalInfo' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'Tags' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'StoreServiceIdentifier' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'DepartmentName' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'CostCenter' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'UnitOfMeasure' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ResourceGroup' => array(
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => 'Entity status.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the record was updated.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the record was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'date' => array('Date'),
+      'year' => array('Year'),
+      'month' => array('Month'),
+      'day' => array('Day'),
+      'year_month' => array('Year', 'Month'),
+      'year_month_day' => array('Year', 'Month', 'Day'),
+      'enrollment_id' => array(array('enrollment_id', 64)),
+      'enrollment_id_year_month' => array(array('enrollment_id', 64), 'Year', 'Month'),
+      'AccountName' => array(array('AccountName', 256)),
+      'SubscriptionName' => array(array('InstanceId', 256)),
+      'ResourceLocation' => array(array('ResourceLocation', 256)),
+      'InstanceId' => array(array('InstanceId', 256)),
+      'ResourceGroup' => array(array('ResourceGroup', 256)),
+      'status' => array('status'),
+      'vid' => array('vid'),
+    ),
+    'primary key' => array('id'),
+  );
+  $schema[__MOHA_ITS_AZURE_CHINA_EXPENSE . '_revision'] = moha_db_revision_schema($schema[__MOHA_ITS_AZURE_CHINA_EXPENSE]);
 
   return $schema;
 }

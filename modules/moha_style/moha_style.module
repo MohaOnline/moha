@@ -34,17 +34,28 @@ define('__MOHA_STYLE__PATH', base_path() . MOHA_STYLE__PATH);
  * Includes css to fine tuning html elements.
  */
 function moha_style_page_build(&$page) {
-  $page['page_bottom']['#attached']['css'][] = MOHA_STYLE__PATH . '/css/moha_style_common.css';
 
   global $theme_key;
 
+  $page['page_bottom']['#attached']['css'][] = MOHA_STYLE__PATH . '/css/moha_style_common.css';
+
   if (path_is_admin(current_path())) {
+
+    // Include admin UI enhancement style.
+    if (module_exists('views')) {
+      $page['page_bottom']['#attached']['css'][] = drupal_get_path('module', 'views') . '/css/views-admin.ctools.css';
+      if ($theme_key == 'seven') {
+        $page['page_bottom']['#attached']['css'][] = drupal_get_path('module', 'views') . '/css/views-admin.seven.css';
+      }
+    }
+
     // Fix element style for theme seven.
     if ($theme_key == 'seven') {
       $page['page_bottom']['#attached']['css'][] = MOHA_STYLE__PATH . '/css/moha_style_admin.seven.css';
     }
   }
   else {
+    // Frontend pages styles.
     $page['page_bottom']['#attached']['css'][] = MOHA_STYLE__PATH . '/css/moha_style_front.css';
   }
 }

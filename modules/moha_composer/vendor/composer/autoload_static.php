@@ -109,6 +109,7 @@ class ComposerStaticInit52d4fa212ecf10e1a28600bbafdef57c
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\Routing\\' => 26,
+            'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\OptionsResolver\\' => 34,
             'Symfony\\Component\\HttpKernel\\' => 29,
             'Symfony\\Component\\HttpFoundation\\' => 33,
@@ -167,6 +168,10 @@ class ComposerStaticInit52d4fa212ecf10e1a28600bbafdef57c
             'Gettext\\Languages\\' => 18,
             'Gettext\\' => 8,
         ),
+        'F' => 
+        array (
+            'Facebook\\WebDriver\\' => 19,
+        ),
         'C' => 
         array (
             'Complex\\' => 8,
@@ -223,6 +228,10 @@ class ComposerStaticInit52d4fa212ecf10e1a28600bbafdef57c
         'Symfony\\Component\\Routing\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/routing',
+        ),
+        'Symfony\\Component\\Process\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/process',
         ),
         'Symfony\\Component\\OptionsResolver\\' => 
         array (
@@ -380,6 +389,10 @@ class ComposerStaticInit52d4fa212ecf10e1a28600bbafdef57c
         'Gettext\\' => 
         array (
             0 => __DIR__ . '/..' . '/gettext/gettext/src',
+        ),
+        'Facebook\\WebDriver\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/facebook/webdriver/lib',
         ),
         'Complex\\' => 
         array (

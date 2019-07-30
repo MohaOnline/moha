@@ -5,7 +5,7 @@
  */
 
 /**
- * Collect schema function name.
+ * Collect schema/install/enable or executable function name.
  *
  * @param $form
  *   Nested array of form elements that comprise the form.
@@ -22,7 +22,7 @@ function moha_db_update_form($form, &$form_state) {
     '#title' => t('hook_schema / function'),
     '#default_value' => '',
     '#size' => 40,
-    '#description' => t('Specify hook_schema function name to deploy missing DB structure, or DB update function name to execute.'),
+    '#description' => t('Specify hook_schema function name to re-deploy missing DB structure, or DB update function name to execute.'),
     '#field_suffix' => '()',
   );
 
@@ -33,7 +33,7 @@ function moha_db_update_form($form, &$form_state) {
 
 /**
  * Execute DB Update or re-deploy schema, only missing structure will be deployed.
- * If specified function exists, execute directory.
+ * If specified function exists, execute directly.
  *
  * @param $form
  *   Nested array of form elements that comprise the form.
@@ -49,22 +49,71 @@ function moha_db_update_form_submit($form, &$form_state) {
     $hook_schema = $values['hook_schema'];
 
     if (function_exists($hook_schema)) {
-      $hook_schema();
-      drupal_set_message("$hook_schema provided DB Update have been performed.");
+      if (substr($hook_schema, -20) == 'fields_and_instances') {
+        moha_create_fields_and_instances($hook_schema);
+        watchdog( __FUNCTION__,
+          "$hook_schema provided fields and instances have been redeployed.",
+          array(
+          ),
+          WATCHDOG_INFO
+        );
+        drupal_set_message("$hook_schema provided fields and instances have been redeployed.");
+      }
+      else {
+        $hook_schema();
+        watchdog( __FUNCTION__,
+          "$hook_schema provided DB Update have been performed.",
+          array(
+          ),
+          WATCHDOG_INFO
+        );
+        drupal_set_message("$hook_schema provided DB Update have been performed.");
+      }
     }
     else {
-      $module_name = str_replace('_schema', '', $hook_schema);
+      $module_name = '';
+      if (substr($hook_schema, -7) == '_schema' || substr($hook_schema, -7) == '_enable') {
+        $module_name = substr($hook_schema, 0, -7);
+      }
+      else {
+        if (substr($hook_schema, -8) == '_install') {
+          $module_name = substr($hook_schema, 0, -8);
+        }
+      }
 
-      if (!module_exists($module_name)) {
-        drupal_set_message("$hook_schema is not a function, or $module_name is not enabled.", "error");
+      if (module_exists($module_name)) {
+        module_load_include('install', $module_name, $module_name);
+        if (substr($hook_schema, -7) == '_schema') {
+          moha_schema_create($hook_schema);
+          watchdog( __FUNCTION__,
+            "$hook_schema defined schemas have been deployed.",
+            array(
+            ),
+            WATCHDOG_INFO
+          );
+          drupal_set_message("$hook_schema defined schemas have been deployed.");
+        }
+        else {
+          $hook_schema();
+          watchdog( __FUNCTION__,
+            "$hook_schema provided statements have been performed.",
+            array(
+            ),
+            WATCHDOG_INFO
+          );
+          drupal_set_message("$hook_schema provided statements have been performed.");
+        }
+      }
+      else {
+        watchdog(__FUNCTION__,
+          "Nothing was executed, $hook_schema is not a function, or $module_name is not enabled.",
+          array(),
+          WATCHDOG_WARNING
+        );
+        drupal_set_message("Nothing was executed, $hook_schema is not a function, or $module_name is not enabled.", "warning");
         return;
       }
-      module_load_include('install', $module_name, $module_name);
-      moha_schema_create_by_function($hook_schema);
-
-      drupal_set_message("$hook_schema provided schemas have been deployed.");
     }
-
   }
   catch (Exception $e){
     watchdog_exception(__FUNCTION__, $e);

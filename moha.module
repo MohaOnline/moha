@@ -107,6 +107,11 @@ define('MOHA__CONSTANTS', array(
 define ('MOHA__DATETIME_FORMAT__SHORT', 'Y-m-d H:i');
 
 /**
+ * Data format: Azure Expense.
+ */
+define ('MOHA__DATETIME_FORMAT__AZURE_EXPENSE', 'Y-m');
+
+/**
  * Form OP: Save.
  */
 define('MOHA__FORM_OP__SAVE', 'Save');
@@ -284,7 +289,7 @@ function moha_theme($existing, $type, $theme, $path) {
  * @return array
  *
  */
-function moha_define_entity($module, $machine_name, $human_name, $class_prefix, $admin_url) {
+function moha_define_entity($module, $machine_name, $human_name, $class_prefix, $admin_url, $fieldable = FALSE) {
   $entity_definition = array(
     'label' => t($human_name),
     'plural label' => t($human_name . 's'),
@@ -320,12 +325,28 @@ function moha_define_entity($module, $machine_name, $human_name, $class_prefix, 
 
     // Make entity un-fieldable;
     /** @see field_attach_form to attach added fields. */
-    'fieldable' => FALSE,
-    'bundles' => array(),
+    'fieldable' => $fieldable,
 
     // Views support.
     'views controller class' => 'EntityDefaultViewsController',
   );
+
+  if (!$fieldable) {
+    $entity_definition['bundles'] = array();
+  }
+  else {
+    $entity_definition['bundles'] = array(
+      $machine_name => array(
+        'label' => $human_name,
+        'plural label' => $human_name . 's',
+        'admin' => array(
+          'path' => $admin_url,
+          /* @see moha_bundle_access() */
+          'access callback' => 'moha_bundle_access',
+        ),
+      )
+    );
+  }
 
   return $entity_definition;
 }
@@ -485,16 +506,29 @@ function moha_entity_access($op, $entity, $account, $entity_type) {
 }
 
 /**
- * Gets the status property of moha entity.
+ *
+ *
+ * @param $account
+ *
+ * @return bool
+ */
+function moha_bundle_access($account = NULL) {
+  return TRUE;
+}
+
+/**
+ * Gets the name of status property for moha entity.
  */
 function moha_entity_status_get($data, array $options, $name, $type, $info) {
   $name = isset($info['schema field']) ? $info['schema field'] : $name;
 
+  $status = 'No Status';
+
   if (isset($data[$name])) {
-    return MOHA__STATUS__ENTITY[$name];
+    $status = MOHA__STATUS__ENTITY[$name];
   }
 
-  return 'No Status';
+  return $status;
 }
 
 /**
@@ -510,6 +544,30 @@ function moha_entity_wrapper_debug($w) {
     $values[$key] = $w->$key->value();
   }
   return $values;
+}
+
+/**
+ * Fetch entities per passed parameters.
+ *
+ * @param string $entity_type
+ * @param string $status_name
+ *
+ * @return array
+ */
+function moha_entity_fetch($entity_type, $status_name = MOHA__TERM__ACTIVE) {
+  if (empty($entity_type)) {
+    return array();
+  }
+
+  // Fetch all infrastructures.
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', $entity_type);
+  $query->propertyCondition('status', moha_array_key_by_value($status_name, MOHA__STATUS__ENTITY), '=');
+  $results = $query->execute();
+  $ids = isset($results[$entity_type]) ? array_keys($results[$entity_type]) : array();
+  $entities = $ids ? entity_load($entity_type, $ids) : array();
+
+  return $entities;
 }
 
 /**
@@ -633,7 +691,7 @@ function moha_menu() {
     'title' => t('Moha DB Update'),
     'description' => t('Perform DB Schema / Table Update, or specified function.'),
     'page callback' => 'drupal_get_form',
-    /* @see moha_ckeditor_upload_form() */
+    /* @see moha_db_update_form() */
     'page arguments' => array('moha_db_update_form'),
     'access arguments' => array(MOHA__PERMISSION__ROOT),
     'file' => 'moha.admin.inc',
@@ -733,10 +791,21 @@ function moha_node_ajax_save_callback($form, &$form_state){
 /**
  * Create DB tables per parameter if they are not ready.
  *
- * @param $schemas array
- *   hook_schema returned array.
+ * @param $schemas array | string
+ *   hook_schema returned array or hook_schema function name.
+ *
+ * @throws Exception
  */
 function moha_schema_create($schemas) {
+  if (is_string($schemas) && function_exists($schemas)) {
+    $schemas = $schemas();
+  }
+  else {
+    if (!is_array($schemas)) {
+      throw new Exception("Func: $schemas does not exist, nothing to be executed.");
+    }
+  }
+
   foreach ($schemas as $table_name => $table) {
     if (!db_table_exists($table_name)) {
       db_create_table($table_name, $table);
@@ -750,35 +819,14 @@ function moha_schema_create($schemas) {
         };
       }
 
-      $indexes = $table['indexes'];
+      $indexes = isset($table['indexes']) ? $table['indexes'] : array();
 
       foreach ($indexes as $index_name => $index) {
         if(!db_index_exists($table_name, $index_name)) {
           db_add_index($table_name, $index_name, $index);
         }
-
       }
     }
-  }
-}
-
-/**
- * Create DB tables per parameter if they are not ready.
- *
- * @param $hook_schema string
- *   hook_schema function name.
- *
- * @throws
- *   Passed function is not exist.
- */
-function moha_schema_create_by_function($hook_schema) {
-  if (function_exists($hook_schema)) {
-
-    $schemas = $hook_schema();
-    moha_schema_create($schemas);
-  }
-  else {
-    throw new Exception("Func: $hook_schema does not exist.");
   }
 }
 
@@ -957,7 +1005,7 @@ function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
     if (!isset($form['vertical_tabs'])){
       moha_form_add_vertical_tabs($form);
     }
-    
+
     $form['fields']['#group'] = 'vertical_tabs';
   }
 
@@ -1618,7 +1666,7 @@ function moha_i18n_value($variable_name, $module, $delta, $default = '') {
  * @param $status_code int
  *  Customized http status code.
  */
-function moha_response_error(Exception $e = NULL, $status_code = 503) {
+function moha_http_response_error(Exception $e = NULL, $status_code = 503) {
   drupal_add_http_header('Status', $status_code . ' Service unavailable');
 
   if ($e != NULL) {
@@ -1626,6 +1674,98 @@ function moha_response_error(Exception $e = NULL, $status_code = 503) {
   }
 
   drupal_exit();
+}
+
+/**
+ * Api called by get.
+ *
+ * @param $url
+ * @param array $options
+ * @param string $return_type
+ *
+ * @throws \Exception
+ */
+function moha_api_get($url, $options = array(), $return_type = 'json') {
+  return moha_api_post($url, $options, $return_type, 'GET');
+}
+
+/**
+ * Api called by post.
+ *
+ * @param $url
+ * @param array $options
+ * @param string $request_type
+ * @param string $return_type
+ *
+ * @return mixed
+ * @throws \Exception
+ */
+function moha_api_post($url, $options = array(), $return_type = 'json', $request_type = "POST") {
+
+  $options['method'] = $request_type;
+
+  $res = drupal_http_request($url, $options);
+
+  // Trace Called WeChat API, cutoff 1/2 sensitive information or only leave 10 characters.
+  $auth_key = ''; $auth_key_print_allowed_length = 20;
+  if (isset($options['headers']['authorization'])) {
+    $auth_key = 'authorization';
+  }
+  else if (isset($options['headers']['Authorization'])) {
+    $auth_key = 'Authorization';
+  }
+  else if (isset($options['headers']['AUTHORIZATION'])) {
+    $auth_key = 'AUTHORIZATION';
+  }
+
+  $options['headers'][$auth_key] = substr($options['headers'][$auth_key], 0, (strlen($options['headers'][$auth_key])/2 < $auth_key_print_allowed_length) ? strlen($options['headers'][$auth_key])/2 : $auth_key_print_allowed_length);
+  watchdog( __FUNCTION__,
+    '@URL<pre>!DATA</pre>',
+    array(
+      '@URL' => $url,
+      '!DATA' => print_r($options, TRUE),
+    ),
+    WATCHDOG_INFO
+  );
+
+  if (!isset($res->data)) {
+    // No response data, network error.
+    throw new Exception($res->error, $res->code);
+  }
+  else {
+    $response_message = '';
+
+    if (isset($res->status_message)) {
+      $response_message = $res->status_message;
+    }
+
+    watchdog( __FUNCTION__,
+      "response: @code @msg",
+      array(
+        '@code' => $res->code,
+        '@msg' => $response_message,
+      ),
+      WATCHDOG_INFO
+    );
+
+    if ($return_type == 'json') {
+      $data = json_decode($res->data, TRUE);
+    }
+    else {
+      $data = $res->data;
+    }
+
+    if (!$data) {
+      throw new Exception('No JSON string in response!');
+    }
+    else if (!empty($data['errcode'])) { // $json['errcode'] is set and value is not 0.
+      throw new Exception(isset($data['errmsg'])?$data['errmsg']:t('no error message'), $data['errcode']);
+    }
+    else {
+      // Normal case.
+      return $data;
+    }
+  }
 }
 
 /**
@@ -1770,6 +1910,28 @@ function moha_array_key_by_value($value = "", $array = array()) {
       return $key;
     }
   }
+}
+
+/**
+ * Generates revision schema per primary schema,
+ * change defination, primary key and index of id and vid,
+ *
+ * @param $schema
+ *
+ * @return array
+ */
+function moha_db_revision_schema($schema) {
+  $schema['fields']['id']['type'] = 'int';
+  $schema['fields']['id']['default'] = 0;
+  $schema['fields']['vid']['type'] = 'serial';
+  unset($schema['fields']['vid']['default']);
+
+  $schema['indexes']['id'] = array('id');
+  unset($schema['indexes']['vid']);
+
+  $schema['primary key'] = array('vid');
+
+  return $schema;
 }
 
 /**

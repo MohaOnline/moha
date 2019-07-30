@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Hook entry file of the module.
+ * Hooks entry file of the module.
  */
 
 /**
@@ -136,7 +136,7 @@ function moha_mailer_permission() {
 function moha_mailer_menu() {
   $items['admin/moha/dashboard/mailer'] = array(
     'title' => 'Dashboard',
-    'description' => t('Moha mail statistics / dashboard.'),
+    'description' => 'Moha mail statistics / dashboard.',
     'page callback' => 'drupal_get_form',
     /* @see moha_mailer_dashboard_form() */
     'page arguments' => array('moha_mailer_dashboard_form'),
@@ -158,7 +158,7 @@ function moha_mailer_menu() {
 
   $items['admin/moha/mailer/dashboard'] = array(
     'title' => 'Dashboard',
-    'description' => t('Moha mail statistics / dashboard.'),
+    'description' => 'Moha mail statistics / dashboard.',
     'weight' => -99,
     /* @see moha_mailer_dashboard_jump() */
     'page callback' => 'moha_mailer_dashboard_jump',

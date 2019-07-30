@@ -40,6 +40,16 @@ define('MOHA_UI__VARIABLES', __MOHA_UI . '__variables');
 define('MOHA_UI__WIDGET__IMAGE_MOBILE_UPLOADER', 'moha_ui_image_mobile_uploader');
 
 /**
+ * Render array item: Dashboard Container.
+ */
+define('MOHA_UI__DASHBOARD__CONTAINER','moha_ui__dashboard');
+
+/**
+ * Drupal Element.
+ */
+define('MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE', 'moha_ui_dashboard_chart_expense');
+
+/**
  * Implements hook_library().
  *
  * @see drupal_add_library
@@ -117,6 +127,7 @@ function moha_ui_library() {
     'js' => array(
       MOHA_UI__PATH . '/bower_components/bootstrap/dist/js/bootstrap.js' => array(),
       MOHA_UI__PATH . '/bower_components/admin-lte/dist/js/adminlte.js' => array(),
+      MOHA_UI__PATH . '/bower_components/echarts/dist/echarts.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(),
     ),
   );
@@ -205,6 +216,8 @@ function moha_ui_menu() {
 }
 
 /**
+ * Move 'Clone' action link to tab area.
+ *
  * Implements hook_menu_alter().
  */
 function moha_ui_menu_alter(&$items) {
@@ -260,6 +273,17 @@ function moha_ui_theme($existing, $type, $theme, $path) {
     'template' => 'templates/page--moha-ui--homepage-contents',
   );
 
+  $themes['moha_ui__tpl__dashboard_block_wrapper'] = array(
+    'render element' => 'element',
+    'template' => 'templates/dashboard-block-wrapper',
+  );
+
+  /** @see moha_ui_dashboard_chart_expense_pre_render() */
+  $themes['moha_ui_dashboard_block'] = array(
+    'render element' => 'element',
+    'template' => 'templates/moha-ui-dashboard-block',
+  );
+
   return $themes;
 }
 
@@ -272,6 +296,16 @@ function moha_ui_page_alter(&$page) {
   $path = current_path();
 
   if (substr($path, 0, 20) === 'admin/moha/dashboard') {
+
+    // Replace original block.tpl.php template to avoid complex html structure to apply on auto generated system_main block.
+    if (isset($page['content']['system_main']['#theme_wrappers'])) {
+      foreach ($page['content']['system_main']['#theme_wrappers'] as $index => $value) {
+        if ($value == 'block') {
+          $page['content']['system_main']['#theme_wrappers'][$index] = 'moha_ui__tpl__dashboard_block_wrapper';
+        }
+      }
+    }
+
     $page['content']['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
     $page['content']['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
 
@@ -533,6 +567,15 @@ function moha_ui_element_info() {
     ),
   );
 
+  $elements['moha_ui_dashboard_chart_expense'] = array(
+    '#input' => FALSE,
+    /** @see moha_ui_theme() */
+    '#theme' => array('moha_ui_dashboard_block'),
+    /** @see moha_ui_dashboard_chart_expense_pre_render() */
+    '#pre_render' => array('moha_ui_dashboard_chart_expense_pre_render'),
+    '#content_wrapper_selector' => 'moha-ui-dashboard-expense-chart-container'
+  );
+
   return $elements;
 }
 
@@ -664,7 +707,7 @@ function theme_moha_ui_rating($variables) {
 }
 
 /**
- * Validate rating data.
+ * Validate moha_ui_rating value.
  *
  * @param $element
  * @param $form_state
@@ -694,6 +737,38 @@ function moha_ui_rating_validate($element, &$form_state) {
   }
 
   return TRUE;
+}
+
+/**
+ * Prepares data for being rendered as chart.
+ *
+ * @param $element
+ *   A render array.
+ *
+ * @return array
+ *   The passed-in elements as well as data for rendering.
+ *
+ * @see drupal_render()
+ */
+function moha_ui_dashboard_chart_expense_pre_render($element) {
+  $element['#id'] = drupal_html_id('moha_ui_dashboard_chart_expense');
+
+  if (isset($element['#data'])) {
+    foreach ($element['#data'] as $key => $data) {
+      $element['#data'][$key]['wrapper_id'] = $element['#id'];
+    }
+
+    $element['#attached']['js'][] = array(
+      'data' => array(__MOHA_UI => array(
+        'expenses_charts' => $element['#data'],
+      ),),
+      'type' => 'setting'
+    );
+    $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
+    $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
+  }
+
+  return $element;
 }
 
 /**

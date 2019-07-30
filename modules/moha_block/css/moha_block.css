@@ -1,0 +1,8 @@
+@charset "UTF-8";
+/**
+ * @file
+ */
+
+div.panel.panel-square {
+  border-radius: 0;
+}

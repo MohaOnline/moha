@@ -1,6 +1,7 @@
 <?php
 /**
  * @var string $breadcrumb
+ * @var string $messages
  * @var array $secondary_local_tasks
  * @var array $page
  */
@@ -48,6 +49,7 @@
   <div class="content-wrapper">
     <!-- Main content -->
     <section class="content container-fluid">
+      <?php print $messages; ?>
       <?php print render($page['content']); ?>
     </section>
     <!-- /.content -->
@@ -56,7 +58,7 @@
 
   <!-- Main Footer -->
   <footer class="main-footer">
-    <!-- To the right -->
+    <!-- Showcase container on right side of footer. -->
     <div class="pull-right hidden-xs">
 
     </div>

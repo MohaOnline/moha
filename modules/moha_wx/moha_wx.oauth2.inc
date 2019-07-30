@@ -59,7 +59,7 @@ function _moha_wx_oauth2_request_explicit_authorization($wechat_name, $state) {
   }
   catch (Exception $e) {
     watchdog_exception(__FUNCTION__, $e);
-    moha_response_error($e);
+    moha_http_response_error($e);
   }
 }
 

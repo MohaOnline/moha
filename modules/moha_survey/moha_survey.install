@@ -209,5 +209,5 @@ function moha_survey_schema() {
  *   when tables can't be created successfully.
  */
 function moha_survey_update_0700() {
-  moha_schema_create_by_function('moha_survey_schema');
+  moha_schema_create('moha_survey_schema');
 }
