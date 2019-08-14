@@ -832,8 +832,6 @@ DAILY_HTML;
     }
   }
 
-  $html .= "</div>";
-
   return $html;
 }
 
