@@ -573,7 +573,8 @@ function moha_ui_element_info() {
     '#theme' => array('moha_ui_dashboard_block'),
     /** @see moha_ui_dashboard_chart_expense_pre_render() */
     '#pre_render' => array('moha_ui_dashboard_chart_expense_pre_render'),
-    '#content_wrapper_selector' => 'moha-ui-dashboard-expense-chart-container'
+    '#content_wrapper_selector' => 'moha-ui-dashboard-expense-chart-container',
+    '#data' => array(),
   );
 
   return $elements;
@@ -754,8 +755,9 @@ function moha_ui_dashboard_chart_expense_pre_render($element) {
   $element['#id'] = drupal_html_id('moha_ui_dashboard_chart_expense');
 
   if (isset($element['#data'])) {
-    foreach ($element['#data'] as $key => $data) {
-      $element['#data'][$key]['wrapper_id'] = $element['#id'];
+    foreach ($element['#data'] as $i => $data) {
+      // JS rendering engine need to know where to insert chart canvas.
+      $element['#data'][$i]['wrapper_id'] = $element['#id'];
     }
 
     $element['#attached']['js'][] = array(
@@ -769,6 +771,94 @@ function moha_ui_dashboard_chart_expense_pre_render($element) {
   }
 
   return $element;
+}
+
+/**
+ * Render statistic data in row format.
+ *
+ * @param $expenses
+ *
+ * @param $column_num
+ *
+ * @return string
+ */
+function moha_ui_dashboard_row_statistic($expenses, $column_num = 7) {
+
+  $html = "";
+  $previous_row = array_fill(0, $column_num, 0);
+
+  foreach ($expenses as $i => $expense) {
+    if (($i + 1) % $column_num == 1) {
+      $html .= "<div class='row moha-ui-row-flex'>";
+      $row = 0;
+    }
+
+    $percentage = '';
+    if ($i < $column_num) {
+      $previous_row[$i] = $expense;
+    }
+    else {
+      if (!empty($expense)) {
+        $percentage = round(($expense - $previous_row[$i%$column_num]) / $previous_row[$i%$column_num] * 100, 2);
+        $percentage = moha_ui_dashboard_render_percentage($percentage);
+      }
+    }
+
+    $html .= <<<DAILY_HTML
+  <div class="description-block border-right">
+    <div class="description-text">$expense</div>
+    $percentage
+  </div>
+DAILY_HTML;
+
+    $row += $previous_row[$i%$column_num] = $expense;
+
+    if (($i + 1) % $column_num == 0) {
+      if (!empty($row_previous)) {
+        $percentage = round(($row - $row_previous) / $row_previous * 100, 2);
+        $percentage = moha_ui_dashboard_render_percentage($percentage);
+      }
+
+      $html .= <<<DAILY_HTML
+  <div class="description-block border-right">
+    <div class="description-text">$row</div>
+    $percentage
+  </div>
+DAILY_HTML;
+      $html .= "</div>";
+
+      $row_previous = $row;
+    }
+  }
+
+  $html .= "</div>";
+
+  return $html;
+}
+
+/**
+ * Render percentage number.
+ *
+ * @param $percentage
+ *
+ * @return string
+ */
+function moha_ui_dashboard_render_percentage($percentage) {
+  if ($percentage > 0) {
+    $percentage_class = 'text-red';
+    $icon_class = 'fa-caret-up';
+  }
+  else if ($percentage < 0) {
+    $percentage_class = 'text-green';
+    $icon_class = 'fa-caret-down';
+  }
+  else {
+    $percentage_class = 'text-yellow';
+    $icon_class = '';
+  }
+  $percentage = "<span class='description-percentage $percentage_class'><i class='fa $icon_class'></i> $percentage%</span>";
+
+  return $percentage;
 }
 
 /**

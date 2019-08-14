@@ -29,11 +29,8 @@
   </div>
   <?php if (isset($element['#footer'])): ?>
   <div class="box-footer" style="">
-    <div class="row">
-      <?php print $element['#footer']; ?>
-    </div>
-    <!-- /.row -->
+    <?php print render($element['#footer']); ?>
+    <!-- /.box-footer -->
   </div>
-  <!-- /.box-footer -->
   <?php endif; ?>
 </div>

@@ -66,7 +66,6 @@ input[type="file"].weui-uploader__input {
 .weui-mask_transparent {
   background-color: rgba(0, 0, 0, 0.5);
 }
-
 /***/
 
 /** Mobile Preview Window  */
@@ -125,3 +124,13 @@ input[type="file"].weui-uploader__input {
   background-color: #367fa9;
 }
 /***/
+
+.moha-ui-row-flex {
+  display: flex;
+  flex-direction: row;
+}
+
+.moha-ui-row-flex > div {
+  flex-grow: 1;
+  flex-basis: 0;
+}
