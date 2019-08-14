@@ -1,0 +1,15 @@
+{
+  "name": "css-element-queries",
+  "homepage": "https://github.com/marcj/css-element-queries",
+  "version": "1.2.1",
+  "_release": "1.2.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.2.1",
+    "commit": "7d0ffa0c8955f72be9650ce36ab4205d14ebeb29"
+  },
+  "_source": "https://github.com/marcj/css-element-queries.git",
+  "_target": "^1.2.1",
+  "_originalSource": "css-element-queries",
+  "_direct": true
+}

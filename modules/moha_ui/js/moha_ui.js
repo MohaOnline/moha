@@ -4,7 +4,7 @@
  */
 /* jshint esversion: 6 */
 /* jshint unused:false, strict: false */
-/* globals Drupal:object, jQuery:object, echarts:object, _:object */
+/* globals Drupal:object, jQuery:object, echarts:object, _:object, ResizeSensor:function */
 var moha = moha || {};
 
 /**
@@ -78,6 +78,7 @@ moha.toFahrenheit = function (degree) {
         };
 
         $(window).resize(resizeCharts);
+        new ResizeSensor($('.content-wrapper'), resizeCharts);
 
       }); // once body finished.
 
@@ -145,6 +146,7 @@ moha.toFahrenheit = function (degree) {
               name: 'RMB',
               type: 'bar',
               smooth: true,
+              large: true,
               data: []
             }]
           };

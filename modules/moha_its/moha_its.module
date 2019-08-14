@@ -1242,33 +1242,6 @@ ROW_HEADER_HTML;
     );
   }
 
-  $statistic_template = <<< FOOTER_HTML
-      <div class="col-sm-3 col-xs-6">
-        <div class="description-block border-right">
-          <h5 class="description-header"></h5>
-          <span class="description-text">Balance</span>
-        </div>
-      </div>
-      <div class="col-sm-3 col-xs-6">
-        <div class="description-block border-right">
-          <h5 class="description-header"></h5>
-          <span class="description-text">Cycle: </span>
-        </div>
-      </div>
-      <div class="col-sm-3 col-xs-6">
-        <div class="description-block border-right">
-          <h5 class="description-header"></h5>
-          <span class="description-text">Cycle: </span>
-        </div>
-      </div>
-      <div class="col-sm-3 col-xs-6">
-        <div class="description-block">
-          <h5 class="description-header"></h5>
-          <span class="description-text">Cycle: </span>
-        </div>
-      </div>
-FOOTER_HTML;
-
   $content['azure_china_expenses'] = array(
     '#title' => 'Azure China Expenses',
     '#type' => 'moha_ui_dashboard_chart_expense',
