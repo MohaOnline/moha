@@ -787,11 +787,12 @@ function moha_ui_dashboard_row_statistic($expenses, $column_num = 7) {
 
   $html = "";
   $previous_row = array_fill(0, $column_num, 0);
+  $weekly_expense = 0;
 
   foreach ($expenses as $i => $expense) {
     if (($i + 1) % $column_num == 1) {
       $html .= "<div class='row moha-ui-row-flex'>";
-      $row = 0;
+      $weekly_expense = 0;
     }
 
     $percentage = '';
@@ -812,23 +813,23 @@ function moha_ui_dashboard_row_statistic($expenses, $column_num = 7) {
   </div>
 DAILY_HTML;
 
-    $row += $previous_row[$i%$column_num] = $expense;
+    $weekly_expense += $previous_row[$i%$column_num] = $expense;
 
     if (($i + 1) % $column_num == 0) {
       if (!empty($row_previous)) {
-        $percentage = round(($row - $row_previous) / $row_previous * 100, 2);
+        $percentage = round(($weekly_expense - $row_previous) / $row_previous * 100, 2);
         $percentage = moha_ui_dashboard_render_percentage($percentage);
       }
 
       $html .= <<<DAILY_HTML
   <div class="description-block border-right">
-    <div class="description-text">$row</div>
+    <div class="description-text">$weekly_expense</div>
     $percentage
   </div>
 DAILY_HTML;
       $html .= "</div>";
 
-      $row_previous = $row;
+      $row_previous = $weekly_expense;
     }
   }
 
