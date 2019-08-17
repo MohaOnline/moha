@@ -1064,7 +1064,7 @@ function moha_its_azure_china_enrollment_ids() {
  */
 function moha_its_azure_china_expense_details() {
   $expenses = moha_cache_get(__FUNCTION__, array());
-  if (!empty($expenses)) {
+  if (!empty($expenses) && is_array($expenses)) {
     return $expenses;
   }
 
@@ -1104,6 +1104,9 @@ function moha_its_azure_china_expense_details() {
     );
   }
 
+  if (!is_array($expenses)) {
+    $expenses = array();
+  }
   moha_cache_set(__FUNCTION__, $expenses, 60*10);
 
   return $expenses;
