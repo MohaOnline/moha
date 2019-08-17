@@ -1063,7 +1063,7 @@ function moha_its_azure_china_enrollment_ids() {
  * @throws \Exception
  */
 function moha_its_azure_china_expense_details() {
-  $expenses = moha_cache_get(__FUNCTION__, array());
+//  $expenses = moha_cache_get(__FUNCTION__, array());
   if (!empty($expenses) && is_array($expenses)) {
     return $expenses;
   }
@@ -1225,25 +1225,23 @@ ROW_HEADER_HTML;
   $expenses = moha_its_azure_china_expense_details();
   foreach ($expenses as $expense) {
 
-    $name = $expense['name'];
-    $full_name = $expense['full_name'];
-    $expense_in_last_weeks = $expense['last_weeks'];
-    $footer[$name]['#markup'] = $row_header . moha_ui_dashboard_row_statistic($expense_in_last_weeks);
-
     $dates = $costs = array();
+
     if (!empty($expense['details'])) {
       foreach ($expense['details'] as $date => $detail) {
         $dates[] = $date;
         $costs[] = round($detail->Cost);
       }
-    }
 
-    $data[] = array(
-      'name' => $name,
-      'full_name' => $full_name,
-      'dates' => $dates,
-      'costs' => $costs,
-    );
+      $name = $expense['name'];
+      $data[] = array(
+        'name' => $name,
+        'full_name' => $expense['full_name'],
+        'dates' => $dates,
+        'costs' => $costs,
+      );
+      $footer[$name]['#markup'] = $row_header . moha_ui_dashboard_row_statistic($expense['last_weeks']);
+    }
   }
 
   $content['azure_china_expenses'] = array(
