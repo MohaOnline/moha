@@ -813,7 +813,8 @@ function moha_ui_dashboard_row_statistic($expenses, $column_num = 7) {
   </div>
 DAILY_HTML;
 
-    $weekly_expense += $previous_row[$i%$column_num] = $expense;
+    $previous_row[$i%$column_num] = $expense;
+    $weekly_expense += is_numeric($expense) ? $expense : 0;
 
     if (($i + 1) % $column_num == 0) {
       if (!empty($row_previous)) {
