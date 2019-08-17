@@ -1063,7 +1063,7 @@ function moha_its_azure_china_enrollment_ids() {
  * @throws \Exception
  */
 function moha_its_azure_china_expense_details() {
-  // $expenses = moha_cache_get(__FUNCTION__, array());
+  $expenses = moha_cache_get(__FUNCTION__, array());
   if (!empty($expenses)) {
     return $expenses;
   }

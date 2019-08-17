@@ -143,6 +143,7 @@ moha.toFahrenheit = function (degree) {
             },
             yAxis: {},
             series: [{
+              animation: false,
               name: 'RMB',
               type: 'bar',
               smooth: true,
