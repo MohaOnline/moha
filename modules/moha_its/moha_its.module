@@ -1190,8 +1190,8 @@ function moha_its_block_view($delta = '') {
  * @throws Exception
  */
 function moha_its_block_view_azure_cn_expenses() {
-  $data = array();
-  $footer = '';
+  $footer = $data = array();
+
   $row_header = <<< ROW_HEADER_HTML
   <h4>Expenses in last 3 weeks</h4>
   <div class="row moha-ui-row-flex">
