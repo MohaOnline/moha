@@ -699,6 +699,7 @@ RATING_CONTAINER
  */
 function theme_moha_ui_rating($variables) {
   $element = $variables['element'];
+  $element['reason']['#required'] = $element['#required'];
   $error = form_get_error($element);
   if ($error) {
     $element['rating']['#attached']['js'][0]['data'][__MOHA_UI]['mohaUIRatingElements'][0]['error'] = TRUE;
