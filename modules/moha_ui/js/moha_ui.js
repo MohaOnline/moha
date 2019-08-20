@@ -34,7 +34,24 @@ moha.toFahrenheit = function (degree) {
 (function ($) {
   Drupal.behaviors.mohaUI = {
 
+
     /**
+     * Resize all registered charts.
+     */
+    resizeExpensesCharts: function () {
+      try {
+        Drupal.settings.moha_ui = Drupal.settings.moha_ui || {};
+
+        _.forEach(Drupal.settings.moha_ui.expenses_charts, function (chart) {
+          chart.echarts.resize();
+        });
+      }
+      catch (e) {
+        console.log(e);
+      }
+    },
+
+  /**
      * Attach behaviors to enhance UIs.
      *
      * @param context document
@@ -62,23 +79,6 @@ moha.toFahrenheit = function (degree) {
           const toggleClassName = $(this).data('toggle-class');
           Drupal.behaviors.mohaUI.toggleClass.call($(this), toggleClassName);
         });
-
-        /**
-         * Resize all registered charts.
-         */
-        const resizeCharts = function () {
-          try {
-            _.forEach(settings.moha_ui.expenses_charts, function (chart) {
-              chart.echarts.resize();
-            });
-          }
-          catch (e) {
-            console.log(e);
-          }
-        };
-
-        $(window).resize(resizeCharts);
-        new ResizeSensor($('.content-wrapper'), resizeCharts);
 
       }); // once body finished.
 
@@ -154,7 +154,7 @@ moha.toFahrenheit = function (degree) {
 
           _.forEach(settings.moha_ui.expenses_charts, function (chart) {
             if ($container.attr('id') === chart.wrapper_id) {
-              $container.append('<div id="moha-ui-element-expense-chart-' + chart.name + '" class="moha-ui-element-expense-chart" style="height: 30vh; width: 100%;"></div>');
+              $container.append('<div id="moha-ui-element-expense-chart-' + chart.name + '" class="moha-ui-element-expense-chart" style="min-height: 300px; height: 30vh; width: 100%;"></div>');
               chart.echarts = echarts.init($container.find('#moha-ui-element-expense-chart-' + chart.name).get(0), 'light', {renderer: 'canvas'});
               option.xAxis.data = chart.dates;
               option.series[0].data = chart.costs;
@@ -162,6 +162,7 @@ moha.toFahrenheit = function (degree) {
             }
           });
 
+          new ResizeSensor($container, Drupal.behaviors.mohaUI.resizeExpensesCharts);
         }); // once initial expense chart finished.
       }
       catch (e) {

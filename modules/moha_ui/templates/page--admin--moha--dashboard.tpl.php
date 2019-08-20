@@ -17,6 +17,7 @@
 </div>
 
 <div class="wrapper">
+  <?php if (user_access(MOHA_UI__PERMISSION__DASHBOARD)): ?>
   <header class="main-header">
 
     <!-- Logo -->
@@ -46,6 +47,7 @@
       </div>
     </nav>
   </header>
+  <?php endif; ?>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -58,6 +60,8 @@
   </div>
   <!-- /.content-wrapper -->
 
+
+  <?php if (user_access(MOHA_UI__PERMISSION__DASHBOARD)): ?>
   <!-- Main Footer -->
   <footer class="main-footer">
     <!-- Showcase container on right side of footer. -->
@@ -67,6 +71,8 @@
     <!-- Default to the left -->
     <strong>Copyleft &copy; 2017-2019</strong>
   </footer>
+  <?php endif; ?>
+
 
   <!-- Control Sidebar -->
   <aside class="main-sidebar">

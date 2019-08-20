@@ -50,6 +50,11 @@ define('MOHA_UI__DASHBOARD__CONTAINER','moha_ui__dashboard');
 define('MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE', 'moha_ui_dashboard_chart_expense');
 
 /**
+ * Permission: Access moha_ui Dashboard.
+ */
+define('MOHA_UI__PERMISSION__DASHBOARD', 'moha_ui dashboard');
+
+/**
  * Implements hook_library().
  *
  * @see drupal_add_library
@@ -187,6 +192,18 @@ function moha_ui_libraries_info() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function moha_ui_permission() {
+    $permissions[MOHA_UI__PERMISSION__DASHBOARD] = array(
+    'title' => t('Moha UI: Access Dashboard'),
+    'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
+  );
+
+  return $permissions;
+}
+
+/**
  * Implements hook_menu().
  */
 function moha_ui_menu() {
@@ -274,9 +291,10 @@ function moha_ui_theme($existing, $type, $theme, $path) {
     'template' => 'templates/page--moha-ui--homepage-contents',
   );
 
-  $themes['moha_ui__tpl__dashboard_block_wrapper'] = array(
+  /** @see moha_ui_page_alter() */
+  $themes['moha_ui_dashboard_block_wrapper'] = array(
     'render element' => 'element',
-    'template' => 'templates/dashboard-block-wrapper',
+    'template' => 'templates/moha-ui-dashboard-block-wrapper',
   );
 
   /** @see moha_ui_dashboard_chart_expense_pre_render() */
@@ -302,7 +320,7 @@ function moha_ui_page_alter(&$page) {
     if (isset($page['content']['system_main']['#theme_wrappers'])) {
       foreach ($page['content']['system_main']['#theme_wrappers'] as $index => $value) {
         if ($value == 'block') {
-          $page['content']['system_main']['#theme_wrappers'][$index] = 'moha_ui__tpl__dashboard_block_wrapper';
+          $page['content']['system_main']['#theme_wrappers'][$index] = 'moha_ui_dashboard_block_wrapper';
         }
       }
     }
@@ -349,6 +367,10 @@ function moha_ui_page_alter(&$page) {
  * @link https://fontawesome.com/v4.7.0/icons/ @endlink
  */
 function moha_ui_dashboard_sidebar_build() {
+  if (!user_access(MOHA_UI__PERMISSION__DASHBOARD)) {
+    return '';
+  }
+
   $render = array();
   foreach (module_implements('moha_ui_dashboard_sidebar') as $module) {
     $function = $module . '_moha_ui_dashboard_sidebar';
@@ -568,7 +590,7 @@ function moha_ui_element_info() {
     ),
   );
 
-  $elements['moha_ui_dashboard_chart_expense'] = array(
+  $elements[MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE] = array(
     '#input' => FALSE,
     /** @see moha_ui_theme() */
     '#theme' => array('moha_ui_dashboard_block'),
@@ -754,9 +776,9 @@ function moha_ui_rating_validate($element, &$form_state) {
  * @see drupal_render()
  */
 function moha_ui_dashboard_chart_expense_pre_render($element) {
-  $element['#id'] = drupal_html_id('moha_ui_dashboard_chart_expense');
+  $element['#id'] = drupal_html_id(MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE);
 
-  if (isset($element['#data'])) {
+  if (isset($element['#data']) && is_array($element['#data'])) {
     foreach ($element['#data'] as $i => $data) {
       // JS rendering engine need to know where to insert chart canvas.
       $element['#data'][$i]['wrapper_id'] = $element['#id'];

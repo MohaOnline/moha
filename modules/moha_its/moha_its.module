@@ -408,7 +408,7 @@ function moha_its_entity_info() {
  */
 function moha_its_menu() {
   $items["admin/moha/dashboard/its"] = array(
-    'title' => 'Moha ITS Dashboard',
+    'title' => 'ITS Dashboard',
     'description' => 'The dashboard of Moha IT Steward.',
     'page callback' => 'moha_its_admin_dashboard',
     'page arguments' => array(),
@@ -1244,9 +1244,13 @@ ROW_HEADER_HTML;
     }
   }
 
+  if (empty($data)) {
+    $data = t('No Azure China expenses data yet.');
+  }
+
   $content['azure_china_expenses'] = array(
     '#title' => 'Azure China Expenses',
-    '#type' => 'moha_ui_dashboard_chart_expense',
+    '#type' => MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE,
     '#data' => $data,
     '#footer' => $footer,
     '#prefix' => '<div class="row"><div class="col-md-12">',

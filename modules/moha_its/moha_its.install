@@ -763,7 +763,7 @@ function moha_its_schema() {
    * @link https://www.drupal.org/docs/7/api/schema-api/data-types @endlink
    */
   $schema[__MOHA_ITS_AZURE_CHINA_EXPENSE] = array(
-    'description' => 'Stores revisions of operation information.',
+    'description' => 'Stores expense data from Azure China',
     'fields' => array(
       'id' => array(
         'description' => 'Primary Key: Unique ID.',

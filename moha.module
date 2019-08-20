@@ -1697,7 +1697,9 @@ function moha_api_get($url, $options = array(), $return_type = 'json') {
  * @param string $request_type
  * @param string $return_type
  *
- * @return mixed
+ * @return array
+ *    Associate array.
+ *
  * @throws \Exception
  */
 function moha_api_post($url, $options = array(), $return_type = 'json', $request_type = "POST") {
@@ -1718,17 +1720,19 @@ function moha_api_post($url, $options = array(), $return_type = 'json', $request
     $auth_key = 'AUTHORIZATION';
   }
 
-  $options['headers'][$auth_key] = substr($options['headers'][$auth_key], 0, (strlen($options['headers'][$auth_key])/2 < $auth_key_print_allowed_length) ? strlen($options['headers'][$auth_key])/2 : $auth_key_print_allowed_length);
-  watchdog( __FUNCTION__,
-    '@URL<pre>!DATA</pre>',
-    array(
-      '@URL' => $url,
-      '!DATA' => print_r($options, TRUE),
-    ),
-    WATCHDOG_INFO
-  );
+  if (!empty($auth_key)) {
+    $options['headers'][$auth_key] = substr($options['headers'][$auth_key], 0, (strlen($options['headers'][$auth_key])/2 < $auth_key_print_allowed_length) ? strlen($options['headers'][$auth_key])/2 : $auth_key_print_allowed_length);
+    watchdog( __FUNCTION__,
+      '@URL<pre>!DATA</pre>',
+      array(
+        '@URL' => $url,
+        '!DATA' => print_r($options, TRUE),
+      ),
+      WATCHDOG_INFO
+    );
+  }
 
-  if (!isset($res->data)) {
+  if (!isset($res->data) || isset($res->error)) {
     // No response data, network error.
     throw new Exception($res->error, $res->code);
   }
@@ -1750,20 +1754,18 @@ function moha_api_post($url, $options = array(), $return_type = 'json', $request
 
     if ($return_type == 'json') {
       $data = json_decode($res->data, TRUE);
-    }
-    else {
-      $data = $res->data;
-    }
 
-    if (!$data) {
-      throw new Exception('No JSON string in response!');
-    }
-    else if (!empty($data['errcode'])) { // $json['errcode'] is set and value is not 0.
-      throw new Exception(isset($data['errmsg'])?$data['errmsg']:t('no error message'), $data['errcode']);
+      if (!$data) {
+        throw new Exception('No decode-able JSON string in response!');
+      }
+      else if (!empty($data['errcode'])) { // $json['errcode'] is set and value is not 0.
+        throw new Exception(isset($data['errmsg'])?$data['errmsg']:t('no error message'), $data['errcode']);
+      }
+
+      return $data;
     }
     else {
-      // Normal case.
-      return $data;
+      return $res->data;
     }
   }
 }

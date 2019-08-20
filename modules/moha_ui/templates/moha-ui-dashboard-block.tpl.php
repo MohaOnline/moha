@@ -21,13 +21,14 @@
   <div class="box-body">
     <div class="row">
       <div <?php print isset($element['#id']) ? 'id="' . $element['#id'] . '"': ''; ?> class="col-md-12 <?php print isset($element['#content_wrapper_selector']) ? $element['#content_wrapper_selector'] : ''; ?>">
+        <?php if (isset($element['#data']) && is_string($element['#data'])) { print $element['#data']; } ?>
         <!-- /.chart-responsive -->
       </div>
       <!-- /.col -->
     </div>
     <!-- /.row -->
   </div>
-  <?php if (isset($element['#footer'])): ?>
+  <?php if (isset($element['#footer']) && !empty($element['#footer'])): ?>
   <div class="box-footer" style="">
     <?php print render($element['#footer']); ?>
     <!-- /.box-footer -->
