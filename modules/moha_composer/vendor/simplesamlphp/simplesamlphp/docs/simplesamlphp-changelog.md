@@ -6,6 +6,17 @@ SimpleSAMLphp changelog
 This document lists the changes between versions of SimpleSAMLphp.
 See the upgrade notes for specific information about upgrading.
 
+## Version 1.17.5
+
+Released 2019-08-02
+
+  * Fixed a bug in the SP API where NameID objects weren't taken care of (introduced in 1.17.0).
+  * Fixed a regression where MetaDataStorageHandlerPdo::getMetaData() would not return a value (#1165).
+  * Fixed an issue with table indexes (#1089).
+  * Fixed an issue with table migrations on SQlite (#1169).
+  * Fixed an issue with generated eduPersonTargetedID lacking a format specified (#1135).
+  * Updated composer dependencies.
+
 ## Version 1.17.4
 
 Released 2019-07-11

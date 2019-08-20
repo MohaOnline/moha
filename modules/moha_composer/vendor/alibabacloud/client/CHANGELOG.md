@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.5.15 - 2019-08-14
+- Improved Client.
+
+
+## 1.5.14 - 2019-07-25
+- Improved Credential Filter.
+
+
+## 1.5.13 - 2019-07-18
+- Improved API Resolver.
+
+
 ## 1.5.12 - 2019-06-20
 - Fixed Signature for ROA.
 
