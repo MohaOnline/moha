@@ -80,6 +80,11 @@ moha.toFahrenheit = function (degree) {
           Drupal.behaviors.mohaUI.toggleClass.call($(this), toggleClassName);
         });
 
+        const $statistic_rows = $('.moha-ui-statistic-row', context);
+        if ($statistic_rows.length > 1) {
+          $statistic_rows.first().css('display', 'none');
+        }
+
       }); // once body finished.
 
       try {

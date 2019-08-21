@@ -23,8 +23,19 @@ body.page-admin div.form-actions a.button {
   font-size: 1.077em;
 }
 
+/* Fix dblog contents are too long. */
+body.page-admin-reports-event tr td:last-child {
+  word-break: break-all;
+}
+
 body div.error {
   background-image: none;
+}
+
+body.page-admin pre,
+body.page-admin code {
+  font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
+  font-size: inherit;
 }
 
 body div.messages.error {

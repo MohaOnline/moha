@@ -260,6 +260,205 @@ function moha_theme($existing, $type, $theme, $path) {
 }
 
 /**
+ *
+ * @param $type
+ *   varchar | int
+ *
+ * @param $description
+ *   Column description.
+ *
+ * @param mixed $size
+ *   tiny / small / medium / normal / big / <int>
+ *
+ * @param $default
+ *   Default value of the column
+ *
+ * @param $unsigned
+ *   boolean
+ *
+ * @return array
+ *   DB column definition array.
+ */
+function moha_db_column_define($type, $description = '', $size = 255, $default = '', $unsigned = TRUE) {
+  $type = trim($type);
+  $db_field = array();
+  static $expecting_int_types = array('tiny', 'small', 'medium', 'normal', 'big');
+
+  switch ($type) {
+    default:
+      break;
+    case 'varchar':
+      if (!is_numeric($size)) {
+        $size = 255;
+      }
+      if (!is_string($default)) {
+        $default = '';
+      }
+
+      $db_field['description'] = $description;
+      $db_field['type'] = 'varchar';
+      $db_field['length'] = $size;
+      $db_field['not null'] = TRUE;
+      $db_field['default'] = $default;
+      break;
+
+    case 'int':
+      $checked_size = 'normal';
+      foreach ($expecting_int_types as $expecting_type) {
+        if ($expecting_type === $size) {
+          $checked_size = $expecting_type;
+        }
+      }
+      if (!is_numeric($default)) {
+        $default = 0;
+      }
+
+      $db_field['description'] = $description;
+      $db_field['type'] = 'int';
+      $db_field['size'] = $checked_size;
+      $db_field['unsigned'] = $unsigned;
+      $db_field['not null'] = TRUE;
+      $db_field['default'] = $default;
+      break;
+
+    case 'serial':
+      $db_field['description'] = $description;
+      $db_field['type'] = 'serial';
+      $db_field['size'] = 'big';
+      $db_field['unsigned'] = TRUE;
+      $db_field['not null'] = TRUE;
+      break;
+
+    case 'blob':
+      $db_field['description'] = $description;
+      $db_field['type'] = 'blob';
+      $db_field['not null'] = FALSE;
+      $db_field['size'] = 'big';
+      $db_field['serialize'] = TRUE;
+      break;
+
+  }
+
+  return $db_field;
+}
+
+/**
+ * Init common definition of the DB Schema.
+ *
+ * @param $description
+ *   Description of the table schema.
+ *
+ * @param $name_column
+ *   If add default name columns.
+ *
+ * @return array
+ */
+function moha_entity_db_schema_init($description = '', $name_column = TRUE) {
+  $schema['description'] = $description;
+
+  $schema['fields'] = array(
+    'id' => moha_db_column_define('serial', 'Primary Key: Unique ID.'),
+    'vid' => moha_db_column_define('int', 'Primary Key: Unique ID.', 'big', 0),
+    'status' => moha_db_column_define('int', 'Entity status.', 'big', 1, FALSE),
+    'updated' => moha_db_column_define('int', 'The Unix timestamp when the record was updated.', 'normal', 0),
+    'created' => moha_db_column_define('int', 'The Unix timestamp when the record was created.', 'normal', 0),
+  );
+
+  $schema = moha_entity_db_schema_default_index($schema);
+
+  if ($name_column) {
+    $schema['fields']['name'] =  moha_db_column_define('varchar', 'Stores machine name of the entity record.', 512);
+    $schema['fields']['human_name'] =  moha_db_column_define('varchar', 'Stores human name of the entity record.', 512);
+    $schema['indexes']['name'] = array('name');
+    $schema['indexes']['name_status'] = array('name', 'status');
+    $schema['indexes']['name_status_updated'] = array('name', 'status', 'updated');
+    $schema['indexes']['human_name'] = array('human_name');
+    $schema['indexes']['human_name_status'] = array('human_name', 'status');
+    $schema['indexes']['human_name_status_updated'] = array('human_name', 'status', 'updated');
+  }
+
+  return $schema;
+}
+
+/**
+ * Create default index for entity schema.
+ *
+ * @param $schema
+ *
+ * @return array
+ */
+function moha_entity_db_schema_default_index(&$schema) {
+  $schema['indexes']['vid'] = array('vid');
+  $schema['indexes']['id_vid'] = array('id', 'vid');
+  $schema['indexes']['status'] = array('status');
+  $schema['indexes']['id_vid_status'] = array('id', 'vid', 'status');
+  $schema['indexes']['id_vid_status_updated'] = array('id', 'vid', 'status','updated');
+  $schema['indexes']['updated'] = array('updated');
+  $schema['indexes']['status_updated'] = array('status', 'updated');
+  $schema['indexes']['created'] = array('created');
+
+  return $schema;
+}
+
+/**
+ * Generates revision schema per primary schema,
+ * change defination, primary key and index of id and vid,
+ *
+ * @param $schema
+ *
+ * @return array
+ */
+function moha_entity_db_revision_schema($schema) {
+  $schema['fields']['id']['type'] = 'int';
+  $schema['fields']['id']['default'] = 0;
+  $schema['fields']['vid']['type'] = 'serial';
+  unset($schema['fields']['vid']['default']);
+
+  $schema['indexes']['id'] = array('id');
+  unset($schema['indexes']['vid']);
+
+  $schema['primary key'] = array('vid');
+
+  return $schema;
+}
+
+/**
+ * Provided as machine name existing function callback.
+ * 
+ * @param $value
+ *   
+ * @param $element
+ *
+ * @param $form_state
+ *   A keyed array containing the current state of the form. The arguments
+ *   that drupal_get_form() was originally called with are available in the
+ *   array $form_state['build_info']['args'].
+ *
+ * @see form_validate_machine_name()
+ */
+function moha_entity_exists($value, $element, $form_state){
+  $entity_type = $form_state['entity_type'];
+  
+  $query = <<<SQL
+SELECT count(*) num from $entity_type
+ WHERE `name` = :name;
+SQL;
+
+  $result = db_query($query, array(
+    ':name' => $value,
+  ))->fetchField();
+  
+  if ($result > 0) {
+    $result = TRUE;
+  }
+  else {
+    $result = FALSE;
+  }
+  
+  return $result;
+}
+
+/**
  * Generates and returns entity define array.
  *
  * @param $module
@@ -277,10 +476,13 @@ function moha_theme($existing, $type, $theme, $path) {
  * @param $admin_url
  *   Entities admin URL.
  *
+ * @param $fieldable
+ *   If field could be attached to the entity.
+ *
  * @example
  *   moha_define_entity(
- *   __MOHA_MAILER,
- *   __MOHA_MAILER_MAIL,
+ *   __MOHA_MAILER,                   // Module machine name.
+ *   __MOHA_MAILER_MAIL,              //
  *   MOHA_MAILER_MAIL,
  *   'MohaMailerMail',
  *   MOHA_MAILER__URL__MAIL_ADMIN_UI
@@ -289,7 +491,7 @@ function moha_theme($existing, $type, $theme, $path) {
  * @return array
  *
  */
-function moha_define_entity($module, $machine_name, $human_name, $class_prefix, $admin_url, $fieldable = FALSE) {
+function moha_entity_define($module, $machine_name, $human_name, $class_prefix, $admin_url, $fieldable = FALSE) {
   $entity_definition = array(
     'label' => t($human_name),
     'plural label' => t($human_name . 's'),
@@ -341,8 +543,8 @@ function moha_define_entity($module, $machine_name, $human_name, $class_prefix, 
         'plural label' => $human_name . 's',
         'admin' => array(
           'path' => $admin_url,
-          /* @see moha_bundle_access() */
-          'access callback' => 'moha_bundle_access',
+          /* @see moha_entity_bundle_access() */
+          'access callback' => 'moha_entity_bundle_access',
         ),
       )
     );
@@ -471,7 +673,7 @@ function moha_entity_permissions_generator($entity_type) {
  *   Whether access is allowed or not. If the entity type does not specify any
  *   access information, NULL is returned.
  */
-function moha_entity_access($op, $entity, $account, $entity_type) {
+function moha_entity_access($op, $entity, $account = NULL, $entity_type = '') {
   global $user;
 
   if (!isset($account)) {
@@ -481,6 +683,10 @@ function moha_entity_access($op, $entity, $account, $entity_type) {
   // User #1 has all privileges:
   if ($account->uid == 1) {
     return TRUE;
+  }
+
+  if (empty($entity_type) && is_string($entity)) {
+    $entity_type = $entity;
   }
 
   if ($op == 'view') {
@@ -506,14 +712,15 @@ function moha_entity_access($op, $entity, $account, $entity_type) {
 }
 
 /**
+ * Access callback for bundles.
  *
- *
- * @param $account
+ * @param %op
+ *   User object.
  *
  * @return bool
  */
-function moha_bundle_access($account = NULL) {
-  return TRUE;
+function moha_entity_bundle_access($op) {
+  return user_access(MOHA__PERMISSION__ROOT);
 }
 
 /**
@@ -547,22 +754,34 @@ function moha_entity_wrapper_debug($w) {
 }
 
 /**
- * Fetch entities per passed parameters.
+ * Fetch all active entities per passed parameters.
  *
- * @param string $entity_type
- * @param string $status_name
+ * @param $entity_type
+ *
+ * @param $properties
  *
  * @return array
  */
-function moha_entity_fetch($entity_type, $status_name = MOHA__TERM__ACTIVE) {
+function moha_entity_fetch($entity_type, $properties = array('status' => MOHA__TERM__ACTIVE)) {
   if (empty($entity_type)) {
     return array();
   }
 
+  $properties += array('status' => MOHA__TERM__ACTIVE);
+
   // Fetch all infrastructures.
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', $entity_type);
-  $query->propertyCondition('status', moha_array_key_by_value($status_name, MOHA__STATUS__ENTITY), '=');
+  foreach ($properties as $property_name => $property_value) {
+    if ($property_name == 'status') {
+      if (is_string($property_value)) {
+        $query->propertyCondition('status', moha_array_key_by_value($property_value, MOHA__STATUS__ENTITY), '=');
+      }
+    }
+    else {
+      $query->propertyCondition($property_name, $property_value);
+    }
+  }
   $results = $query->execute();
   $ids = isset($results[$entity_type]) ? array_keys($results[$entity_type]) : array();
   $entities = $ids ? entity_load($entity_type, $ids) : array();
@@ -639,6 +858,118 @@ function moha_image_default_styles() {
     ),
   );
   return $styles;
+}
+
+/**
+ * Page route definition helper.
+ *
+ * @param $title
+ * @param $description
+ *
+ * @param $type
+ *   Normal
+ *   Task
+ *   Callback
+ *
+ * @param $definition
+ *   array('<FUNCTION_NAME>', INDEX_OF_ARGUMENT, ...),
+ *
+ * @param $access
+ *   TRUE / FALSE; '<FUNCTION_NAME>'; Array('FUNCTION_NAME', 'PERMISSION_NAME', 'PERMISSION_NAME'); Array('PERMISSION_NAME', 'PERMISSION_NAME');
+ *
+ * @param $file
+ * @param $path
+ */
+function moha_menu_define($title = '', $description = '', $definition = array(), $access = array('access content'), $type = 'Normal', $file = '', $path = '' ) {
+  $item = array(
+    'title' => $title,
+    'description' => $description,
+  );
+
+  switch ($type) {
+    default:
+      $item['type'] = $type;
+      break;
+    case '':
+    case 'Normal':
+      $item['type'] = MENU_NORMAL_ITEM;
+      break;
+    case 'Callback':
+      $item['type'] = MENU_CALLBACK;
+      break;
+  }
+
+  if (is_string($definition)) {
+    $item['page callback'] = $definition;
+  }
+  else if (is_array($definition) && count($definition) >= 1) {
+    if (moha_end_with($definition[0], '_form')) {
+      $item['page callback'] = 'drupal_get_form';
+      $item['page arguments'] = $definition;
+    }
+    else {
+      $function = array_shift($definition);
+      $item['page callback'] = $function;
+      $item['page arguments'] = $definition;
+    }
+  }
+
+  if (is_string($access)) {
+    if (function_exists($access)) {
+      $item['access callback'] = $access;
+    }
+    else {
+      $item['access arguments'] = array($access);
+    }
+  }
+  else if ($access === TRUE || $access === FALSE) {
+    $item['access callback'] = $access;
+  }
+  else if (is_array($access) && count($access) > 0) {
+    if (function_exists($access[0])) {
+      $item['access callback'] = $access[0];
+      array_shift($access);
+      $item['access arguments'] = $access;
+    }
+    else {
+      $item['access callback'] = 'user_access';
+      $item['access arguments'] = $access;
+    }
+  }
+
+  if (!empty(trim($file))) {
+    $item['file'] = $file;
+  }
+
+  if (!empty(trim($path))) {
+    $item['file path'] = $path;
+  }
+
+  return $item;
+}
+
+/**
+ * Define parent menu to collect admin sub-menu.
+ * 
+ * @param $title
+ * @param $description
+ * @param $weight
+ *
+ * @return array
+ */
+function moha_menu_define_system($title = '', $description = '', $weight = 0) {
+  $item = array(
+    'page callback' => 'system_admin_menu_block_page',
+    'title' => $title,
+    'description' => t($description),
+    'weight' => $weight,
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  
+  return $item;
 }
 
 /**
@@ -953,6 +1284,37 @@ function moha_generate_description_fields_and_instances($types) {
 }
 
 /**
+ * Return if passed array is a render-able array.
+ *
+ * @param $array
+ *   Array to test.
+ *
+ * @return bool
+ */
+function moha_is_render_array($array) {
+  $result = FALSE;
+  if (!is_array($array)) {
+    return $result;
+  }
+
+  static $render_keys = array('#type', '#markup', '#attached');
+
+  foreach ($array as $key => $value) {
+    foreach ($render_keys as $render_key) {
+      if ($key === $render_key) {
+        return TRUE;
+      }
+    }
+
+     if ($result = moha_is_render_array($value)) {
+       return $result;
+     }
+  }
+
+  return $result;
+}
+
+/**
  * Add vertical tabs on passed form.
  *
  * @param $form
@@ -1017,6 +1379,24 @@ function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
 }
 
 /**
+ * Returns render array of collapsible container.
+ *
+ * @param $title
+ * @param $collapsed
+ * @param $collapsible
+ *
+ * @return mixed
+ */
+function moha_form_element_container($title, $collapsed = TRUE, $collapsible = TRUE) {
+  $element['#type'] = 'fieldset';
+  $element['#title'] = t($title);
+  $element['#collapsed'] = $collapsed;
+  $element['#collapsible'] = $collapsible;
+  
+  return $element;
+}
+
+/**
  * Returns form element for prompt IMCE usage.
  *
  * @return array
@@ -1033,10 +1413,96 @@ function moha_form_element_prompt_imce_usage() {
 }
 
 /**
+ * Returns render array for weight.
+ *
+ * @param $default
+ * @param $delta
+ *
+ * @return mixed
+ */
+function moha_form_element_weight($default = 0, $delta = 255) {
+  $element['#type'] = 'weight';
+  $element['#attributes'] = array('class' => array('row-weight'));
+  $element['#default_value'] = $default;
+  $element['#delta'] = $delta;
+
+  return $element;
+}
+
+/**
+ * Returns render array for text element.
+ *
+ * @param $title
+ * @param $description
+ * @param $default
+ * @param $size
+ * @param $max_length
+ *
+ * @return mixed
+ */
+function moha_form_element_text($title = '', $description = '', $default = '', $size = 40, $max_length = 255) {
+  $element['#type'] = 'textfield';
+  $element['#title'] = $title;
+  $element['#description'] = $description;
+  $element['#default_value'] = $default;
+  $element['#size'] = $size;
+  $element['#maxlength'] = $max_length;
+
+  return $element;
+}
+
+/**
+ * Returns render array for textarea element.
+ *
+ * @param $title
+ * @param $description
+ * @param $default
+ * @param $rows
+ * 
+ * @return array
+ */
+function moha_form_element_textarea($title = '', $description = '', $default = '', $rows = 5) {
+  $element['#type'] = 'textarea';
+  $element['#title'] = t($title);
+  $element['#description'] = t($description);
+  $element['#default_value'] = $default;
+  $element['#rows'] = $rows;
+  
+  return $element;
+}
+
+/**
+ * Returns render array for select element.
+ *
+ * @param $title
+ * @param $description
+ * @param $default
+ * @param $options
+ * @param $required
+ * @param $empty
+ *
+ * @return mixed
+ */
+function moha_form_element_select($title = '', $description = '', $default = '', $options = array(), $required = FALSE, $empty = '') {
+  $element['#type'] = 'select';
+  $element['#title'] = $title;
+  $element['#description'] = t($description);
+  $element['#options'] = $options;
+  $element['#empty_value'] = $empty;
+  $element['#default_value'] = $default;
+  $element['#required'] = $required;
+
+  return $element;
+}
+
+/**
  * Add default configuration for a Radio form element.
  *
- * @param $form
- *   Form element.
+ * @param $title
+ *   The title of form element.
+ *
+ * @param $description
+ *   The description of form element.
  *
  * @param $default
  *   Radio default value.
@@ -1044,26 +1510,57 @@ function moha_form_element_prompt_imce_usage() {
  * @param array $options
  *   Options definitions.
  *
+ * @param boolean $required
+ *
  * @return array
  *   Form element.
  */
-function moha_form_radio(&$form, $default, array $options = array(1 => 'Yes', 0 => 'No')) {
-  $form['#type'] = 'radios';
-  $form['#options'] = $options;
-  $form['#default_value'] = $default ? 1 : 0;
+function moha_form_element_radio($title = '', $description = '', $default = NULL, array $options = array(1 => 'Yes', 0 => 'No'), $required = FALSE) {
+  $element['#type'] = 'radios';
+  $element['#title'] = t($title);
+  $element['#description'] = t($description);
+  $element['#default_value'] = (isset($default)) ? $default : 0;
 
-  return $form;
+  if (!empty($options)) {
+    $element['#options'] = $options;
+  }
+  else {
+    $element['#options'] = array(1 => 'Yes', 0 => 'No');
+  }
+
+  $element['#required'] = $required;
+
+  return $element;
+}
+
+/**
+ * Returns render array for draggable table.
+ * If added weight column, this table will be shown as draggable table.
+ *
+ * @param $header
+ * @param $rows
+ *   If true
+ * @param $empty
+ */
+function moha_form_element_table($rows, $header = array(), $empty = 'No Data.') {
+  $element['#type'] = MOHA_UI__ELEMENT__DRAGGABLE_TABLE;
+  $element['#header'] = $header;
+  $element['#rows'] = $rows;
+  $element['#empty'] = $empty;
+  $element['#tree'] = TRUE;
+
+  return $element;
 }
 
 /**
  * Cache save default radio value which values generated by moha_form_radio().
  *
- * @param $form_value
+ * @param $value
  *
  * @param $constant_name
  */
-function moha_form_radio_cache_save($form_value, $constant_name) {
-  if ($form_value) {
+function moha_form_cache_save($constant_name, $value) {
+  if ($value) {
     moha_cache_set($constant_name, TRUE);
     moha_variable_set($constant_name, TRUE);
   }
@@ -1083,18 +1580,66 @@ function moha_form_radio_cache_save($form_value, $constant_name) {
  *
  * @return mixed
  */
-function moha_form_actions(&$form, $buttons = array('Save')) {
+function &moha_form_actions(&$form, $buttons = array('Save')) {
   $form['actions'] = array('#type' => 'actions');
 
   if (is_string($buttons)) {
     $buttons = array($buttons);
   }
 
-  foreach ($buttons as $button) {
-    $form['actions'][$button] = array(
+  foreach ($buttons as $name) {
+    $form['actions'][moha_h2m($name)] = array(
       '#type' => 'submit',
-      '#value' => t($button),
+      '#value' => t($name),
     );
+  }
+
+  return $form;
+}
+
+/**
+ * Generate form link action.
+ *
+ * @param $form
+ * 
+ * @param $links
+ *   Associative array:
+ *     Key => URI/URL or
+ *     Key => Array(URI/URL, OPTIONS items)
+ *   Example: @see moha_user_form_user_login_alter
+ *     
+ * @return array
+ *   Render array.
+ */
+function moha_form_actions_link(&$form, $links = array()) {
+
+  if (empty($form['actions'])) {
+    $form['actions'] = array('#type' => 'actions');
+  }
+  
+  $options = array(
+    'attributes' => array(
+      'class' => array('button', 'form-submit'),
+      'target' => '_blank',
+    )
+  );
+  
+  foreach ($links as $name => $link) {
+    if (is_string($link)) {
+      $form['actions'][moha_h2m($name)] = array(
+        '#type' => 'markup',
+        '#markup' => l(t($name), $link, $options),
+      );
+    }
+    else if (is_array($link)) {
+      $uri = array_shift($link);
+      $options = drupal_array_merge_deep($options, $link);
+
+      $form['actions'][moha_h2m($name)] = array(
+        '#type' => 'markup',
+        '#markup' => l(t($name), $uri, $options),
+      );
+    }
   }
 
   return $form;
@@ -1211,6 +1756,17 @@ function moha_form_options_from_entity($excludes) {
   return $entity_options;
 }
 
+/**
+ * @param $array
+ *
+ * @return mixed
+ */
+function &moha_sort_per_weight(&$array) {
+  uasort($array, 'drupal_sort_weight');
+
+  return $array;
+}
+
 
 /**
  * Turn admin data configuration form to draggable table.
@@ -1308,7 +1864,7 @@ function moha_draggable_table_data_trim_empty(&$values, $condition_columns = arr
 
 
 /**
- * sort passed array per weight, then eliminate weight after storing.
+ * sort passed array per weight, then eliminate weight after sorting.
  */
 function moha_draggable_table_data_trim_weight(&$values) {
   uasort($values, 'drupal_sort_weight');
@@ -1326,7 +1882,6 @@ function moha_unset_weight(&$item) {
     unset($item['weight']);
   }
 }
-
 
 function moha_draggable_table_data_prepare_for_saving(&$values) {
   $values = moha_draggable_table_data_trim_empty($values);
@@ -1609,6 +2164,20 @@ function moha_cache_get($cid, $default = '', $use_static = TRUE) {
 }
 
 /**
+ * @param $key
+ * @param $default
+ */
+function moha_cache_variable_get($key, $default = '') {
+  $value = moha_cache_get($key);
+
+  if (empty($value)) {
+    $value = moha_variable_get($key, $default);
+  }
+
+  return $value;
+}
+
+/**
  * Cache the data by ID.
  *
  * @param $cid string
@@ -1633,6 +2202,19 @@ function moha_cache_set($cid, $value, $expire_in_seconds = CACHE_PERMANENT) {
     $expire = $expire_in_seconds;
   }
   cache_set($cid, $value, 'cache', $expire);
+}
+
+/**
+ * Remove cached data by ID.
+ *
+ * @param $cid string
+ *   Cache ID.
+ */
+function moha_cache_del($cid) {
+  $static = &drupal_static(__MOHA);
+  unset($static[$cid]);
+
+  cache_clear_all($cid, 'cache');
 }
 
 /**
@@ -1804,7 +2386,7 @@ function moha_throw_exception_per_variable($suspend_variable_name, $default = FA
  *    - 'error'
  */
 function moha_show_exception(Exception $e, $message_type = 'error') {
-  drupal_set_message(t('Exception: %msg', array('%msg' => $e->getMessage())), $message_type);
+  drupal_set_message(t('Oops: %msg', array('%msg' => $e->getMessage())), $message_type);
 }
 
 /* Common functions. */
@@ -1816,7 +2398,6 @@ function moha_show_exception(Exception $e, $message_type = 'error') {
  * @return string
  */
 function moha_nonce($length = 16) {
-
   // potential characters
   $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -1825,6 +2406,38 @@ function moha_nonce($length = 16) {
     $str .= $chars[mt_rand(0, strlen($chars) - 1)];
   }
   return $str;
+}
+
+/**
+ * Store value and get a uuid as key to fetch later.
+ *
+ * @param $original
+ *   state code embedded in URL when request OAuth2 authentication.
+ */
+function moha_state_set($original = '') {
+  $uuid = uuid_generate();
+  $cache_id = __MOHA . ':state:' . $uuid;
+
+  moha_cache_set($cache_id, $original);
+
+  return $uuid;
+}
+
+/**
+ * Get a stored value through UUID state key.
+ *
+ * @param $state_uuid
+ *   state code embedded in URL when request OAuth2 authentication.
+ *
+ * @param  $default
+ */
+function moha_state_get($state_uuid = '', $default = '') {
+  $cache_id = __MOHA . ':state:' . $state_uuid;
+
+  $value = moha_cache_get($cache_id, $default);
+  moha_cache_del($cache_id);
+
+  return $value;
 }
 
 /**
@@ -1837,7 +2450,7 @@ function moha_nonce($length = 16) {
  * @return string
  */
 function moha_n2e($variable, $default = '') {
-  if (!empty($variable)) {
+  if ($variable === NULL) {
     return $variable;
   }
   else {
@@ -1846,18 +2459,17 @@ function moha_n2e($variable, $default = '') {
 }
 
 /**
- * Convert array NULL element to empty string.
- * If $default is specified, return $default.
+ * Identified NULL or nonexistent array element to $default string.
  *
  * @param $array
  * @param $key
  * @param $default string
  *  Default value when element is NULL.
  *
- * @return string
+ * @return mixed
  */
 function moha_an2e($array, $key, $default = '') {
-  if (!empty($array[$key])) {
+  if (isset($array[$key]) && $array[$key] !== NULL) {
     return $array[$key];
   }
   else {
@@ -1875,19 +2487,36 @@ function moha_an2e($array, $key, $default = '') {
  *   Machine name cleaned-up of any special chars.
  */
 function moha_h2m($human_name) {
+  $converted = &drupal_static(__FUNCTION__);
 
-  $string_mapping = &drupal_static(__FUNCTION__);
-
-  if(empty($string_mapping) || !isset($string_mapping[$human_name])){
+  if(empty($converted) || !isset($converted[$human_name])){
     $machine_name = strtolower($human_name);
-    $machine_name = preg_replace('@[^a-z0-9_]+@', '_', $machine_name);
-    $string_mapping[$human_name] = $machine_name;
+    $machine_name = preg_replace('@[^a-z0-9\-_]+@', '_', $machine_name);
+    $converted[$human_name] = $machine_name;
   }
   else {
-    $machine_name = $string_mapping[$human_name];
+    $machine_name = $converted[$human_name];
   }
 
   return $machine_name;
+}
+
+/**
+ * Uppercase the first character of each word in a string.
+ *
+ * @param $text
+ *
+ * @return mixed
+ */
+function moha_ucwords($text) {
+  global $multibyte;
+
+  if ($multibyte == UNICODE_MULTIBYTE) {
+    return mb_convert_case($text, MB_CASE_TITLE);
+  }
+  else {
+    return ucwords($text);
+  }
 }
 
 /**
@@ -1915,46 +2544,6 @@ function moha_array_key_by_value($value = "", $array = array()) {
 }
 
 /**
- * Generates revision schema per primary schema,
- * change defination, primary key and index of id and vid,
- *
- * @param $schema
- *
- * @return array
- */
-function moha_db_revision_schema($schema) {
-  $schema['fields']['id']['type'] = 'int';
-  $schema['fields']['id']['default'] = 0;
-  $schema['fields']['vid']['type'] = 'serial';
-  unset($schema['fields']['vid']['default']);
-
-  $schema['indexes']['id'] = array('id');
-  unset($schema['indexes']['vid']);
-
-  $schema['primary key'] = array('vid');
-
-  return $schema;
-}
-
-/**
- * Uppercase the first character of each word in a string.
- *
- * @param $text
- *
- * @return mixed
- */
-function moha_ucwords($text) {
-  global $multibyte;
-
-  if ($multibyte == UNICODE_MULTIBYTE) {
-    return mb_convert_case($text, MB_CASE_TITLE);
-  }
-  else {
-    return ucwords($text);
-  }
-}
-
-/**
  * Convert to celsius degree.
  *
  * @param $degree
@@ -1976,5 +2565,41 @@ function moha_toFahrenheit($degree) {
   return $degree * 9 / 5 + 32;
 }
 
-// include /site/all/modules/custom/moha/ckeditor/moha.ckeditor.inc.
-ctools_include('moha.ckeditor', __MOHA, 'ckeditor');
+/**
+ * If passed string start with expectation string.
+ *
+ * @param $string
+ * @param $needle
+ *
+ * @return bool
+ */
+function moha_start_with($string, $needle)
+{
+  $length = strlen($needle);
+  $result = (substr($string, 0, $length) === $needle);
+
+  return $result;
+}
+
+/**
+ * If passed string end with expectation string.
+ *
+ * @param $string
+ * @param $expectation
+ *
+ * @return bool
+ */
+function moha_end_with($string, $expectation)
+{
+  $length = strlen($expectation);
+
+  if ($length == 0) {
+    return true;
+  }
+
+  $result = (substr($string, -$length) === $expectation);
+
+  return $result;
+}
+
+include_once 'ckeditor/moha.ckeditor.inc';

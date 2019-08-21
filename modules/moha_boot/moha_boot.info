@@ -1,0 +1,4 @@
+name = Moha Boot
+description = Boot.
+core = 7.x
+package = Moha Online

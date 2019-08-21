@@ -102,8 +102,7 @@ define('MOHA_MAILER__PERMISSION__ADMIN', 'administer moha mailer');
  * Implements hook_entity_info().
  */
 function moha_mailer_entity_info() {
-
-  $items[__MOHA_MAILER_MAIL] = moha_define_entity(
+  $items[__MOHA_MAILER_MAIL] = moha_entity_define(
     __MOHA_MAILER,
     __MOHA_MAILER_MAIL,
     MOHA_MAILER_MAIL,

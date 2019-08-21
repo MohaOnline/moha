@@ -1,0 +1,14 @@
+<?php
+/**
+ * @file
+ * The test file for the module.
+ */
+
+/**
+ * Class MohaUnitTestCase
+ */
+class MohaUnitTestCase extends DrupalUnitTestCase {
+
+}
+
+

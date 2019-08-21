@@ -17,10 +17,19 @@
 /* Fix help text style in inline container. */
 .container-inline .form-item div.description {
   display: block;
+  margin-left: 10.2rem;
 }
 
 .container-inline label {
-  min-width: 10em;
+  min-width: 10rem;
+  display: inline-block;
+}
+
+.container-inline .form-item label.option {
+  min-width: initial;
+}
+
+.container-inline div.form-item.form-type-radio {
   display: inline-block;
 }
 /***/

@@ -78,7 +78,7 @@ function moha_its_effort_form($form, &$form_state, $effort = NULL) {
     '#type' => 'textfield',
     '#title' => t('Duration'),
     '#size' => 10,
-    '#description' => t('hrs.'),
+    '#field_suffix' => t('hrs.'),
     '#default_value' => isset($effort->duration)?$effort->duration:'',
   );
   moha_form_apply_inline_wrapper($date_form['duration']);

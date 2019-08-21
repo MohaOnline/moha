@@ -1,0 +1,38 @@
+<?php
+/**
+ * @file
+ * The install file of moha_user.
+ */
+
+/**
+ * Implements hook_schema.
+ *
+ * Defines table schemas for entities of the module.
+ */
+function moha_user_schema() {
+
+  /**
+   * @link https://www.drupal.org/docs/7/api/schema-api/data-types @endlink
+   */
+  $schema[__MOHA_USER_OAUTH2_CLIENT] = moha_entity_db_schema_init('Stores registered information of certain OAuth2 client.');
+  $_schema = &$schema[__MOHA_USER_OAUTH2_CLIENT];
+  $_schema['fields']['tenant'] = moha_db_column_define('varchar', 'Tenant ID or name', 255);
+  $_schema['fields']['pid'] = moha_db_column_define('int', 'Taxonomy ID of platform');
+  $_schema['fields']['authorize'] = moha_db_column_define('varchar', 'Authorization Endpoint.', 255);
+  $_schema['fields']['token'] = moha_db_column_define('varchar', 'Token Endpoint.', 255);
+  $_schema['fields']['openid'] = moha_db_column_define('varchar', 'OpenID Endpoint.', 255);
+  $_schema['fields']['client_id'] = moha_db_column_define('varchar', 'Client ID', 64);
+  $_schema['fields']['client_secret'] = moha_db_column_define('varchar', 'Client Secret', 64);
+  $_schema['fields']['response_type'] = moha_db_column_define('varchar', 'Specifies what can be returned to client.', 64);
+  $_schema['fields']['response_mode'] = moha_db_column_define('varchar', 'Specifies the method that should be used to send the resulting token back to client.', 64);
+  $_schema['fields']['resource'] = moha_db_column_define('varchar', 'The App ID URI of the target web API (secured resource).');
+  $_schema['fields']['scope'] = moha_db_column_define('varchar', 'A space-separated list of scopes that you want the user to consent to.', 64);
+  $_schema['fields']['domain_hint'] = moha_db_column_define('varchar', 'Hint AAD redirects to the specified tenant federation server.', 64);
+  $_schema['fields']['uid'] = moha_db_column_define('int', 'User ID who made the creation or update.');
+  $_schema['fields']['integration'] = moha_db_column_define('int', 'Boolean if auto login.', 'normal', 0);
+  $_schema['fields']['mapping'] = moha_db_column_define('blob', 'A serialized mapping array between response attributes and OAuth2 profile2 fields.');
+  $schema[__MOHA_USER_OAUTH2_CLIENT . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_USER_OAUTH2_CLIENT]);
+
+  return $schema;
+}
+

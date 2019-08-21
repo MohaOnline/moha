@@ -28,7 +28,7 @@ drupal_add_css(MOHA_CLIP__PATH . '/css/moha_clip.views.css');
  * @ingroup views_templates
  */
 ?>
-<div class="<?php print $classes; ?> col-sm-9 col-md-6">
+<div class="<?php print $classes; ?>">
   <?php print render($title_prefix); ?>
   <?php if ($title): ?>
     <?php print $title; ?>

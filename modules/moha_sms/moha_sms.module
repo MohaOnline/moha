@@ -90,13 +90,15 @@ function _moha_sms_entity_admin_access_callback($op, $account = NULL) {
 
 /**
  * Implements hook_entity_info().
+ *
+ * Stores SMS request information.
  */
 function moha_sms_entity_info() {
   $items = array();
 
-  // Stores basic information of a company / group company.
+  // Stores basic information of a SMS request.
   // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
-  $items[__MOHA_SMS_ALIYUN_REQUEST] = moha_define_entity(
+  $items[__MOHA_SMS_ALIYUN_REQUEST] = moha_entity_define(
     __MOHA_SMS,
     __MOHA_SMS_ALIYUN_REQUEST,
     MOHA_SMS_ALIYUN_REQUEST,

@@ -290,7 +290,7 @@ function moha_its_entity_info() {
     'views controller class' => 'EntityDefaultViewsController',
   );
 
-  $items[__MOHA_ITS_INFRASTRUCTURE] = moha_define_entity(
+  $items[__MOHA_ITS_INFRASTRUCTURE] = moha_entity_define(
     __MOHA_ITS,
     __MOHA_ITS_INFRASTRUCTURE,
     MOHA_ITS_INFRASTRUCTURE,
@@ -1048,6 +1048,9 @@ function moha_its_azure_china_enrollment_ids() {
  * Fetch available expense details of Azure China.
  * By default, data will be cached 10 minutes.
  *
+ * @param $weeks_num
+ *   Leave last $weeks_num weeks' expenses.
+ *
  * @return array
  *   Associative array keyed by $enrollment_id, array item keys:
  *     name
@@ -1062,7 +1065,7 @@ function moha_its_azure_china_enrollment_ids() {
  *
  * @throws \Exception
  */
-function moha_its_azure_china_expense_details() {
+function moha_its_azure_china_expense_details($weeks_num = 4) {
   $expenses = moha_cache_get(__FUNCTION__, array());
   if (!empty($expenses) && is_array($expenses)) {
     return $expenses;
@@ -1077,14 +1080,14 @@ function moha_its_azure_china_expense_details() {
       )
     )->fetchAllAssoc('Date');
 
-    // Collect last 3 week's expense.
-    $weeks = array_fill(0, 3*7, '');;
+    // Collect last $weeks_num week's expense.
+    $weeks = array_fill(0, ($weeks_num + 1)*7, '');;
 
     if (!empty($expense)) {
       $last = end($expense);
       $day = date('w', strtotime($last->Date));
 
-      for ($i = $day + 14; $i >= 0; $i--) {
+      for ($i = $day + $weeks_num * 7; $i >= 0; $i--) {
         $value = current($expense);
         $weeks[$i] = round($value->Cost);
 
@@ -1192,36 +1195,6 @@ function moha_its_block_view($delta = '') {
 function moha_its_block_view_azure_cn_expenses() {
   $footer = $data = array();
 
-  $row_header = <<< ROW_HEADER_HTML
-  <h4>Expenses in last 3 weeks</h4>
-  <div class="row moha-ui-row-flex">
-    <div class="description-block border-right">
-      <div class="description-header">Sun</div>
-    </div>
-    <div class="description-block border-right">
-      <div class="description-header">Mon</div>
-    </div>
-    <div class="description-block border-right">
-      <div class="description-header">Tue</div>
-    </div>
-    <div class="description-block border-right">
-      <div class="description-header">Wed</div>
-    </div>
-    <div class="description-block border-right">
-      <div class="description-header">Thu</div>
-    </div>
-    <div class="description-block border-right">
-      <div class="description-header">Fri</div>
-    </div>
-    <div class="description-block border-right">
-      <div class="description-header">Sat</div>
-    </div>
-    <div class="description-block border-right">
-      <div class="description-header">Weekly</div>
-    </div>
-  </div>
-ROW_HEADER_HTML;
-
   $expenses = moha_its_azure_china_expense_details();
   foreach ($expenses as $expense) {
 
@@ -1240,22 +1213,24 @@ ROW_HEADER_HTML;
         'dates' => $dates,
         'costs' => $costs,
       );
-      $footer[$name]['#markup'] = $row_header . moha_ui_dashboard_row_statistic($expense['last_weeks']);
+      $footer[$name]['#markup'] = moha_ui_dashboard_row_statistic($expense['last_weeks']);
     }
   }
 
-  if (empty($data)) {
-    $data = t('No Azure China expenses data yet.');
-  }
-
   $content['azure_china_expenses'] = array(
-    '#title' => 'Azure China Expenses',
+    '#title' => t('Azure China Expenses'),
     '#type' => MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE,
-    '#data' => $data,
     '#footer' => $footer,
     '#prefix' => '<div class="row"><div class="col-md-12">',
     '#suffix' => '</div></div>',
   );
+  if (empty($data)) {
+    $data = t('No Azure China expenses data yet.');
+  }
+  else {
+
+    $content['azure_china_expenses']['#data'] = $data;
+  }
 
   return $content;
 }

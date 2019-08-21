@@ -50,6 +50,11 @@ define('MOHA_UI__DASHBOARD__CONTAINER','moha_ui__dashboard');
 define('MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE', 'moha_ui_dashboard_chart_expense');
 
 /**
+ * Drupal Element: moha_ui_draggable_table.
+ */
+define('MOHA_UI__ELEMENT__DRAGGABLE_TABLE', 'moha_ui_draggable_table');
+
+/**
  * Permission: Access moha_ui Dashboard.
  */
 define('MOHA_UI__PERMISSION__DASHBOARD', 'moha_ui dashboard');
@@ -166,7 +171,6 @@ function moha_ui_library_alter(&$libraries, $module) {
  * @see libraries_load();
  */
 function moha_ui_libraries_info() {
-
   $libraries[__MOHA_UI] = array(
     'name' => MOHA_UI,
     'library path' => MOHA_UI__PATH,
@@ -245,10 +249,23 @@ function moha_ui_menu_alter(&$items) {
 }
 
 /**
+ * Implements hook_menu_breadcrumb_alter().
+ */
+function moha_ui_menu_breadcrumb_alter(&$active_trail, $item) {
+  // Add breadcrumb for DB log page on log details page.
+  if (isset($item['path']) && $item['path'] == 'admin/reports/event/%') {
+    array_pop($active_trail);
+    $active_trail[] = menu_get_item('admin/reports/dblog');
+  }
+
+}
+
+/**
  * Implements hook_theme().
  */
 function moha_ui_theme($existing, $type, $theme, $path) {
   $themes = array(
+    /** @see theme_moha_ui_rating() */
     'moha_ui_rating' => array(
       'render element' => 'element',
     ),
@@ -303,6 +320,11 @@ function moha_ui_theme($existing, $type, $theme, $path) {
     'template' => 'templates/moha-ui-dashboard-block',
   );
 
+  /** @see theme_moha_ui_draggable_table() */
+  $themes[MOHA_UI__ELEMENT__DRAGGABLE_TABLE] = array(
+    'render element' => 'element',
+  );
+
   return $themes;
 }
 
@@ -314,7 +336,7 @@ function moha_ui_theme($existing, $type, $theme, $path) {
 function moha_ui_page_alter(&$page) {
   $path = current_path();
 
-  if (substr($path, 0, 20) === 'admin/moha/dashboard') {
+  if (moha_start_with($path, 'admin/moha/dashboard') ) {
 
     // Replace original block.tpl.php template to avoid complex html structure to apply on auto generated system_main block.
     if (isset($page['content']['system_main']['#theme_wrappers'])) {
@@ -497,6 +519,8 @@ function theme_moha_ui_form_element($variables) {
 /**
  * Replacement for theme_webform_element().
  *
+ * @param $variables
+ *
  * @see theme_webform_element
  */
 function theme_moha_ui_webform_element($variables) {
@@ -590,14 +614,36 @@ function moha_ui_element_info() {
     ),
   );
 
+  /**
+   * Set #data for chart rendering;
+   */
   $elements[MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE] = array(
     '#input' => FALSE,
+    /** @see moha-ui-dashboard-block.tpl.php */
     /** @see moha_ui_theme() */
     '#theme' => array('moha_ui_dashboard_block'),
     /** @see moha_ui_dashboard_chart_expense_pre_render() */
     '#pre_render' => array('moha_ui_dashboard_chart_expense_pre_render'),
     '#content_wrapper_selector' => 'moha-ui-dashboard-expense-chart-container',
-    '#data' => array(),
+    '#classes' => array('box-primary'),
+  );
+
+  /**
+   * Form element: moha_ui_draggable_table.
+   * If no weight column, element will be rendered as normal table.
+   *
+   * @see moha_form_element_weight()
+   * @see moha_ui_draggable_table_process()
+   * @see theme_moha_ui_draggable_table()
+   */
+  $elements[MOHA_UI__ELEMENT__DRAGGABLE_TABLE] = array(
+    '#tree' => TRUE,
+    '#input' => TRUE,
+    '#header' => array(),
+    '#rows' => array(),
+    '#empty' => t('No Data.'),
+    '#theme' => array(MOHA_UI__ELEMENT__DRAGGABLE_TABLE),
+    '#process' => array('moha_ui_draggable_table_process'),
   );
 
   return $elements;
@@ -765,7 +811,8 @@ function moha_ui_rating_validate($element, &$form_state) {
 }
 
 /**
- * Prepares data for being rendered as chart.
+ * Prepares data before they are rendered as chart.
+ * For element: MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE.
  *
  * @param $element
  *   A render array.
@@ -773,27 +820,53 @@ function moha_ui_rating_validate($element, &$form_state) {
  * @return array
  *   The passed-in elements as well as data for rendering.
  *
+ * @see MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE
+ * @see moha_ui_element_info()
  * @see drupal_render()
  */
 function moha_ui_dashboard_chart_expense_pre_render($element) {
   $element['#id'] = drupal_html_id(MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE);
 
-  if (isset($element['#data']) && is_array($element['#data'])) {
-    foreach ($element['#data'] as $i => $data) {
-      // JS rendering engine need to know where to insert chart canvas.
-      $element['#data'][$i]['wrapper_id'] = $element['#id'];
-    }
+  if (isset($element['#data'])) {
+    if (is_array($element['#data'])) {
+      if (!moha_is_render_array($element['#data'])) {
+        foreach ($element['#data'] as $i => $data) {
+          // JS rendering engine need to know where to insert chart canvas.
+          $element['#data'][$i]['wrapper_id'] = $element['#id'];
+        }
 
-    $element['#attached']['js'][] = array(
-      'data' => array(__MOHA_UI => array(
-        'expenses_charts' => $element['#data'],
-      ),),
-      'type' => 'setting'
-    );
-    $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
-    $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
+        $element['#attached']['js'][] = array(
+          'data' => array(
+            __MOHA_UI => array(
+              'expenses_charts' => $element['#data'],
+            ),
+          ),
+          'type' => 'setting'
+        );
+        unset($element['#data']);
+        $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
+        $element['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
+      }
+      else {
+        $element['#data'] = render($element['#data']);
+      }
+    }
   }
 
+  // Convert class array to string for style html.
+  if (isset($element['#classes'])) {
+    if (is_array($element['#classes'])) {
+      $box_classes = '';
+      foreach ($element['#classes'] as $class) {
+        $box_classes .= ' ' . $class;
+      }
+
+      $element['#classes'] = $box_classes;
+    }
+  }
+  else {
+    $element['#classes'] = ' box-default box-solid';
+  }
   return $element;
 }
 
@@ -807,26 +880,54 @@ function moha_ui_dashboard_chart_expense_pre_render($element) {
  * @return string
  */
 function moha_ui_dashboard_row_statistic($expenses, $column_num = 7) {
+  $html = <<< ROW_HEADER_HTML
+<h4>Expenses in last 4 weeks</h4>
+<div class="row moha-ui-row-flex">
+  <div class="description-block border-right">
+    <div class="description-header">Sun</div>
+  </div>
+  <div class="description-block border-right">
+    <div class="description-header">Mon</div>
+  </div>
+  <div class="description-block border-right">
+    <div class="description-header">Tue</div>
+  </div>
+  <div class="description-block border-right">
+    <div class="description-header">Wed</div>
+  </div>
+  <div class="description-block border-right">
+    <div class="description-header">Thu</div>
+  </div>
+  <div class="description-block border-right">
+    <div class="description-header">Fri</div>
+  </div>
+  <div class="description-block border-right">
+    <div class="description-header">Sat</div>
+  </div>
+  <div class="description-block border-right">
+    <div class="description-header">Weekly</div>
+  </div>
+</div>
+ROW_HEADER_HTML;
 
-  $html = "";
   $previous_row = array_fill(0, $column_num, 0);
   $weekly_expense = 0;
 
   foreach ($expenses as $i => $expense) {
-    if (($i + 1) % $column_num == 1) {
-      $html .= "<div class='row moha-ui-row-flex'>";
-      $weekly_expense = 0;
-    }
-
     $percentage = '';
     if ($i < $column_num) {
       $previous_row[$i] = $expense;
     }
     else {
       if (!empty($expense)) {
-        $percentage = round(($expense - $previous_row[$i%$column_num]) / $previous_row[$i%$column_num] * 100, 2);
+        $percentage = round(($expense - $previous_row[$i % $column_num]) / $previous_row[$i % $column_num] * 100, 2);
         $percentage = moha_ui_dashboard_render_percentage($percentage);
       }
+    }
+
+    if (($i + 1) % $column_num == 1) {
+      $html .= "<div class='row moha-ui-row-flex moha-ui-statistic-row'>";
+      $weekly_expense = 0;
     }
 
     $html .= <<<DAILY_HTML
@@ -836,9 +937,10 @@ function moha_ui_dashboard_row_statistic($expenses, $column_num = 7) {
   </div>
 DAILY_HTML;
 
-    $previous_row[$i%$column_num] = $expense;
+    $previous_row[$i % $column_num] = $expense;
     $weekly_expense += is_numeric($expense) ? $expense : 0;
 
+    // Last column.
     if (($i + 1) % $column_num == 0) {
       if (!empty($row_previous)) {
         $percentage = round(($weekly_expense - $row_previous) / $row_previous * 100, 2);
@@ -1266,4 +1368,88 @@ function moha_ui_webform_component_info() {
   );
 
   return $components;
+}
+
+/**
+ * An element #process callback for the moha_ui_draggable_table form element.
+ *
+ * @param $element
+ * @param $form_state
+ * @param $form
+ *
+ * @return mixed
+ *
+ * @see moha_ui_element_info()
+ * @see \moha_form_element_table()
+ */
+function moha_ui_draggable_table_process($element, &$form_state, $form) {
+
+  foreach ($element['#rows'] as $row_id => $row) {
+    $row_id = moha_h2m($row_id);
+
+    foreach ($row as $column_id => $column) {
+      $column_id = moha_h2m($column_id);
+
+      if (is_array($column)) {
+        $element[$row_id][$column_id] = $column;
+      }
+      else {
+        $element[$row_id][$column_id] = array('#markup' => $column);
+      }
+    }
+  }
+
+  return $element;
+}
+
+/**
+ * Theme function renders draggable table.
+ *
+ * @param $variables
+ *
+ * @see moha_ui_element_info()
+ * @see moha_ui_theme()
+ *
+ * @throws Exception
+ */
+function theme_moha_ui_draggable_table($variables) {
+
+  $element = $variables['element'];
+  $header = array();
+  $rows = array();
+  $draggable = FALSE;
+
+  foreach ($element['#rows'] as $row_id => $row) {
+    $header = array();
+    $row_id = moha_h2m($row_id);
+
+    foreach ($row as $column_id => $column) {
+      $header[] = $column_id;
+      $column_id = moha_h2m($column_id);
+
+      if (isset($element[$row_id][$column_id]['#is_weight']) && $element[$row_id][$column_id]['#is_weight']) {
+        $draggable = TRUE;
+      }
+
+      $rows[$row_id][$column_id] = render($element[$row_id][$column_id]);
+    }
+
+    if ($draggable) {
+      $rows[$row_id]['data'] = $rows[$row_id];
+      $rows[$row_id]['class'] = array('draggable');
+    }
+  }
+
+  $output = theme('table', array(
+    'header' => (empty($element['#header'])) ? $header : $element['#header'],
+    'rows' => $rows,
+    'empty' => $element['#empty'],
+    'attributes' => array('id' => $element['#id'] . '-draggable-table') + $element['#attributes']
+  ));
+
+  if ($draggable) {
+    drupal_add_tabledrag($element['#id'] . '-draggable-table', 'order', 'sibling', 'row-weight');
+  }
+
+  return $output;
 }

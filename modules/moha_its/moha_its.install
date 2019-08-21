@@ -1018,11 +1018,11 @@ function moha_its_schema() {
       'InstanceId' => array(array('InstanceId', 256)),
       'ResourceGroup' => array(array('ResourceGroup', 256)),
       'status' => array('status'),
-      'vid' => array('vid'),
     ),
     'primary key' => array('id'),
   );
-  $schema[__MOHA_ITS_AZURE_CHINA_EXPENSE . '_revision'] = moha_db_revision_schema($schema[__MOHA_ITS_AZURE_CHINA_EXPENSE]);
+  $schema[__MOHA_ITS_AZURE_CHINA_EXPENSE] = moha_entity_db_schema_default_index($schema[__MOHA_ITS_AZURE_CHINA_EXPENSE]);
+  $schema[__MOHA_ITS_AZURE_CHINA_EXPENSE . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_ITS_AZURE_CHINA_EXPENSE]);
 
   return $schema;
 }

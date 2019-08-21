@@ -1,12 +1,14 @@
 <?php
 /**
  * @file
- *   Template file.
+ *   The template file of the theme moha_ui_dashboard_block.
  *
+ * @var
+ * @see moha_ui_element_info()
  * @see moha_ui_theme()
  */
 ?>
-<div class="box box-primary">
+<div class="box <?php print $element['#classes']; ?>">
   <div class="box-header with-border">
     <?php if (isset($element['#title'])): ?>
     <h3 class="box-title"><?php print $element['#title']; ?></h3>
@@ -20,7 +22,7 @@
 
   <div class="box-body">
     <div class="row">
-      <div <?php print isset($element['#id']) ? 'id="' . $element['#id'] . '"': ''; ?> class="col-md-12 <?php print isset($element['#content_wrapper_selector']) ? $element['#content_wrapper_selector'] : ''; ?>">
+      <div <?php print isset($element['#id']) ? 'id="' . $element['#id'] . '"' : ''; ?> class="col-md-12 <?php print isset($element['#content_wrapper_selector']) ? $element['#content_wrapper_selector'] : ''; ?>">
         <?php if (isset($element['#data']) && is_string($element['#data'])) { print $element['#data']; } ?>
         <!-- /.chart-responsive -->
       </div>

@@ -124,96 +124,23 @@ function moha_schema(){
       ),
     ),
     'primary key' => array('id'),
-  );
-
-  // Entity revision is handled by field API mostly.
-  $schema['moha_raci_revision'] = array(
-    'description' => 'Stores revisions information for Moha RACI entity.',
-    'fields' => array(
-      'vid' => array(
-        'description' => 'Primary Key: Unique Revision ID.',
-        'type' => 'serial',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-      ),
-      'id' => array(
-        'description' => 'Parent ID - Group ID.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      'entity' => array(
-        'description' => 'Entity type (machine name).',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'eid' => array(
-        'description' => 'Which entity current record are associated with',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      // Owner could be any entity.
-      'owner_entity' => array(
-        'description' => 'Entity type (machine name) of owner.',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'oid' => array(
-        'description' => 'Which ID owned this record.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      'raci' => array(
-        /** @see MOHA__STATUS__RACI */
-        'description' => 'RACI Relationship.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      /** @see MOHA__STATUS__ENTITY */
-      'status' => array(
-        'description' => 'Entity status.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 1,
-      ),
-      'uid' => array(
-        'description' => 'User ID who made the creation or update.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'updated' => array(
-        'description' => 'The Unix timestamp when the account was most recently saved.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'created' => array(
-        'description' => 'The Unix timestamp when the account was created.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'comment' => array(
-        'type' => 'text', // Can't have default value.
-        'size' => 'big',
-        'description' => 'Update reason.',
-        'not null' => FALSE,
-      )
+    'indexes' => array(
+      'entity' => array(array('entity', 64)),
+      'eid' => array('eid'),
+      'entity_eid' => array(array('entity', 64), 'eid'),
+      'entity_eid_status' => array(array('entity', 64), 'eid', 'status'),
+      'owner_entity' => array(array('owner_entity', 64)),
+      'oid' => array('oid'),
+      'owner_entity_oid' => array(array('owner_entity', 64), 'oid'),
+      'owner_entity_oid_status' => array(array('owner_entity', 64), 'oid', 'status'),
+      'entity_eid_owner_entity_oid' => array(array('entity', 64), 'eid', array('owner_entity', 64), 'oid'),
+      'entity_eid_owner_entity_oid_raci' => array(array('entity', 64), 'eid', array('owner_entity', 64), 'oid', 'raci'),
+      'entity_eid_owner_entity_oid_raci_status' => array(array('entity', 64), 'eid', array('owner_entity', 64), 'oid', 'raci', 'status'),
+      'raci' => array('raci'),
     ),
-    'primary key' => array('vid'),
   );
+  $schema[__MOHA_RACI] = moha_entity_db_schema_default_index($schema[__MOHA_RACI]);
+  $schema['moha_raci_revision'] = moha_entity_db_revision_schema($schema[__MOHA_RACI]);
 
   return $schema;
 }

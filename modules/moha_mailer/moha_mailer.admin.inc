@@ -105,19 +105,21 @@ function moha_mailer_config_form($form, &$form_state) {
     '#required' => TRUE,
   );
 
-  $config['suspend'] = array(
-    '#title' => t('Suspend queued mail sending'),
-    '#description' => t('Choose Yes to suspend queued mail sending.'),
-    '#required' => TRUE,
+  $config['suspend'] = moha_form_element_radio(
+    'Suspend queued mail sending',
+    'Choose Yes to suspend queued mail sending.',
+    moha_cache_get(MOHA_MAILER__VARIABLE__SUSPEND, moha_variable_get(MOHA_MAILER__VARIABLE__SUSPEND, FALSE), FALSE),
+    array(),
+    TRUE
   );
-  moha_form_radio($config['suspend'], moha_cache_get(MOHA_MAILER__VARIABLE__SUSPEND, moha_variable_get(MOHA_MAILER__VARIABLE__SUSPEND, FALSE), FALSE));
 
-  $config['ignore_cc'] = array(
-    '#title' => t('Ignore passed Cc recipients'),
-    '#description' => t('Choose Yes to ignore passed Cc recipients when mail sending through cron.'),
-    '#required' => TRUE,
+  $config['ignore_cc'] = moha_form_element_radio(
+    'Ignore passed Cc recipients',
+    'Choose Yes to ignore passed Cc recipients when mail sending through cron.',
+    moha_cache_get(MOHA_MAILER__VARIABLE__IGNORE_CC, moha_variable_get(MOHA_MAILER__VARIABLE__IGNORE_CC, FALSE), FALSE),
+    array(),
+    TRUE
   );
-  moha_form_radio($config['ignore_cc'], moha_cache_get(MOHA_MAILER__VARIABLE__IGNORE_CC, moha_variable_get(MOHA_MAILER__VARIABLE__IGNORE_CC, FALSE), FALSE));
 
   moha_form_actions($form);
 
@@ -159,8 +161,8 @@ function moha_mailer_config_form_submit($form, &$form_state) {
 
   moha_variable_set(MOHA_MAILER__VARIABLE__THRESHOLD, $values['threshold']);
 
-  moha_form_radio_cache_save($values['suspend'], MOHA_MAILER__VARIABLE__SUSPEND);
-  moha_form_radio_cache_save($values['ignore_cc'], MOHA_MAILER__VARIABLE__IGNORE_CC);
+  moha_form_cache_save(MOHA_MAILER__VARIABLE__SUSPEND, $values['suspend']);
+  moha_form_cache_save(MOHA_MAILER__VARIABLE__IGNORE_CC, $values['ignore_cc']);
 
   drupal_set_message(t('Configurations have been saved.'));
 }

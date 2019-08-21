@@ -1,6 +1,9 @@
 name = Moha User
-description = Moha personal center.
+description = User management related functions: OAuth2 login / register; permission management enhancement; user higherachi.
 core = 7.x
 package = Moha Online
 
 dependencies[] = moha
+
+files[] = includes/MohaUserOAuth2ClientEntity.php
+files[] = includes/MohaUserOAuth2ClientEntityAdminController.php

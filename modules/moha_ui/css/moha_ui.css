@@ -124,7 +124,7 @@ input[type="file"].weui-uploader__input {
 }
 
 /* Push wrappered contents down to avoid to be overlapped by fixed menu. */
-.moha-toggole-class-off .wrapper:before, .wrapper:before {
+.moha-toggle-class-off .wrapper:before {
   height: 50px;
 }
 
