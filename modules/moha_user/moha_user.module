@@ -69,9 +69,9 @@ define('MOHA_USER__OAUTH2__NOT_LISTED', 'Integrated without listed paths');
 define('MOHA_USER__OAUTH2__ALL', 'Integrated with whole site');
 
 /**
- * Moha Status array: entity.
+ * Moha User OAuth2 Integration Approaches.
  */
-define('MOHA_USER__STATUS__OAUTH2_INTEGRATION', array(
+define('MOHA_USER__OAUTH2__INTEGRATION_APPROACHES', array(
   0 => MOHA_USER__OAUTH2__BYPASS,
   1 => MOHA_USER__OAUTH2__ADMIN,
   2 => MOHA_USER__OAUTH2__LISTED,
@@ -105,12 +105,15 @@ function moha_user_init() {
       }
     }
 
+    // Go through configured OAuth2 client.
     $integrations = moha_cache_variable_get(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
-
+    if (empty($integrations)) {
+      return;
+    }
     foreach ($integrations as $client_name => $integration) {
       // If bypass rule matches, not need to OAuth2 login.
       $approach = moha_an2e($integration, 'integration_approach');
-      if ($approach === moha_array_key_by_value(MOHA_USER__OAUTH2__BYPASS, MOHA_USER__STATUS__OAUTH2_INTEGRATION)) {
+      if ($approach === moha_array_key_by_value(MOHA_USER__OAUTH2__BYPASS, MOHA_USER__OAUTH2__INTEGRATION_APPROACHES)) {
         break;
       }
 
@@ -124,7 +127,7 @@ function moha_user_init() {
         }
       }
 
-      if ($approach == moha_array_key_by_value(MOHA_USER__OAUTH2__ALL, MOHA_USER__STATUS__OAUTH2_INTEGRATION)) {
+      if ($approach == moha_array_key_by_value(MOHA_USER__OAUTH2__ALL, MOHA_USER__OAUTH2__INTEGRATION_APPROACHES)) {
         if (!isset($_SESSION[MOHA_USER__SESSION__OAUTH2_USER]) || !isset($_SESSION[MOHA_USER__SESSION__OAUTH2_USER][$client_name])) {
           moha_user_oauth2_login($client_name, $current_path);
         }

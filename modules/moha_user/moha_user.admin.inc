@@ -19,7 +19,6 @@
  *   Form definition array.
  */
 function moha_user_oauth2_admin_form($form, &$form_state) {
-
   try {
     $integrations = moha_cache_variable_get(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
 
@@ -39,7 +38,7 @@ function moha_user_oauth2_admin_form($form, &$form_state) {
       $rows[$entity->name]['Integration Approach'] = moha_form_element_radio(
         '', '',
         moha_an2e($integration, 'integration_approach', 1),
-        MOHA_USER__STATUS__OAUTH2_INTEGRATION
+        MOHA_USER__OAUTH2__INTEGRATION_APPROACHES
       );
       $rows[$entity->name]['Paths of pages'] = moha_form_element_textarea('', '', moha_an2e($integration, 'paths_of_pages', ''));
       $rows[$entity->name]['Weight'] = moha_form_element_weight(moha_an2e($integration, 'weight', 0));
@@ -53,7 +52,6 @@ function moha_user_oauth2_admin_form($form, &$form_state) {
     moha_show_exception($e);
     watchdog_exception(__FUNCTION__, $e);
   }
-
   
   return $form;
 }
@@ -115,7 +113,6 @@ function moha_user_oauth2_admin_form_submit($form, &$form_state) {
  * @linke admin/moha/user/oauth2/mapping/% @endlink
  */
 function moha_user_oauth2_mapping_form($form, &$form_state, $client_name) {
-
   try {
     if (is_object($client_name)) {
       $client_name = $client_name->name;
@@ -216,7 +213,7 @@ function moha_user_oauth2_mapping_form_submit($form, &$form_state) {
     $client_name = moha_an2e($values, 'client_name');
 
     /** @var MohaUserOAuth2ClientEntity $entity */
-    /** @see \MohaCommonEntityController::save()*/
+    /** @see MohaCommonEntityController::save() */
     $entity = moha_user_fetch_oauth2_client($client_name, array('status' => array()));
     $entity->mapping = $mapping;
     $entity->save();
