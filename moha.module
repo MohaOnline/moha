@@ -80,9 +80,9 @@ define('MOHA__PERMISSION__SITE_PREVIEW', 'moha site preview as user');
 define('MOHA__PERMISSION__SITE_PREVIEW_ANONYMOUS', 'moha site preview as anonymous');
 
 /**
- * moha__role__admin.
+ * Moha Role: moha__admin.
  */
-define('MOHA__ROLE__ADMIN', __MOHA . '__role__admin');
+define('MOHA__ROLE__ADMIN', __MOHA . '__admin');
 
 /**
  * JSON encoding options: bitmask.
@@ -433,6 +433,8 @@ function moha_entity_db_revision_schema($schema) {
  *   A keyed array containing the current state of the form. The arguments
  *   that drupal_get_form() was originally called with are available in the
  *   array $form_state['build_info']['args'].
+ *
+ * @return boolean
  *
  * @see form_validate_machine_name()
  */
@@ -790,6 +792,20 @@ function moha_entity_fetch($entity_type, $properties = array('status' => MOHA__T
 }
 
 /**
+ * Returns permission define array.
+ * @param $title
+ * @param $description
+ */
+function moha_permission_define($title, $description = '') {
+  $permission = array(
+    'title' => t($title),
+    'description' => t($description),
+    );
+  
+  return $permission;
+}
+
+/**
  * Permissions administrator should have.
  *
  * @return array
@@ -839,6 +855,66 @@ function _moha_prepare_roles_and_permissions() {
 }
 
 /**
+ * Login with provided information.
+ * 
+ * @param $user_info
+ * @param $force 
+ *   If force to use info provided to login.
+ * 
+ * @throws Exception
+ */
+function moha_login($user_info = 0, $force = FALSE, $allow_root = FALSE) {
+  
+  if (!isset($user_info)) {
+    throw new Exception('No user or related info is specified.');
+  }
+  
+  // Load user per provides information.
+  if ($user_info === '0') {
+    module_load_include('inc', 'user', 'user.pages');
+    user_logout();
+  }
+  else if (is_numeric($user_info)) {
+    $new_user = user_load($user_info);
+  }
+  else if (is_object($user_info)) {
+    $new_user = $user_info;
+  }
+  else if (is_string($user_info) && valid_email_address($user_info)) {
+    $new_user = user_load_by_mail($user_info);
+  }
+  else {
+    throw new Exception("Unknown data passed: $user_info");
+  }
+  
+  if (empty($new_user)) {
+    throw new Exception("User not found: $user_info");
+  }
+  
+  // No action when specified user has login.
+  global $user;
+  if ($user->uid == $new_user->uid) {
+    drupal_set_message("Your are already $new_user->name($new_user->uid)", "warning");
+    return; 
+  }
+
+  // Process parameter $allow_root
+  if ($new_user->uid == 1 && !$allow_root) {
+    throw new Exception("User 1 is not allowed");
+  }
+
+  $edit_link = moha_link("$new_user->name($new_user->uid)", "user/$new_user->uid/edit");
+  if (!isset($new_user->status) || $new_user->status == 0) {
+    throw new Exception("User blocked $edit_link.");
+  }
+
+  if ($force || !user_is_logged_in()) {
+    $form_state['uid'] = $new_user->uid;
+    user_login_submit(array(), $form_state);
+  }
+}
+
+/**
  * Implements hook_image_default_styles().
  */
 function moha_image_default_styles() {
@@ -866,9 +942,10 @@ function moha_image_default_styles() {
  * @param $title
  * @param $description
  *
- * @param $type
+ * @param $type string
  *   Normal
  *   Task
+ *   Action
  *   Callback
  *
  * @param $definition
@@ -896,6 +973,9 @@ function moha_menu_define($title = '', $description = '', $definition = array(),
       break;
     case 'Callback':
       $item['type'] = MENU_CALLBACK;
+      break;
+    case 'Task':
+      $item['type'] = MENU_LOCAL_TASK;
       break;
   }
 
@@ -957,7 +1037,7 @@ function moha_menu_define($title = '', $description = '', $definition = array(),
  *
  * @return array
  */
-function moha_menu_define_system($title = '', $description = '', $weight = 0) {
+function moha_menu_block_define($title = '', $description = '', $weight = 0) {
   $item = array(
     'page callback' => 'system_admin_menu_block_page',
     'title' => $title,
@@ -1281,6 +1361,23 @@ function moha_generate_description_fields_and_instances($types) {
   }
 
   return $fields;
+}
+
+/**
+ * Returns HTML of generated link.
+ * 
+ * @param $name
+ * @param $url
+ * @param $new_window
+ * @param $options
+ */
+function moha_link($name, $url, $options = array('absolute' => TRUE), $new_window = TRUE) {
+  if ($new_window) {
+    $options['attributes']['target'] = '_blank';
+  }
+  $link = l(t($name), $url, $options);
+  
+  return $link;
 }
 
 /**
@@ -2386,7 +2483,7 @@ function moha_throw_exception_per_variable($suspend_variable_name, $default = FA
  *    - 'error'
  */
 function moha_show_exception(Exception $e, $message_type = 'error') {
-  drupal_set_message(t('Oops: %msg', array('%msg' => $e->getMessage())), $message_type);
+  drupal_set_message(t("Oops: !msg", array('!msg' => $e->getMessage())), $message_type);
 }
 
 /* Common functions. */
@@ -2451,10 +2548,10 @@ function moha_state_get($state_uuid = '', $default = '') {
  */
 function moha_n2e($variable, $default = '') {
   if ($variable === NULL) {
-    return $variable;
+    return $default;
   }
   else {
-    return $default;
+    return $variable;
   }
 }
 

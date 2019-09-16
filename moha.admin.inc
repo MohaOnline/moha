@@ -19,10 +19,10 @@ function moha_db_update_form($form, &$form_state) {
 
   $form['hook_schema'] = array(
     '#type' => 'textfield',
-    '#title' => t('hook_schema / function'),
+    '#title' => t('hook_schema / hook_install / hook_enable / function'),
     '#default_value' => '',
     '#size' => 40,
-    '#description' => t('Specify hook_schema function name to re-deploy missing DB structure, or DB update function name to execute.'),
+    '#description' => t('Specify hook functions name .in install file to re-deploy missing DB structure, or DB update function name to execute.'),
     '#field_suffix' => '()',
   );
 

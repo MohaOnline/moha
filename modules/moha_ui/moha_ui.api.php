@@ -1,12 +1,13 @@
 <?php
 /**
  * @file
- * API file of the module.
+ * The API file of the module.
  */
 
 /**
  * Return items of dashboard sidebar.
  *
+ * @see moha_ui_dashboard_sidebar_build()
  * @link https://fontawesome.com/v4.7.0/icons/ @endlink
  */
 function hook_moha_ui_dashboard_sidebar() {

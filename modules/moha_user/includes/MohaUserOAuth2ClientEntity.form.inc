@@ -89,6 +89,15 @@ function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
     '#size' => 100,
   );
 
+  $container['logout'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Logout'),
+    '#default_value' => empty($entity->logout) ? '' : $entity->logout,
+    '#description' => t('URL: Logout endpoint.'),
+    '#maxlength' => 255,
+    '#size' => 100,
+  );
+
   $container['client_id'] = array(
     '#type' => 'textfield',
     '#title' => t('Client ID'),
@@ -150,8 +159,12 @@ function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
     40, 60
   );
 
-  $container['integration'] = moha_form_element_radio('Integration', 'Boolean if let user auto login.');
-  
+  $container['auto_register'] = moha_form_element_radio(
+    'Auto Register',
+    'If create user account when user does not exist.',
+    empty($entity->auto_register) ? 0 : $entity->auto_register
+  );
+
   $container['status'] = array(
     '#type' => 'select',
     '#title' => t('Status'),

@@ -126,7 +126,7 @@ function moha_user_oauth2_mapping_form($form, &$form_state, $client_name) {
     $profile_json = moha_an2e($_SESSION, MOHA_USER__SESSION__OAUTH2_USER, array());
 
     if (empty($profile_json)) {
-      moha_user_oauth2_login($client_name, "admin/moha/user/oauth2/mapping/$client_name");
+      moha_user_oauth2_login($client_name, "admin/moha/user/oauth2/mapping/$client_name", TRUE);
       return $form;
     }
     
@@ -224,4 +224,102 @@ function moha_user_oauth2_mapping_form_submit($form, &$form_state) {
     moha_show_exception($e);
     watchdog_exception(__FUNCTION__, $e);
   }
+}
+
+
+/**
+ * Become to another user information user provides.
+ *
+ * @param $form
+ *   Nested array of form elements that comprise the form.
+ *
+ * @param $form_state
+ *   A keyed array containing the current state of the form. The arguments
+ *   that drupal_get_form() was originally called with are available in the
+ *   array $form_state['build_info']['args'].
+ *
+ * @return array
+ *   Form definition array.
+ */
+function moha_user_simulation_form($form, &$form_state) {
+  $form['uid'] = moha_form_element_text('User ID', 'Specify UID whom to become to.'); 
+  $form['mail'] = moha_form_element_text('Mail', 'Specify user\'s mail address whom to become to.');
+  moha_form_actions($form, 'Simulate');
+
+  return $form;
+}
+
+/**
+ *
+ *
+ * @param $form
+ *   Nested array of form elements that comprise the form.
+ *
+ * @param $form_state
+ *   A keyed array containing the current state of the form. The arguments
+ *   that drupal_get_form() was originally called with are available in the
+ *   array $form_state['build_info']['args'].
+ */
+function moha_user_simulation_form_validate($form, &$form_state) {
+  $values = $form_state['values'];
+
+}
+
+/**
+ *
+ *
+ * @param $form
+ *   Nested array of form elements that comprise the form.
+ *
+ * @param $form_state
+ *   A keyed array containing the current state of the form. The arguments
+ *   that drupal_get_form() was originally called with are available in the
+ *   array $form_state['build_info']['args'].
+ */
+function moha_user_simulation_form_submit($form, &$form_state) {
+  try {
+    $values = $form_state['values'];
+    if (isset($values['uid']) && trim($values['uid']) != ''){
+      $user_info = trim($values['uid']);
+    }
+    else if (isset($values['mail']) && trim($values['mail']) != '') {
+      $user_info = trim($values['mail']);
+    }
+
+    if (isset($user_info)) {
+      moha_login($user_info, TRUE);
+      drupal_set_message(t('User change action is performed, check current user please.'));
+    }
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    moha_show_exception($e);
+  }
+}
+
+/**
+ * Centralized logout page.
+ */
+function moha_user_logout() {
+  try {
+    // Prepare links to logout OAuth2 Platform.
+    $entities = moha_user_fetch_oauth2_client();
+    foreach ($entities as $entity) {
+      if (isset($_SESSION[MOHA_USER__SESSION__OAUTH2_USER][$entity->name])) {
+        $contents[] = array(
+          '#markup' => '<p>' . moha_link("Logout $entity->human_name", $entity->logout) . '</p>',
+        );
+      }
+    }
+    $contents[] = array(
+      '#markup' => l('Drupal Logout', 'user/logout'),
+    );
+
+    return $contents;
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    moha_show_exception($e);
+  }
+
 }

@@ -38,6 +38,16 @@ define('MOHA_USER_OAUTH2_CLIENT', 'Moha User OAuth2 Client');
 define('__MOHA_USER_OAUTH2_CLIENT', 'moha_user_oauth2_client');
 
 /**
+ * Entity human name.
+ */
+define('MOHA_USER_ACTION', 'Moha User Action');
+
+/**
+ * Entity machine name.
+ */
+define('__MOHA_USER_ACTION', 'moha_user_action');
+
+/**
  * Session name: OAuth2 Response of current user.
  */
 define('MOHA_USER__SESSION__OAUTH2_USER', 'moha_user_session_oauth2_user');
@@ -48,9 +58,19 @@ define('MOHA_USER__SESSION__OAUTH2_USER', 'moha_user_session_oauth2_user');
 define('MOHA_USER__URL__OAUTH2_CLIENT_ADMIN_UI', 'admin/moha/entities/oauth2-clients');
 
 /**
+ * User role: moha_user__admin.
+ */
+define('MOHA_USER__ROLE__ADMIN', __MOHA_USER . '__admin');
+
+/**
  * Permission: edit user info, overwrite default user edit logic.
  */
-define('MOHA_USER__PERMISSION__EDIT_OWN_PROFILE', 'moha edit own profile');
+define('MOHA_USER__PERMISSION__EDIT_OWN_PROFILE', 'moha user edit own profile');
+
+/**
+ * Permission: become another user.
+ */
+define('MOHA_USER__PERMISSION__USER_SIMULATION', 'moha user simulation');
 
 /**
  * Module variables name: moha_user__var__oauth2_integration.
@@ -79,67 +99,28 @@ define('MOHA_USER__OAUTH2__INTEGRATION_APPROACHES', array(
   9 => MOHA_USER__OAUTH2__ALL,
 ));
 
+define('MOHA_USER__ACTION__LOGOUT', 'Logout');
+define('MOHA_USER__ACTION__LOGIN', 'Login');
+define('MOHA_USER__ACTION__ACCESS', 'Access');
+define('MOHA_USER__ACTION__CREATE', 'Create');
+define('MOHA_USER__ACTION__DELETE', 'Delete');
+define('MOHA_USER__ACTION__MAIL', 'Mail');
+define('MOHA_USER__ACTION__SMS', 'SMS');
+
+/**
+ * Moha User OAuth2 Integration Approaches.
+ */
+define('MOHA_USER__ACTIONS', array(
+  0 => MOHA_USER__ACTION__LOGOUT,
+  1 => MOHA_USER__ACTION__LOGIN,
+));
+
 /**
  * Implements hook_init().
  */
 function moha_user_init() {
   try {
-    if (drupal_is_cli()) {
-      return; // Good-bye Drush!
-    }
-    
-    if (isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME'] == '/cron.php') {
-      return; // Good-bye Cron Invoke.
-    }
-    
-    static $predefine_excludes = array(
-      'moha/user/oauth2/login/',
-      'moha/user/oauth2/post/',
-    );
-
-    $current_path = current_path();
-    
-    // Excludes system paths
-    static $system_excludes = array(
-      'user/reset/'
-    );
-    foreach ($system_excludes as $system_exclude) {
-      if (moha_start_with($current_path, $system_exclude)) {
-        return;
-      }
-    }
-
-    // Go through configured OAuth2 client.
-    $integrations = moha_cache_variable_get(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
-    if (empty($integrations)) {
-      return;
-    }
-    foreach ($integrations as $client_name => $integration) {
-      // If bypass rule matches, not need to OAuth2 login.
-      $approach = moha_an2e($integration, 'integration_approach');
-      if ($approach === moha_array_key_by_value(MOHA_USER__OAUTH2__BYPASS, MOHA_USER__OAUTH2__INTEGRATION_APPROACHES)) {
-        break;
-      }
-
-      // Paths used to receive OAuth2 Server post back should be excluded.
-      $excludes = array();
-      foreach ($predefine_excludes as $predefine_exclude) {
-        $excludes[] = $predefine_exclude . $client_name;
-
-        if ($current_path == $predefine_exclude . $client_name) {
-          return;
-        }
-      }
-
-      if ($approach == moha_array_key_by_value(MOHA_USER__OAUTH2__ALL, MOHA_USER__OAUTH2__INTEGRATION_APPROACHES)) {
-        if (!isset($_SESSION[MOHA_USER__SESSION__OAUTH2_USER]) || !isset($_SESSION[MOHA_USER__SESSION__OAUTH2_USER][$client_name])) {
-          moha_user_oauth2_login($client_name, $current_path);
-        }
-        else {
-          break;
-        }
-      }
-    }
+    moha_user_oauth2_integration_process();
   }
   catch (Exception $e) {
     watchdog_exception(__FUNCTION__, $e);
@@ -151,12 +132,17 @@ function moha_user_init() {
  * Implements hook_permission().
  */
 function moha_user_permission() {
-  return array(
-    MOHA_USER__PERMISSION__EDIT_OWN_PROFILE => array(
-      'title' => t('Edit user'),
-      'description' => t('Allows users to update own information.'),
-    ),
+  $permissions[MOHA_USER__PERMISSION__EDIT_OWN_PROFILE] = moha_permission_define(
+    'Edit Own Profile',
+    'Allows users to update own information.'
   );
+  
+  $permissions[MOHA_USER__PERMISSION__USER_SIMULATION] = moha_permission_define(
+    'User Simulation',
+    'Allows user to become to another user.'
+  );
+  
+  return $permissions;
 }
 
 /**
@@ -223,7 +209,7 @@ function moha_user_menu() {
     'Callback'
   );
   
-  $items['admin/moha/user'] = moha_menu_define_system(
+  $items['admin/moha/user'] = moha_menu_block_define(
     'Moha User',
     'Configurations of user related settings, like: login, etc.'
   );
@@ -245,6 +231,26 @@ function moha_user_menu() {
     array('moha_user_oauth2_mapping_form', 5),
     array(MOHA__PERMISSION__ROOT),
     'Callback',
+    'moha_user.admin.inc'
+  );
+
+  $items['admin/moha/user/logout'] = moha_menu_define(
+    'OAuth2 Logout',
+    'Logout user from multiple platform.',
+    /** @see moha_user_logout */
+    array('moha_user_logout'),
+    array('user_is_logged_in'),
+    'Normal',
+    'moha_user.admin.inc'
+  );
+
+  $items['admin/moha/user/simulation'] = moha_menu_define(
+    'User Simulation',
+    'Become another user per information provided.',
+    /** @see moha_user_simulation_form */
+    array('moha_user_simulation_form'),
+    array(MOHA_USER__PERMISSION__USER_SIMULATION),
+    'Normal',
     'moha_user.admin.inc'
   );
 
@@ -311,6 +317,55 @@ function moha_user_fetch_oauth2_client($client_name = '', $options = array('stat
   }
   
   return $data;
+}
+
+
+/**
+ * Process integration of configured OAuth2 clients.
+ */
+function moha_user_oauth2_integration_process() {
+  if (drupal_is_cli()) {
+    return; // Good-bye Drush!
+  }
+
+  if (isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME'] == '/cron.php') {
+    return; // Good-bye Cron Invoke.
+  }
+
+  $current_path = current_path();
+
+  // System paths, or the paths used to issue OAuth2 login request or receive OAuth2 Server post back should be excluded.
+  static $system_excludes = <<<EXCLUDES
+user/reset/*
+moha/user/oauth2/login/*
+moha/user/oauth2/post/*
+EXCLUDES;
+  if (drupal_match_path($current_path, $system_excludes)) { return; }
+
+  // Go through configured OAuth2 clients' integration approach to take related actions.
+  $integrations = moha_cache_variable_get(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
+  if (empty($integrations)) {
+    return;
+  }
+
+  foreach ($integrations as $client_name => $integration) {
+    // If bypass rule matches, not need to OAuth2 login.
+    $approach = moha_an2e($integration, 'integration_approach');
+
+    if (moha_user_is_oauth2_logged_in($client_name)) {
+      continue;
+    }
+    else {
+      if ($approach == moha_array_key_by_value(MOHA_USER__OAUTH2__ALL, MOHA_USER__OAUTH2__INTEGRATION_APPROACHES) ||
+        $approach == moha_array_key_by_value(MOHA_USER__OAUTH2__ADMIN, MOHA_USER__OAUTH2__INTEGRATION_APPROACHES) && path_is_admin($current_path) ||
+        $approach == moha_array_key_by_value(MOHA_USER__OAUTH2__LISTED, MOHA_USER__OAUTH2__INTEGRATION_APPROACHES) && drupal_match_path($current_path, moha_an2e($integration, 'paths_of_pages')) ||
+        $approach == moha_array_key_by_value(MOHA_USER__OAUTH2__NOT_LISTED, MOHA_USER__OAUTH2__INTEGRATION_APPROACHES) && !drupal_match_path($current_path, moha_an2e($integration, 'paths_of_pages'))
+      ) {
+        moha_user_oauth2_login($client_name, $current_path);
+      }
+    }
+  }  // Foreach.
+
 }
 
 /**
@@ -388,9 +443,18 @@ function moha_user_oauth2_post_url($client_name) {
  * @param $client_name
  *
  * @param $destination
+ * @param $force
+ *   If force perform OAuth2 login.
+ *
+ * @return NULL
  */
-function moha_user_oauth2_login($client_name, $destination = 'user') {
+function moha_user_oauth2_login($client_name, $destination = 'user', $force = FALSE) {
   try {
+    
+    if (!$force && user_is_logged_in()) {
+      return NULL;
+    }
+    
     $entity = moha_user_fetch_oauth2_client($client_name);
 
     $nonce = moha_nonce();
@@ -447,6 +511,9 @@ function moha_user_oauth2_login($client_name, $destination = 'user') {
  * @see __MOHA_USER_OAUTH2_CLIENT
  * @see moha_user_entity_info()
  * @see moha_user_schema()
+ *
+ * @return NULL;
+ *   Nothing to return, should use drupal_goto to certain landing page.
  */
 function moha_user_oauth2_post($client_name) {
   try {
@@ -472,9 +539,9 @@ function moha_user_oauth2_post($client_name) {
     if (!empty($oauth2_error)) {
       throw new Exception("<b>$oauth2_error</b><br/>$oauth2_error_description<br/>Click $oauth2_login_link to have another try.");
     }
-    ///**/
+    ////////
     
-    // Fetch user's OAuth2 profile.
+    // Fetch user's OAuth2 profile is access token is ready.
     if (empty($oauth2_access_token)) {
       throw new Exception("No access token. Click $oauth2_login_link to have another try.");
     }
@@ -500,26 +567,44 @@ function moha_user_oauth2_post($client_name) {
         '!dump' => print_r($profile_json, true),
       ));
     }
+    ////////
 
     $destination = moha_state_get($oauth2_state);
-
-    // If don't know how to mapping OAuth2 profile to drupal user, forward or prompt user to configure.
 
     if (moha_start_with($destination, 'admin/moha/user/oauth2/mapping')) {
       drupal_goto($destination);
     }
     else {
-      if (empty($entity->mapping) || empty($entity->mapping['mail'])) {
-        throw new Exception("How to use OAuth2 profile to login has not been configured. Click $mapping_config_link to setup.");
+      // Invoke any customized login logic, otherwise throws exception if don't how to mapping profile attributes
+      $implements = module_implements('moha_user_oauth2_post_config');
+      if (!empty($implements)) {
+        foreach ($implements as $implement) {
+          $function = $implement . '_moha_user_oauth2_post_config';
+          $configurations = $function();
+          if (isset($configurations[$client_name])) {
+            $configurations[$client_name]($profile_json);
+            break;
+          }
+        }
+      }
+      else {
+        // If don't know how to mapping OAuth2 profile to drupal user, forward or prompt user to configure.
+        if (empty($entity->mapping) || empty($entity->mapping['mail'])) {
+          throw new Exception("How to use OAuth2 profile to login has not been configured. Click $mapping_config_link to setup.");
+        }
       }
     }
-    
-    /// Fetch / Create user to login.
+
+    // Fetch / Create user to login.
     $oauth2_user_name = moha_an2e($profile_json, $entity->mapping['name']);
     $oauth2_user_mail = moha_an2e($profile_json, $entity->mapping['mail']);
     $oauth2_user = user_load_by_mail($oauth2_user_mail);
 
-    if (empty($oauth2_user)) {
+    // When user is not exist and auto register is also not allowed
+    if (empty($oauth2_user) && $entity->auto_register == 0) {
+      throw new Exception("$oauth2_user_name($oauth2_user_mail) isn't registered.");
+    }
+    else if (empty($oauth2_user)) {
       // Create new user.
       $password = user_password(16);
       $user_fields = array(
@@ -537,16 +622,12 @@ function moha_user_oauth2_post($client_name) {
       $oauth2_user = user_save('', $user_fields);
     }
     else if (isset($oauth2_user->status) && $oauth2_user->status == 0) {
-      throw new Exception("User $oauth2_user->name is blocked.");
+      throw new Exception("User $oauth2_user->name($oauth2_user->uid) is blocked.");
     }
 
+    moha_login($oauth2_user, TRUE, TRUE);
+    ////////
 
-    if (!user_is_logged_in()) {
-      $form_state['uid'] = $oauth2_user->uid;
-      user_login_submit(array(), $form_state);
-      drupal_session_regenerate();
-    }
-    
     drupal_goto($destination);
   }
   catch (Exception $e) {
@@ -555,6 +636,23 @@ function moha_user_oauth2_post($client_name) {
   }
   
   return '';
+}
+
+/**
+ * Judge if user login through OAuth2.
+ *
+ * @param string $client_name
+ *
+ * @return bool
+ */
+function moha_user_is_oauth2_logged_in($client_name = '') {
+  if (empty($client_name)) {
+    $status = FALSE;
+  }
+  else {
+    $status = isset($_SESSION[MOHA_USER__SESSION__OAUTH2_USER]) && !empty($_SESSION[MOHA_USER__SESSION__OAUTH2_USER][$client_name]);
+  }
+  return $status;
 }
 
 /**
@@ -567,7 +665,7 @@ function moha_user_form_user_login_alter(&$form, &$form_state, $form_id) {
     $login_entries = array();
     $entities = moha_user_fetch_oauth2_client();
     foreach ($entities as $entity) {
-      $login_entries[$entity->human_name] = array(
+      $login_entries['Login with ' . $entity->human_name] = array(
         "moha/user/oauth2/login/$entity->name",
         'attributes' => array(
           'class' => array('btn', 'btn-success'),

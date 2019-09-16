@@ -71,12 +71,12 @@ define('MOHA_NEWSLETTER__PERMISSION__CHANGE_FORMAT_OWN', 'change format of own' 
 /**
  * moha_newsletter__role__manager.
  */
-define('MOHA_NEWSLETTER__ROLE__MANAGER', __MOHA_NEWSLETTER . '__role__manager');
+define('MOHA_NEWSLETTER__ROLE__MANAGER', __MOHA_NEWSLETTER . '__manager');
 
 /**
  * moha_newsletter__role__admin.
  */
-define('MOHA_NEWSLETTER__ROLE__ADMIN', __MOHA_NEWSLETTER . '__role__admin');
+define('MOHA_NEWSLETTER__ROLE__ADMIN', __MOHA_NEWSLETTER . '__admin');
 
 /**
  * moha_newsletter__text_format.
