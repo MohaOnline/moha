@@ -397,7 +397,6 @@ function moha_user_oauth2_login($client_name, $destination = 'user') {
     $_SESSION[__MOHA_USER_OAUTH2_CLIENT . '_nonce'] = $nonce;
     
     $queries = array(
-      'sso_reload' => 'true',
       'client_id' => $entity->client_id,
       'redirect_uri' => moha_user_oauth2_post_url($entity->name),
       'response_type' => $entity->response_type,
