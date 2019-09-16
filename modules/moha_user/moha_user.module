@@ -88,6 +88,10 @@ function moha_user_init() {
       return; // Good-bye Drush!
     }
     
+    if (isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME'] == '/cron.php') {
+      return; // Good-bye Cron Invoke.
+    }
+    
     static $predefine_excludes = array(
       'moha/user/oauth2/login/',
       'moha/user/oauth2/post/',

@@ -37,7 +37,7 @@ function moha_user_oauth2_admin_form($form, &$form_state) {
       $rows[$entity->name]['Name'] = l($entity->human_name, MOHA_USER__URL__OAUTH2_CLIENT_ADMIN_UI . '/manage/' . $entity->id);
       $rows[$entity->name]['Integration Approach'] = moha_form_element_radio(
         '', '',
-        moha_an2e($integration, 'integration_approach', 1),
+        moha_an2e($integration, 'integration_approach', 0),
         MOHA_USER__OAUTH2__INTEGRATION_APPROACHES
       );
       $rows[$entity->name]['Paths of pages'] = moha_form_element_textarea('', '', moha_an2e($integration, 'paths_of_pages', ''));

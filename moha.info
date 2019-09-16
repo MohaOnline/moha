@@ -13,6 +13,7 @@ dependencies[] = field_collection
 dependencies[] = jquery_update
 dependencies[] = libraries
 dependencies[] = entityreference_autocomplete
+dependencies[] = uuid
 
 files[] = includes/MohaRACIEntity.php
 files[] = includes/MohaRACIEntityAdminController.php

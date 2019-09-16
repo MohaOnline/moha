@@ -30,7 +30,7 @@ function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
 
   $form['human_name'] = array(
     '#type' => 'textfield',
-    '#title' => t('Full name'),
+    '#title' => t('Human name'),
     '#default_value' => empty($entity->human_name) ? '' : $entity->human_name,
     '#description' => t('English full name of the OAuth2 client.'),
     '#maxlength' => 255,
