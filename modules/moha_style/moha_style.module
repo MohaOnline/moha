@@ -48,6 +48,11 @@ function moha_style_page_build(&$page) {
         $page['page_bottom']['#attached']['css'][] = drupal_get_path('module', 'views') . '/css/views-admin.seven.css';
       }
     }
+    
+    if (module_exists('ctools')) {
+      $page['page_bottom']['#attached']['css'][] = drupal_get_path('module', 'ctools') . '/css/dropbutton.css';
+      $page['page_bottom']['#attached']['css'][] = drupal_get_path('module', 'ctools') . '/css/button.css';
+    }
 
     // Fix element style for theme seven.
     if ($theme_key == 'seven') {

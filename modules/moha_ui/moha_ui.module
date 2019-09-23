@@ -136,6 +136,7 @@ function moha_ui_library() {
       ),
     ),
     'js' => array(
+      MOHA_UI__PATH . '/js/term_reference_tree.js' => array(),
       MOHA_UI__PATH . '/bower_components/bootstrap/dist/js/bootstrap.js' => array(),
       MOHA_UI__PATH . '/bower_components/admin-lte/dist/js/adminlte.js' => array(),
       MOHA_UI__PATH . '/bower_components/echarts/dist/echarts.js' => array(),
@@ -159,7 +160,7 @@ function moha_ui_library_alter(&$libraries, $module) {
     $version_2 = variable_get('jquery_update_jquery_admin_version', '1.4');
     $version_3 = moha_n2e(theme_get_setting('jquery_update_jquery_version', $theme_key), '1.4');
 
-    if (version_compare($version_2, '1.10') >= 0 || version_compare($version_3, '1.10') >= 0) {
+    if (version_compare($version_2, '1.10') >= 0 || ( version_compare($version_3, '1.10') >= 0 && version_compare($version_3, '2') < 0 )) {
       $libraries['jquery']['js']['misc/jquery.js']['data'] = MOHA_UI__PATH . '/libs/jquery/jquery-1.12.4.js';
     }
   }
@@ -379,6 +380,26 @@ function moha_ui_page_alter(&$page) {
     drupal_add_html_head($html5shiv, 'html5shiv');
     drupal_add_html_head($respond, 'respond');
   }
+}
+
+/**
+ * Implements hook_js_alter().
+ */
+function moha_ui_js_alter(&$javascript) {
+  // term_reference_tree.js doesn't work with jQuery 1.06+, replace with customized version.
+  global $theme_key;
+  $version_2 = variable_get('jquery_update_jquery_admin_version', '1.4');
+  $version_3 = moha_n2e(theme_get_setting('jquery_update_jquery_version', $theme_key), '1.4');
+
+  if (module_exists('term_reference_tree')) {
+    if (version_compare($version_2, '1.06') >= 0 || version_compare($version_3, '1.06') >= 0 ) {
+      $path = drupal_get_path('module','term_reference_tree');
+      if (isset($javascript["$path/term_reference_tree.js"])) {
+        $javascript["$path/term_reference_tree.js"]['data'] = MOHA_UI__PATH . "/js/term_reference_tree.js";
+      }
+    }
+  }
+  ////////
 }
 
 /**

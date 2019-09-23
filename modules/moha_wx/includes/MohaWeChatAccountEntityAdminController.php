@@ -4,7 +4,7 @@
  * The Admin UI definition file.
  */
 
-class MohaUserOAuth2ClientEntityAdminController extends EntityDefaultUIController {
+class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
 
   /**
    * {@inheritdoc}
@@ -13,32 +13,7 @@ class MohaUserOAuth2ClientEntityAdminController extends EntityDefaultUIControlle
     $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%entity_object';
     $items = parent::hook_menu();
 
-    // Add Integration tab on entity list page.
-    $items[$this->path . '/config'] = array(
-      'title' => 'Integration',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('moha_user_oauth2_admin_form'),
-      'access callback' => 'moha_entity_access',
-      'access arguments' => array('update', $this->entityType),
-      'file path' => MOHA_USER__PATH,
-      'file' => 'moha_user.admin.inc',
-      'type' => MENU_LOCAL_TASK,
-    );
-
     $items[$this->path . '/manage/' . $wildcard]['type'] = MENU_LOCAL_TASK;
-
-    // Mapping form, a special case for the edit form.
-    $items[$this->path . '/manage/' . $wildcard . '/mapping'] = array(
-      'title' => 'Mapping',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('moha_user_oauth2_mapping_form', 5),
-      'load arguments' => array($this->entityType),
-      'access callback' => 'entity_access',
-      'access arguments' => array('update', $this->entityType),
-      'file path' => MOHA_USER__PATH,
-      'file' => 'moha_user.admin.inc',
-      'type' => MENU_LOCAL_TASK,
-    );
 
     return $items;
   }

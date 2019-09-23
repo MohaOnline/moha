@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * The module file of the module.
+ */
 
 /**
  * Human name.
@@ -11,19 +15,45 @@ define('MOHA_WX', 'Moha WX');
 define('__MOHA_WX', 'moha_wx');
 
 /**
- * moha_wx__variables.
- */
-define('MOHA_WX__VARIABLES', __MOHA_WX . '__variables');
-
-/**
  * sites/all/modules/custom/moha/modules/moha_wx.
  */
-define('MOHA_WX__RELATIVE_PATH', drupal_get_path('module', __MOHA_WX));
+define('MOHA_WX__PATH', drupal_get_path('module', __MOHA_WX));
 
 /**
  * /sites/all/modules/custom/moha/modules/moha_wx.
  */
-define('MOHA_WX__PATH', base_path() . MOHA_WX__RELATIVE_PATH);
+define('__MOHA_WX__PATH', base_path() . MOHA_WX__PATH);
+
+/**
+ * Entity human name.
+ */
+define('MOHA_WX_ACCOUNT', 'Moha WeChat Account');
+
+/**
+ * Entity machine name.
+ */
+define('__MOHA_WX_ACCOUNT', 'moha_wx_account');
+
+/** WeChat Account Types. */
+define('MOHA_WX__ACCOUNT_TYPE__SERVICE', 'service');
+define('MOHA_WX__ACCOUNT_TYPE__ENTERPRISE', 'enterprise');
+define('MOHA_WX__ACCOUNT_TYPE__SUBSCRIPTION', 'subscription');
+define('MOHA_WX__ACCOUNT_TYPE__OPEN', 'open_platform');
+
+/**
+ * Moha WX Types.
+ */
+define('MOHA_WX__TYPES', array(
+  MOHA_WX__ACCOUNT_TYPE__SERVICE,
+  MOHA_WX__ACCOUNT_TYPE__ENTERPRISE,
+  MOHA_WX__ACCOUNT_TYPE__SUBSCRIPTION,
+  MOHA_WX__ACCOUNT_TYPE__OPEN,
+));
+
+/**
+ * Moha WX URL: Moha WX account management page URL.
+ */
+define('MOHA_WX__URL__ACCOUNT_ADMIN_UI', 'admin/moha/entities/wechat-accounts');
 
 /**
  * Module URL: handles redirection back from WeChat OAuth2 for getting user information.
@@ -134,6 +164,22 @@ define('MOHA_WX__OAUTH2_STATE__HOME', 'MOHA_WX__OAUTH2_STATE__HOME');
  * WeChat OAuth2 state: Drupal user page.
  */
 define('MOHA_WX__OAUTH2_STATE__USER_PAGE', 'MOHA_WX__OAUTH2_STATE__USER_PAGE');
+
+/**
+ * Implements hook_entity_info().
+ */
+function moha_wx_entity_info() {
+  // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
+  $items[__MOHA_WX_ACCOUNT] = moha_entity_define(
+    __MOHA_WX,
+    __MOHA_WX_ACCOUNT,
+    MOHA_WX_ACCOUNT,
+    'MohaWeChatAccount',
+    MOHA_WX__URL__ACCOUNT_ADMIN_UI
+  );
+
+  return $items;
+}
 
 /**
  * Implements hook_menu().
@@ -268,7 +314,7 @@ function moha_wx_check_signature($token, $query) {
  * Disable WeChat sharing function.
  */
 function moha_wx_sharing_disable() {
-  drupal_add_js(MOHA_WX__RELATIVE_PATH . '/js/moha_wx_sharing_disable.js');
+  drupal_add_js(MOHA_WX__PATH . '/js/moha_wx_sharing_disable.js');
 }
 
 /**
@@ -1405,8 +1451,8 @@ EOF;
 function moha_wx_views_api() {
   return array(
     'api' => 3,
-    'path' => MOHA_WX__RELATIVE_PATH . '/views',               // view 的定义存放的路径
-    'template path' => MOHA_WX__RELATIVE_PATH . '/templates',  // view 的模版存放的路径
+    'path' => MOHA_WX__PATH . '/views',               // view 的定义存放的路径
+    'template path' => MOHA_WX__PATH . '/templates',  // view 的模版存放的路径
   );
 }
 

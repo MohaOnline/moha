@@ -108,11 +108,16 @@ define('MOHA_USER__ACTION__MAIL', 'Mail');
 define('MOHA_USER__ACTION__SMS', 'SMS');
 
 /**
- * Moha User OAuth2 Integration Approaches.
+ * Moha User Actions.
  */
 define('MOHA_USER__ACTIONS', array(
-  0 => MOHA_USER__ACTION__LOGOUT,
-  1 => MOHA_USER__ACTION__LOGIN,
+  MOHA_USER__ACTION__LOGOUT,
+  MOHA_USER__ACTION__LOGIN,
+  MOHA_USER__ACTION__ACCESS,
+  MOHA_USER__ACTION__CREATE,
+  MOHA_USER__ACTION__DELETE,
+  MOHA_USER__ACTION__MAIL,
+  MOHA_USER__ACTION__SMS,
 ));
 
 /**
@@ -451,7 +456,9 @@ function moha_user_oauth2_post_url($client_name) {
 function moha_user_oauth2_login($client_name, $destination = 'user', $force = FALSE) {
   try {
     
-    if (!$force && user_is_logged_in()) {
+    if (!$force && moha_user_is_oauth2_logged_in($client_name)) {
+      $here = moha_link('here', 'user', FALSE);
+      drupal_set_message(t("User has OAuth2 logged in. Click $here to check current user."));
       return NULL;
     }
     

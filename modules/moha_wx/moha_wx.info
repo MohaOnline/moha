@@ -9,3 +9,6 @@ dependencies[] = text
 dependencies[] = media
 
 files[] = libs/MohaWeChat.class.php
+
+files[] = includes/MohaWeChatAccountEntity.php
+files[] = includes/MohaWeChatAccountEntityAdminController.php

@@ -21,7 +21,7 @@
  *
  * @return mixed form array.
  */
-function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
+function moha_wx_account_form($form, &$form_state, $entity = NULL) {
 
   $form['id'] = array(
     '#type' => 'hidden',
@@ -148,8 +148,8 @@ function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
   );
 
   $container['domain_hint'] = moha_form_element_text(
-    'Domain Hint',
-    'Hint AAD redirects to the specified tenant federation server.',
+    t('Domain Hint'),
+    t('Hint AAD redirects to the specified tenant federation server.'),
     empty($entity->domain_hint) ? '' : $entity->domain_hint,
     40, 60
   );
@@ -158,12 +158,6 @@ function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
     'Auto Register',
     'If create user account when user does not exist.',
     empty($entity->auto_register) ? 0 : $entity->auto_register
-  );
-
-  $container['auto_enable'] = moha_form_element_radio(
-    'Auto Register',
-    'If enable user account when user is blocked after OAuth2 login.',
-    empty($entity->auto_enable) ? 0 : $entity->auto_enable
   );
 
   $container['status'] = array(
@@ -202,7 +196,7 @@ function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
  *   that drupal_get_form() was originally called with are available in the
  *   array $form_state['build_info']['args'].
  */
-function moha_user_oauth2_client_form_validate($node, &$form_state) {
+function moha_wx_account_form_validate($node, &$form_state) {
 
 }
 
@@ -217,7 +211,7 @@ function moha_user_oauth2_client_form_validate($node, &$form_state) {
  *   that drupal_get_form() was originally called with are available in the
  *   array $form_state['build_info']['args'].
  */
-function moha_user_oauth2_client_form_submit($form, &$form_state) {
+function moha_wx_account_form_submit($form, &$form_state) {
 
   // Build entity from submission.
   /** @var MohaUserOAuth2ClientEntity $entity */

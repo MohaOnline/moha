@@ -337,6 +337,12 @@ function moha_db_column_define($type, $description = '', $size = 255, $default =
       $db_field['serialize'] = TRUE;
       break;
 
+    case 'text':
+      $db_field['description'] = $description;
+      $db_field['type'] = 'text';
+      $db_field['not null'] = FALSE;
+      break;
+
   }
 
   return $db_field;
@@ -440,24 +446,19 @@ function moha_entity_db_revision_schema($schema) {
  */
 function moha_entity_exists($value, $element, $form_state){
   $entity_type = $form_state['entity_type'];
-  
-  $query = <<<SQL
-SELECT count(*) num from $entity_type
- WHERE `name` = :name;
-SQL;
+  $entity_type = check_plain($entity_type);
 
-  $result = db_query($query, array(
-    ':name' => $value,
-  ))->fetchField();
+  $query = db_select($entity_type)->fields($entity_type)->condition('name', $value);
+  $count = $query->execute()->rowCount();
   
-  if ($result > 0) {
-    $result = TRUE;
+  if ($count > 0) {
+    $count = TRUE;
   }
   else {
-    $result = FALSE;
+    $count = FALSE;
   }
   
-  return $result;
+  return $count;
 }
 
 /**
@@ -850,8 +851,13 @@ function moha_permission() {
  * Create necessary roles and permissions.
  */
 function _moha_prepare_roles_and_permissions() {
-  $admin_permission = array(MOHA__PERMISSION__SITE_PREVIEW);
-  moha_grant_permissions_2_role_with_creation(MOHA__ROLE__ADMIN, $admin_permission);
+  $admin_permissions = array(
+    'view the administration theme',
+    'access administration menu',
+    MOHA__PERMISSION__SITE_PREVIEW
+  );
+  
+  moha_grant_permissions_2_role_with_creation(MOHA__ROLE__ADMIN, $admin_permissions);
 }
 
 /**
@@ -1371,7 +1377,7 @@ function moha_generate_description_fields_and_instances($types) {
  * @param $new_window
  * @param $options
  */
-function moha_link($name, $url, $options = array('absolute' => TRUE), $new_window = TRUE) {
+function moha_link($name, $url, $new_window = TRUE, $options = array('absolute' => TRUE)) {
   if ($new_window) {
     $options['attributes']['target'] = '_blank';
   }
@@ -1494,6 +1500,36 @@ function moha_form_element_container($title, $collapsed = TRUE, $collapsible = T
 }
 
 /**
+ * Returns render array of machine name.
+ *
+ * @param $normal_element
+ * @param $default
+ * @param $exist_func
+ * @param $allow_hyphen
+ *
+ * @return array
+ */
+function moha_form_element_machine($normal_element, $default, $exist_func = FALSE, $allow_hyphen = FALSE) {
+  $element['#type'] = 'machine_name';
+  $element['#default_value'] = $default;
+  $element['#machine_name'] = array(
+    'source' => array($normal_element), // Bind machine_name field to relative human name field.
+    'label' => t('name'),
+    'replace_pattern' => '[^a-z0-9_]+',
+    'replace' => '_',
+    'exists' => $exist_func,
+  );
+
+  if ($allow_hyphen) {
+    $element['#description'] = t('A unique machine-readable name. Can only contain lowercase letters, numbers, hyphen, and underscores');
+    $element['#machine_name']['replace_pattern'] = '[^a-z0-9-_]+';
+    $element['#machine_name']['replace'] = '-';
+  }
+
+  return $element;
+}
+
+/**
  * Returns form element for prompt IMCE usage.
  *
  * @return array
@@ -1539,8 +1575,8 @@ function moha_form_element_weight($default = 0, $delta = 255) {
  */
 function moha_form_element_text($title = '', $description = '', $default = '', $size = 40, $max_length = 255) {
   $element['#type'] = 'textfield';
-  $element['#title'] = $title;
-  $element['#description'] = $description;
+  $element['#title'] = t($title);
+  $element['#description'] = t($description);
   $element['#default_value'] = $default;
   $element['#size'] = $size;
   $element['#maxlength'] = $max_length;

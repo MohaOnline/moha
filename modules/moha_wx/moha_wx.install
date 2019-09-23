@@ -2,8 +2,44 @@
 /**
  * @file
  *
- * Prepare module level database tables: moha_wx_accounts.
+ * The install file of the module.
  */
+
+/**
+ * Implements hook_schema().
+ */
+function moha_wx_schema() {
+  /**
+   * @see moha_wx_entity_info()
+   *   Related entity definition.
+   *
+   * @link https://www.drupal.org/docs/7/api/schema-api/data-types @endlink
+   */
+  $schema[__MOHA_WX_ACCOUNT] = moha_entity_db_schema_init('Stores WeChat account information.');
+  $_schema = &$schema[__MOHA_WX_ACCOUNT];
+  $_schema['fields']['uid'] = moha_db_column_define('int', 'User ID who made the creation or update.');
+  $_schema['fields']['type'] = moha_db_column_define('varchar', 'Account type.', 64);
+  $_schema['fields']['agent_id'] = moha_db_column_define('varchar', 'Agent ID of application for an enterprise account.');
+  $_schema['fields']['app_id'] = moha_db_column_define('varchar');
+  $_schema['fields']['app_secret'] = moha_db_column_define('varchar');
+  $_schema['fields']['token'] = moha_db_column_define('varchar');
+  $_schema['fields']['encoding_aes_key'] = moha_db_column_define('varchar');
+  $_schema['fields']['access_token'] = moha_db_column_define('varchar', '', 512);
+  $_schema['fields']['access_token_updated'] = moha_db_column_define('int');
+  $_schema['fields']['access_token_expires_in'] = moha_db_column_define('int');
+  $_schema['fields']['news_title'] = moha_db_column_define('varchar');
+  $_schema['fields']['news_cover'] = moha_db_column_define('varchar');
+  $_schema['fields']['news_digest'] = moha_db_column_define('varchar');
+  $_schema['fields']['news_link'] = moha_db_column_define('varchar');
+  $_schema['fields']['text'] = moha_db_column_define('text', '');
+  $_schema['fields']['wx_menu'] = moha_db_column_define('text', 'WeChat menu JSON configurations.');
+  $_schema['fields']['jsapi_ticket'] = moha_db_column_define('varchar', 'WeChat JS SDK invoke token.', 512);
+  $_schema['fields']['jsapi_ticket_updated'] = moha_db_column_define('int', 'jsapi_ticket updated time.');
+  $_schema['fields']['jsapi_ticket_expires_in'] = moha_db_column_define('int', 'How long seconds jsapi_ticket will be valid after jsapi_ticket_updated');
+  $schema[__MOHA_WX_ACCOUNT . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_WX_ACCOUNT]);
+
+  return $schema;
+}
 
 /**
  * Implements hook_install().

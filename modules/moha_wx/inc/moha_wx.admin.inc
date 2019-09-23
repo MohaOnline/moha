@@ -284,7 +284,7 @@ function _moha_wx_menu_form($form, &$form_state, $wechat_name = ''){
 
     $form['#attached']['css'] = array(
       MOHA__PATH . '/css/moha.admin.css',
-      MOHA_WX__RELATIVE_PATH . '/css/moha_wx.admin.css',
+      MOHA_WX__PATH . '/css/moha_wx.admin.css',
     );
 
     $form['wechat_name'] = array(
