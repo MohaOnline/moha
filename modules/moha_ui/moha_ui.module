@@ -30,6 +30,12 @@ define('MOHA_UI__PATH', drupal_get_path('module', __MOHA_UI));
 define('__MOHA_UI__PATH', base_path() . MOHA_UI__PATH);
 
 /**
+ * Common used css paths.
+ */
+define('MOHA_UI__CSS', MOHA_UI__PATH . '/css/moha_ui.css');
+define('MOHA_UI__ADMIN_CSS', MOHA_UI__PATH . '/css/moha_ui.admin.css');
+
+/**
  * Module variables name.
  */
 define('MOHA_UI__VARIABLES', __MOHA_UI . '__variables');
@@ -48,6 +54,18 @@ define('MOHA_UI__DASHBOARD__CONTAINER','moha_ui__dashboard');
  * Drupal Element.
  */
 define('MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE', 'moha_ui_dashboard_chart_expense');
+
+/**
+ * Drupal Element: moha_ui_invisible_iframe.
+ * @see moha_ui_element_info()
+ */
+define('MOHA_UI__ELEMENT__INVISIBLE_IFRAME', 'moha_ui_invisible_iframe');
+
+/**
+ * Drupal Element: moha_ui_loading.
+ * @see moha_ui_element_info()
+ */
+define('MOHA_UI__ELEMENT__LOADING', 'moha_ui_loading');
 
 /**
  * Drupal Element: moha_ui_draggable_table.
@@ -251,9 +269,11 @@ function moha_ui_menu_alter(&$items) {
 
 /**
  * Implements hook_menu_breadcrumb_alter().
+ *
+ * {@inheritDoc}
  */
 function moha_ui_menu_breadcrumb_alter(&$active_trail, $item) {
-  // Add breadcrumb for DB log page on log details page.
+  // Add breadcrumb to Recent log messages page on log details page.
   if (isset($item['path']) && $item['path'] == 'admin/reports/event/%') {
     array_pop($active_trail);
     $active_trail[] = menu_get_item('admin/reports/dblog');
@@ -319,6 +339,18 @@ function moha_ui_theme($existing, $type, $theme, $path) {
   $themes['moha_ui_dashboard_block'] = array(
     'render element' => 'element',
     'template' => 'templates/moha-ui-dashboard-block',
+  );
+
+  /** @see moha_ui_invisible_iframe() */
+  $themes[MOHA_UI__ELEMENT__INVISIBLE_IFRAME] = array(
+    'render element' => 'element',
+    'template' => 'templates/moha-ui-invisible-iframe',
+  );
+
+  /** @see moha_ui_loading() */
+  $themes[MOHA_UI__ELEMENT__LOADING] = array(
+    'render element' => 'element',
+    'template' => 'templates/moha-ui-loading',
   );
 
   /** @see theme_moha_ui_draggable_table() */
@@ -636,6 +668,32 @@ function moha_ui_element_info() {
   );
 
   /**
+   * Loading element.
+   */
+  $elements[MOHA_UI__ELEMENT__LOADING] = array(
+    '#input' => FALSE,
+    '#duration' => 5, /* Unit: second */
+    '#text_loading' => 'Loading',
+    '#text_finished' => 'Done',
+    /** @see moha_ui_loading() */
+    '#pre_render' => array(MOHA_UI__ELEMENT__LOADING),
+    /** @see moha_ui_theme() */
+    '#theme' => array(MOHA_UI__ELEMENT__LOADING),
+  );
+
+  /**
+   * Set #urls for iframe rendering.
+   */
+  $elements[MOHA_UI__ELEMENT__INVISIBLE_IFRAME] = array(
+    '#input' => FALSE,
+    '#urls' =>array(),
+    /** @see moha_ui_invisible_iframe() */
+    '#pre_render' => array(MOHA_UI__ELEMENT__INVISIBLE_IFRAME),
+    /** @see moha_ui_theme() */
+    '#theme' => array(MOHA_UI__ELEMENT__INVISIBLE_IFRAME),
+  );
+
+  /**
    * Set #data for chart rendering;
    */
   $elements[MOHA_UI__ELEMENT__DASHBOARD_CHART_EXPENSE] = array(
@@ -663,6 +721,7 @@ function moha_ui_element_info() {
     '#header' => array(),
     '#rows' => array(),
     '#empty' => t('No Data.'),
+    /** @see moha_ui_theme() */
     '#theme' => array(MOHA_UI__ELEMENT__DRAGGABLE_TABLE),
     '#process' => array('moha_ui_draggable_table_process'),
   );
@@ -1009,6 +1068,46 @@ function moha_ui_dashboard_render_percentage($percentage) {
 }
 
 /**
+ * Pre-render for invisible iframe.
+ *
+ * @param $element
+ *
+ * @return mixed
+ *
+ * @see moha_ui_element_info()
+ */
+function moha_ui_invisible_iframe($element) {
+  if (is_string($element['#urls'])) {
+    $element['#urls'] = array($element['#urls']);
+  }
+
+  moha_attach_css($element, MOHA_UI__CSS);
+  return $element;
+}
+
+/**
+ * Pre-render for loading element.
+ *
+ * @param $element
+ *
+ * @return mixed
+ *
+ * @see moha_ui_element_info()
+ * @see moha_ui_theme()
+ */
+function moha_ui_loading($element) {
+  // Create an ID to group related parameters.
+  $element['#id'] = drupal_html_id(MOHA_UI__ELEMENT__LOADING);
+
+  moha_attach_css($element, MOHA_UI__CSS);
+  moha_attach_js_settings($element, __MOHA_UI, MOHA_UI__ELEMENT__LOADING, array(
+    array('id' => $element['#id'], 'duration' => $element['#duration'], 'finished' => $element['#text_finished']),
+  ));
+
+  return $element;
+}
+
+/**
  * Implements hook_field_info().
  *
  * @see https://api.drupal.org/api/drupal/modules!field!field.module/group/field/7.x
@@ -1256,8 +1355,11 @@ function theme_moha_ui_image_mobile_uploader_widget_multiple($variables) {
  *   An associative array containing:
  *   - element: A render element representing the image field widget.
  *
+ * @return string
+ *
  * @see theme_image_widget()
  * @see theme_moha_ui_image_mobile_uploader_widget_multiple()
+ * @see moha_ui_theme()
  *
  * @ingroup themeable
  */
@@ -1427,6 +1529,8 @@ function moha_ui_draggable_table_process($element, &$form_state, $form) {
  * Theme function renders draggable table.
  *
  * @param $variables
+ *
+ * @return string
  *
  * @see moha_ui_element_info()
  * @see moha_ui_theme()

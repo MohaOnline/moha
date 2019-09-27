@@ -57,7 +57,8 @@ function moha_user_schema() {
   $_schema['fields']['label'] = moha_db_column_define('varchar', 'Resource title', 255);
   $_schema['fields']['addition'] = moha_db_column_define('varchar', 'Resource details', 255);
   $_schema['fields']['comment'] = moha_db_column_define('varchar', '', 255);
-  $_schema['fields']['value'] = moha_db_column_define('int', 'Tenant ID or name');
+  $_schema['fields']['value'] = moha_db_column_define('int', 'Item ID, etc.');
+  $_schema['fields']['time'] = moha_db_column_define('int', 'How long spent on related item.');
   $_schema['indexes']['uid'] = array('uid');
   $schema[__MOHA_USER_ACTION . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_USER_ACTION]);
 

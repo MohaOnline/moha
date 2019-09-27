@@ -161,8 +161,8 @@ function moha_mailer_config_form_submit($form, &$form_state) {
 
   moha_variable_set(MOHA_MAILER__VARIABLE__THRESHOLD, $values['threshold']);
 
-  moha_form_cache_save(MOHA_MAILER__VARIABLE__SUSPEND, $values['suspend']);
-  moha_form_cache_save(MOHA_MAILER__VARIABLE__IGNORE_CC, $values['ignore_cc']);
+  moha_form_element_radio_save(MOHA_MAILER__VARIABLE__SUSPEND, $values['suspend']);
+  moha_form_element_radio_save(MOHA_MAILER__VARIABLE__IGNORE_CC, $values['ignore_cc']);
 
   drupal_set_message(t('Configurations have been saved.'));
 }

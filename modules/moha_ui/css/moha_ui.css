@@ -147,3 +147,24 @@ input[type="file"].weui-uploader__input {
   flex-grow: 1;
   flex-basis: 0;
 }
+
+/* Element: moha_ui_invisible_iframe */
+.moha-ui-invisible-iframe {
+  display:none;
+}
+/***/
+
+/* Element: moha_ui_loading */
+.moha-ui-loading-icon {
+  margin: auto;
+  width: 100px
+}
+
+.moha-ui-loading-icon img {
+  width: 100px;
+}
+.moha-ui-loading-text {
+  text-align: center;
+}
+
+/***/

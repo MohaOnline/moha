@@ -21,19 +21,14 @@
 function moha_user_oauth2_admin_form($form, &$form_state) {
   try {
     $integrations = moha_cache_variable_get(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
+    $login_integration = moha_an2e($integrations, MOHA_USER__VARIABLE__OAUTH2_LOGIN, '');
+    $logout_integration = moha_an2e($integrations, MOHA_USER__VARIABLE__OAUTH2_LOGOUT, 0);
 
-    $form['tips'] = moha_form_element_container('Tips');
-    $form['tips']['paths'] = array(
-      '#type' => 'item',
-      '#title' => 'Path of Pages',
-      '#description' => 'If more than one page need be configured, please list path of pages in each own line in textarea.',
-    );
-
-    $rows = array();
+    $rows = $clients = array();
     $entities = moha_user_fetch_oauth2_client();
     foreach ($entities as $entity) {
       $integration = moha_an2e($integrations, $entity->name, array());
-
+      $clients[$entity->name] = $entity->human_name;
       $rows[$entity->name]['Name'] = l($entity->human_name, MOHA_USER__URL__OAUTH2_CLIENT_ADMIN_UI . '/manage/' . $entity->id);
       $rows[$entity->name]['Integration Approach'] = moha_form_element_radio(
         '', '',
@@ -43,7 +38,33 @@ function moha_user_oauth2_admin_form($form, &$form_state) {
       $rows[$entity->name]['Paths of pages'] = moha_form_element_textarea('', '', moha_an2e($integration, 'paths_of_pages', ''));
       $rows[$entity->name]['Weight'] = moha_form_element_weight(moha_an2e($integration, 'weight', 0));
     }
-
+    
+    $form['tips'] = moha_form_element_container('Tips');
+    $form['tips']['login_logout'] = array(
+      '#type' => 'item',
+      '#title' => 'Login / Logout Integration',
+      '#description' => 'After settings change cache will be cleared to triger menu_alter hook.',
+    );
+    $form['tips']['paths'] = array(
+      '#type' => 'item',
+      '#title' => 'Path of Pages',
+      '#description' => 'If more than one page need be configured, please list path of pages in each own line in textarea.',
+    );
+    
+    $container = &moha_form_set_inline_container($form['container']);
+    $container['login'] = moha_form_element_select(
+      'Login Integration',
+      'Specify OAuth2 client to replace Drupal Login.',
+      $login_integration,
+      $clients
+    );
+    
+    $container['logout'] = moha_form_element_radio(
+      'Logout Integration',
+      'If use OAuth2 logout to replace Drupal logout.',
+      $logout_integration
+    );
+    
     $form['oauth2_integration'] = moha_form_element_table($rows);
 
     moha_form_actions($form);
@@ -87,8 +108,11 @@ function moha_user_oauth2_admin_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   $oauth2_integration = $values['oauth2_integration'];
   $oauth2_integration = moha_sort_per_weight($oauth2_integration);
-  moha_variable_set(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, $values['oauth2_integration']);
-  moha_cache_set(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, $values['oauth2_integration']);
+  $oauth2_integration[MOHA_USER__VARIABLE__OAUTH2_LOGIN] = $values['login'];
+  $oauth2_integration[MOHA_USER__VARIABLE__OAUTH2_LOGOUT] = $values['logout'];
+  cache_clear_all();
+  moha_variable_set(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, $oauth2_integration);
+  moha_cache_set(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, $oauth2_integration);
 
   drupal_set_message(t('Configurations have been saved.'));
 }
@@ -306,9 +330,11 @@ function moha_user_logout() {
     $entities = moha_user_fetch_oauth2_client();
     foreach ($entities as $entity) {
       if (isset($_SESSION[MOHA_USER__SESSION__OAUTH2_USER][$entity->name])) {
-        $contents[] = array(
-          '#markup' => '<p>' . moha_link("Logout $entity->human_name", $entity->logout) . '</p>',
-        );
+        if (isset($entity->logout)) {
+          $contents[] = array(
+            '#markup' => '<p>' . moha_link(t("Logout from @client_name", array('@client_name' => $entity->human_name)), "moha/user/oauth2/logout/$entity->name") . '</p>',
+          );
+        }
       }
     }
     $contents[] = array(

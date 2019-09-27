@@ -74,10 +74,27 @@ define('MOHA_USER__PERMISSION__USER_SIMULATION', 'moha user simulation');
 
 /**
  * Module variables name: moha_user__var__oauth2_integration.
- *
- * OAuth2 client name to replace drupal login.
+ * Configured OAuth2 clients and how to integrate with drupal.
  */
 define('MOHA_USER__VARIABLE__OAUTH2_INTEGRATION', __MOHA_USER. '__var__oauth2_integration');
+
+/**
+ * Module variables name: moha_user__var__oauth2_integration_login.
+ * Boolean if auto replace Drupal login, need clear cache to enable.
+ * 
+ * @see moha_user_oauth2_admin_form()
+ * @see moha_user_menu_alter()
+ */
+define('MOHA_USER__VARIABLE__OAUTH2_LOGIN', __MOHA_USER. '__var__oauth2_login');
+
+/**
+ * Module variables name: moha_user__var__oauth2_integration_logout.
+ * Boolean if auto replace Drupal logout, need clear cache to enable.
+ * 
+ * @see moha_user_oauth2_admin_form()
+ * @see moha_user_menu_alter()
+ */
+define('MOHA_USER__VARIABLE__OAUTH2_LOGOUT', __MOHA_USER. '__var__oauth2_logout');
 
 /**
  * OAuth2 client integration approaches.
@@ -213,6 +230,15 @@ function moha_user_menu() {
     TRUE,
     'Callback'
   );
+
+  $items['moha/user/oauth2/logout'] = moha_menu_define(
+    'OAuth2 Logout',
+    'Logout current OAuth2 user.',
+    /** @see moha_user_oauth2_logout */
+    array('moha_user_oauth2_logout'),
+    'user_is_logged_in',
+    'Callback'
+  );
   
   $items['admin/moha/user'] = moha_menu_block_define(
     'Moha User',
@@ -272,6 +298,15 @@ function moha_user_menu_alter(&$items) {
   /** @see moha_user_edit_access() */
   $items['user/%user/edit']['access callback'] = 'moha_user_edit_access';
 
+  $integrations = moha_cache_variable_get(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
+  $login_integration = moha_an2e($integrations, MOHA_USER__VARIABLE__OAUTH2_LOGIN, '');
+  $logout_integration = moha_an2e($integrations, MOHA_USER__VARIABLE__OAUTH2_LOGOUT, 0);
+  
+  if ($logout_integration) {
+    /** @see moha_user_oauth2_logout() */
+    $items['user/logout']['page callback'] = 'moha_user_oauth2_logout';
+  }
+
   return $items;
 }
 
@@ -283,6 +318,8 @@ function moha_user_menu_alter(&$items) {
  *   User object.
  *
  * @see user_edit_access().
+ *
+ * @return boolean
  */
 function moha_user_edit_access($account) {
   $access = (
@@ -313,7 +350,7 @@ function moha_user_fetch_oauth2_client($client_name = '', $options = array('stat
     $data = $entities = moha_entity_fetch(__MOHA_USER_OAUTH2_CLIENT, $options);
   }
   else if (is_string($client_name)) {
-    $entities = moha_entity_fetch(__MOHA_USER_OAUTH2_CLIENT, array('name' => $client_name)+$options);
+    $entities = moha_entity_fetch(__MOHA_USER_OAUTH2_CLIENT, array('name' => $client_name) + $options);
     $data = array_shift($entities);
   }
 
@@ -342,8 +379,10 @@ function moha_user_oauth2_integration_process() {
   // System paths, or the paths used to issue OAuth2 login request or receive OAuth2 Server post back should be excluded.
   static $system_excludes = <<<EXCLUDES
 user/reset/*
+user/logout
 moha/user/oauth2/login/*
 moha/user/oauth2/post/*
+moha/user/oauth2/logout
 EXCLUDES;
   if (drupal_match_path($current_path, $system_excludes)) { return; }
 
@@ -401,10 +440,7 @@ function moha_user_oauth2_implicit_login($client_name) {
   catch (Exception $e) {
     moha_show_exception($e);
     watchdog_exception(__FUNCTION__, $e);
-    return MENU_NOT_FOUND;
   }
-  
-  return MENU_SITE_ONLINE;
 }
 
 /**
@@ -420,14 +456,19 @@ function moha_user_oauth2_implicit_redirect($client_name) {
   catch (Exception $e) {
     moha_show_exception($e);
     watchdog_exception(__FUNCTION__, $e);
-    return MENU_NOT_FOUND;
   }
-  
-  return MENU_SITE_ONLINE;
 }
 
-function moha_user_oauth2_login_url() {
-  
+/**
+ * Generate login request URL per client name.
+ *
+ * @param $client_name
+ *
+ * @return string
+ */
+function moha_user_oauth2_login_url($client_name) {
+  $url = url("moha/user/oauth2/login/$client_name", array('absolute' => TRUE, 'prefix' => ''));
+  return $url;
 }
 
 /**
@@ -450,8 +491,6 @@ function moha_user_oauth2_post_url($client_name) {
  * @param $destination
  * @param $force
  *   If force perform OAuth2 login.
- *
- * @return NULL
  */
 function moha_user_oauth2_login($client_name, $destination = 'user', $force = FALSE) {
   try {
@@ -459,7 +498,7 @@ function moha_user_oauth2_login($client_name, $destination = 'user', $force = FA
     if (!$force && moha_user_is_oauth2_logged_in($client_name)) {
       $here = moha_link('here', 'user', FALSE);
       drupal_set_message(t("User has OAuth2 logged in. Click $here to check current user."));
-      return NULL;
+      drupal_goto($destination);
     }
     
     $entity = moha_user_fetch_oauth2_client($client_name);
@@ -505,8 +544,6 @@ function moha_user_oauth2_login($client_name, $destination = 'user', $force = FA
     moha_show_exception($e);
     watchdog_exception(__FUNCTION__, $e);
   }
-  
-  return "";
 }
 
 /**
@@ -548,7 +585,7 @@ function moha_user_oauth2_post($client_name) {
     }
     ////////
     
-    // Fetch user's OAuth2 profile is access token is ready.
+    // Fetch user's OAuth2 profile when access token is ready.
     if (empty($oauth2_access_token)) {
       throw new Exception("No access token. Click $oauth2_login_link to have another try.");
     }
@@ -611,7 +648,7 @@ function moha_user_oauth2_post($client_name) {
     if (empty($oauth2_user) && $entity->auto_register == 0) {
       throw new Exception("$oauth2_user_name($oauth2_user_mail) isn't registered.");
     }
-    else if (empty($oauth2_user)) {
+    else if (empty($oauth2_user) && $entity->auto_register != 0) {
       // Create new user.
       $password = user_password(16);
       $user_fields = array(
@@ -628,8 +665,12 @@ function moha_user_oauth2_post($client_name) {
 
       $oauth2_user = user_save('', $user_fields);
     }
-    else if (isset($oauth2_user->status) && $oauth2_user->status == 0) {
+    else if (isset($oauth2_user->status) && $oauth2_user->status == 0 && isset($entity->auto_enable) && $entity->auto_enable == 0) {
       throw new Exception("User $oauth2_user->name($oauth2_user->uid) is blocked.");
+    }
+    else if (isset($oauth2_user->status) && $oauth2_user->status == 0 && isset($entity->auto_enable) && $entity->auto_enable != 0) {
+      $oauth2_user->status = 1;
+      $oauth2_user = user_save($oauth2_user);
     }
 
     moha_login($oauth2_user, TRUE, TRUE);
@@ -641,8 +682,51 @@ function moha_user_oauth2_post($client_name) {
     moha_show_exception($e);
     watchdog_exception(__FUNCTION__, $e);
   }
-  
-  return '';
+}
+
+/**
+ * @param string $client_name
+ *
+ * @return mixed
+ *
+ * @see moha_user_menu()
+ * @see moha_user_theme()
+ * @see templates/moha-user-oauth2-logout.tpl.php
+ */
+function moha_user_oauth2_logout($client_name = '') {
+  try {
+    // Drupal logout.
+    module_load_include('inc', 'user', 'user.pages');
+    user_logout_current_user();
+    
+    // Waiting for OAuth2 logout.
+    $entities = moha_user_fetch_oauth2_client($client_name);
+    $logout_endpoints = array();
+    foreach ($entities as $entity) {
+      if (isset($_SESSION[MOHA_USER__SESSION__OAUTH2_USER][$entity->name]) && !empty($entity->logout)) {
+        $logout_endpoints[] = $entity->logout;
+      }
+    }
+
+    $content['logout_iframe'] = moha_form_element_invisible_iframe(
+      $logout_endpoints
+    );
+
+    $content['loading'] = moha_form_element_loading(
+      20,
+      'Logging out from all signed OAuth2 platforms, pls waiting ...',
+      'Done, you may close current browser tab or window, or go to other sites.'
+    );
+
+    moha_attach_library_moha_ui($content);
+
+    return $content;
+
+  }
+  catch (Exception $e) {
+    moha_show_exception($e);
+    watchdog_exception(__FUNCTION__, $e);
+  }
 }
 
 /**

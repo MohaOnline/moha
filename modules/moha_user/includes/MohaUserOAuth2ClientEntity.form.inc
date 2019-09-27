@@ -161,7 +161,7 @@ function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
   );
 
   $container['auto_enable'] = moha_form_element_radio(
-    'Auto Register',
+    'Auto Enable',
     'If enable user account when user is blocked after OAuth2 login.',
     empty($entity->auto_enable) ? 0 : $entity->auto_enable
   );
@@ -225,6 +225,13 @@ function moha_user_oauth2_client_form_submit($form, &$form_state) {
 
   /** @see \MohaCommonEntityController::save()*/
   $entity->save();
+  
+  if ($entity->status == moha_array_key_by_value(MOHA__TERM__ACTIVE, MOHA__STATUS__ENTITY) && empty($entity->mapping)){
+    $form_state['redirect'] = "admin/moha/user/oauth2/mapping/$entity->name";
+  }
+  else {
+    $form_state['redirect'] = MOHA_USER__URL__OAUTH2_CLIENT_ADMIN_UI;
+  }
 
-  $form_state['redirect'] = MOHA_USER__URL__OAUTH2_CLIENT_ADMIN_UI;
+
 }

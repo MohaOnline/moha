@@ -169,10 +169,25 @@ moha.toFahrenheit = function (degree) {
 
           new ResizeSensor($container, Drupal.behaviors.mohaUI.resizeExpensesCharts);
         }); // once initial expense chart finished.
+
       }
       catch (e) {
         console.log(e);
       }
+
+      /** @see php: moha_ui_loading() */
+      $('.moha-ui-loading', context).once('moha-ui-loading', function () {
+        const $loading = $(this);
+
+        _.forEach(settings.moha_ui.moha_ui_loading, function(loading){
+          if ($loading.prop('id') === loading.id) {
+            setTimeout(function() {
+              $loading.find('img').remove();
+              $loading.find('#'+loading.id+'-text').text(loading.finished);
+            }, loading.duration * 1000);
+          }
+        });
+      });
 
     }
   };

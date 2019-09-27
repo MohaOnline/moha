@@ -4,6 +4,7 @@ core = 7.x
 package = Moha Online
 
 dependencies[] = moha
+dependencies[] = moha_ui
 
 files[] = includes/MohaUserOAuth2ClientEntity.php
 files[] = includes/MohaUserOAuth2ClientEntityAdminController.php
