@@ -695,9 +695,6 @@ function moha_user_oauth2_post($client_name) {
  */
 function moha_user_oauth2_logout($client_name = '') {
   try {
-    // Drupal logout.
-    module_load_include('inc', 'user', 'user.pages');
-    user_logout_current_user();
     
     // Waiting for OAuth2 logout.
     $entities = moha_user_fetch_oauth2_client($client_name);
@@ -719,6 +716,10 @@ function moha_user_oauth2_logout($client_name = '') {
     );
 
     moha_attach_library_moha_ui($content);
+    
+    // Drupal logout.
+    module_load_include('inc', 'user', 'user.pages');
+    user_logout_current_user();
 
     return $content;
 
