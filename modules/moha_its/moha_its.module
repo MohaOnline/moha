@@ -4,9 +4,6 @@
  * Hooks entry file of the module.
  */
 
-// TODO
-// Platform information storage entity.
-
 /**
  * Module human name: Moha ITS.
  */
@@ -233,61 +230,13 @@ define('MOHA_ITS__AZURE_CHINA_API__EXPENSE', 'https://ea.azure.cn/rest/!enrollme
  */
 function moha_its_entity_info() {
   $items = array();
-
-  // Stores basic information of a company / group company.
   // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
-  $items[__MOHA_ITS_GROUP] = array(
-    'label' => t(MOHA_ITS_GROUP),
-    'plural label' => t(MOHA_ITS_GROUP . 's'), // Moha ITS Groups
-    'base table' => __MOHA_ITS_GROUP,
-    'revision table' => __MOHA_ITS_GROUP . '_revision',
-    'entity keys' => array(
-      'id' => 'id',
-      'label' => 'full_name',
-      'revision' => 'vid',
-//    'bundle' => 'type',
-    ),
-    //
-    'label callback' => 'entity_class_label',
-
-    /** @see entity_crud_hook_entity_info() */
-    'admin ui' => array(
-      /* Moha ITS Groups management page URL & Class. */
-      'path' => MOHA_ITS__URL__GROUP_ADMIN_UI,
-      'controller class' => "MohaITSGroupEntityAdminController",
-
-      /** @see entity_ui_get_form() */
-      /* Moha ITS Groups add / edit forms containing file. */
-      'file' => "includes/MohaITSGroupEntity.form.inc",  //
-    ),
-
-    // Declares which module contains related Class information, like Admin UI Class, etc.
-    'module' => __MOHA_ITS,
-    'access callback' => 'moha_entity_access',
-
-    'entity class' => 'MohaITSGroupEntity',
-    'controller class' => 'MohaITSGroupEntityController',
-    // Uses defaultUri method of entity class to generate entity URL.
-    'uri callback' => 'entity_class_uri',
-
-    // Make entity fieldable; @see field_attach_form to attach added fields.
-    'fieldable' => TRUE,
-    'bundles' => array(
-      __MOHA_ITS_GROUP => array(
-        'label' => t(MOHA_ITS_GROUP),
-        'plural label' => t(MOHA_ITS_GROUP . 's'),
-        'admin' => array(
-          'path' => MOHA_ITS__URL__GROUP_ADMIN_UI,
-          'access arguments' => array(MOHA_ITS__PERMISSION__EDIT_ANY_GROUP),
-        ),
-      ),
-    ),
-//    'bundle keys' => array(
-//      'bundle' => 'type',
-//    ),
-
-    // Views support.
-    'views controller class' => 'EntityDefaultViewsController',
+  $items[__MOHA_ITS_GROUP] = moha_entity_define(
+    __MOHA_ITS,
+    __MOHA_ITS_GROUP,
+    MOHA_ITS_GROUP,
+    'MohaITSGroup',
+    MOHA_ITS__URL__GROUP_ADMIN_UI
   );
 
   $items[__MOHA_ITS_INFRASTRUCTURE] = moha_entity_define(
@@ -299,6 +248,7 @@ function moha_its_entity_info() {
     TRUE
   );
   $items[__MOHA_ITS_INFRASTRUCTURE]['entity keys']['label'] = 'full_name';
+
 
   $items[__MOHA_ITS_SERVICE] = array(
     'label' => t(MOHA_ITS_SERVICE),
@@ -453,6 +403,7 @@ function moha_its_menu() {
 function moha_its_query_era_query_alter(QueryAlterableInterface $query) {
   /** @var $query \SelectQuery */
   $tables = $query->getTables();
+  $conditions = &$query->conditions();
 
   // Skip verify label for moha_its_service entity.
   if (isset($tables[__MOHA_ITS_SERVICE])) {
@@ -464,6 +415,26 @@ function moha_its_query_era_query_alter(QueryAlterableInterface $query) {
           break;
         }
       }
+    }
+  }
+
+  if (count($tables) == 1) {
+    // Only hack Moha tables.
+    $table_name = array_key_first($tables);
+    if (!moha_start_with($table_name, __MOHA)) {
+      return;
+    }
+
+    if ($table_name && count($conditions) == 2 && $conditions['#conjunction'] == 'AND' && $conditions[0]['field'] == $table_name . '.id') {
+      $conditions['#conjunction'] = 'OR';
+      $conditions[] = array(
+        'field' => $table_name . '.name',
+        'operator' => 'LIKE',
+        'value' => $conditions[0]['value'],
+      );
+    }
+    else if ($table_name && count($conditions) == 3 && $conditions['#conjunction'] == 'AND' && moha_end_with($conditions[0]['field'], '.id') && !is_numeric($conditions[0]['value'])) {
+      unset($conditions[0]);
     }
   }
 

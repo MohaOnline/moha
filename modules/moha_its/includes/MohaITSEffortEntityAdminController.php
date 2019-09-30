@@ -159,7 +159,7 @@ class MohaITSEffortEntityAdminController extends EntityDefaultUIController {
 
     // From 3rd property column.
     $group = entity_load_single(__MOHA_ITS_GROUP, $entity->gid);
-    $additional_cols[] = $group->full_name;
+    $additional_cols[] = $group->human_name;
 
     $service = entity_load_single(__MOHA_ITS_SERVICE, $entity->sid);
     $additional_cols[] = $service->label();

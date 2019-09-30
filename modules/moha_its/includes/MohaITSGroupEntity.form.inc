@@ -19,81 +19,52 @@ function moha_its_group_form($form, &$form_state, $group = NULL) {
     '#value' => !empty($group->id)?$group->id:'',
   );
 
-  $form['full_name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Full name'),
-    '#default_value' => empty($group->full_name)?'':$group->full_name,
-    '#description' => t('English full name of group.'),
-    '#maxlength' => 128,
-    '#size' => 120,
-    '#required' => TRUE,
+  $form['human_name'] = moha_form_element_text(
+    'Human name',
+    'Human readable name of the group.',
+    empty($group->human_name) ? '' : $group->human_name,
+    120, 128, TRUE
   );
 
-  $form['name'] = array(
-    '#type' => 'machine_name',
-    '#description' => t('A unique name to construct the URL for the group. It must only contain lowercase letters, numbers and hyphens.'),
-    '#default_value' => empty($group->name)?'':$group->name,
-    '#machine_name' => array(
-      'source' => array('full_name'), // Bind machine_name field to relative normal field.
-      'label' => t('URI'),
-      'replace_pattern' => '[^a-z0-9-]+',
-      'replace' => '-',
-      'exists' => 'moha_its_group_entity_exists',
-    ),
+  $form['name'] = moha_form_element_machine(
+    'human_name',
+    empty($group->name)?'':$group->name,
+    /** @see moha_entity_exists() */
+    'moha_entity_exists',
+    TRUE
   );
 
-  $form['local_name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Local name'),
-    '#default_value' => empty($group->local_name)?'':$group->local_name,
-    '#description' => t('The group\'s local full name.'),
-    '#maxlength' => 128,
-    '#size' => 120,
+  $form['local_name'] = moha_form_element_text(
+    'Local name',
+    'Local Human name of the group.',
+    empty($group->local_name) ? '' : $group->local_name,
+    120, 128
   );
 
-  $form['pid'] = array(
-    '#title' => t('Parent group / company'),
-    '#type' => 'entityreference',
-    '#description' => t('Specify parent group / company.'),
-    '#era_entity_type' => __MOHA_ITS_GROUP,
-    '#era_cardinality' => 1,
-    '#era_query_settings' => array(
-      'property_conditions' => array(
-      ),
-    ),
-    '#default_value' => isset($group->pid)?$group->pid:'',
+  $form['pid'] = moha_form_element_entity_ref(
+    'Parent group / company',
+    'Specify parent group / company.',
+    isset($group->pid) ? $group->pid : '',
+    __MOHA_ITS_GROUP
   );
 
-  $form['rid'] = array(
-    '#title' => t('Representative'),
-    '#type' => 'entityreference',
-    '#description' => t('Specify who represents this group / company.'),
-    '#era_entity_type' => 'user',
-    '#era_cardinality' => 1,
-    '#era_query_settings' => array(
-      'property_conditions' => array(
-      ),
-    ),
-    '#default_value' => isset($group->oid)?$group->oid:'',
+  $form['rid'] = moha_form_element_entity_ref(
+    'Representative',
+    'Specify who represents this group / company.',
+    isset($group->rid) ? $group->rid : '',
+    'user'
   );
 
-  $form['status'] = array(
-    '#title' => t('Status'),
-    '#type' => 'select',
-    '#options' => MOHA__STATUS__ENTITY,
-    '#default_value' => isset($group->status)?$group->status:1,
-    '#description' => t('Status of group.'),
+  $form['status'] = moha_form_element_select(
+    'Status',
+    'Status of the entity.',
+    isset($group->status) ? $group->status : 1,
+    MOHA__STATUS__ENTITY
   );
 
-  field_attach_form(__MOHA_ITS_GROUP, $group, $form, $form_state);
+  moha_form_add_entity_fields(__MOHA_ITS_GROUP, $group, $form, $form_state);
 
-  $form['actions'] = array(
-    '#type' => 'actions',
-    'submit' => array(
-      '#type' => 'submit',
-      '#value' => isset($group->is_new)?'Add group':'Save group',
-    ),
-  );
+  moha_form_actions($form, isset($group->is_new) ? 'Add group' : 'Save group');
 
   return $form;
 }

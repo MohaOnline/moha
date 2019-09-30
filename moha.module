@@ -240,10 +240,10 @@ define('MOHA__TERM__INFORMED', 'Informed');
  * Moha Status array: RACI.
  */
 define('MOHA__STATUS__RACI', array(
-  0 => MOHA__TERM__ACCOUNTABLE, // Resource Owner.
-  1 => MOHA__TERM__RESPONSIBLE, // Principal.
-  2 => MOHA__TERM__CONSULTED,
-  3 => MOHA__TERM__INFORMED,
+  0 => MOHA__TERM__ACCOUNTABLE, // Resource Owner, Approver
+  1 => MOHA__TERM__RESPONSIBLE, // Executor, Updater
+  2 => MOHA__TERM__CONSULTED,   // Viewer
+  3 => MOHA__TERM__INFORMED,    // Related Party
 ));
 
 /**
@@ -339,7 +339,10 @@ function moha_db_column_define($type, $description = '', $size = 255, $default =
 
     case 'text':
       $db_field['description'] = $description;
-      $db_field['type'] = 'text';
+      $db_field['type'] = 'text'; // Can't have default value.
+      if ($size == 'big') {
+        $db_field['size'] = $size;
+      }
       $db_field['not null'] = FALSE;
       break;
 
@@ -371,6 +374,7 @@ function moha_entity_db_schema_init($description = '', $name_column = TRUE) {
   );
 
   $schema = moha_entity_db_schema_default_index($schema);
+  $schema['primary key'] = array('id');
 
   if ($name_column) {
     $schema['fields']['name'] =  moha_db_column_define('varchar', 'Stores machine name of the entity record.', 512);
@@ -420,8 +424,8 @@ function moha_entity_db_revision_schema($schema) {
   $schema['fields']['vid']['type'] = 'serial';
   unset($schema['fields']['vid']['default']);
 
-  $schema['indexes']['id'] = array('id');
   unset($schema['indexes']['vid']);
+  $schema['indexes']['id'] = array('id');
 
   $schema['primary key'] = array('vid');
 
@@ -1479,8 +1483,10 @@ function moha_form_add_vertical_tab(&$form, $tab_name) {
  * @param $vertical_tabs
  *   if add entity fields on vertical tabs
  *
+ * @return array
+ *   Fields wrapper in the form array.
  */
-function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
+function &moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
 
   $form['fields'] = array(
     '#type' => 'fieldset',
@@ -1501,6 +1507,24 @@ function moha_form_add_entity_fields_wrapper(&$form, $vertical_tabs = TRUE){
   $form['fields']['wrapper'] = array(
     '#type' => 'container',
   );
+  
+  return $form['fields']['wrapper'];
+}
+
+/**
+ * Attache entity fields to a vertical tab. 
+ *
+ * @param $entity_type
+ * @param $entity
+ * @param $form
+ * @param $form_state
+ *
+ * @return array
+ */
+function &moha_form_add_entity_fields($entity_type, $entity, &$form, $form_state) {
+  $wrapper = &moha_form_add_entity_fields_wrapper($form);
+  field_attach_form($entity_type, $entity, $wrapper, $form_state);
+  return $wrapper;
 }
 
 /**
@@ -1558,8 +1582,10 @@ function moha_form_element_machine($normal_element, $default, $exist_func = FALS
  */
 function moha_form_element_prompt_imce_usage() {
   $element = array(
+    '#type' => 'item',
+    '#title' => 'Hint',
     '#prefix' => '<div class="moha-admin-form-hint">',
-    '#markup' => 'Hint: Public assets could be uploaded in <a target="_blank" href="/imce">imce</a>, private assets could be uploaded in <a target="_blank" href="/imce/private">imce/private</a>.',
+    '#markup' => 'Public assets could be uploaded in <a target="_blank" href="/imce">imce</a>, private assets could be uploaded in <a target="_blank" href="/imce/private">imce/private</a>.',
     '#suffix' => '</div>',
     '#weight' => -99,
   );
@@ -1595,13 +1621,14 @@ function moha_form_element_weight($default = 0, $delta = 255) {
  *
  * @return mixed
  */
-function moha_form_element_text($title = '', $description = '', $default = '', $size = 40, $max_length = 255) {
+function moha_form_element_text($title = '', $description = '', $default = '', $size = 40, $max_length = 255, $required = FALSE) {
   $element['#type'] = 'textfield';
   $element['#title'] = t($title);
   $element['#description'] = t($description);
   $element['#default_value'] = $default;
   $element['#size'] = $size;
   $element['#maxlength'] = $max_length;
+  $element['#required'] = $required;
 
   return $element;
 }
@@ -1704,6 +1731,36 @@ function moha_form_element_radio_save($constant_name, $value) {
     moha_cache_set($constant_name, FALSE);
     moha_variable_set($constant_name, FALSE);
   }
+}
+
+/**
+ * Returns render array for entity reference autocomplete element.
+ *
+ * @param string $title
+ * @param string $description
+ * @param null $default
+ * @param string $entity_type
+ * @param int $cardinality
+ * @param array $property_conditions
+ * @param array $field_conditions
+ *
+ * @return mixed
+ *
+ * @see entityreference_autocomplete_element_info()
+ */
+function moha_form_element_entity_ref($title = '', $description = '', $default = NULL, $entity_type = '',
+                                      $cardinality = 1, $property_conditions = array(), $field_conditions = array()) {
+  $element['#type'] = 'entityreference';
+  $element['#title'] = t($title);
+  $element['#description'] = t($description);
+  $element['#default_value'] = (isset($default)) ? $default : '';
+  $element['#era_entity_type'] = $entity_type;
+  $element['#era_cardinality'] = $cardinality;
+  $element['#era_entity_type'] = $entity_type;
+  $element['#era_query_settings']['property_conditions'] = $property_conditions;
+  $element['#era_query_settings']['field_conditions'] = $field_conditions;
+
+  return $element;
 }
 
 /**
@@ -2857,6 +2914,18 @@ function moha_end_with($string, $expectation)
   $result = (substr($string, -$length) === $expectation);
 
   return $result;
+}
+
+/**
+ * Polyfill: array_key_first.
+ */
+if (!function_exists('array_key_first')) {
+  function array_key_first(array $arr) {
+    foreach($arr as $key => $unused) {
+      return $key;
+    }
+    return NULL;
+  }
 }
 
 include_once 'ckeditor/moha.ckeditor.inc';

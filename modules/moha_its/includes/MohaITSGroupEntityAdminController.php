@@ -165,8 +165,6 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
    */
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = []) {
 
-
-
     // Entity machine name.
     $additional_cols[] = $entity->name;
     $additional_cols[] = $entity->local_name;
@@ -178,15 +176,9 @@ class MohaITSGroupEntityAdminController extends EntityDefaultUIController {
     $additional_cols[] = format_date($entity->updated, 'short');
     $additional_cols[] = format_date($entity->created, 'short');
 
-    if ($entity->status == moha_array_key_by_value(MOHA__TERM__DISABLED, MOHA__STATUS__ENTITY)) {
-      $additional_cols[] = l('Deliver', 'admin/moha/commerce/order/deliver/' . $entity->id, ['attributes' => ['class' => ['button']]]);
-    }
-    else {
-      $additional_cols[] = '';
-    }
-
     $row = parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
     array_unshift($row, $id);
+
     return $row;
   }
 }

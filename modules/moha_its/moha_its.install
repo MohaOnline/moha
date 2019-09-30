@@ -7,187 +7,21 @@
  * Prepares entities table.
  */
 function moha_its_schema() {
-  // @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
-  $schema['moha_its_group'] = array(
-    'description' => 'Stores group company information.',
-    'fields' => array(
-      'id' => array(
-        'description' => 'Primary Key: Unique Group ID.',
-        'type' => 'serial',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-      ),
-      'pid' => array(
-        'description' => 'ID of parent Group / Company.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      'name' => array(
-        'description' => 'Name of group.',
-        'type' => 'varchar',
-        'length' => 512,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'full_name' => array(
-        'description' => 'Full name of group.',
-        'type' => 'varchar',
-        'length' => 512,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'local_name' => array(
-        'description' => 'Local name of group.',
-        'type' => 'varchar',
-        'length' => 512,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'vid' => array(
-        'description' => 'Revision ID of group.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      'rid' => array(
-        'description' => 'User ID who represents the group.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'uid' => array(
-        'description' => 'User ID who made the creation or update.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'status' => array(
-        'description' => 'Group status.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 1,
-      ),
-      'updated' => array(
-        'description' => 'The Unix timestamp when the account was most recently saved.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'created' => array(
-        'description' => 'The Unix timestamp when the account was created.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'description' => array(
-        'type' => 'text', // Can't have default value.
-        'size' => 'big',
-        'description' => 'Descriptions of group / company.',
-        'not null' => FALSE,
-      ),
-      'comment' => array(
-        'type' => 'text', // Can't have default value.
-        'size' => 'big',
-        'description' => 'Update reason.',
-        'not null' => FALSE,
-      ),
-    ),
-    'primary key' => array('id'),
-  );
-
-  // Entity revision is handled by field API mostly.
-  $schema['moha_its_group_revision'] = array(
-    'description' => 'Stores revisions of group company information.',
-    'fields' => array(
-      'vid' => array(
-        'description' => 'Primary Key: Unique Group Revision ID.',
-        'type' => 'serial',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-      ),
-      'pid' => array(
-        'description' => 'ID of parent Group / Company.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      'name' => array(
-        'description' => 'Name of group.',
-        'type' => 'varchar',
-        'length' => 512,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'full_name' => array(
-        'description' => 'Full name of group.',
-        'type' => 'varchar',
-        'length' => 512,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'local_name' => array(
-        'description' => 'Local name of group.',
-        'type' => 'varchar',
-        'length' => 512,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'id' => array(
-        'description' => 'Parent ID - Group ID.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-        'default' => 0,
-      ),
-      'rid' => array(
-        'description' => 'User ID who represents the group.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'uid' => array(
-        'description' => 'User ID who made the creation or update.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'status' => array(
-        'description' => 'The status of this record.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 1,
-      ),
-      'updated' => array(
-        'description' => 'The Unix timestamp when the account was most recently saved.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'created' => array(
-        'description' => 'The Unix timestamp when the account was created.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'description' => array(
-        'type' => 'text', // Can't have default value.
-        'size' => 'big',
-        'description' => 'Descriptions of group / company.',
-        'not null' => FALSE,
-      ),
-      'comment' => array(
-        'type' => 'text', // Can't have default value.
-        'size' => 'big',
-        'description' => 'Update reason.',
-        'not null' => FALSE,
-      )
-    ),
-    'primary key' => array('vid'),
-  );
+  /**
+   * @see moha_user_entity_info()
+   *   Related entity definition.
+   *
+   * @link https://www.drupal.org/docs/7/api/schema-api/data-types @endlink
+   */
+  $schema[__MOHA_ITS_GROUP] = moha_entity_db_schema_init('Stores group company information.');
+  $_schema = &$schema[__MOHA_ITS_GROUP];
+  $_schema['fields']['local_name'] = moha_db_column_define('varchar', 'The name of group in local country, like Chinese name, etc', 512);
+  $_schema['fields']['pid'] = moha_db_column_define('int', 'ID of parent Group / Company.');
+  $_schema['fields']['rid'] = moha_db_column_define('int', 'User ID who represents the group.');
+  $_schema['fields']['uid'] = moha_db_column_define('int', 'User ID who made the creation or update.');
+  $_schema['fields']['description'] = moha_db_column_define('text', 'Descriptions of group / company.', 'big');
+  $_schema['fields']['comment'] = moha_db_column_define('text', 'Update reason.', 'big');
+  $schema[__MOHA_ITS_GROUP . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_ITS_GROUP]);
 
   // Entity storing table: Moha ITS Infrastructure.
   $schema[__MOHA_ITS_INFRASTRUCTURE] = array(
@@ -1038,6 +872,14 @@ function moha_its_install() {
 
   /** @see moha_its_fields_and_instances() */
   moha_create_fields_and_instances('moha_its_fields_and_instances');
+
+  /**
+   * Identify moha_its_group as og_group.
+   *
+   * @see og_ui_field_settings_submit()
+   */
+  $og_field = og_fields_info(OG_GROUP_FIELD);
+  og_create_field(OG_GROUP_FIELD, __MOHA_ITS_GROUP, __MOHA_ITS_GROUP, $og_field);
 }
 
 /**
@@ -1092,6 +934,8 @@ function _moha_its_taxonomies() {
 /**
  * Create tables for moha its entities.
  * @throws \FieldException
+ *
+ * @see https://www.drupal.org/docs/7/api/schema-api/updating-tables-hook_update_n-functions.
  */
 function moha_its_update_0701() {
   $schemas = moha_its_schema();

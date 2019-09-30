@@ -15,12 +15,11 @@ dependencies[] = date_popup
 dependencies[] = moha
 dependencies[] = moha_ui
 
+files[] = includes/MohaITSGroupEntity.php
+files[] = includes/MohaITSGroupEntityAdminController.php
 files[] = includes/MohaITSEffortEntity.php
 files[] = includes/MohaITSEffortEntityAdminController.php
 files[] = includes/MohaITSEffortEntityController.php
-files[] = includes/MohaITSGroupEntity.php
-files[] = includes/MohaITSGroupEntityAdminController.php
-files[] = includes/MohaITSGroupEntityController.php
 files[] = includes/MohaITSInfrastructureEntity.php
 files[] = includes/MohaITSInfrastructureEntityAdminController.php
 files[] = includes/MohaITSServiceEntity.php

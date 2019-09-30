@@ -6,6 +6,11 @@
 class MohaITSGroupEntity extends Entity {
 
   /**
+   * Human name
+   */
+  public $human_name;
+
+  /**
    * @return array
    */
   protected function defaultUri() {
@@ -20,7 +25,7 @@ class MohaITSGroupEntity extends Entity {
       return '';
     }
     else {
-      return parent::defaultLabel();
+      return $this->human_name;
     }
   }
 }
