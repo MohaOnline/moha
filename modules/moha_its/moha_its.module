@@ -236,7 +236,8 @@ function moha_its_entity_info() {
     __MOHA_ITS_GROUP,
     MOHA_ITS_GROUP,
     'MohaITSGroup',
-    MOHA_ITS__URL__GROUP_ADMIN_UI
+    MOHA_ITS__URL__GROUP_ADMIN_UI,
+    TRUE
   );
 
   $items[__MOHA_ITS_INFRASTRUCTURE] = moha_entity_define(
