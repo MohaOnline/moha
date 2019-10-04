@@ -18,25 +18,29 @@ function moha_wx_schema() {
   $schema[__MOHA_WX_ACCOUNT] = moha_entity_db_schema_init('Stores WeChat account information.');
   $_schema = &$schema[__MOHA_WX_ACCOUNT];
   $_schema['fields']['uid'] = moha_db_column_define('int', 'User ID who made the creation or update.');
-  $_schema['fields']['type'] = moha_db_column_define('varchar', 'Account type.', 64);
-  $_schema['fields']['agent_id'] = moha_db_column_define('varchar', 'Agent ID of application for an enterprise account.');
+  $_schema['fields']['type'] = moha_db_column_define('int', 'Account type.'); /** @see MOHA_WX__TYPE */
+  $_schema['fields']['agent_id'] = moha_db_column_define('varchar', 'Agent ID of the enterprise account.', 64);
   $_schema['fields']['app_id'] = moha_db_column_define('varchar');
   $_schema['fields']['app_secret'] = moha_db_column_define('varchar');
-  $_schema['fields']['token'] = moha_db_column_define('varchar');
+  $_schema['fields']['token'] = moha_db_column_define('varchar', 'Verifying factor of WeChat message signature.');
+  $_schema['fields']['scope'] = moha_db_column_define('varchar', 'OAuth2 login type.', 32);
   $_schema['fields']['encoding_aes_key'] = moha_db_column_define('varchar');
   $_schema['fields']['access_token'] = moha_db_column_define('varchar', '', 512);
   $_schema['fields']['access_token_updated'] = moha_db_column_define('int');
   $_schema['fields']['access_token_expires_in'] = moha_db_column_define('int');
   $_schema['fields']['news_title'] = moha_db_column_define('varchar');
   $_schema['fields']['news_cover'] = moha_db_column_define('varchar');
-  $_schema['fields']['news_digest'] = moha_db_column_define('varchar');
+  $_schema['fields']['news_digest'] = moha_db_column_define('varchar', 'News Summary');
   $_schema['fields']['news_link'] = moha_db_column_define('varchar');
   $_schema['fields']['text'] = moha_db_column_define('text', '');
   $_schema['fields']['wx_menu'] = moha_db_column_define('text', 'WeChat menu JSON configurations.');
+  $_schema['fields']['wx_fallback'] = moha_db_column_define('int', 'The account ID which to fallback when user login Open Platform through WeChat browser, vice versa.');
   $_schema['fields']['jsapi_ticket'] = moha_db_column_define('varchar', 'WeChat JS SDK invoke token.', 512);
   $_schema['fields']['jsapi_ticket_updated'] = moha_db_column_define('int', 'jsapi_ticket updated time.');
   $_schema['fields']['jsapi_ticket_expires_in'] = moha_db_column_define('int', 'How long seconds jsapi_ticket will be valid after jsapi_ticket_updated');
-  $schema[__MOHA_WX_ACCOUNT . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_WX_ACCOUNT]);
+
+  moha_entity_db_add_revision_schema($schema, __MOHA_WX_ACCOUNT);
+  moha_entity_db_add_cache_schema($schema, __MOHA_WX_ACCOUNT);
 
   return $schema;
 }
@@ -52,7 +56,6 @@ function moha_wx_install() {
   moha_wx_update_0701();
   moha_wx_update_0702();
   moha_wx_update_0703();
-  moha_wx_update_0704();
   moha_wx_update_0705();
   moha_wx_update_0706();
 }
@@ -244,32 +247,6 @@ function moha_wx_update_0703(){
 }
 
 /**
- * Prepare fields for profile2.
- *
- * @throws \FieldException
- *   Throw any exception to interrupt update, otherwise DB version will be correctly updated.
- */
-function moha_wx_update_0704(){
-  try {
-    foreach (_moha_wx_moha_profile2_fields_and_instances() as $field) {
-      if (!field_info_field($field['field_name'])) {
-        field_create_field($field);
-      }
-
-      if (!field_info_instance($field['entity_type'], $field['field_name'], $field['bundle'])) {
-        field_create_instance($field);
-      }
-    }
-  }
-  catch (FieldException $e){
-    watchdog_exception(__FUNCTION__, $e);
-    throw $e;
-  }
-
-  cache_clear_all();
-}
-
-/**
  * Update moha_wx_accounts table: add jsapi_ticket, jsapi_ticket_updated add jsapi_ticket_expires_in field.
  */
 function moha_wx_update_0705 () {
@@ -330,15 +307,7 @@ function moha_wx_update_0706 () {
   db_add_field('moha_wx_accounts', 'agent_id', $agent_id);
 
   try {
-    $field = _moha_wx_moha_profile2_fields_and_instances()['moha_wx_userid'] ;
-
-    if (!field_info_field($field['field_name'])) {
-      field_create_field($field);
-    }
-
-    if (!field_info_instance($field['entity_type'], $field['field_name'], $field['bundle'])) {
-      field_create_instance($field);
-    }
+    moha_create_fields_and_instances('_moha_wx_moha_profile2_fields_and_instances');
   }
   catch (FieldException $e){
     watchdog_exception(__FUNCTION__, $e);

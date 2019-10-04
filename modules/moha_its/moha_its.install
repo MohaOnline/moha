@@ -21,7 +21,7 @@ function moha_its_schema() {
   $_schema['fields']['uid'] = moha_db_column_define('int', 'User ID who made the creation or update.');
   $_schema['fields']['description'] = moha_db_column_define('text', 'Descriptions of group / company.', 'big');
   $_schema['fields']['comment'] = moha_db_column_define('text', 'Update reason.', 'big');
-  $schema[__MOHA_ITS_GROUP . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_ITS_GROUP]);
+  moha_entity_db_add_revision_schema($schema, __MOHA_ITS_GROUP);
 
   // Entity storing table: Moha ITS Infrastructure.
   $schema[__MOHA_ITS_INFRASTRUCTURE] = array(
@@ -856,7 +856,7 @@ function moha_its_schema() {
     'primary key' => array('id'),
   );
   $schema[__MOHA_ITS_AZURE_CHINA_EXPENSE] = moha_entity_db_schema_default_index($schema[__MOHA_ITS_AZURE_CHINA_EXPENSE]);
-  $schema[__MOHA_ITS_AZURE_CHINA_EXPENSE . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_ITS_AZURE_CHINA_EXPENSE]);
+  moha_entity_db_add_revision_schema($schema, __MOHA_ITS_AZURE_CHINA_EXPENSE);
 
   return $schema;
 }

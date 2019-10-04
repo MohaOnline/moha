@@ -112,19 +112,61 @@ define ('MOHA__DATETIME_FORMAT__SHORT', 'Y-m-d H:i');
 define ('MOHA__DATETIME_FORMAT__AZURE_EXPENSE', 'Y-m');
 
 /**
- * Form OP: Save.
+ * Action: Access.
  */
-define('MOHA__FORM_OP__SAVE', 'Save');
+define('MOHA__ACTION__ACCESS', 'Access');
 
 /**
- * Form OP: Update.
+ * Action: Add.
  */
-define('MOHA__FORM_OP__UPDATE', 'Update');
+define('MOHA__ACTION__ADD', 'Add');
 
 /**
- * Form OP: Delete.
+ * Action: Update.
  */
-define('MOHA__FORM_OP__DELETE', 'Delete');
+define('MOHA__ACTION__UPDATE', 'Update');
+
+/**
+ * Action: Delete.
+ */
+define('MOHA__ACTION__DELETE', 'Delete');
+
+/**
+ * Action: Refresh.
+ */
+define('MOHA__ACTION__REFRESH', 'Refresh');
+
+/**
+ * Action: Deploy.
+ */
+define('MOHA__ACTION__DEPLOY', 'Deploy');
+
+/**
+ * Action: Login.
+ */
+define('MOHA__ACTION__LOGIN', 'Login');
+
+/**
+ * Action: Logout.
+ */
+define('MOHA__ACTION__LOGOUT', 'Logout');
+
+/**
+ * Action: Save.
+ */
+define('MOHA__ACTION__SAVE', 'Save');
+
+/**
+ * Moha Status array: entity.
+ */
+define('MOHA__ACTION', array(
+  0 => MOHA__ACTION__ACCESS,
+  MOHA__ACTION__ADD,
+  MOHA__ACTION__UPDATE,
+  MOHA__ACTION__DELETE,
+  MOHA__ACTION__LOGIN,
+  MOHA__ACTION__LOGOUT,
+));
 
 /**
  * Moha Term: Checking.
@@ -411,25 +453,67 @@ function moha_entity_db_schema_default_index(&$schema) {
 }
 
 /**
+ * Creates schema for entity cache.
+ *
+ * @param $schema
+ * @param $entity_name
+ *
+ * @return array
+ *   Updated DB Schema array.
+ */
+function &moha_entity_db_add_cache_schema(&$schema, $entity_name = '') {
+
+  if (empty($entity_name)) { return $schema; }
+
+  // Cache bins for Entity-cache module.
+  $cache_schema = drupal_get_schema_unprocessed('system', 'cache');
+
+  if (is_array($entity_name)) {
+    $types = $entity_name;
+  }
+  else {
+    $types = array( $entity_name );
+  }
+
+  foreach ($types as $type) {
+    $schema["cache_entity_$type"] = $cache_schema;
+    $schema["cache_entity_$type"]['description'] = "Cache table used to store $type entity records.";
+  }
+
+  return $schema;
+}
+
+/**
  * Generates revision schema per primary schema,
  * change defination, primary key and index of id and vid,
  *
  * @param $schema
+ * @param $table_name string
+ *   Base table name.
  *
  * @return array
  */
-function moha_entity_db_revision_schema($schema) {
-  $schema['fields']['id']['type'] = 'int';
-  $schema['fields']['id']['default'] = 0;
-  $schema['fields']['vid']['type'] = 'serial';
-  unset($schema['fields']['vid']['default']);
+function &moha_entity_db_add_revision_schema(&$schema, $table_name = '') {
+  if (empty($table_name)) {
+    // Get copy from base table.
+    $schema_rev = $schema;
+  }
+  else {
+    $schema[$table_name . '_revision'] = $schema[$table_name];
+    $schema_rev = &$schema[$table_name . '_revision'];
+  }
 
-  unset($schema['indexes']['vid']);
-  $schema['indexes']['id'] = array('id');
+  $schema_rev['fields']['id']['type'] = 'int';
+  $schema_rev['fields']['id']['default'] = 0;
+  $schema_rev['fields']['vid']['type'] = 'serial';
+  unset($schema_rev['fields']['vid']['default']);
 
-  $schema['primary key'] = array('vid');
+  unset($schema_rev['indexes']['vid']);
+  $schema_rev['indexes']['id'] = array('id');
 
-  return $schema;
+  $schema_rev['primary key'] = array('vid');
+
+  return $schema_rev;
 }
 
 /**
@@ -463,6 +547,51 @@ function moha_entity_exists($value, $element, $form_state){
   }
   
   return $count;
+}
+
+/**
+ * @param $form
+ * @param $form_state
+ * @param $entity
+ * @param $comment
+ *
+ * @return array
+ *   form rendered array.
+ */
+function &moha_entity_form_default(&$form, &$form_state, $entity = NULL, $comment = '') {
+
+  $form['id'] = array(
+    '#type' => 'hidden',
+    '#value' => empty($entity->id) ? '' : $entity->id,
+  );
+
+  $form['human_name'] = moha_form_element_text(
+    'Human name',
+    'Human name of the entity.',
+    empty($entity->human_name) ? '' : $entity->human_name,
+    40, 64, TRUE, array('form-control', 'form-human-name')
+  );
+
+  $form['name'] = moha_form_element_machine(
+    'human_name',
+    empty($entity->name) ? '' : $entity->name,
+    /** @see moha_entity_exists() */
+    'moha_entity_exists',
+    TRUE
+  );
+
+  $container = &moha_form_set_inline_container($form['container']);
+
+  $container['status'] = moha_form_element_select(
+    'Status',
+    'Status of the entity.',
+    isset($entity->status) ? $entity->status : 1,
+    MOHA__STATUS__ENTITY
+  );
+
+  moha_form_actions($form, isset($entity->is_new) ? MOHA__ACTION__ADD : MOHA__ACTION__UPDATE);
+
+  return $form;
 }
 
 /**
@@ -529,6 +658,7 @@ function moha_entity_define($module, $machine_name, $human_name, $class_prefix, 
 
     'entity class' => $class_prefix . 'Entity',
     'controller class' => 'MohaCommonEntityController',
+    'entity cache' => module_exists('entitycache'),
     // Uses defaultUri method of entity class to generate entity URL.
     'uri callback' => 'entity_class_uri',
 
@@ -798,8 +928,11 @@ function moha_entity_fetch($entity_type, $properties = array('status' => MOHA__T
 
 /**
  * Returns permission define array.
+ *
  * @param $title
  * @param $description
+ *
+ * @return array
  */
 function moha_permission_define($title, $description = '') {
   $permission = array(
@@ -1618,10 +1751,12 @@ function moha_form_element_weight($default = 0, $delta = 255) {
  * @param $default
  * @param $size
  * @param $max_length
+ * @param $required
+ * @param $classes
  *
  * @return mixed
  */
-function moha_form_element_text($title = '', $description = '', $default = '', $size = 40, $max_length = 255, $required = FALSE) {
+function moha_form_element_text($title = '', $description = '', $default = '', $size = 40, $max_length = 255, $required = FALSE, $classes = array('form-control')) {
   $element['#type'] = 'textfield';
   $element['#title'] = t($title);
   $element['#description'] = t($description);
@@ -1630,24 +1765,34 @@ function moha_form_element_text($title = '', $description = '', $default = '', $
   $element['#maxlength'] = $max_length;
   $element['#required'] = $required;
 
+  if (!empty($classes)) {
+    $element['#attributes']['class'] = $classes;
+  }
+
   return $element;
 }
 
 /**
- * Returns render array for textarea element.
+ * Returns render array for textarea element,
+ * textarea size decided by newline number of the default value.
  *
  * @param $title
  * @param $description
  * @param $default
- * @param $rows
  * 
  * @return array
  */
-function moha_form_element_textarea($title = '', $description = '', $default = '', $rows = 5) {
+function moha_form_element_textarea($title = '', $description = '', $default = '') {
   $element['#type'] = 'textarea';
   $element['#title'] = t($title);
   $element['#description'] = t($description);
   $element['#default_value'] = $default;
+
+  $rows = moha_count_line($default) + 1;
+  if ($rows < 5) {
+    $rows = 5;
+  }
+
   $element['#rows'] = $rows;
   
   return $element;
@@ -1785,6 +1930,25 @@ function moha_form_element_table($rows, $header = array(), $empty = 'No Data.') 
 }
 
 /**
+ * @param $container
+ *
+ * @return array
+ */
+function &moha_form_element_inline_2_table(&$container) {
+  $rows = array();
+  
+  foreach(element_children($container) as $item) {
+    $rows[$item]['item'] = $container[$item]['#title'];
+    $container[$item]['#title'] = '';
+    $rows[$item][$item] = $container[$item];
+  }
+  $container = moha_form_element_table($rows, array('Item', 'Value'));
+  $container['#tree'] = FALSE;
+  
+  return $container;
+}
+
+/**
  * Returns render array for invisible iframe.
  *
  * @param array $urls
@@ -1831,7 +1995,9 @@ function moha_form_element_loading($duration = 5, $text_loading = 'Loading', $te
  * @return mixed
  */
 function &moha_form_actions(&$form, $buttons = array('Save')) {
-  $form['actions'] = array('#type' => 'actions');
+  if (!isset($form['actions'])) {
+    $form['actions'] = array('#type' => 'actions');
+  }
 
   if (is_string($buttons)) {
     $buttons = array($buttons);
@@ -1927,8 +2093,21 @@ function &moha_attach_js_settings(&$form, $group, $key, $value) {
   return $form;
 }
 
-function moha_attach_js() {
-
+/**
+ * 
+ * 
+ * @param $form
+ * @param $file
+ * 
+ * @return array
+ */
+function &moha_attach_js(&$form, $file) {
+  $form['#attached']['js'][] = array(
+    'data' => $file,
+    'type' => 'file',
+  );
+  
+  return $form;
 }
 
 /**
@@ -1944,12 +2123,16 @@ function &moha_attach_css(&$form, $file) {
 /**
  *
  * @param $form
- * @param $file
+ * @param $admin
+ *
+ * @return array
  */
-function &moha_attach_library_moha_ui(&$form) {
-  $form['#attached']['library'] = array(
-    array(__MOHA_UI, __MOHA_UI),
-  );
+function &moha_attach_library_moha_ui(&$form, $admin = FALSE) {
+  $form['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
+
+  if ($admin) {
+    $form['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
+  }
 
   return $form;
 }
@@ -2727,6 +2910,9 @@ function moha_nonce($length = 16) {
  *
  * @param $original
  *   state code embedded in URL when request OAuth2 authentication.
+ *
+ * @return string
+ *   UUID.
  */
 function moha_state_set($original = '') {
   $uuid = uuid_generate();
@@ -2914,6 +3100,17 @@ function moha_end_with($string, $expectation)
   $result = (substr($string, -$length) === $expectation);
 
   return $result;
+}
+
+/**
+ * Returns how many new lines in passed string.
+ * 
+ * @param $string
+ * @return int
+ */
+function moha_count_line($string = '') {
+  $count = substr_count($string, "\n" );
+  return $count;
 }
 
 /**

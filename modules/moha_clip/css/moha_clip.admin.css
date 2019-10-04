@@ -3,7 +3,6 @@
 
 }
 
-
 form .field-multiple-table th.field-label label {
   padding-left: 3px;
 }
@@ -29,6 +28,11 @@ div.cke_combopanel {
 
 
 /** CKEditor Styles. */
+/* Style window height. */
+.cke.cke_combopanel {
+  height: 360px
+}
+
 /* Template dialog height. */
 .cke_tpl_list {
   height: 460px;

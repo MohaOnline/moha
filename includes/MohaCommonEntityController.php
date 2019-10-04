@@ -97,8 +97,12 @@ class MohaCommonEntityController extends EntityAPIController{
       $entity->created = REQUEST_TIME;
     }
 
+    if (!isset($entity->is_new_revision) || $entity->is_new_revision == TRUE) {
+      $entity->is_new_revision = TRUE;
+      $entity->default_revision = TRUE;
+    }
+
     $entity->updated = REQUEST_TIME;
-    $entity->is_new_revision = TRUE;
     $entity->uid = $user->uid;
 
     return parent::save($entity, $transaction);

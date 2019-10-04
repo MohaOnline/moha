@@ -3,6 +3,61 @@
  * @file
  * Admin styles of the module.
  */
+html, textarea {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/** Admin form elements style fix. ************************************************************************************/
+body.page-admin-moha label {
+  display: block;
+}
+
+body.page-admin-moha .container-inline label {
+  display: inline-block;
+}
+
+body.page-admin-moha .form-radios .form-item label,
+body.page-admin-moha .form-checkboxes .form-item label,
+body.page-admin-moha td label {
+  display: inline;
+}
+
+body.page-admin-moha legend {
+  width: auto;
+  font-size: inherit;
+}
+
+body.page-admin-moha input.form-autocomplete,
+body.page-admin-moha input.form-text,
+body.page-admin-moha input.form-file,
+body.page-admin-moha select.form-select {
+  height: 30px;
+}
+
+body.page-admin-moha input.form-autocomplete,
+body.page-admin-moha input.form-text,
+body.page-admin-moha input.form-file,
+body.page-admin-moha textarea.form-textarea,
+body.page-admin-moha select.form-select {
+  border-radius: 4px;
+  padding: 2px 10px;
+  border-color: #d2d6de;
+}
+
+body.page-admin-moha input.form-autocomplete:focus,
+body.page-admin-moha input.form-text:focus,
+body.page-admin-moha input.form-file:focus,
+body.page-admin-moha textarea.form-textarea:focus,
+body.page-admin-moha select.form-select:focus {
+  border-color: #bebfb9;
+}
+
+body.page-admin-moha .form-human-name {
+  display: inline-block;
+  max-width: 400px;
+}
+/**********************************************************************************************************************/
+
 /** Original */
 body.page-admin-moha-dashboard.drupal-admin-ui-off.admin-menu.adminimal-menu:before {
   max-height: 0;
@@ -24,3 +79,4 @@ body.page-admin-moha-dashboard.drupal-admin-ui-on #branding {
 body.page-admin-moha-dashboard a:hover {
   text-decoration: none;
 }
+

@@ -355,7 +355,7 @@ function moha_user_fetch_oauth2_client($client_name = '', $options = array('stat
   }
 
   if (empty($data)) {
-    throw new Exception(format_string("@client_name is not configured or disabled.", array('@client_name' => $client_name)));
+    throw new Exception(format_string("@client_name is not configured or disabled.", array('@client_name' => $client_name)), 404);
   }
   
   return $data;
@@ -770,7 +770,10 @@ function moha_user_form_user_login_alter(&$form, &$form_state, $form_id) {
     }
   }
   catch (Exception $e) {
-    moha_show_exception($e);
-    watchdog_exception(__FUNCTION__, $e);
+    // 404 means clients haven't be configured, or all disabled.
+    if ($e->getCode() != 404) {
+      moha_show_exception($e);
+      watchdog_exception(__FUNCTION__, $e);
+    }
   }
 }

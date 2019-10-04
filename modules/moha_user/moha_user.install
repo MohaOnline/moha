@@ -47,12 +47,12 @@ function moha_user_schema() {
   $_schema['fields']['auto_register'] = moha_db_column_define('int', 'Boolean if auto creation non-exist user.', 'normal', 0);
   $_schema['fields']['auto_enable'] = moha_db_column_define('int', 'Boolean if auto enable a blocked user after user successfully OAuth2 login.', 'normal', 0);
   $_schema['fields']['mapping'] = moha_db_column_define('blob', 'A serialized mapping array between response attributes and OAuth2 profile2 fields.');
-  $schema[__MOHA_USER_OAUTH2_CLIENT . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_USER_OAUTH2_CLIENT]);
+  moha_entity_db_add_revision_schema($schema, __MOHA_USER_OAUTH2_CLIENT);
 
   $schema[__MOHA_USER_ACTION] = moha_entity_db_schema_init('Stores users\' actions, like login, logout, etc.');
   $_schema = &$schema[__MOHA_USER_ACTION];
   $_schema['fields']['uid'] = moha_db_column_define('int', 'User ID who own this record.');
-  $_schema['fields']['action'] = moha_db_column_define('varchar', 'Actions performed', 255);
+  $_schema['fields']['action'] = moha_db_column_define('varchar', 'Which actions performed: login, update, access', 255);
   $_schema['fields']['category'] = moha_db_column_define('varchar', 'The category of contents, typically content types.', 255);
   $_schema['fields']['label'] = moha_db_column_define('varchar', 'Resource title', 255);
   $_schema['fields']['addition'] = moha_db_column_define('varchar', 'Resource details', 255);
@@ -60,7 +60,7 @@ function moha_user_schema() {
   $_schema['fields']['value'] = moha_db_column_define('int', 'Item ID, etc.');
   $_schema['fields']['time'] = moha_db_column_define('int', 'How long spent on related item.');
   $_schema['indexes']['uid'] = array('uid');
-  $schema[__MOHA_USER_ACTION . '_revision'] = moha_entity_db_revision_schema($schema[__MOHA_USER_ACTION]);
+  moha_entity_db_add_revision_schema($schema, __MOHA_USER_ACTION);
 
   return $schema;
 }

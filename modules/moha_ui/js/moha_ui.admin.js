@@ -19,10 +19,11 @@ var moha = moha || {};
      * @see Drupal.attachBehaviors JSDoc.
      */
     attach: function(context, settings) {
-      $('body', context).once('moha-ui-admin-body-attach', function () {
-
-
-
+      // move required mark.
+      $('body table.sticky-table', context).once('moha-ui-admin-sticky-table-attach', function () {
+        $(this).find('span.form-required').each(function () {
+          $(this).closest('tr').find('td:first-child').append($(this));
+        });
         // once body finished.
       });
     }

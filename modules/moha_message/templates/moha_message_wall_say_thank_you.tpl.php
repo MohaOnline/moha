@@ -241,7 +241,7 @@
 
 <?php
       try {
-        $account = _moha_wx_moha_account('default');
+        $account = moha_wx_fetch_account_by_name('default');
         moha_wx_jsapi_config($account);
       }
       catch (Exception $e) {

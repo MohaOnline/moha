@@ -1,7 +1,12 @@
 <?php
+/**
+ * @file
+ * The OAuth2 functions definition.
+ */
 
 /**
  * @param $error_code
+ * @return string
  */
 function _moha_wx_oauth2_errors($error_code) {
   $error_mapping = array(
@@ -34,7 +39,7 @@ function _moha_wx_oauth2_errors($error_code) {
 function _moha_wx_oauth2_request_explicit_authorization($wechat_name, $state) {
 
   try {
-    $account = _moha_wx_moha_account($wechat_name);
+    $account = moha_wx_fetch_account_by_name($wechat_name);
 
     // Check if state is valid.
     $url = _moha_wx_get_state_url($state);
@@ -96,7 +101,7 @@ function _moha_wx_oauth2_back_with_user_info($wechat_name){
       throw new Exception('No Code.', MohaWeChat::$ERROR__OAUTH_NO_CODE);
     }
 
-    $account = _moha_wx_moha_account($wechat_name);
+    $account = moha_wx_fetch_account_by_name($wechat_name);
 
     if ($account['is_enterprise']) {
       _moha_wx_refresh_access_token($account);

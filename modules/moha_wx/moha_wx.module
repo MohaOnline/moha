@@ -35,18 +35,18 @@ define('MOHA_WX_ACCOUNT', 'Moha WeChat Account');
 define('__MOHA_WX_ACCOUNT', 'moha_wx_account');
 
 /** WeChat Account Types. */
-define('MOHA_WX__ACCOUNT_TYPE__SERVICE', 'service');
-define('MOHA_WX__ACCOUNT_TYPE__ENTERPRISE', 'enterprise');
-define('MOHA_WX__ACCOUNT_TYPE__SUBSCRIPTION', 'subscription');
-define('MOHA_WX__ACCOUNT_TYPE__OPEN', 'open_platform');
+define('MOHA_WX__ACCOUNT_TYPE__SERVICE', 'Service Account');
+define('MOHA_WX__ACCOUNT_TYPE__ENTERPRISE', 'Enterprise Account');
+define('MOHA_WX__ACCOUNT_TYPE__SUBSCRIPTION', 'Subscription Account');
+define('MOHA_WX__ACCOUNT_TYPE__OPEN', 'Open Platform Account');
 
 /**
  * Moha WX Types.
  */
-define('MOHA_WX__TYPES', array(
+define('MOHA_WX__ACCOUNT_TYPE', array(
+  0 => MOHA_WX__ACCOUNT_TYPE__SUBSCRIPTION,
   MOHA_WX__ACCOUNT_TYPE__SERVICE,
   MOHA_WX__ACCOUNT_TYPE__ENTERPRISE,
-  MOHA_WX__ACCOUNT_TYPE__SUBSCRIPTION,
   MOHA_WX__ACCOUNT_TYPE__OPEN,
 ));
 
@@ -72,6 +72,17 @@ define('MOHA_WX__URL__REQUEST_OAUTH2_LOGIN_EXPLICIT', 'moha/wx/oauth2_explicit_l
  * Redirect anonymous user to WeChat OAuth2 silent authentication URL.
  */
 define('MOHA_WX__URL__REQUEST_OAUTH2_LOGIN_SILENT', 'moha/wx/oauth2_silent_login/@WECHAT_NAME/@STATE');
+
+/**
+ * Module URL: WeChat OAuth2 login entry.
+ * Redirect anonymous user to WeChat OAuth2 authentication URL per account type.
+ */
+define('MOHA_WX__URL__OAUTH2_LOGIN', 'moha/wx/oauth2/login/%');
+
+/**
+ * Module URL: WeChat OAuth2 redirect back entry.
+ */
+define('MOHA_WX__URL__OAUTH2_BACK', 'moha/wx/oauth2/back/%');
 
 /**
  * Error message: 503 Service is not available.
@@ -134,6 +145,16 @@ define('MOHA_WX__API__DELETE_MENU_ENT', 'https://qyapi.weixin.qq.com/cgi-bin/men
 define('MOHA_WX__API__OAUTH2_WITH_USER_INFO', 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=@APPID&redirect_uri=@REDIRECT_URI&response_type=code&scope=snsapi_userinfo&state=@STATE#wechat_redirect');
 
 /**
+ * WeChat API: Request an OAuth2 authorization which only get user openid.
+ */
+define('MOHA_WX__API__OAUTH2', 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=@APPID&redirect_uri=@REDIRECT_URI&response_type=code&scope=snsapi_base&state=@STATE#wechat_redirect');
+
+/**
+ * WeChat Open Platform API: Request an OAuth2 authorization.
+ */
+define('MOHA_WX__API__OAUTH2_OPEN_PLATFORM', 'https://open.weixin.qq.com/connect/qrconnect?appid=@APPID&redirect_uri=@REDIRECT_URI&response_type=code&scope=snsapi_login&state=@STATE#wechat_redirect');
+
+/**
  * WeChat API: Request user information of an OAuth2 user.
  */
 define('MOHA_WX__API__OAUTH2_REQUEST_USER_INFO', 'https://api.weixin.qq.com/sns/userinfo?access_token=@ACCESS_TOKEN&openid=@OPENID&lang=zh_CN');
@@ -164,6 +185,11 @@ define('MOHA_WX__OAUTH2_STATE__HOME', 'MOHA_WX__OAUTH2_STATE__HOME');
  * WeChat OAuth2 state: Drupal user page.
  */
 define('MOHA_WX__OAUTH2_STATE__USER_PAGE', 'MOHA_WX__OAUTH2_STATE__USER_PAGE');
+
+/**
+ * Session name: OAuth2 Response of current user.
+ */
+define('MOHA_WX__SESSION__OAUTH2_USER', 'moha_wx_session_oauth2_user');
 
 /**
  * Implements hook_entity_info().
@@ -212,33 +238,16 @@ function moha_wx_menu() {
   );
 
   // Handles redirect from WeChat oauth2 process.
-  /** @see _moha_wx_oauth2_back_with_user_info() */
+  // moha/wx/oauth2_back_with_user_info/@WECHAT_NAME
   $items[format_string(MOHA_WX__URL__OAUTH2_BACK_WITH_USER_INFO, array('@WECHAT_NAME' => '%'))] = array(
     'title' => 'wechat',
     'description' => 'moha callback',
+    /** @see _moha_wx_oauth2_back_with_user_info() */
     'page callback' => '_moha_wx_oauth2_back_with_user_info',
     'page arguments' => array(3),
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
     'file' => 'moha_wx.oauth2.inc',
-  );
-
-  $items['admin/moha/wx/config/%'] = array(
-    'title' => t('Configure WeChat Account'),
-    'description' => t('Manage WeChat Account configurations.'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('_moha_wx_account_form', 4),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'inc/moha_wx.admin.inc',
-  );
-
-  $items['admin/moha/wx/menu/%'] = array(
-    'title' => t('Configure WeChat Menu'),
-    'description' => t('Manage configurations of WeChat menus.'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('_moha_wx_menu_form', 4),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'inc/moha_wx.admin.inc',
   );
 
   $items['moha/wx/home'] = array(
@@ -249,7 +258,189 @@ function moha_wx_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  /** @link moha/wx/oauth2/login/% @endlink */
+  $items[MOHA_WX__URL__OAUTH2_LOGIN] = moha_menu_define(
+    'OAuth2 Login',
+    'Login user through configured OAuth2 client.',
+    /** @see moha_wx_oauth2_login */
+    array('moha_wx_oauth2_login', 4),
+    TRUE,
+    'Callback'
+  );
+
+  /** @link moha/wx/oauth2/back/% @endlink */
+  $items[MOHA_WX__URL__OAUTH2_BACK] = moha_menu_define(
+    'OAuth2 Client',
+    'Receive response from OAuth2 Server.',
+    /** @see moha_wx_oauth2_back */
+    array('moha_wx_oauth2_back', 4),
+    TRUE,
+    'Callback'
+  );
+
   return $items;
+}
+
+/**
+ * Forward user to scan have
+ *
+ * @param $name
+ * @param $destination
+ * @param $force
+ *
+ * @return mixed
+ */
+function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
+
+  watchdog(__FUNCTION__, t('OAuth2 login %name.', array('%name' => $name)));
+
+  try {
+    if (!$force && user_is_logged_in()) {
+      drupal_goto($destination);
+    }
+    else {
+      $account = moha_wx_fetch_account_by_name($name);
+
+      if (!isset($account->type)) {
+        throw new Exception(t('No account type, WeChat account is miss configured.'));
+      }
+
+      // Mark WeChat Browser.
+      $wx_browser = FALSE;
+      $user_agent = $_SERVER['HTTP_USER_AGENT'];
+      watchdog(__FUNCTION__, $user_agent);
+      if (strpos( $user_agent, 'MicroMessenger' ) !== FALSE) {
+        $wx_browser = TRUE;
+      }
+
+      $redirect_uri = moha_url('moha/wx/oauth2/back/' . $name);
+      $state = moha_state_set($destination);
+
+      switch ($account->type) {
+        default:
+          throw new Exception(t('Unknown account type: %type, WeChat account is miss configured.', array('%type' => $account->type)));
+          break;
+
+        case moha_array_key_by_value(MOHA_WX__ACCOUNT_TYPE__OPEN, MOHA_WX__ACCOUNT_TYPE):
+          // WeChat Open Platform account.
+          if ($wx_browser) {
+            if (!empty($account->wx_fallback)) {
+              $account = moha_wx_fetch_account_by_id($account->wx_fallback);
+              watchdog(__FUNCTION__, t('Fallback to %name, App accesses Open Platform.', array('%name' => $account->name)));
+              return moha_wx_oauth2_login($account->name, $destination, $force);
+            }
+
+            return t("Please don't use WeChat browser to login.");
+          }
+
+          $login_url = format_string( MOHA_WX__API__OAUTH2_OPEN_PLATFORM,
+            array(
+              '@APPID' => $account->app_id,
+              '@REDIRECT_URI' => $redirect_uri,
+              '@STATE' => $state
+            )
+          );
+          break;
+
+        case moha_array_key_by_value(MOHA_WX__ACCOUNT_TYPE__SERVICE, MOHA_WX__ACCOUNT_TYPE):
+        case moha_array_key_by_value(MOHA_WX__ACCOUNT_TYPE__SUBSCRIPTION, MOHA_WX__ACCOUNT_TYPE):
+          // WeChat Service and Subscription account.
+          if (!$wx_browser) {
+            if (!empty($account->wx_fallback)) {
+              $account = moha_wx_fetch_account_by_id($account->wx_fallback);
+              watchdog(__FUNCTION__, t('Fallback to %name, Browser accesses WeChat account.', array('%name' => $account->name)));
+              return moha_wx_oauth2_login($account->name, $destination, $force);
+            }
+
+            return t("Please use WeChat browser to login.");
+          }
+
+          $login_url = format_string( MOHA_WX__API__OAUTH2,
+            array(
+              '@APPID' => $account->app_id,
+              '@REDIRECT_URI' => $redirect_uri,
+              '@STATE' => $state
+            )
+          );
+          break;
+      }
+
+      watchdog(__FUNCTION__, t("Authorise: %login_url", array('%login_url' => $login_url)));
+      drupal_goto($login_url);
+    }
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    moha_http_response_error($e);
+  }
+
+  return NULL;
+}
+
+/**
+ *
+ *
+ * @param $name
+ *
+ * @return mixed
+ */
+function moha_wx_oauth2_back($name) {
+  try {
+    $state = isset($_GET['state'])?$_GET['state']:'';
+
+    if (empty($state)){
+      throw new Exception('No State.', MohaWeChat::$ERROR__OAUTH_NO_STATE);
+    }
+
+    $code = isset($_GET['code'])?$_GET['code']:'';
+
+    if (empty($code)){
+      throw new Exception('No Code.', MohaWeChat::$ERROR__OAUTH_NO_CODE);
+    }
+
+    $account = moha_wx_fetch_account_by_name($name);
+
+    if ($account->isEnterpriseAccount()) {
+
+    }
+    else {
+      //** Service, Subscription WeChat account logic. */
+      /* JSON array structure sample:
+        { "access_token":"ACCESS_TOKEN",
+          "expires_in":7200,
+          "refresh_token":"REFRESH_TOKEN",
+          "openid":"OPENID",
+          "scope":"SCOPE"
+        }
+      */
+      $oauth2_credential_array = moha_wx_get_official(
+        format_string(MOHA_WX__API__OAUTH2_ACCESS_TOKEN, [
+          '@APPID' => $account['app_id'],
+          '@APPSECRET' => $account['app_secret'],
+          '@CODE' => $code,
+        ])
+      );
+
+      // Store access_token, expires_in, refresh_token, openid, scope, unionid.
+      $oauth2_user = _moha_wx_moha_user_by_openid($oauth2_credential_array['openid'], $account->app_id);
+
+      global $user;
+
+      if (!user_is_logged_in() || (user_is_logged_in() && $user->uid != $oauth2_user->uid)) {
+        $form_state = array();
+        $form_state['uid'] = $oauth2_user->uid;
+
+        user_login_submit(array(), $form_state);
+        drupal_session_regenerate();
+      }
+
+      drupal_goto(moha_state_get($state));
+    }
+  }
+  catch (Exception $e) {
+    watchdog_exception(__FUNCTION__, $e);
+    moha_http_response_error($e);
+  }
 }
 
 function _moha_wx_home() {
@@ -392,49 +583,41 @@ function moha_wx_post_official($wechat_api_url, $data = '', $request_type = "POS
 
 }
 
-
 /**
  * If access token no existed or expired, fetch access token from wechat server,
  * otherwise return stored access token.
  *
- * @param $account array
+ * @param $account MohaWeChatAccountEntity
  *    account information array.
  *
  * @return string: access token.
  *
  * @throws \Exception: no access token.
  */
-function _moha_wx_refresh_access_token(&$account) {
+function _moha_wx_refresh_access_token($account) {
 
   // expired time of access_token is in future.
-  if (!empty($account['access_token']) && ($account['access_token_updated'] + $account['access_token_expires_in']) > REQUEST_TIME ){
-    return $account['access_token'];
+  if (!empty($account->access_token) && ($account->access_token_updated + $account->access_token_expires_in) > REQUEST_TIME ){
+    return $account->access_token;
   }
 
   // Adjust URL of access token API per account type.
   $access_token_api = MOHA_WX__API__ACCESS_TOKEN;
-  if ($account['is_enterprise']) {
+  if ($account->type == moha_array_key_by_value(MOHA_WX__ACCOUNT_TYPE__ENTERPRISE, MOHA_WX__ACCOUNT_TYPE)) {
     $access_token_api = MOHA_WX__API__ACCESS_TOKEN__ENT;
   }
 
   $json = moha_wx_get_official(format_string($access_token_api, array(
-    '@APPID' => $account['app_id'],
-    '@APPSECRET' => $account['app_secret'],
+    '@APPID' => $account->app_id,
+    '@APPSECRET' => $account->app_secret,
   )));
 
   // Save access_token into DB.
-  $access_token = $account['access_token'] = $json['access_token'];
-  $account['access_token_updated'] = REQUEST_TIME;
-  $account['access_token_expires_in'] = $json['expires_in'];
+  $access_token = $account->access_token = $json['access_token'];
+  $account->access_token_updated = REQUEST_TIME;
+  $account->access_token_expires_in = $json['expires_in'];
 
-  db_update('moha_wx_accounts')
-    ->fields(array(
-      'access_token' => $account['access_token'],
-      'access_token_updated' => $account['access_token_updated'],
-      'access_token_expires_in' => $account['access_token_expires_in'],
-    ))
-    ->condition('wechat_name', $account['wechat_name'])
-    ->execute();
+  $account->save();
 
   return $access_token;
 }
@@ -533,175 +716,88 @@ function _moha_wx_refresh_welcome_news_info($account) {
 }
 
 /**
- * Fetch JSON configuration of WeChat menu.
- * If there is no menu customized at WeChat end,
- * then make sure relative menu configuration in DB is empty string.
+ * Fetch all active WeChat accounts.
  *
- * @param array $account
- *  WeChat account associative array.
- *
- * @return string
- *  WeChat menu JSON configuration.
- * 
- * @throws \Exception
- */
-function _moha_wx_get_menu(&$account) {
-  _moha_wx_refresh_access_token($account);
-
-  try {
-    if ($account['is_enterprise']) {
-      $response_array = moha_wx_get_official(
-        format_string(MOHA_WX__API__GET_MENU_ENT, array(
-          '@ACCESS_TOKEN' => $account['access_token'],
-          '@AGENT_ID' => $account['agent_id'],
-        ))
-      );
-    }
-    else {
-      $response_array = moha_wx_get_official(
-        format_string(MOHA_WX__API__GET_MENU, array('@ACCESS_TOKEN' => $account['access_token']))
-      );
-    }
-  }
-  catch (Exception $e) {
-    if ($e->getCode() == 46003) {
-      // If menu does not exist.
-      watchdog_exception(__FUNCTION__, $e, NULL, array(), WATCHDOG_WARNING);
-      moha_show_exception($e, 'warning');
-    }
-    else {
-      throw $e;
-    }
-  }
-
-  if (empty($response_array) || !empty($response_array['errcode'])){
-    $wx_menu = '';
-  }
-  elseif (isset($response_array['menu'])) {
-    $wx_menu = json_encode($response_array['menu'], MOHA__JSON_ENCODING_OPTIONS_BIT_MASK);
-  }
-  else {
-    // erase "errcode" => 0 and "errmsg" => "ok" from response of enterprise account menu.
-    if ($account['is_enterprise']) {
-      unset($response_array["errcode"]);
-      unset($response_array["errmsg"]);
-    }
-
-    $wx_menu = json_encode($response_array, MOHA__JSON_ENCODING_OPTIONS_BIT_MASK);
-  }
-
-  if($account['wx_menu'] != $wx_menu) {
-    $account['wx_menu'] = $wx_menu;
-
-    $affected_row_number = db_update('moha_wx_accounts')
-      ->fields(array(
-        'wx_menu' => $account['wx_menu'],
-        'updated' => time(),
-      ))
-      ->condition('wechat_name', $account['wechat_name'])
-      ->execute();
-  }
-
-  if (isset($affected_row_number) && $affected_row_number == 1 && !empty($wx_menu)) {
-    drupal_set_message(t("JSON configuration of WeChat menu is fetched."));
-  }
-  else {
-    // This function is invoked only when wx_menu column is empty.
-    drupal_set_message(t("No WeChat menu, or customized WeChat menu hasn't been reflected on WeChat account."));
-  }
-
-  return $account['wx_menu'];
-}
-
-/**
- * Create WeChat Menu.
- *
- * @param $account array
- *        WeChat account array from schema moha_wechat_accounts.
- *
- * @throws \Exception
- *
- * @see https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421141013
- */
-function _moha_wx_create_menu(&$account){
-  _moha_wx_refresh_access_token($account);
-
-  if ($account['is_enterprise']) {
-    $response_array = moha_wx_post_official(
-      format_string(MOHA_WX__API__CREATE_MENU_ENT, array(
-        '@ACCESS_TOKEN' => $account['access_token'],
-        '@AGENT_ID' => $account['agent_id'],
-        )),
-      $account['wx_menu']
-    );
-  }
-  else {
-    $response_array = moha_wx_post_official(
-      format_string(MOHA_WX__API__CREATE_MENU, ['@ACCESS_TOKEN' => $account['access_token']]), $account['wx_menu']
-    );
-  }
-
-  if ($response_array['errcode'] == 0) {
-    drupal_set_message('WeChat Menu has been uploaded.');
-  }
-}
-
-/**
- * Delete WeChat menu.
- *
- * @param $account array
- *        WeChat account array from schema moha_wechat_accounts.
- *
- * @throws \Exception
- */
-function _moha_wx_delete_menu(&$account){
-  _moha_wx_refresh_access_token($account);
-
-  if ($account['is_enterprise']) {
-    $result = moha_wx_get_official(
-      format_string(MOHA_WX__API__DELETE_MENU_ENT, array(
-        '@ACCESS_TOKEN' => $account['access_token'],
-        '@AGENT_ID' => $account['agent_id'],)
-      )
-    );
-  }
-  else {
-    $result = moha_wx_get_official(
-      format_string(MOHA_WX__API__DELETE_MENU, ['@ACCESS_TOKEN' => $account['access_token']])
-    );
-  }
-
-  if ($result['errcode'] == 0 ) {
-    drupal_set_message('WeChat Menu has been deleted.');
-  }
-}
-
-/**
- * Fetch WeChat account details from DB table: moha_wx_accounts.
- *
- * @param $wechat_name string
- *   WeChat account machine name.
+ * @param $options
  *
  * @return array
- *   WeChat account array from schema moha_wx_accounts.
+ */
+function moha_wx_fetch_account($options = array('status' => MOHA__TERM__ACTIVE)){
+  $accounts = moha_entity_fetch(__MOHA_WX_ACCOUNT, $options + array('status' => MOHA__TERM__ACTIVE));
+
+  return $accounts;
+}
+
+/**
+ * Fetch one WeChat account per given machine name.
  *
- * @throws \Exception
+ * @param string $name
+ *   Machine name of the account.
+ *
+ * @return MohaWeChatAccountEntity
+ *
+ * @throws Exception
  *
  */
-function _moha_wx_moha_account($wechat_name) {
-
-  $account = db_query("SELECT * FROM {moha_wx_accounts} moha_wx_accounts WHERE wechat_name = :wechat_name",
-    array(
-      ':wechat_name' => $wechat_name,
-    )
-  )->fetchAssoc();
-
-  if (!$account) {
-    throw new Exception("Invalid account: " . check_plain($wechat_name), MohaWeChat::$ERROR__WECHAT_ACCOUNT_INVALID);
+function moha_wx_fetch_account_by_name($name = '') {
+  if (empty($name)) {
+    throw new Exception('Empty account name.');
   }
-  else {
-    return $account;
+
+  $name = check_plain($name);
+  $account = moha_entity_fetch(__MOHA_WX_ACCOUNT, array('name' => $name));
+
+  if (empty($account)) {
+    throw new Exception("Account: $name doesn't exist or isn't active.");
   }
+  else if(count($account) > 1) {
+    throw new Exception("Account: $name multiply exist.");
+  }
+
+  $account = array_shift($account);
+
+  return $account;
+}
+
+/**
+ * Returns account entity by entity ID.
+ *
+ * @param $id
+ * @param $condition
+ *
+ * @return MohaWeChatAccountEntity
+ *
+ * @throws Exception
+ *   When $id is not number, or contains non-number.
+ */
+function moha_wx_fetch_account_by_id($id = 0, $condition = array()) {
+  if (empty($id)) {
+    throw new Exception('Empty account ID.');
+  }
+  else if (is_array($id)) {
+    $ids = print_r($id, TRUE);
+
+    foreach ($id as $i) {
+      if (!is_numeric($i)) {
+        throw new Exception(t("Invalid account ID: %ids(%i)", array('%ids' => $ids, '%i' => $i)));
+      }
+    }
+  }
+  else if (!is_array($id) && !is_numeric($id)) {
+    throw new Exception("Invalid account ID: $id");
+  }
+
+  $account = entity_load(__MOHA_WX_ACCOUNT, array($id), $condition);
+
+  if (empty($account)) {
+    throw new Exception("Account: $id doesn't exist.");
+  }
+
+  if (!is_array($id)) {
+    $account = reset($account);
+  }
+
+  return $account;
 }
 
 /**
@@ -714,10 +810,10 @@ function _moha_wx_moha_profile2_fields_and_instances() {
     'type' => 'field_collection',
     'field_name' => 'moha_wx_user_info',
     'label' => t('User information in WeChat'),
+    'description' => t('User information in WeChat'),
     'entity_type' => 'profile2',
     'bundle' => __MOHA,
     'default_value' => NULL,
-    'description' => t('User information in WeChat'),
     'cardinality' => 1,
     'display' => array(
       'default' => array(
@@ -1253,6 +1349,19 @@ function _moha_wx_moha_profile2_fields_and_instances() {
 }
 
 /**
+ *
+ */
+function moha_wx_wechat_is_login($user = NULL) {
+  if (empty($user)) {
+    global $user;
+  }
+
+  // If user exists, profile2: open_weixin exists as well.
+  $profile = profile2_load_by_user($user, __OPEN_WEIXIN);
+
+}
+
+/**
  * Returns user object per opendid and appid from Drupal site.
  *
  * @param $appid string
@@ -1266,7 +1375,7 @@ function _moha_wx_moha_profile2_fields_and_instances() {
  *
  * @return \stdClass
  */
-function _moha_wx_moha_user_by_openid($openid='', $appid='') {
+function _moha_wx_moha_user_by_openid($openid = '', $appid = '') {
   if (empty($openid)) {
     throw new MohaWXParamException('Empty OpenID.');
   }
@@ -1499,7 +1608,7 @@ function moha_wx_anonymous_fall_back_to_explicit_oauth2_authorization($wechat_na
     return;
   }
   else {
-    $account = _moha_wx_moha_account($wechat_name);
+    $account = moha_wx_fetch_account_by_name($wechat_name);
 
     // When user hasn't logged in, redirect him/her to WeChat OAuth2 explicit authentication URL.
     drupal_goto(

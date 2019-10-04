@@ -3,10 +3,13 @@ description = WeChat support for Moha modules.
 core = 7.x
 package = Moha Online
 
-dependencies[] = moha
 dependencies[] = taxonomy
 dependencies[] = text
+dependencies[] = field_collection
 dependencies[] = media
+dependencies[] = moha
+dependencies[] = moha_user
+dependencies[] = moha_ui
 
 files[] = libs/MohaWeChat.class.php
 

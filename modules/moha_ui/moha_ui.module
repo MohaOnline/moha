@@ -158,7 +158,10 @@ function moha_ui_library() {
       MOHA_UI__PATH . '/bower_components/bootstrap/dist/js/bootstrap.js' => array(),
       MOHA_UI__PATH . '/bower_components/admin-lte/dist/js/adminlte.js' => array(),
       MOHA_UI__PATH . '/bower_components/echarts/dist/echarts.js' => array(),
-      MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(),
+      MOHA_UI__PATH . '/js/moha_ui.admin.js' => array(
+        'scope' => 'footer',
+        'group' => JS_DEFAULT,
+      ),
     ),
   );
 
@@ -278,6 +281,14 @@ function moha_ui_menu_breadcrumb_alter(&$active_trail, $item) {
     array_pop($active_trail);
     $active_trail[] = menu_get_item('admin/reports/dblog');
   }
+  // Add breadcrumb to people page on user edit page.
+  else if (isset($item['path']) && $item['path'] == 'user/%/edit') {
+    // last trail could be abandoned.
+    array_pop($active_trail);
+    $view = array_pop($active_trail);
+    $active_trail[] = menu_get_item('admin/people');
+    $active_trail[] = $view;
+  }
 
 }
 
@@ -369,7 +380,11 @@ function moha_ui_theme($existing, $type, $theme, $path) {
 function moha_ui_page_alter(&$page) {
   $path = current_path();
 
-  if (moha_start_with($path, 'admin/moha/dashboard') ) {
+  if (moha_start_with($path, 'admin/moha')) {
+    moha_attach_library_moha_ui($page['content'], TRUE);
+  }
+
+  if (moha_start_with($path, 'admin/moha/dashboard')) {
 
     // Replace original block.tpl.php template to avoid complex html structure to apply on auto generated system_main block.
     if (isset($page['content']['system_main']['#theme_wrappers'])) {

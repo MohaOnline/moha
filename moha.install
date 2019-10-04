@@ -140,7 +140,7 @@ function moha_schema(){
     ),
   );
   $schema[__MOHA_RACI] = moha_entity_db_schema_default_index($schema[__MOHA_RACI]);
-  $schema['moha_raci_revision'] = moha_entity_db_revision_schema($schema[__MOHA_RACI]);
+  moha_entity_db_add_revision_schema($schema, __MOHA_RACI);
 
   return $schema;
 }

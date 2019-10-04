@@ -20,11 +20,12 @@ if(typeof(CKEDITOR) !== 'undefined') {
       { name : 'Heading 2'		, element : 'h2' },
       { name : 'Heading 3'		, element : 'h3' },
       { name : 'Heading 4'		, element : 'h4' },
+      { name : 'Preformatted Text', element : 'pre' },
+      { name : 'Division', element : 'div' },
 
       /*
       { name : 'Heading 5'		, element : 'h5' },
       { name : 'Heading 6'		, element : 'h6' },
-      { name : 'Preformatted Text', element : 'pre' },
       { name : 'Address'			, element : 'address' },
 
       { name : 'Blue Title'		, element : 'h3', styles : { 'color' : 'Blue' } },

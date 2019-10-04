@@ -15,6 +15,19 @@ class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
 
     $items[$this->path . '/manage/' . $wildcard]['type'] = MENU_LOCAL_TASK;
 
+    // Menu form, a special case for the edit form.
+    $items[$this->path . '/manage/' . $wildcard . '/menu'] = array(
+      'title' => 'WeChat Menu',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('_moha_wx_menu_form', 5),
+      'load arguments' => array($this->entityType),
+      'access callback' => 'entity_access',
+      'access arguments' => array('update', $this->entityType),
+      'file path' => MOHA_WX__PATH,
+      'file' => 'inc/moha_wx.admin.inc',
+      'type' => MENU_LOCAL_TASK,
+    );
+
     return $items;
   }
 
@@ -121,8 +134,9 @@ class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
   protected function overviewTableHeaders($conditions, $rows, $additional_header = []) {
 
     $additional_header[] = t('ID');
-    $additional_header[] = t('Server Details');
-    $additional_header[] = t('Client Details');
+    $additional_header[] = t('Name');
+    $additional_header[] = t('Callback URL');
+    $additional_header[] = t('Type');
     $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
     $additional_header[] = t('Created');
@@ -139,18 +153,14 @@ class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
    */
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = []) {
 
-    // From 3rd property column.
-    $authorize = check_plain($entity->authorize);
-    $token = check_plain($entity->token);
-    $additional_cols[] = "$authorize<br />$token";
+    $human_name = check_plain($entity->human_name);
+    $name = check_plain($entity->name);
+    $additional_cols[] = "$human_name ($name)";
 
-    global $base_url;
-    $code_login_uri = $base_url . url("moha/user/oauth2/login/$entity->name");
-    $code_post_uri = $base_url . url("moha/user/oauth2/post/$entity->name");
-    $additional_cols[] = "$code_login_uri<br />$code_post_uri";
-    
+    $additional_cols[] = moha_url("moha/wx/server/$name");
+
+    $additional_cols[] = MOHA_WX__ACCOUNT_TYPE[$entity->type];
     $additional_cols[] = MOHA__STATUS__ENTITY[$entity->status];
-
 
     // Order updated and created time.
     $additional_cols[] = format_date($entity->updated, 'short');

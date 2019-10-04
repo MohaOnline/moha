@@ -17,6 +17,8 @@
  *
  * @return array
  *   Form definition array.
+ * 
+ * @see MohaUserOAuth2ClientEntityAdminController::hook_menu()
  */
 function moha_user_oauth2_admin_form($form, &$form_state) {
   try {
@@ -54,7 +56,7 @@ function moha_user_oauth2_admin_form($form, &$form_state) {
     $container = &moha_form_set_inline_container($form['container']);
     $container['login'] = moha_form_element_select(
       'Login Integration',
-      'Specify OAuth2 client to replace Drupal Login.',
+      'Select OAuth2 client to replace Drupal Login.',
       $login_integration,
       $clients
     );
@@ -110,7 +112,7 @@ function moha_user_oauth2_admin_form_submit($form, &$form_state) {
   $oauth2_integration = moha_sort_per_weight($oauth2_integration);
   $oauth2_integration[MOHA_USER__VARIABLE__OAUTH2_LOGIN] = $values['login'];
   $oauth2_integration[MOHA_USER__VARIABLE__OAUTH2_LOGOUT] = $values['logout'];
-  cache_clear_all();
+  cache_clear_all(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
   moha_variable_set(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, $oauth2_integration);
   moha_cache_set(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, $oauth2_integration);
 

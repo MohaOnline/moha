@@ -173,7 +173,8 @@ function moha_user_oauth2_client_form($form, &$form_state, $entity = NULL) {
     '#options' => MOHA__STATUS__ENTITY,
     '#default_value' => isset($entity->status)?$entity->status:1,
   );
-  
+
+  moha_form_element_inline_2_table($container);
   moha_form_actions($form, isset($entity->is_new) ? 'Add' : 'Save');
   
   if (!empty($entity->name)) {

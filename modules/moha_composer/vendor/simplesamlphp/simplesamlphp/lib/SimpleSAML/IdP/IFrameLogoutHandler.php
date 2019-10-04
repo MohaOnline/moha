@@ -2,8 +2,10 @@
 
 namespace SimpleSAML\IdP;
 
+use SimpleSAML\Configuration;
 use SimpleSAML\Module;
 use SimpleSAML\Utils\HTTP;
+use SimpleSAML\XHTML\Template;
 
 /**
  * Class that handles iframe logout.
@@ -89,16 +91,17 @@ class IFrameLogoutHandler implements LogoutHandlerInterface
     {
         assert(is_string($assocId));
 
-        $config = \SimpleSAML\Configuration::getInstance();
         $this->idp->terminateAssociation($assocId);
 
-        $t = new \SimpleSAML\XHTML\Template($config, 'IFrameLogoutHandler.twig');
+        $config = Configuration::getInstance();
+
+        $t = new Template($config, 'IFrameLogoutHandler.tpl.php');
         $t->data['assocId'] = var_export($assocId, true);
         $t->data['spId'] = sha1($assocId);
         if (!is_null($error)) {
             $t->data['errorMsg'] = $error->getMessage();
         }
+
         $t->show();
-        exit(0);
     }
 }
