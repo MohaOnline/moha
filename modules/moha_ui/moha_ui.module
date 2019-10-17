@@ -244,16 +244,13 @@ function moha_ui_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['admin/moha/dashboard'] = array(
-    'title' => 'Dashboard',
-    'weight' => -99,
-    'description' => t('Dashboard of Moha modules.'),
-    'page callback' => 'drupal_get_form',
-    /* @see moha_dashboard_form() */
-    'page arguments' => array('moha_ui_dashboard_form'),
-    'access arguments' => array(MOHA__PERMISSION__ROOT),
-    'file' => 'moha_ui.admin.inc',
-    'type' => MENU_NORMAL_ITEM,
+  $items['admin/moha/dashboard'] = moha_menu_define(
+    'Dashboard',
+    'Dashboard of Moha modules.',
+    array('moha_ui_dashboard_overview_form'),
+    array(MOHA__PERMISSION__ROOT),
+    MOHA__MENU__NORMAL,
+    'moha_ui.admin.inc', MOHA_UI__PATH, -99
   );
 
   return $items;
@@ -461,6 +458,13 @@ function moha_ui_dashboard_sidebar_build() {
     return '';
   }
 
+  /**
+   * Hook implements return two-dimension render array of sidebar tab. 
+   * first dimension stands for which section tab belongs,
+   * second dimension contains path of the tab, used to judge if this tab is active.
+   * 
+   * @see moha_ui_moha_ui_dashboard_sidebar()
+   */
   $render = array();
   foreach (module_implements('moha_ui_dashboard_sidebar') as $module) {
     $function = $module . '_moha_ui_dashboard_sidebar';

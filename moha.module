@@ -109,7 +109,13 @@ define ('MOHA__DATETIME_FORMAT__SHORT', 'Y-m-d H:i');
 /**
  * Data format: Azure Expense.
  */
-define ('MOHA__DATETIME_FORMAT__AZURE_EXPENSE', 'Y-m');
+define('MOHA__DATETIME_FORMAT__AZURE_EXPENSE', 'Y-m');
+
+/**
+ * Menu Type: Normal
+ * @see moha_menu_define()
+ */
+define('MOHA__MENU__NORMAL', 'Normal');
 
 /**
  * Action: Access.
@@ -1092,15 +1098,18 @@ function moha_image_default_styles() {
  *   Callback
  *
  * @param $definition
- *   array('<FUNCTION_NAME>', INDEX_OF_ARGUMENT, ...),
+ *   Example: array('<FUNCTION_NAME>', INDEX_OF_ARGUMENT, ...),
  *
  * @param $access
  *   TRUE / FALSE; '<FUNCTION_NAME>'; Array('FUNCTION_NAME', 'PERMISSION_NAME', 'PERMISSION_NAME'); Array('PERMISSION_NAME', 'PERMISSION_NAME');
  *
  * @param $file
  * @param $path
+ * @param $weight
+ * 
+ * @return array
  */
-function moha_menu_define($title = '', $description = '', $definition = array(), $access = array('access content'), $type = 'Normal', $file = '', $path = '' ) {
+function moha_menu_define($title = '', $description = '', $definition = array(), $access = array('access content'), $type = MOHA__MENU__NORMAL, $file = '', $path = '', $weight = 0) {
   $item = array(
     'title' => $title,
     'description' => $description,
@@ -1111,19 +1120,25 @@ function moha_menu_define($title = '', $description = '', $definition = array(),
       $item['type'] = $type;
       break;
     case '':
-    case 'Normal':
+    case MOHA__MENU__NORMAL:
       $item['type'] = MENU_NORMAL_ITEM;
-      break;
-    case 'Callback':
-      $item['type'] = MENU_CALLBACK;
       break;
     case 'Task':
       $item['type'] = MENU_LOCAL_TASK;
       break;
+    case 'Callback':
+      $item['type'] = MENU_CALLBACK;
+      break;
   }
 
   if (is_string($definition)) {
-    $item['page callback'] = $definition;
+    if (moha_end_with($definition, '_form')) {
+      $item['page callback'] = 'drupal_get_form';
+      $item['page arguments'] = array($definition);
+    }
+    else {
+      $item['page callback'] = $definition;
+    }
   }
   else if (is_array($definition) && count($definition) >= 1) {
     if (moha_end_with($definition[0], '_form')) {
@@ -1166,6 +1181,10 @@ function moha_menu_define($title = '', $description = '', $definition = array(),
 
   if (!empty(trim($path))) {
     $item['file path'] = $path;
+  }
+  
+  if (is_numeric($weight) && $weight >= 0) {
+    $item['weight'] = $weight;
   }
 
   return $item;

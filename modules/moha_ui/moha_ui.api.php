@@ -25,9 +25,17 @@ function hook_moha_ui_dashboard_sidebar() {
 /**
  * Return items of dashboard overview.
  *
+ * @param $form
+ *   Nested array of form elements that comprise the form.
+ *
+ * @param $form_state
+ *   A keyed array containing the current state of the form. The arguments
+ *   that drupal_get_form() was originally called with are available in the
+ *   array $form_state['build_info']['args'].
+ * 
  * @return array
  */
-function hook_moha_ui_dashboard_overview() {
+function hook_moha_ui_dashboard_overview_form($form, &$form_state) {
   if (!user_access(MOHA_UI__PERMISSION__DASHBOARD)) {
     return array();
   }

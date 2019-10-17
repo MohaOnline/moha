@@ -20,7 +20,7 @@
  *
  * @link /sites/all/modules/custom/moha/modules/moha_ui/bower_components/admin-lte/starter.html @endlink
  */
-function moha_ui_dashboard_form($form, &$form_state) {
+function moha_ui_dashboard_overview_form($form, &$form_state) {
 
   return $form;
 }
@@ -36,7 +36,7 @@ function moha_ui_dashboard_form($form, &$form_state) {
  *   that drupal_get_form() was originally called with are available in the
  *   array $form_state['build_info']['args'].
  */
-function moha_ui_dashboard_form_validate($form, &$form_state) {
+function moha_ui_dashboard_overview_form_validate($form, &$form_state) {
   $values = $form_state['values'];
 
 }
@@ -52,7 +52,7 @@ function moha_ui_dashboard_form_validate($form, &$form_state) {
  *   that drupal_get_form() was originally called with are available in the
  *   array $form_state['build_info']['args'].
  */
-function moha_ui_dashboard_form_submit($form, &$form_state) {
+function moha_ui_dashboard_overview_form_submit($form, &$form_state) {
   $values = $form_state['values'];
 
   drupal_set_message(t('Configurations have been saved.'));
