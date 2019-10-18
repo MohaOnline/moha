@@ -116,6 +116,7 @@ define('MOHA__DATETIME_FORMAT__AZURE_EXPENSE', 'Y-m');
  * @see moha_menu_define()
  */
 define('MOHA__MENU__NORMAL', 'Normal');
+define('MOHA__MENU__CALLBACK', 'Callback');
 
 /**
  * Action: Access.
@@ -1126,7 +1127,7 @@ function moha_menu_define($title = '', $description = '', $definition = array(),
     case 'Task':
       $item['type'] = MENU_LOCAL_TASK;
       break;
-    case 'Callback':
+    case MOHA__MENU__CALLBACK:
       $item['type'] = MENU_CALLBACK;
       break;
   }
@@ -1555,10 +1556,11 @@ function moha_url($path, $file = FALSE, $options = array('absolute' => TRUE)) {
  *
  * @return string
  */
-function moha_link($name, $url, $new_window = TRUE, $options = array('absolute' => TRUE)) {
+function moha_link($name, $url, $new_window = TRUE, $options = array('absolute' => TRUE, 'html' => TRUE)) {
   if ($new_window) {
     $options['attributes']['target'] = '_blank';
   }
+  $options = $options + array('absolute' => TRUE, 'html' => TRUE);
   $link = l(t($name), $url, $options);
 
   return $link;
@@ -1875,6 +1877,33 @@ function moha_form_element_radio($title = '', $description = '', $default = NULL
   }
 
   $element['#required'] = $required;
+
+  return $element;
+}
+
+/**
+ * Add default configuration for a Radio form element.
+ *
+ * @param $title
+ *   The title of form element.
+ *
+ * @param $description
+ *   The description of form element.
+ *
+ * @param $default
+ *   Radio default value.
+ *
+ * @param array $options
+ *   Options definitions.
+ *
+ * @param boolean $required
+ *
+ * @return array
+ *   Form element.
+ */
+function moha_form_element_checks($title = '', $description = '', $default = NULL, array $options = array(1 => 'Yes', 0 => 'No'), $required = FALSE) {
+  $element = moha_form_element_radio($title, $description, $default, $options, $required);
+  $element['#type'] = 'checkboxes';
 
   return $element;
 }
@@ -2681,6 +2710,8 @@ function moha_cache_get($cid, $default = '', $use_static = TRUE) {
  * 
  * @param $key
  * @param $default
+ * 
+ * @return mixed
  */
 function moha_cache_variable_get($key, $default = '') {
   $value = moha_cache_get($key);

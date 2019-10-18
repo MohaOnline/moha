@@ -36,9 +36,9 @@ define('MOHA_UI__CSS', MOHA_UI__PATH . '/css/moha_ui.css');
 define('MOHA_UI__ADMIN_CSS', MOHA_UI__PATH . '/css/moha_ui.admin.css');
 
 /**
- * Module variables name.
+ * Module variable name.
  */
-define('MOHA_UI__VARIABLES', __MOHA_UI . '__variables');
+define('MOHA_UI__VARIABLE__DASHBOARD_SIDEBAR', __MOHA_UI . '__variable__dashboard_sidebar');
 
 /**
  * Image field Widget: Image Mobile Uploader.
@@ -76,6 +76,11 @@ define('MOHA_UI__ELEMENT__DRAGGABLE_TABLE', 'moha_ui_draggable_table');
  * Permission: Access moha_ui Dashboard.
  */
 define('MOHA_UI__PERMISSION__DASHBOARD', 'moha_ui dashboard');
+
+/**
+ * URL.
+ */
+define('MOHA_UI__URL__DASHBOARD_CONFIG', 'admin/moha/ui/dashboard');
 
 /**
  * Implements hook_library().
@@ -233,15 +238,14 @@ function moha_ui_permission() {
  * Implements hook_menu().
  */
 function moha_ui_menu() {
-  $items['moha/homepage'] = array(
-    'title' => 'Homepage',
-    'weight' => -399,
-    'description' => t('Homepage of the site.'),
+  $items['moha/homepage'] = moha_menu_define(
+    'Homepage',
+    'Homepage of the site.',
     /* @see moha_ui_homepage() */
-    'page callback' => 'moha_ui_homepage',
-    'access arguments' => array('access content'),
-    'file' => 'moha_ui.home.inc',
-    'type' => MENU_CALLBACK,
+    'moha_ui_homepage',
+    array('access content'),
+    MENU_CALLBACK,
+    'moha_ui.home.inc', MOHA_UI__PATH, -399
   );
 
   $items['admin/moha/dashboard'] = moha_menu_define(
@@ -251,6 +255,24 @@ function moha_ui_menu() {
     array(MOHA__PERMISSION__ROOT),
     MOHA__MENU__NORMAL,
     'moha_ui.admin.inc', MOHA_UI__PATH, -99
+  );
+
+  $items['admin/moha/ui'] = moha_menu_block_define(
+    'Moha UI',
+    'Configurations of Moha UI module.'
+  );
+
+  /**
+   * @link admin/moha/ui/dashboard @endlink
+   * @see moha_ui_admin_dashboard_form();
+   */
+  $items[MOHA_UI__URL__DASHBOARD_CONFIG] = moha_menu_define(
+    'Dashboard Configuration',
+    'Configure Moha dashboard',
+    array('moha_ui_admin_dashboard_form'),
+    array(MOHA__PERMISSION__ROOT),
+    MOHA__MENU__NORMAL,
+    'moha_ui.admin.inc'
   );
 
   return $items;
@@ -466,10 +488,14 @@ function moha_ui_dashboard_sidebar_build() {
    * @see moha_ui_moha_ui_dashboard_sidebar()
    */
   $render = array();
+  $active_implements = moha_cache_variable_get(MOHA_UI__VARIABLE__DASHBOARD_SIDEBAR, array());
   foreach (module_implements('moha_ui_dashboard_sidebar') as $module) {
-    $function = $module . '_moha_ui_dashboard_sidebar';
-    $item = $function();
-    $render = drupal_array_merge_deep($render, $item);
+    if (isset($active_implements[$module]) && $active_implements[$module]) {
+      $function = $module . '_moha_ui_dashboard_sidebar';
+      $item = $function();
+      $render = drupal_array_merge_deep($render, $item);
+    }
+    
   }
 
   $output = '';

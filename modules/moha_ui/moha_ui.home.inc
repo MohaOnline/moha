@@ -13,8 +13,10 @@
 function moha_ui_homepage() {
 
   $view = views_get_view('moha_clip_list');
-  $view->override_url = $_GET['q'];
-  $element['moha_clip_list'] = $view->preview('default');
+  if (!empty($view)) {
+    $view->override_url = $_GET['q'];
+    $element['moha_clip_list'] = $view->preview('default');
+  }
 
   // Include Moha Block Service Conversion.
   if (module_exists('moha_block')) {
