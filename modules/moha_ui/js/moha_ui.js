@@ -189,6 +189,58 @@ moha.toFahrenheit = function (degree) {
         });
       });
 
+      $('.moha-ui-date-range', context).once('moha-ui-date-range', function () {
+        $('#demo').daterangepicker({
+          "minYear": 2017,
+          "autoApply": true,
+          ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          },
+          "locale": {
+            "format": "MM/DD/YYYY",
+            "separator": " - ",
+            "applyLabel": "确定",
+            "cancelLabel": "取消",
+            "fromLabel": "从",
+            "toLabel": "到",
+            "customRangeLabel": "自选",
+            "weekLabel": "周",
+            "daysOfWeek": [
+              "日",
+              "一",
+              "二",
+              "三",
+              "四",
+              "五",
+              "六"
+            ],
+            "monthNames": [
+              "January",
+              "February",
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December"
+            ],
+            "firstDay": 1
+          },
+          "startDate": "10/13/2019",
+          "endDate": "10/19/2019"
+        }, function(start, end, label) {
+          console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+        });
+      })
     }
   };
 

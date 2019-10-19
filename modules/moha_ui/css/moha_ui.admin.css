@@ -58,6 +58,20 @@ body.page-admin-moha .form-human-name {
 }
 /**********************************************************************************************************************/
 
+/** Date range picker ***/
+div.daterangepicker .calendar {
+  width: auto;
+}
+
+div.daterangepicker table th {
+  background-color: white;
+}
+
+div.daterangepicker tr td:last-child {
+  border-right: 1px solid white;
+}
+/**********************************************************************************************************************/
+
 /** Original */
 body.page-admin-moha-dashboard.drupal-admin-ui-off.admin-menu.adminimal-menu:before {
   max-height: 0;
@@ -80,3 +94,16 @@ body.page-admin-moha-dashboard a:hover {
   text-decoration: none;
 }
 
+/** Progress bar in table needn't margin */
+body.page-admin-moha-dashboard table tr>td .progress {
+  margin: 0;
+}
+
+body.page-admin-moha-dashboard .box table th {
+  text-transform: unset;
+  background: unset;
+  font-weight: normal;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #bebfb9;
+}
