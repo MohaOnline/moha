@@ -432,10 +432,10 @@ function moha_ui_dashboard_sidebar_build() {
   }
 
   /**
-   * Hook implements return two-dimension render array of sidebar tab. 
+   * Hook implements return two-dimension render array of sidebar tab.
    * first dimension stands for which section tab belongs,
    * second dimension contains path of the tab, used to judge if this tab is active.
-   * 
+   *
    * @see moha_ui_moha_ui_dashboard_sidebar()
    */
   $render = array();
@@ -446,7 +446,7 @@ function moha_ui_dashboard_sidebar_build() {
       $item = $function();
       $render = drupal_array_merge_deep($render, $item);
     }
-    
+
   }
 
   $output = '';
@@ -774,7 +774,7 @@ function moha_ui_element_info() {
 
   /**
    * Set #urls for iframe rendering.
-   * 
+   *
    * @see moha_ui_theme()
    * @see moha_ui_invisible_iframe() for pre-render.
    * @see moha-ui-invisible-iframe.tpl.php
@@ -821,10 +821,10 @@ function moha_ui_element_info() {
 
   /** Form element: moha_ui_date_range. */
   $elements[MOHA_UI__ELEMENT__DATE_RANGE] = moha_ui_date_range_element_info();
-  
+
   /** Form element: moha_ui_adminlte_box. */
   $elements[MOHA_UI__ELEMENT__ADMINLTE_BOX] = moha_ui_adminlte_box_element_info();
-  
+
   /** Form element: moha_ui_adminlte_summary. */
   $elements[MOHA_UI__ELEMENT__ADMINLTE_SUMMARY] = moha_ui_adminlte_summary_element_info();
 
@@ -1682,10 +1682,10 @@ function theme_moha_ui_draggable_table($variables) {
 }
 
 /**
- * Define element info array for moha_ui_date_range. 
- * 
+ * Define element info array for moha_ui_date_range.
+ *
  * @return array
- * 
+ *
  * @see moha_ui_element_info()
  * @see MOHA_UI__ELEMENT__DATE_RANGE
  * @see moha_ui_theme()
@@ -1707,7 +1707,7 @@ function moha_ui_date_range_element_info() {
     '#theme' => array(MOHA_UI__ELEMENT__DATE_RANGE),
     '#theme_wrappers' => array('moha_ui_form_element'),
   );
-  
+
   return $element;
 }
 
@@ -1723,7 +1723,7 @@ function moha_ui_date_range_element_info() {
  * @see moha_ui_element_info()
  */
 function moha_ui_date_range_process($element, &$form_state, $form) {
-  
+
   return $element;
 }
 
@@ -1747,7 +1747,7 @@ function moha_ui_date_range_pre_render($element) {
   $element[MOHA_UI__ELEMENT__DATE_RANGE]['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI_ADMIN);
 
   $default = $element['#default_value'];
-  
+
   if (empty($default)) {
     $date_1 = date(MOHA__DATETIME_FORMAT__DATE);
     $date_0 = date(MOHA__DATETIME_FORMAT__DATE, strtotime(" -30 day"));
@@ -1756,9 +1756,9 @@ function moha_ui_date_range_pre_render($element) {
     $date_0 = $default[0];
     $date_1 = $default[1];
   }
-  
+
   $id = $element['#id'];
- 
+
   $widget_html = <<<HTML
 <button type="button" class="btn btn-default pull-right" id="$id">
   <span>
@@ -1773,33 +1773,33 @@ HTML;
   ));
   $element[MOHA_UI__ELEMENT__DATE_RANGE]['widget'] = array('#markup' => $widget_html);
   $element[MOHA_UI__ELEMENT__DATE_RANGE]['value'] = array(
-    '#name' => $element['#name'] . '[value]', 
-    '#type' => 'hidden', 
+    '#name' => $element['#name'] . '[value]',
+    '#type' => 'hidden',
     '#default_value' => $element['#default_value']
   );
-  
+
   return $element;
 }
 
 /**
  * Theme function renders moha_ui_date_range.
- * 
+ *
  * @param $variables
  *
  * @return string
- * 
+ *
  * @see moha_ui_element_info()
  * @see moha_ui_theme()
  */
 function theme_moha_ui_date_range($variables) {
   $element = $variables['element'];
-  
+
   return render($element[MOHA_UI__ELEMENT__DATE_RANGE]);
 }
 
 /**
- * Define element info array for moha_ui_adminlte_box. 
- * 
+ * Define element info array for moha_ui_adminlte_box.
+ *
  * @return array
  *
  * @see MOHA_UI__ELEMENT__ADMINLTE_BOX
@@ -1818,7 +1818,7 @@ function moha_ui_adminlte_box_element_info() {
     '#process' => array(MOHA_UI__ELEMENT__ADMINLTE_BOX . '_process'),
     '#theme' => array(MOHA_UI__ELEMENT__ADMINLTE_BOX),
   );
-  
+
   return $element;
 }
 
@@ -1834,7 +1834,7 @@ function moha_ui_adminlte_box_element_info() {
  * @see moha_ui_element_info()
  */
 function moha_ui_adminlte_box_process($element, &$form_state, $form) {
-  
+
   return $element;
 }
 
@@ -1853,41 +1853,43 @@ function moha_ui_adminlte_box_process($element, &$form_state, $form) {
  */
 function moha_ui_adminlte_box_pre_render($element) {
 
-  
+
   return $element;
 }
 
 /**
  * Theme function renders moha_ui_adminlte_box.
- * 
+ *
  * @param $variables
  *
  * @return string
- * 
+ *
  * @see moha_ui_element_info()
  * @see moha_ui_theme()
  */
 function theme_moha_ui_adminlte_box($variables) {
   $element = $variables['element'];
-  
+
   $title = $element['#title'];
   $column = $element['#column'];
 
   if (!empty($element['#style'])) {
-    $style = $element['#style'] . ' ';
+    $classes = $element['#style'] . ' ';
   }
   else {
-    $style = "";
+    $classes = "";
   }
 
   if (!empty($element['#border'])) {
-    $style .= 'box-solid ';
+    $classes .= 'box-solid ';
   }
-  
+
+  $style = '';
   if (isset($element['#collapsable']) && $element['#collapsable'] == TRUE) {
     if (isset($element['#collapsed']) && $element['#collapsed'] == TRUE) {
       $tool = '<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>';
-      $style .= 'collapsed-box';
+      $classes .= 'collapsed-box';
+      $style = "display: none;";
     }
     else {
       $tool = '<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>';
@@ -1896,9 +1898,9 @@ function theme_moha_ui_adminlte_box($variables) {
   else {
     $tool = '';
   }
-  
+
   $prefix = <<< PREFIX
-<div class="box $style">
+<div class="box $classes">
   <div class="box-header with-border">
     <h3 class="box-title">$title</h3>
 
@@ -1908,7 +1910,7 @@ function theme_moha_ui_adminlte_box($variables) {
     <!-- /.box-tools -->
   </div>
   <!-- /.box-header -->
-  <div class="box-body" style="">
+  <div class="box-body" style="$style">
 PREFIX
   ;
 
@@ -1919,22 +1921,22 @@ PREFIX
 SUFFIX;
 
   $html = $prefix;
-  
+
   foreach (element_children($element) as $key) {
     $html .= render($element[$key]);
   }
   $html .= $suffix;
-  
+
   if (!empty($column)) {
     $html = "<div class='$column'>" . $html . '</div>';
   }
-  
+
   return $html;
 }
 
 /**
- * Define element info array for moha_ui_adminlte_summary. 
- * 
+ * Define element info array for moha_ui_adminlte_summary.
+ *
  * @return array
  *
  * @see MOHA_UI__ELEMENT__ADMINLTE_SUMMARY
@@ -1953,7 +1955,7 @@ function moha_ui_adminlte_summary_element_info() {
     '#process' => array(MOHA_UI__ELEMENT__ADMINLTE_SUMMARY . '_process'),
     '#theme' => array(MOHA_UI__ELEMENT__ADMINLTE_SUMMARY),
   );
-  
+
   return $element;
 }
 
@@ -1969,7 +1971,7 @@ function moha_ui_adminlte_summary_element_info() {
  * @see moha_ui_element_info()
  */
 function moha_ui_adminlte_summary_process($element, &$form_state, $form) {
-  
+
   return $element;
 }
 
@@ -1988,37 +1990,37 @@ function moha_ui_adminlte_summary_process($element, &$form_state, $form) {
  */
 function moha_ui_adminlte_summary_pre_render($element) {
 
-  
+
   return $element;
 }
 
 /**
  * Theme function renders moha_ui_adminlte_box.
- * 
+ *
  * @param $variables
  *
  * @return string
- * 
+ *
  * @see moha_ui_element_info()
  * @see moha_ui_theme()
  */
 function theme_moha_ui_adminlte_summary($variables) {
   $element = $variables['element'];
-  
+
   $title = $element['#title'];
   $description = $element['#description'];
   $column = $element['#column'];
   $icon = $element['#icon'];
   $more = $element['#more'];
   $type = $element['#block_type'];
-  
+
   if (!empty($element['#style'])) {
     $style = $element['#style'] . ' ';
   }
   else {
     $style = "";
   }
-  
+
   if (!empty($more)) {
     $footer = <<<FOOTER
   <a href="#" class="small-box-footer">
@@ -2029,7 +2031,7 @@ FOOTER;
   else {
     $footer = '';
   }
-  
+
   switch ($type) {
     default:
     case MOHA_UI__ADMINLTE_SUMMARY_TYPE__ICON_MORE:
@@ -2049,10 +2051,10 @@ FOOTER;
 PREFIX;
       break;
   }
-  
+
   if (!empty($column)) {
     $html = "<div class='$column'>" . $html . '</div>';
   }
-  
+
   return $html;
 }
