@@ -2064,10 +2064,12 @@ function moha_form_element_date_range($title = '', $description = '', $default =
  * @param string $column
  * @param bool $collapsable
  * @param bool $collapsed
+ * @param $padding
+ *   If set padding for box body.
  *
  * @return mixed
  */
-function moha_form_element_adminlte_box($title = '', $style = 'box-default', $column = 'col-xs-12', $border = FALSE, $collapsable = TRUE, $collapsed = TRUE) {
+function moha_form_element_adminlte_box($title = '', $column = 'col-xs-12', $style = 'box-default', $border = FALSE, $collapsable = TRUE, $collapsed = TRUE, $padding = TRUE) {
   $element['#type'] = MOHA_UI__ELEMENT__ADMINLTE_BOX;
   $element['#title'] = t($title);
   $element['#column'] = $column;
@@ -2075,6 +2077,7 @@ function moha_form_element_adminlte_box($title = '', $style = 'box-default', $co
   $element['#border'] = $border;
   $element['#collapsable'] = $collapsable;
   $element['#collapsed'] = $collapsed;
+  $element['#padding'] = $padding;
 
   return $element;
 }

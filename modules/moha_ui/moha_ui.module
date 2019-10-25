@@ -101,7 +101,12 @@ define('MOHA_UI__ADMINLTE_SUMMARY_TYPE__ICON_MORE', 'Icon More');
 define('MOHA_UI__PERMISSION__DASHBOARD', 'moha_ui dashboard');
 
 /**
- * URL.
+ * Permission: Configure moha_ui Dashboard.
+ */
+define('MOHA_UI__PERMISSION__DASHBOARD_CONFIG', 'moha_ui dashboard config');
+
+/**
+ * URL: 
  */
 define('MOHA_UI__URL__DASHBOARD_CONFIG', 'admin/moha/ui/dashboard');
 
@@ -206,6 +211,10 @@ function moha_ui_library() {
         'type' => 'file',
         'media' => 'screen',
       ),
+      MOHA_UI__PATH . '/bower_components/morris.js/morris.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
       MOHA_UI__PATH . '/bower_components/admin-lte/dist/css/skins/skin-blue.css' => array(
         'type' => 'file',
         'media' => 'screen',
@@ -221,6 +230,8 @@ function moha_ui_library() {
       MOHA_UI__PATH . '/bower_components/moment/min/moment-with-locales.js' => array(),
       MOHA_UI__PATH . '/bower_components/bootstrap-daterangepicker/daterangepicker.js' => array(),
       MOHA_UI__PATH . '/bower_components/jquery-slimscroll/jquery.slimscroll.js' => array(),
+      MOHA_UI__PATH . '/bower_components/raphael/raphael.js' => array(),   // Required by Morris.
+      MOHA_UI__PATH . '/bower_components/morris.js/morris.js' => array(),        //
       MOHA_UI__PATH . '/bower_components/fastclick/lib/fastclick.js' => array(),
       MOHA_UI__PATH . '/bower_components/admin-lte/dist/js/adminlte.js' => array(),
       MOHA_UI__PATH . '/bower_components/echarts/dist/echarts.js' => array(),
@@ -257,7 +268,7 @@ function moha_ui_library_alter(&$libraries, $module) {
  * Implements hook_js_alter().
  */
 function moha_ui_js_alter(&$javascript) {
-  // term_reference_tree.js doesn't work with jQuery 1.06+, replace with customized version.
+  // Module shipped term_reference_tree.js doesn't work with jQuery 1.06+, replace with customized version.
   global $theme_key;
   $version_2 = variable_get('jquery_update_jquery_admin_version', '1.4');
   $version_3 = moha_n2e(theme_get_setting('jquery_update_jquery_version', $theme_key), '1.4');
@@ -277,8 +288,13 @@ function moha_ui_js_alter(&$javascript) {
  * Implements hook_permission().
  */
 function moha_ui_permission() {
-    $permissions[MOHA_UI__PERMISSION__DASHBOARD] = array(
+  $permissions[MOHA_UI__PERMISSION__DASHBOARD] = array(
     'title' => t('Moha UI: Access Dashboard'),
+    'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
+  );
+  
+  $permissions[MOHA_UI__PERMISSION__DASHBOARD_CONFIG] = array(
+    'title' => t('Moha UI: Configure Dashboard'),
     'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
   );
 
@@ -1898,7 +1914,13 @@ function theme_moha_ui_adminlte_box($variables) {
   else {
     $tool = '';
   }
-
+  $padding = $element['#padding'];
+  if ($padding) {
+    $padding = '';
+  }
+  else {
+    $padding = 'no-padding';
+  }
   $prefix = <<< PREFIX
 <div class="box $classes">
   <div class="box-header with-border">
@@ -1910,7 +1932,7 @@ function theme_moha_ui_adminlte_box($variables) {
     <!-- /.box-tools -->
   </div>
   <!-- /.box-header -->
-  <div class="box-body" style="$style">
+  <div class="box-body $padding" style="$style">
 PREFIX
   ;
 

@@ -107,3 +107,12 @@ body.page-admin-moha-dashboard .box table th {
   border-style: solid;
   border-color: #bebfb9;
 }
+
+/* AdminLTE summary block ICON position fixing. ************/
+.small-box.no-more-link .icon {
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+/**********************************************************************************************************************/
