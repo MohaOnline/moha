@@ -1,3 +1,13 @@
+/*  */
+body.page-admin-moha-survey * {
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+}
+
+body.page-admin-moha-survey label {
+  display: unset;
+}
 
 .form-options .remove-default,
 .form-options .form-options-manual,
