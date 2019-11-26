@@ -1,9 +1,17 @@
+/**
+ * @file
+ */
+/* jshint esversion: 6 */
+/* jshint unused:false, strict: false */
+/* globals Drupal:object, jQuery:object, _:object */
+
 (function ($) {
 
   /* globals Drupal:object */
 
   Drupal.behaviors.moha_clip_admin = {
     load_preview: function(){
+      /** @see moha_clip_form_moha_clip_node_form_alter() */
       jQuery('iframe#moha_node_preview').attr('src', Drupal.settings.moha_clip.preview_url);
     },
 
@@ -99,9 +107,10 @@
         jQuery('div#moha_node_preview_wrapper').css('display', 'none');
       }
 
-      jQuery('div#moha_node_preview_wrapper', context).once('fix-preview-wrapper-height', function () {
-        jQuery('iframe#moha_node_preview').load(function () {
-          jQuery('div#moha_node_preview_wrapper').height(this.contentWindow.document.body.offsetHeight + 50);
+      $('div#moha_node_preview_wrapper', context).once('fix-preview-wrapper-height', function () {
+        $('iframe#moha_node_preview').load(function () {
+          /* this.contentWindow is iframe window. */
+          $('div#moha_node_preview_wrapper').height(this.contentWindow.document.body.offsetHeight + 50);
         });
       });
 

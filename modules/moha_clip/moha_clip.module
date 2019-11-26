@@ -6,6 +6,16 @@
 /**
  * Human name.
  */
+define('MOHA_SERIES', 'Moha Series');
+
+/**
+ * Machine name.
+ */
+define('__MOHA_SERIES', 'moha_series');
+
+/**
+ * Human name.
+ */
 define('MOHA_CLIP', 'Moha Clip');
 
 /**
@@ -205,6 +215,15 @@ function moha_clip_element_info_alter(&$type) {
  */
 function _moha_clip__text_format_process($element) {
   if ($element['#format'] != MOHA_CLIP__TEXT_FORMAT) {
+
+    // Pass setting values from PHP to JS.
+    drupal_add_js(array(
+      __MOHA_CLIP => array(
+        'ckeditor_template_image_path' => __MOHA_CLIP__PATH . '/ckeditor/', // Usage: Drupal.settings.moha_clip.ckeditor_template_image_path.
+        'speaker' => ''
+      )
+    ), 'setting');
+
     return $element;
   }
 
@@ -317,14 +336,14 @@ config.pasteFilter = null;
     ),
   );
 
-  db_query('INSERT INTO {ckeditor_settings} (name, settings) VALUES(:name, :settings)',
+  db_query('INSERT INTO ckeditor_settings (name, settings) VALUES(:name, :settings)',
     array(
       ':name' => MOHA_CLIP__CK_PROFILE,
       ':settings' => serialize($profile_data),
     )
   );
 
-  db_query("INSERT INTO {ckeditor_input_format} (name, format) VALUES(:name, :format)",
+  db_query("INSERT INTO ckeditor_input_format (name, format) VALUES(:name, :format)",
     array(
       ':name' => MOHA_CLIP__CK_PROFILE,
       ':format' => MOHA_CLIP__TEXT_FORMAT,
@@ -351,27 +370,66 @@ function moha_clip_image_default_styles() {
 
 /**
  * Implements hook_node_info().
+ *
+ * Declares content types: moha_clip, moha_series.
  */
 function moha_clip_node_info() {
+  $items[__MOHA_CLIP] = array(
+    'name' => t(MOHA_CLIP),
+    'base' => __MOHA_CLIP, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
+    'description' => t('Use <i>Moha Clip</i> to share your knowledge, such as a \'Technology Sharing\' page.'),
+    'title_label' => t('Title'),
+    'has_title' => TRUE,
+    'locked' => FALSE,
+  );
 
-  $items = array(
-    __MOHA_CLIP => array(
-      'name' => t(MOHA_CLIP),
-      'base' => __MOHA_CLIP, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
-      'description' => t('Use <i>Moha Clip</i> to share your knowledge, such as a \'Technology Sharing\' page.'),
-      'title_label' => t('Title'),
-      'has_title' => TRUE,
-      'locked' => FALSE,
-    ),
+  $items[__MOHA_SERIES] = array(
+    'name' => t(MOHA_SERIES),
+    'base' => __MOHA_SERIES, /* Set to node_content, otherwise need implement hook_form to let title could be specified. */
+    'description' => t('Use <i>Moha Series</i> to group <i>Moha Clip</i> on same topic.'),
+    'title_label' => t('Title'),
+    'has_title' => TRUE,
+    'locked' => FALSE,
   );
 
   return $items;
 }
 
 /**
+ * Implements hook_node_type_insert().
+ *
+ * Invoked one-time when node type is created.
+ * Bind node fields for moha_clip, moha_series.
+ *
+ * @inheritDoc
+ *
+ * @throws Exception
+ *
+ * @see node_type_save
+ */
+function moha_clip_node_type_insert($info) {
+  $body_instance = node_add_body_field($info, t('Contents'));
+  // Save our changes to the body field instance.
+  field_update_instance($body_instance);
+
+  if ($info->type == __MOHA_CLIP) {
+    moha_create_fields_and_instances('_moha_clip_fields_and_instances');
+
+    // Hide comment for Moha Clip by default.
+    variable_set('comment_' . __MOHA_CLIP, COMMENT_NODE_HIDDEN);
+    variable_set('node_options_' . __MOHA_CLIP, array('status'));
+  }
+  else if ($info->type == __MOHA_SERIES) {
+    // Hide comment for Moha Clip by default.
+    variable_set('comment_' . __MOHA_SERIES, COMMENT_NODE_HIDDEN);
+    variable_set('node_options_' . __MOHA_SERIES, array('status'));
+  }
+}
+
+/**
  * Implements hook_form().
  *
- * Moha Clip node add / edit form.
+ * Node add / edit form for Moha Clip.
  *
  * Drupal needs this to provide a form that lets the user
  * add content. This is the form that the user will see if
@@ -392,13 +450,46 @@ function moha_clip_form($node, &$form_state) {
   drupal_add_js(MOHA_CLIP__PATH . '/js/moha_clip.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
   drupal_add_library('system', 'drupal.collapse');
 
-  // Pass setting values from PHP to JS.
-  drupal_add_js(array(
-    __MOHA_CLIP => array(
-      'ckeditor_template_image_path' => __MOHA_CLIP__PATH . '/ckeditor/', // Usage: Drupal.settings.moha_clip.ckeditor_template_image_path.
-      'speaker' => ''
-    )
-  ), 'setting');
+  $form = node_content_form($node, $form_state);
+
+  $form['hint'] = moha_form_element_prompt_imce_usage();
+  $form['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
+
+  return $form;
+}
+
+/**
+ * Implements hook_form().
+ *
+ * @param $node
+ *   The node being added or edited.
+ * @param $form_state
+ *   The form state array.
+ *
+ * @return array
+ *   An array containing the title and any custom form elements to be displayed
+ *   in the node editing form.
+ *
+ * Node add / edit form for Moha Series.
+ *
+ * Drupal needs this to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/moha-clip.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
+ */
+function moha_series_form($node, &$form_state) {
+  global $theme_key;
+
+  if ($theme_key == 'seven') {
+    // Fix admin style issue when admin theme is seven.
+    drupal_add_css(MOHA_CLIP__PATH . '/css/moha_clip.admin.css');
+  }
+
+  // Add collapsible effect to image and video fields.
+  drupal_add_js(MOHA_CLIP__PATH . '/js/moha_clip.admin.js', array('group' => JS_LIBRARY, 'weight' => -1));
+  drupal_add_library('system', 'drupal.collapse');
 
   $form = node_content_form($node, $form_state);
 
@@ -411,6 +502,22 @@ function moha_clip_form($node, &$form_state) {
 /**
  * Implements hook_form_FORM_ID_alter().
  *   FORM_ID: moha_clip_node_form.
+ *
+ * @param $form
+ *   Nested array of form elements that comprise the form.
+ *
+ * @param $form_state
+ *   A keyed array containing the current state of the form. The arguments
+ *   that drupal_get_form() was originally called with are available in the
+ *   array $form_state['build_info']['args'].
+ *
+ * @param $form_id
+ *   The unique string identifying the desired form. If a function
+ *   with that name exists, it is called to build the form array.
+ *   Modules that need to generate the same form (or very similar forms)
+ *   using different $form_ids can implement hook_forms(), which maps
+ *   different $form_id values to the proper form constructor function. Examples
+ *   may be found in node_forms() and search_forms().
  *
  * Adds additional functions to moha_clip node form:
  *  - View: Open page in separated browser tab / window.
@@ -454,6 +561,7 @@ PREVIEW
 ,
       '#suffix' => '</div>',
     );
+
     drupal_add_js(array(
       __MOHA_CLIP => array(
         'preview_url' => url($alias, array('absolute' => TRUE)), // Usage: Drupal.settings.moha_clip.preview_url.
@@ -480,12 +588,14 @@ PREVIEW
 
 /**
  * Implements hook_view().
+ *
+ * Node display view.
  */
 function moha_clip_view($node, $view_mode, $langcode = NULL) {
-
-  if ($node->type == __MOHA_CLIP) {
+  if ($node->type == __MOHA_CLIP || $node->type == __MOHA_SERIES) {
     $node->content['#attached']['library'][] = array(__MOHA_UI, __MOHA_UI);
   }
+
   return $node;
 }
 
@@ -643,26 +753,6 @@ function _moha_clip_fields_and_instances() {
   );
 
   return $fields_and_instances;
-}
-
-/**
- * Implements hook_node_type_insert().
- *
- * Bind moha_clip fields.
- */
-function moha_clip_node_type_insert($info) {
-  if ($info->type == __MOHA_CLIP) {
-
-    $body_instance = node_add_body_field($info, t('Contents'));
-    // Save our changes to the body field instance.
-    field_update_instance($body_instance);
-
-    moha_create_fields_and_instances('_moha_clip_fields_and_instances');
-
-    // Hide comment for Moha Clip by default.
-    variable_set('comment_' . __MOHA_CLIP, COMMENT_NODE_HIDDEN);
-    variable_set('node_options_' . __MOHA_CLIP, array('status'));
-  }
 }
 
 /**

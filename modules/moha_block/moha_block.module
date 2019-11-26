@@ -69,6 +69,11 @@ define('MOHA_BLOCK__FOOTER_POLICE', 'moha_block__footer_police');
 define('MOHA_BLOCK__SERVICE_CONVERSION', 'moha_block__service_conversion');
 
 /**
+ * Block Service: Random Password.
+ */
+define('MOHA_BLOCK__RANDOM_PASSWORD', 'moha_block__random_password');
+
+/**
  * Implements hook_block_info().
  *
  * Moha blocks could be contained in theme file directly.

@@ -1,3 +1,10 @@
+/**
+ * @file
+ */
+/* jshint esversion: 6 */
+/* jshint unused:false, strict: false */
+/* globals Drupal:object, jQuery:object, _:object */
+
 jQuery(document).ready(function () {
 
   // Per sidebar height, show scroll to top button
