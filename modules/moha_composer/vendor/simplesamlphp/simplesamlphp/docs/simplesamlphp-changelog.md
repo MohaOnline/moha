@@ -6,6 +6,58 @@ SimpleSAMLphp changelog
 This document lists the changes between versions of SimpleSAMLphp.
 See the upgrade notes for specific information about upgrading.
 
+## Version 1.18.2
+
+Released 2019-11-26
+
+  * Fixed an issue with the `ldap` module that prevented installing SimpleSAMLphp from the repository (#1241).
+
+## Version 1.18.1
+
+Released 2019-11-26
+
+  * Fixed an issue that prevented custom themes from working (#1240).
+  * Fixed an issue with translations in the discovery service (#1244).
+  * Fixed an issue with schema validation.
+
+## Version 1.18.0
+
+Released 2019-11-19
+
+  * Fixed an issue with warnings being logged when using PHP 7.2 or newer (#1168).
+  * Fixed an issue with web server aliases or rewritten URLs not working (#1023, #1093).
+  * Fixed an issue that prevented errors to be logged if the log file was not writeable (#1194).
+  * Fixed an issue with old-style NameIDPolicy configurations that disallowed creating new NameIDs (#1230).
+  * Resolved a security issue that exposed host information to unauthenticated users. See
+    [SSPSA 201911-02](https://simplesamlphp.org/security/201911-02).
+  * Replaced custom Email class with the phpmailer library.
+  * Allow logging to STDERR in the `logging.handler` option by setting it to `stderr`.
+  * Allow use of stream wrappers (e.g. s3://) in paths.
+  * Improved 'update or insert' handling for different SQL drivers.
+  * The default algorithm within the TimeLimitedToken class has been bumped from SHA-1 to SHA-256
+    as announced by deprecation notice in 1.15.
+  * Most modules have been externalized. They will not be included in our future releases by default,
+    but will be easily installable using composer. For now, they are still included in the package.
+  * Minor fixes to code, CSS and documentation.
+
+### metarefresh
+  * The algorithm to compute the fingerprint of the certificate that signed
+    metadata can be specified with the new `validateFingerprintAlgorithm`
+    configuration option.
+
+### saml
+  * Make the id of the generated signed metadata change only when metadata content changes.
+  * New SP metadata configuration options `AssertionConsumerService` and `SingleLogoutServiceLocation`
+    to allow overriding the default URL paths.
+  * Added support for per-IDP configurable `AuthnContextClassRef`/`AuthnContextComparison`.
+
+## Version 1.17.7
+
+Released 2019-11-06
+
+  * Resolved a security issue that allows to bypass signature validation. See
+    [SSPSA 201911-01](https://simplesamlphp.org/security/201911-01).
+
 ## Version 1.17.6
 
 Released 2019-08-29
@@ -30,7 +82,7 @@ Released 2019-08-02
 Released 2019-07-11
 
   * Fix an issue introduced in 1.17.3 with `enable.http_post`.
-
+  
 ## Version 1.17.3
 
 Released 2019-07-10

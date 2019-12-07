@@ -10,6 +10,9 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '023d27dca8066ef29e6739335ea73bad' => __DIR__ . '/..' . '/symfony/polyfill-php70/bootstrap.php',
+        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
+        '6175f5662c2e26de0149cb048cda7209' => __DIR__ . '/..' . '/simplesamlphp/saml2/src/_autoload.php',
+        '5abda994d126976858eb25d2546ee3c9' => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/lib/_autoload_modules.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
@@ -78,9 +81,7 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         '6ab8ad87a734f276a6bcd5a0fe1289be' => __DIR__ . '/..' . '/markbaker/matrix/classes/src/operations/divideinto.php',
         'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
-        '6175f5662c2e26de0149cb048cda7209' => __DIR__ . '/..' . '/simplesamlphp/saml2/src/_autoload.php',
         '66453932bc1be9fb2f910a27947d11b6' => __DIR__ . '/..' . '/alibabacloud/client/src/Functions.php',
-        '5abda994d126976858eb25d2546ee3c9' => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/lib/_autoload_modules.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -104,7 +105,9 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Util\\' => 22,
             'Symfony\\Polyfill\\Php70\\' => 23,
+            'Symfony\\Polyfill\\Php56\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
@@ -119,6 +122,31 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
             'Symfony\\Component\\Debug\\' => 24,
             'Symfony\\Component\\Config\\' => 25,
             'Stringy\\' => 8,
+            'SimpleSAML\\modules\\yubikey\\' => 27,
+            'SimpleSAML\\modules\\discopower\\' => 30,
+            'SimpleSAML\\TwigConfigurableI18n\\' => 32,
+            'SimpleSAML\\Module\\statistics\\' => 29,
+            'SimpleSAML\\Module\\sqlauth\\' => 26,
+            'SimpleSAML\\Module\\smartattributes\\' => 34,
+            'SimpleSAML\\Module\\sanitycheck\\' => 30,
+            'SimpleSAML\\Module\\riak\\' => 23,
+            'SimpleSAML\\Module\\radius\\' => 25,
+            'SimpleSAML\\Module\\preprodwarning\\' => 33,
+            'SimpleSAML\\Module\\negotiate\\' => 28,
+            'SimpleSAML\\Module\\metarefresh\\' => 30,
+            'SimpleSAML\\Module\\ldap\\' => 23,
+            'SimpleSAML\\Module\\expirycheck\\' => 30,
+            'SimpleSAML\\Module\\exampleattributeserver\\' => 41,
+            'SimpleSAML\\Module\\consent\\' => 26,
+            'SimpleSAML\\Module\\cdc\\' => 22,
+            'SimpleSAML\\Module\\cas\\' => 22,
+            'SimpleSAML\\Module\\authwindowslive\\' => 34,
+            'SimpleSAML\\Module\\authtwitter\\' => 30,
+            'SimpleSAML\\Module\\authorize\\' => 28,
+            'SimpleSAML\\Module\\authfacebook\\' => 31,
+            'SimpleSAML\\Module\\authcrypt\\' => 28,
+            'SimpleSAML\\Module\\authX509\\' => 27,
+            'SimpleSAML\\Module\\adfs\\' => 23,
             'SimpleSAML\\' => 11,
         ),
         'R' => 
@@ -147,7 +175,6 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         'J' => 
         array (
             'JmesPath\\' => 9,
-            'JaimePerez\\TwigConfigurableI18n\\' => 32,
         ),
         'H' => 
         array (
@@ -176,6 +203,10 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         array (
             'Complex\\' => 8,
             'Clue\\StreamFilter\\' => 18,
+        ),
+        'B' => 
+        array (
+            'Basho\\' => 6,
         ),
         'A' => 
         array (
@@ -209,9 +240,17 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         array (
             0 => __DIR__ . '/..' . '/twig/twig/src',
         ),
+        'Symfony\\Polyfill\\Util\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-util',
+        ),
         'Symfony\\Polyfill\\Php70\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php70',
+        ),
+        'Symfony\\Polyfill\\Php56\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php56',
         ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
@@ -268,6 +307,106 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         'Stringy\\' => 
         array (
             0 => __DIR__ . '/..' . '/danielstjules/stringy/src',
+        ),
+        'SimpleSAML\\modules\\yubikey\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authyubikey/lib',
+        ),
+        'SimpleSAML\\modules\\discopower\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-discopower/lib',
+        ),
+        'SimpleSAML\\TwigConfigurableI18n\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/twig-configurable-i18n/src',
+        ),
+        'SimpleSAML\\Module\\statistics\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-statistics/lib',
+        ),
+        'SimpleSAML\\Module\\sqlauth\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-sqlauth/lib',
+        ),
+        'SimpleSAML\\Module\\smartattributes\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-smartattributes/lib',
+        ),
+        'SimpleSAML\\Module\\sanitycheck\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-sanitycheck/lib',
+        ),
+        'SimpleSAML\\Module\\riak\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-riak/lib',
+        ),
+        'SimpleSAML\\Module\\radius\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-radius/lib',
+        ),
+        'SimpleSAML\\Module\\preprodwarning\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-preprodwarning/lib',
+        ),
+        'SimpleSAML\\Module\\negotiate\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-negotiate/lib',
+        ),
+        'SimpleSAML\\Module\\metarefresh\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-metarefresh/lib',
+        ),
+        'SimpleSAML\\Module\\ldap\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-ldap/lib',
+        ),
+        'SimpleSAML\\Module\\expirycheck\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-expirycheck/lib',
+        ),
+        'SimpleSAML\\Module\\exampleattributeserver\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-exampleattributeserver/lib',
+        ),
+        'SimpleSAML\\Module\\consent\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-consent/lib',
+        ),
+        'SimpleSAML\\Module\\cdc\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-cdc/lib',
+        ),
+        'SimpleSAML\\Module\\cas\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-cas/lib',
+        ),
+        'SimpleSAML\\Module\\authwindowslive\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authwindowslive/lib',
+        ),
+        'SimpleSAML\\Module\\authtwitter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authtwitter/lib',
+        ),
+        'SimpleSAML\\Module\\authorize\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authorize/lib',
+        ),
+        'SimpleSAML\\Module\\authfacebook\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authfacebook/lib',
+        ),
+        'SimpleSAML\\Module\\authcrypt\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authcrypt/lib',
+        ),
+        'SimpleSAML\\Module\\authX509\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authx509/lib',
+        ),
+        'SimpleSAML\\Module\\adfs\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-adfs/lib',
         ),
         'SimpleSAML\\' => 
         array (
@@ -332,10 +471,6 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         'JmesPath\\' => 
         array (
             0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
-        ),
-        'JaimePerez\\TwigConfigurableI18n\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/jaimeperez/twig-configurable-i18n/src',
         ),
         'Http\\Promise\\' => 
         array (
@@ -402,6 +537,10 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         array (
             0 => __DIR__ . '/..' . '/clue/stream-filter/src',
         ),
+        'Basho\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpfastcache/riak-client/src',
+        ),
         'AlibabaCloud\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/alibabacloud/client/src',
@@ -426,6 +565,10 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         ),
         'S' => 
         array (
+            'SimpleSamlPhp\\Composer' => 
+            array (
+                0 => __DIR__ . '/..' . '/simplesamlphp/composer-module-installer/src',
+            ),
             'SAML2\\' => 
             array (
                 0 => __DIR__ . '/..' . '/simplesamlphp/saml2/src',

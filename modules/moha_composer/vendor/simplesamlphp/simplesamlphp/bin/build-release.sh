@@ -46,7 +46,7 @@ php "$TARGET/composer.phar" config version "$VERSION" -d "$TARGET"
 # Install dependencies (without vcs history or dev tools)
 php "$TARGET/composer.phar" install --no-dev --prefer-dist -o -d "$TARGET"
 
-cd $TARGET 
+cd $TARGET
 npm install
 npm audit fix
 npm run build

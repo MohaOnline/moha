@@ -2,6 +2,7 @@ SimpleSAMLphp Documentation
 ===========================
 
  * [Installing SimpleSAMLphp](simplesamlphp-install)
+    * [Upgrade notes for version 1.18](simplesamlphp-upgrade-notes-1.18)
     * [Upgrade notes for version 1.17](simplesamlphp-upgrade-notes-1.17)
     * [Upgrade notes for version 1.16](simplesamlphp-upgrade-notes-1.16)
     * [Upgrade notes for version 1.15](simplesamlphp-upgrade-notes-1.15)
@@ -30,7 +31,7 @@ SimpleSAMLphp Documentation
   * [Configuring HTTP-Artifact](./simplesamlphp-artifact-idp)
   * [Identity Provider Advanced Topics](simplesamlphp-idp-more)
   * [Holder-of-Key profile](simplesamlphp-hok-idp)
- * [Automated Metadata Management](simplesamlphp-automated_metadata)
+ * [Automated Metadata Management](./metarefresh:simplesamlphp-automated_metadata)
  * [Maintenance and configuration](simplesamlphp-maintenance) - covers session handling, php configuration etc.
  * [Authentication Processing Filters](simplesamlphp-authproc) - attribute filtering, attribute mapping, consent, group generation etc.
  * [Advanced features](simplesamlphp-advancedfeatures) - covers bridging protocols, attribute filtering, etc.
@@ -48,7 +49,7 @@ Documentation on specific SimpleSAMLphp modules:
  * [Consent module](./consent:consent)
  * [Installing and configuring the consentAdmin module](./consentAdmin:consentAdmin)
  * [Authorization](./authorize:authorize)
- * [autotest Module](./autotest:test)
+ * [autotest Module](https://github.com/simplesamlphp/simplesamlphp-module-autotest/blob/v1.0/README.md)
  * [Statistics](./statistics:statistics)
 
 Documentation for SimpleSAMLphp developers:
