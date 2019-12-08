@@ -219,13 +219,9 @@ div.moha-spotlight-details {
   margin-left: 5rem;
 }
 
-/*  */
-div.moha-spotlight-details p:last-child {
-  margin-bottom: 0;
-}
-
-div.moha-spotlight-details p:first-child {
-  margin-top: 0;
+/* Eliminate margin of paragraph in Moha Spotlight area. */
+div.moha-spotlight-details p {
+  margin: 0;
 }
 /***/
 

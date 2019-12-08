@@ -3,3 +3,36 @@ a.slicknav_btn {
   background-position-y: 10px;
 }
 /***/
+
+/** draggable table style fix. */
+/* Form element in table needn't extra bottom margin. */
+table .form-group {
+  margin-bottom: unset;
+}
+
+/* Vertically align drag controller of draggable table. */
+table tr.draggable td:first-child {
+  vertical-align: middle;
+}
+
+/* Form element in table needn't extra margin. */
+table tr.draggable td a.tabledrag-handle {
+  margin: unset;
+  height: 20px;
+  vertical-align: middle;
+  float: inherit;
+}
+
+table tr.draggable td a.tabledrag-handle div.handle {
+  background-position: 6px 3px;
+  height: 20px;
+  width: 30px;
+  margin: unset;
+  padding: unset;
+  display: inline-block;
+}
+
+table tr.draggable td a.tabledrag-handle-hover div.handle {
+  background-position: 6px -17px;
+}
+/***/
