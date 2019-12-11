@@ -77,6 +77,7 @@
 						cs: 'C#',
 						css: 'CSS',
             diff: 'Diff',
+            docker: 'Dockerfile',
             go: 'Go',
 						html: 'HTML',
 						ini: 'INI',
