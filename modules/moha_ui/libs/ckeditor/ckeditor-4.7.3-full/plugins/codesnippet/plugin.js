@@ -71,12 +71,14 @@
 				var hljsHighlighter = new CKEDITOR.plugins.codesnippet.highlighter( {
 					languages: {
 						apache: 'Apache',
+            arduino: 'Arduino',
 						bash: 'Bash',
             bat: 'Windows Batch',
 						cpp: 'C++',
 						cs: 'C#',
 						css: 'CSS',
             diff: 'Diff',
+            docker: 'Dockerfile',
             go: 'Go',
 						html: 'HTML',
 						ini: 'INI',
@@ -97,6 +99,7 @@
             sql: 'SQL',
             tcl: 'Tcl',
             twig: 'Twig',
+            typescript: 'TypeScript',
 						xml: 'XML',
             yaml: 'YAML'
 					},
