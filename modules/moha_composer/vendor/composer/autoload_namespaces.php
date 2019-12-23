@@ -11,4 +11,5 @@ return array(
     'SimpleSamlPhp\\Composer' => array($vendorDir . '/simplesamlphp/composer-module-installer/src'),
     'SAML2\\' => array($vendorDir . '/simplesamlphp/saml2/src'),
     'Phpml' => array($vendorDir . '/php-ai/php-ml/src'),
+    'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),
 );
