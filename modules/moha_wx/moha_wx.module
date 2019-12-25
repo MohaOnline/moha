@@ -147,7 +147,7 @@ define('MOHA_WX__API__OAUTH2_WITH_USER_INFO', 'https://open.weixin.qq.com/connec
 /**
  * WeChat API: Request an OAuth2 authorization which only get user openid.
  */
-define('MOHA_WX__API__OAUTH2', 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=@APPID&redirect_uri=@REDIRECT_URI&response_type=code&scope=snsapi_base&state=@STATE#wechat_redirect');
+define('MOHA_WX__API__OAUTH2', 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=@APPID&redirect_uri=@REDIRECT_URI&response_type=code&scope=@SCOPE&state=@STATE#wechat_redirect');
 
 /**
  * WeChat Open Platform API: Request an OAuth2 authorization.
@@ -193,9 +193,15 @@ define('MOHA_WX__SESSION__OAUTH2_USER', 'moha_wx_session_oauth2_user');
 
 /**
  * Implements hook_entity_info().
+ *
+ * Entity: moha_user_oauth2_client.
+ *   Check @link admin/moha/entities/wechat-accounts entity list page @endlink for all saved entities.
  */
 function moha_wx_entity_info() {
-  // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
+  /**
+   * @link https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type @endlink
+   *   Save WeChat account information as entity.
+   */
   $items[__MOHA_WX_ACCOUNT] = moha_entity_define(
     __MOHA_WX,
     __MOHA_WX_ACCOUNT,
@@ -258,7 +264,11 @@ function moha_wx_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  /** @link moha/wx/oauth2/login/% @endlink */
+  /**
+   * Helps visitors to login through WeChat (Scan QR code).
+   * 
+   * @link moha/wx/oauth2/login/% @endlink 
+   */
   $items[MOHA_WX__URL__OAUTH2_LOGIN] = moha_menu_define(
     'OAuth2 Login',
     'Login user through configured OAuth2 client.',
@@ -282,11 +292,16 @@ function moha_wx_menu() {
 }
 
 /**
- * Forward user to scan have
+ * Forward user to scan QR code to login.
  *
  * @param $name
+ *   machine name of entity moha_wx_account @see __MOHA_WX_ACCOUNT.
+ * 
  * @param $destination
+ *   Landing page when user is redirected from Tencent/WeChat site.
+ * 
  * @param $force
+ *   Even user has logged in, force forward user to scan QR code.
  *
  * @return mixed
  */
@@ -306,24 +321,21 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
       }
 
       // Mark WeChat Browser.
-      $wx_browser = FALSE;
+      $is_wx_browser = FALSE;
       $user_agent = $_SERVER['HTTP_USER_AGENT'];
       watchdog(__FUNCTION__, $user_agent);
       if (strpos( $user_agent, 'MicroMessenger' ) !== FALSE) {
-        $wx_browser = TRUE;
+        $is_wx_browser = TRUE;
       }
-
-      $redirect_uri = moha_url('moha/wx/oauth2/back/' . $name);
-      $state = moha_state_set($destination);
 
       switch ($account->type) {
         default:
           throw new Exception(t('Unknown account type: %type, WeChat account is miss configured.', array('%type' => $account->type)));
           break;
 
+        // WeChat Open Platform account.
         case moha_array_key_by_value(MOHA_WX__ACCOUNT_TYPE__OPEN, MOHA_WX__ACCOUNT_TYPE):
-          // WeChat Open Platform account.
-          if ($wx_browser) {
+          if ($is_wx_browser) {
             if (!empty($account->wx_fallback)) {
               $account = moha_wx_fetch_account_by_id($account->wx_fallback);
               watchdog(__FUNCTION__, t('Fallback to %name, App accesses Open Platform.', array('%name' => $account->name)));
@@ -333,19 +345,13 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
             return t("Please don't use WeChat browser to login.");
           }
 
-          $login_url = format_string( MOHA_WX__API__OAUTH2_OPEN_PLATFORM,
-            array(
-              '@APPID' => $account->app_id,
-              '@REDIRECT_URI' => $redirect_uri,
-              '@STATE' => $state
-            )
-          );
+          $login_url_template = MOHA_WX__API__OAUTH2_OPEN_PLATFORM;
           break;
 
+        // WeChat Service and Subscription account.
         case moha_array_key_by_value(MOHA_WX__ACCOUNT_TYPE__SERVICE, MOHA_WX__ACCOUNT_TYPE):
         case moha_array_key_by_value(MOHA_WX__ACCOUNT_TYPE__SUBSCRIPTION, MOHA_WX__ACCOUNT_TYPE):
-          // WeChat Service and Subscription account.
-          if (!$wx_browser) {
+          if (!$is_wx_browser) {
             if (!empty($account->wx_fallback)) {
               $account = moha_wx_fetch_account_by_id($account->wx_fallback);
               watchdog(__FUNCTION__, t('Fallback to %name, Browser accesses WeChat account.', array('%name' => $account->name)));
@@ -354,17 +360,25 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
 
             return t("Please use WeChat browser to login.");
           }
-
-          $login_url = format_string( MOHA_WX__API__OAUTH2,
+          
+          $login_url_template = format_string( MOHA_WX__API__OAUTH2,
             array(
-              '@APPID' => $account->app_id,
-              '@REDIRECT_URI' => $redirect_uri,
-              '@STATE' => $state
+              '@SCOPE' => $account->scope,
             )
           );
           break;
       }
 
+      $redirect_uri = moha_url('moha/wx/oauth2/back/' . $name);
+      $state = moha_state_set($destination);
+      $login_url = format_string( $login_url_template,
+        array(
+          '@APPID' => $account->app_id,
+          '@REDIRECT_URI' => $redirect_uri,
+          '@STATE' => $state
+        )
+      );
+      
       watchdog(__FUNCTION__, t("Authorise: %login_url", array('%login_url' => $login_url)));
       drupal_goto($login_url);
     }

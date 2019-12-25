@@ -170,13 +170,15 @@ function moha_user_permission() {
 /**
  * Implements hook_entity_info().
  *
+ * Entity: moha_user_oauth2_client.
+ *   Check @link admin/moha/entities/oauth2-clients entity list page @endlink for all saved entities.
+ * 
  * Stores information:
  *   Azure AD OAuth2 Endpoint.
  *   WeChat Account OAuth2 Endpoint.
  */
 function moha_user_entity_info() {
-
-  // @see: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type
+  /** @link: https://www.drupal.org/docs/7/api/entity-api/providing-a-new-entity-type @endlink */
   $items[__MOHA_USER_OAUTH2_CLIENT] = moha_entity_define(
     __MOHA_USER,
     __MOHA_USER_OAUTH2_CLIENT,
@@ -246,8 +248,8 @@ function moha_user_menu() {
   );
 
   $items['admin/moha/user/oauth2'] = moha_menu_define(
-    'OAuth2 Clients',
-    'Configure OAuth2 clients related settings.',
+    'Login Integration',
+    'Configure how site should be protected with various login clients. Configure OAuth2 clients related settings.',
     /** @see moha_user_oauth2_admin_form */
     array('moha_user_oauth2_admin_form'),
     array(MOHA__PERMISSION__ROOT),

@@ -135,7 +135,7 @@ class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
 
     $additional_header[] = t('ID');
     $additional_header[] = t('Name');
-    $additional_header[] = t('Callback URL');
+    $additional_header[] = t('Service Endpoints');
     $additional_header[] = t('Type');
     $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
@@ -157,7 +157,14 @@ class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
     $name = check_plain($entity->name);
     $additional_cols[] = "$human_name ($name)";
 
-    $additional_cols[] = moha_url("moha/wx/server/$name");
+    static $endpoint_tpl = <<<ENDPOINT
+<p>WeChat Callback: <span class="moha_highlight_endpoint">@callback</span></p>
+<p>WeChat Login: <span class="moha_highlight_endpoint">@login</span></p>
+ENDPOINT;
+    $additional_cols[] = format_string($endpoint_tpl, array(
+      '@callback' => moha_url("moha/wx/server/$name"),
+      '@login' => moha_url("moha/wx/oauth2/login/$name"),
+    ));
 
     $additional_cols[] = MOHA_WX__ACCOUNT_TYPE[$entity->type];
     $additional_cols[] = MOHA__STATUS__ENTITY[$entity->status];

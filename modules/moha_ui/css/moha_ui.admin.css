@@ -3,6 +3,7 @@
  * @file
  * Admin styles of the module.
  */
+
 html, textarea {
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
@@ -114,5 +115,23 @@ body.page-admin-moha-dashboard .box table th {
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
+}
+/**********************************************************************************************************************/
+
+/** Customized styles. ************************************************************************************************/
+/* Highlight URL of endpoints. */
+.moha_highlight_endpoint {
+  background-color: lightblue;
+  padding: 5px;
+  border-radius: 3px; 
+}
+
+/* Suppress margin space of paragraph in table cell. */
+body.page-admin-moha td p:first-child {
+  margin-top: 0;
+}
+
+body.page-admin-moha td p:last-child {
+  margin-bottom: 0;
 }
 /**********************************************************************************************************************/
