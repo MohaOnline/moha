@@ -3061,7 +3061,7 @@ function moha_state_set($original = '') {
   $uuid = uuid_generate();
   $cache_id = __MOHA . ':state:' . $uuid;
 
-  moha_cache_set($cache_id, $original);
+  moha_cache_set($cache_id, $original, 60*60*24);
 
   return $uuid;
 }
@@ -3073,6 +3073,8 @@ function moha_state_set($original = '') {
  *   state code embedded in URL when request OAuth2 authentication.
  *
  * @param  $default
+ * 
+ * @return mixed
  */
 function moha_state_get($state_uuid = '', $default = '') {
   $cache_id = __MOHA . ':state:' . $state_uuid;

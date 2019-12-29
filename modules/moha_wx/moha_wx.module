@@ -266,8 +266,8 @@ function moha_wx_menu() {
 
   /**
    * Helps visitors to login through WeChat (Scan QR code).
-   * 
-   * @link moha/wx/oauth2/login/% @endlink 
+   *
+   * @link moha/wx/oauth2/login/% @endlink
    */
   $items[MOHA_WX__URL__OAUTH2_LOGIN] = moha_menu_define(
     'OAuth2 Login',
@@ -296,10 +296,10 @@ function moha_wx_menu() {
  *
  * @param $name
  *   machine name of entity moha_wx_account @see __MOHA_WX_ACCOUNT.
- * 
+ *
  * @param $destination
  *   Landing page when user is redirected from Tencent/WeChat site.
- * 
+ *
  * @param $force
  *   Even user has logged in, force forward user to scan QR code.
  *
@@ -360,7 +360,7 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
 
             return t("Please use WeChat browser to login.");
           }
-          
+
           $login_url_template = format_string( MOHA_WX__API__OAUTH2,
             array(
               '@SCOPE' => $account->scope,
@@ -378,7 +378,7 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
           '@STATE' => $state
         )
       );
-      
+
       watchdog(__FUNCTION__, t("Authorise: %login_url", array('%login_url' => $login_url)));
       drupal_goto($login_url);
     }
@@ -392,7 +392,7 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
 }
 
 /**
- *
+ * Receive response from WeChat service. Normally code is sent back.
  *
  * @param $name
  *
@@ -400,13 +400,13 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
  */
 function moha_wx_oauth2_back($name) {
   try {
-    $state = isset($_GET['state'])?$_GET['state']:'';
+    $state = isset($_GET['state']) ? $_GET['state'] : '';
 
     if (empty($state)){
       throw new Exception('No State.', MohaWeChat::$ERROR__OAUTH_NO_STATE);
     }
 
-    $code = isset($_GET['code'])?$_GET['code']:'';
+    $code = isset($_GET['code']) ? $_GET['code'] : '';
 
     if (empty($code)){
       throw new Exception('No Code.', MohaWeChat::$ERROR__OAUTH_NO_CODE);
@@ -743,7 +743,7 @@ function moha_wx_fetch_account($options = array('status' => MOHA__TERM__ACTIVE))
 }
 
 /**
- * Fetch one WeChat account per given machine name.
+ * Fetch WeChat account entity per given machine name.
  *
  * @param string $name
  *   Machine name of the account.
