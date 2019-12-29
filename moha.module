@@ -2799,25 +2799,6 @@ function moha_cache_get($cid, $default = '', $use_static = TRUE) {
 }
 
 /**
- * Configuration values get, fallback from cache to variable.
- *
- * @param $key
- * @param $default
- *
- * @return mixed
- */
-function moha_cache_variable_get($key, $default = '') {
-  $value = moha_cache_get($key);
-
-  if (empty($value)) {
-    $value = moha_variable_get($key, $default);
-    moha_cache_set($key, $value);
-  }
-
-  return $value;
-}
-
-/**
  * Cache the data by ID.
  *
  * @param $cid string
@@ -2855,6 +2836,25 @@ function moha_cache_del($cid) {
   unset($static[$cid]);
 
   cache_clear_all($cid, 'cache');
+}
+
+/**
+ * Configuration values get, fallback from cache to variable.
+ *
+ * @param $key
+ * @param $default
+ *
+ * @return mixed
+ */
+function moha_cache_variable_get($key, $default = '') {
+  $value = moha_cache_get($key);
+
+  if (empty($value)) {
+    $value = moha_variable_get($key, $default);
+    moha_cache_set($key, $value);
+  }
+
+  return $value;
 }
 
 /**
@@ -3073,7 +3073,7 @@ function moha_state_set($original = '') {
  *   state code embedded in URL when request OAuth2 authentication.
  *
  * @param  $default
- * 
+ *
  * @return mixed
  */
 function moha_state_get($state_uuid = '', $default = '') {

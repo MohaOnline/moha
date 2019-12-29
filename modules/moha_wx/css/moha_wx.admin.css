@@ -1,3 +1,14 @@
 #edit-wx-menu {
   font-family: "Fira Code", monospace;
 }
+
+/* Optimize form element in table. */
+table .form-group {
+  margin-bottom: 0;
+}
+
+table .form-group label {
+  line-height: 30px;
+  text-align: right;
+}
+/*********************************************/

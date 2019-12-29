@@ -48,6 +48,7 @@ class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
 
     $filter = &moha_form_set_inline_container($form['filter']['container']);
 
+    moha_attach_css($form, MOHA_WX__PATH_ADMIN_CSS);
 
     moha_form_actions($form['filter'], array('Filter', 'Reset Filter'));
 
@@ -135,7 +136,7 @@ class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
 
     $additional_header[] = t('ID');
     $additional_header[] = t('Name');
-    $additional_header[] = t('Service Endpoints');
+    $additional_header[] = t('WeChat Service Endpoints');
     $additional_header[] = t('Type');
     $additional_header[] = t('Status');
     $additional_header[] = t('Updated');
@@ -158,8 +159,17 @@ class MohaWeChatAccountEntityAdminController extends EntityDefaultUIController {
     $additional_cols[] = "$human_name ($name)";
 
     static $endpoint_tpl = <<<ENDPOINT
-<p>WeChat Callback: <span class="moha_highlight_endpoint">@callback</span></p>
-<p>WeChat Login: <span class="moha_highlight_endpoint">@login</span></p>
+<div class="form-group row">
+  <label for="" class="col-sm-3 control-label">Callback</label>
+  <div class="col-sm-9">
+    <input type="text" class="form-control input-sm" value="@callback"></div>
+</div>
+
+<div class="form-group row">
+  <label for="" class="col-sm-3 control-label">Login</label>
+  <div class="col-sm-9">
+    <input type="text" class="form-control input-sm" value="@login"></div>
+</div>
 ENDPOINT;
     $additional_cols[] = format_string($endpoint_tpl, array(
       '@callback' => moha_url("moha/wx/server/$name"),

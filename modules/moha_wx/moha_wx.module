@@ -25,6 +25,11 @@ define('MOHA_WX__PATH', drupal_get_path('module', __MOHA_WX));
 define('__MOHA_WX__PATH', base_path() . MOHA_WX__PATH);
 
 /**
+ * Common used css paths.
+ */
+define('MOHA_WX__PATH_ADMIN_CSS', MOHA_WX__PATH . '/css/moha_wx.admin.css');
+
+/**
  * Entity human name.
  */
 define('MOHA_WX_ACCOUNT', 'Moha WeChat Account');
@@ -338,7 +343,7 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
           if ($is_wx_browser) {
             if (!empty($account->wx_fallback)) {
               $account = moha_wx_fetch_account_by_id($account->wx_fallback);
-              watchdog(__FUNCTION__, t('Fallback to %name, App accesses Open Platform.', array('%name' => $account->name)));
+              watchdog(__FUNCTION__, t('Fallback: %name, App to Open Platform.', array('%name' => $account->name)));
               return moha_wx_oauth2_login($account->name, $destination, $force);
             }
 
@@ -354,7 +359,7 @@ function moha_wx_oauth2_login($name, $destination = '', $force = FALSE) {
           if (!$is_wx_browser) {
             if (!empty($account->wx_fallback)) {
               $account = moha_wx_fetch_account_by_id($account->wx_fallback);
-              watchdog(__FUNCTION__, t('Fallback to %name, Browser accesses WeChat account.', array('%name' => $account->name)));
+              watchdog(__FUNCTION__, t('Fallback: %name, PC access WeChat account.', array('%name' => $account->name)));
               return moha_wx_oauth2_login($account->name, $destination, $force);
             }
 
@@ -424,15 +429,16 @@ function moha_wx_oauth2_back($name) {
           "expires_in":7200,
           "refresh_token":"REFRESH_TOKEN",
           "openid":"OPENID",
-          "scope":"SCOPE"
+          "scope":"SCOPE",
+          "unionid":""
         }
       */
       $oauth2_credential_array = moha_wx_get_official(
-        format_string(MOHA_WX__API__OAUTH2_ACCESS_TOKEN, [
-          '@APPID' => $account['app_id'],
-          '@APPSECRET' => $account['app_secret'],
+        format_string(MOHA_WX__API__OAUTH2_ACCESS_TOKEN, array(
+          '@APPID' => $account->app_id,
+          '@APPSECRET' => $account->app_secret,
           '@CODE' => $code,
-        ])
+        ))
       );
 
       // Store access_token, expires_in, refresh_token, openid, scope, unionid.
@@ -441,17 +447,33 @@ function moha_wx_oauth2_back($name) {
       global $user;
 
       if (!user_is_logged_in() || (user_is_logged_in() && $user->uid != $oauth2_user->uid)) {
-        $form_state = array();
-        $form_state['uid'] = $oauth2_user->uid;
+        // Simulate user login if account is not disabled.
+        if ($oauth2_user->status <> 1) {
+          throw new Exception(format_string("%uid:%name disabled, can't login",
+            array(
+              '%uid' => $oauth2_user->uid,
+              '%name' => $oauth2_user->name,
+            )
+          ));
+        }
+        else {
+          $form_state = array();
+          $form_state['uid'] = $oauth2_user->uid;
 
-        user_login_submit(array(), $form_state);
-        drupal_session_regenerate();
+          user_login_submit(array(), $form_state);
+          drupal_session_regenerate();
+        }
       }
 
       drupal_goto(moha_state_get($state));
     }
   }
+  catch (MohaWXNoUserException $e) {
+    // When User doesn't exist.
+
+  }
   catch (Exception $e) {
+    // Common exception handling.
     watchdog_exception(__FUNCTION__, $e);
     moha_http_response_error($e);
   }
@@ -1398,15 +1420,54 @@ function _moha_wx_moha_user_by_openid($openid = '', $appid = '') {
     throw new MohaWXParamException('Empty AppID');
   }
 
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', 'field_collection_item')
-    ->entityCondition('bundle', 'moha_wx_connected_accounts')
-    ->fieldCondition('moha_wx_appid', 'value', $appid)
-    ->fieldCondition('moha_wx_openid', 'value', $openid);
+  $user = NULL;
 
-  $result = $query->execute();
+  $cache = moha_cache_get(__FUNCTION__);
+  if (isset($cache[$appid][$openid])) {
+    $uid = $cache[$appid][$openid];
 
-  if (empty($result)) {
+    $user = user_load($uid);
+  }
+  else {
+    // $openid and $appid don't exist in cache, check them in DB.
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'field_collection_item')
+      ->entityCondition('bundle', 'moha_wx_connected_accounts')
+      ->fieldCondition('moha_wx_appid', 'value', $appid)
+      ->fieldCondition('moha_wx_openid', 'value', $openid);
+
+    $result = $query->execute();
+
+    if ($result) {
+      watchdog(__FUNCTION__, 'Return User: %OPENID(%APPID)',
+        array(
+          '%OPENID' => $openid,
+          '%APPID' => $appid,
+        )
+      );
+
+      // Load user.
+      $field_collection_record = array_pop($result['field_collection_item']);
+      $connected_wechat_account = entity_load_single('field_collection_item', $field_collection_record->item_id);
+      $profile = $connected_wechat_account->hostEntity();
+      $user = user_load($profile->uid);
+    }
+  }
+
+  if ($user) {
+    // Cache User ID if they are found from DB.
+    $cache[$appid][$openid] = $user->uid;
+    moha_cache_set(__FUNCTION__, $cache, 60*60*24);
+    return $user;
+  }
+  else {
+    // if user can't be loaded, clean cache when need.
+    if (isset($cache[$appid][$openid])) {
+      unset($cache[$appid][$openid]);
+      moha_cache_set(__FUNCTION__, $cache, 60*60*24);
+    }
+
+    // User does not exist, or has been removed.
     throw new MohaWXNoUserException(
       format_string(
         'New User: %OPENID(%APPID)',
@@ -1417,22 +1478,7 @@ function _moha_wx_moha_user_by_openid($openid = '', $appid = '') {
       )
     );
   }
-  else {
-    watchdog(__FUNCTION__, 'Return User: %OPENID(%APPID)',
-      array(
-        '%OPENID' => $openid,
-        '%APPID' => $appid,
-      )
-    );
 
-    // Load user.
-    $field_collection_record = array_pop($result['field_collection_item']);
-    $connected_wechat_account = entity_load_single('field_collection_item', $field_collection_record->item_id);
-    $profile = $connected_wechat_account->hostEntity();
-    $user = user_load($profile->uid);
-
-    return $user;
-  }
 }
 
 /**
