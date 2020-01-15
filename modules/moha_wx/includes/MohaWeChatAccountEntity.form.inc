@@ -81,6 +81,12 @@ function moha_wx_account_form($form, &$form_state, $entity = NULL) {
     empty($entity->news_title) ? '' : $entity->news_title
   );
 
+  $container['news_digest'] = moha_form_element_text(
+    'Abstract',
+    'Specify the brief of the news which will be used as welcome message.',
+    empty($entity->news_digest) ? '' : $entity->news_digest
+  );
+
   $container['news_cover'] = moha_form_element_text(
     'Cover URL',
     'URL of the news cover image.',
@@ -94,7 +100,7 @@ function moha_wx_account_form($form, &$form_state, $entity = NULL) {
     empty($entity->news_link) ? '' : $entity->news_link,
     120, 255
   );
-  
+
   $container['text'] = moha_form_element_textarea(
     'Contact us text',
     'Put text contact us message here.',
@@ -113,7 +119,7 @@ function moha_wx_account_form($form, &$form_state, $entity = NULL) {
     !isset($entity->wx_fallback) ? '' : $entity->wx_fallback,
     $options
   );
-  
+
   moha_form_element_inline_2_table($container);
   moha_form_actions($form, MOHA__ACTION__REFRESH);
   return $form;
