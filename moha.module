@@ -1770,6 +1770,38 @@ function moha_form_element_weight($default = 0, $delta = 255) {
 }
 
 /**
+ * Returns render array for Current Item ID column in draggable table.
+ *
+ * @param $default
+ *
+ * @return mixed
+ */
+function moha_form_element_id($default = 0) {
+  $element['#type'] = 'hidden';
+  $element['#attributes'] = array('class' => array('row-id'));
+  $element['#is_id'] = TRUE; // Mark current element is Row ID.
+  $element['#value'] = $default;
+
+  return $element;
+}
+
+/**
+ * Returns render array for parent ID column in draggable table.
+ *
+ * @param $default
+ *
+ * @return mixed
+ */
+function moha_form_element_pid($default = 0) {
+  $element['#type'] = 'hidden';
+  $element['#attributes'] = array('class' => array('row-pid'));
+  $element['#is_pid'] = TRUE;
+  $element['#default_value'] = $default;
+
+  return $element;
+}
+
+/**
  * Returns render array for text element.
  *
  * @param $title
@@ -1971,6 +2003,8 @@ function moha_form_element_entity_ref($title = '', $description = '', $default =
  * @param $empty
  *
  * @return array
+ *
+ * @see theme_moha_ui_draggable_table()
  */
 function moha_form_element_table($rows, $header = array(), $empty = 'No Data.') {
   $element['#type'] = MOHA_UI__ELEMENT__DRAGGABLE_TABLE;

@@ -81,7 +81,7 @@ define('MOHA_USER__VARIABLE__OAUTH2_INTEGRATION', __MOHA_USER. '__var__oauth2_in
 /**
  * Module variables name: moha_user__var__oauth2_integration_login.
  * Boolean if auto replace Drupal login, need clear cache to enable.
- * 
+ *
  * @see moha_user_oauth2_admin_form()
  * @see moha_user_menu_alter()
  */
@@ -90,7 +90,7 @@ define('MOHA_USER__VARIABLE__OAUTH2_LOGIN', __MOHA_USER. '__var__oauth2_login');
 /**
  * Module variables name: moha_user__var__oauth2_integration_logout.
  * Boolean if auto replace Drupal logout, need clear cache to enable.
- * 
+ *
  * @see moha_user_oauth2_admin_form()
  * @see moha_user_menu_alter()
  */
@@ -158,12 +158,12 @@ function moha_user_permission() {
     'Edit Own Profile',
     'Allows users to update own information.'
   );
-  
+
   $permissions[MOHA_USER__PERMISSION__USER_SIMULATION] = moha_permission_define(
     'User Simulation',
     'Allows user to become to another user.'
   );
-  
+
   return $permissions;
 }
 
@@ -172,7 +172,7 @@ function moha_user_permission() {
  *
  * Entity: moha_user_oauth2_client.
  *   Check @link admin/moha/entities/oauth2-clients entity list page @endlink for all saved entities.
- * 
+ *
  * Stores information:
  *   Azure AD OAuth2 Endpoint.
  *   WeChat Account OAuth2 Endpoint.
@@ -214,7 +214,7 @@ function moha_user_menu() {
     TRUE,
     'Callback'
   );
-  
+
   $items['moha/user/oauth2/login/%'] = moha_menu_define(
     'OAuth2 Login',
     'Login user through configured OAuth2 client.',
@@ -241,7 +241,7 @@ function moha_user_menu() {
     'user_is_logged_in',
     'Callback'
   );
-  
+
   $items['admin/moha/user'] = moha_menu_block_define(
     'Moha User',
     'Configurations of user related settings, like: login, etc.'
@@ -303,7 +303,7 @@ function moha_user_menu_alter(&$items) {
   $integrations = moha_cache_variable_get(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
   $login_integration = moha_an2e($integrations, MOHA_USER__VARIABLE__OAUTH2_LOGIN, '');
   $logout_integration = moha_an2e($integrations, MOHA_USER__VARIABLE__OAUTH2_LOGOUT, 0);
-  
+
   if ($logout_integration) {
     /** @see moha_user_oauth2_logout() */
     $items['user/logout']['page callback'] = 'moha_user_oauth2_logout';
@@ -324,6 +324,7 @@ function moha_user_menu_alter(&$items) {
  * @return boolean
  */
 function moha_user_edit_access($account) {
+  /** @var boolean $access */
   $access = (
     ($GLOBALS['user']->uid == $account->uid) && user_access(MOHA_USER__PERMISSION__EDIT_OWN_PROFILE) ||
     user_access('administer users')
@@ -334,7 +335,7 @@ function moha_user_edit_access($account) {
 
 /**
  * Fetch OAuth2 client entity.
- * 
+ *
  * @param $client_name
  *   Client machine name.
  *
@@ -342,7 +343,7 @@ function moha_user_edit_access($account) {
  *
  * @return mixed
  *   __MOHA_USER_OAUTH2_CLIENT entity or entity array.
- * 
+ *
  * @throws Exception
  */
 function moha_user_fetch_oauth2_client($client_name = '', $options = array('status' => MOHA__TERM__ACTIVE)) {
@@ -359,7 +360,7 @@ function moha_user_fetch_oauth2_client($client_name = '', $options = array('stat
   if (empty($data)) {
     throw new Exception(format_string("@client_name is not configured or disabled.", array('@client_name' => $client_name)), 404);
   }
-  
+
   return $data;
 }
 
@@ -453,7 +454,7 @@ function moha_user_oauth2_implicit_login($client_name) {
 function moha_user_oauth2_implicit_redirect($client_name) {
   try {
     $entity = moha_user_fetch_oauth2_client($client_name);
-    
+
   }
   catch (Exception $e) {
     moha_show_exception($e);
@@ -475,7 +476,7 @@ function moha_user_oauth2_login_url($client_name) {
 
 /**
  * Generate post back URL per client name.
- * 
+ *
  * @param $client_name
  *
  * @return string
@@ -496,18 +497,18 @@ function moha_user_oauth2_post_url($client_name) {
  */
 function moha_user_oauth2_login($client_name, $destination = 'user', $force = FALSE) {
   try {
-    
+
     if (!$force && moha_user_is_oauth2_logged_in($client_name)) {
       $here = moha_link('here', 'user', FALSE);
       drupal_set_message(t("User has OAuth2 logged in. Click $here to check current user."));
       drupal_goto($destination);
     }
-    
+
     $entity = moha_user_fetch_oauth2_client($client_name);
 
     $nonce = moha_nonce();
     $_SESSION[__MOHA_USER_OAUTH2_CLIENT . '_nonce'] = $nonce;
-    
+
     $queries = array(
       'client_id' => $entity->client_id,
       'redirect_uri' => moha_user_oauth2_post_url($entity->name),
@@ -567,7 +568,7 @@ function moha_user_oauth2_post($client_name) {
     $oauth2_login_link = l('here', "moha/user/oauth2/login/$client_name");
 
     $entity = moha_user_fetch_oauth2_client($client_name);
-    
+
     ///* Receive and log credential data from OAuth2 Server, handling error checking. */
     $post = file_get_contents("php://input");
     watchdog(__FUNCTION__, "RAW: $post");
@@ -586,7 +587,7 @@ function moha_user_oauth2_post($client_name) {
       throw new Exception("<b>$oauth2_error</b><br/>$oauth2_error_description<br/>Click $oauth2_login_link to have another try.");
     }
     ////////
-    
+
     // Fetch user's OAuth2 profile when access token is ready.
     if (empty($oauth2_access_token)) {
       throw new Exception("No access token. Click $oauth2_login_link to have another try.");
@@ -697,7 +698,7 @@ function moha_user_oauth2_post($client_name) {
  */
 function moha_user_oauth2_logout($client_name = '') {
   try {
-    
+
     // Waiting for OAuth2 logout.
     $entities = moha_user_fetch_oauth2_client($client_name);
     $logout_endpoints = array();
@@ -718,7 +719,7 @@ function moha_user_oauth2_logout($client_name = '') {
     );
 
     moha_attach_library_moha_ui($content);
-    
+
     // Drupal logout.
     module_load_include('inc', 'user', 'user.pages');
     user_logout_current_user();
@@ -751,7 +752,7 @@ function moha_user_is_oauth2_logged_in($client_name = '') {
 
 /**
  * Implements hook_form_FORM_ID_alter().
- * 
+ *
  * @see hook_form_FORM_ID_alter().
  */
 function moha_user_form_user_login_alter(&$form, &$form_state, $form_id) {

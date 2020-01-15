@@ -70,6 +70,10 @@ define('MOHA_UI__ELEMENT__LOADING', 'moha_ui_loading');
 
 /**
  * Drupal Element: moha_ui_draggable_table.
+ * Leverage helper function @see moha_form_element_table() to generate rendering array.
+ *
+ * @see moha_ui_element_info()
+ * @see moha_ui_theme()
  */
 define('MOHA_UI__ELEMENT__DRAGGABLE_TABLE', 'moha_ui_draggable_table');
 
@@ -106,7 +110,7 @@ define('MOHA_UI__PERMISSION__DASHBOARD', 'moha_ui dashboard');
 define('MOHA_UI__PERMISSION__DASHBOARD_CONFIG', 'moha_ui dashboard config');
 
 /**
- * URL: 
+ * URL:
  */
 define('MOHA_UI__URL__DASHBOARD_CONFIG', 'admin/moha/ui/dashboard');
 
@@ -292,7 +296,7 @@ function moha_ui_permission() {
     'title' => t('Moha UI: Access Dashboard'),
     'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
   );
-  
+
   $permissions[MOHA_UI__PERMISSION__DASHBOARD_CONFIG] = array(
     'title' => t('Moha UI: Configure Dashboard'),
     'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
@@ -1644,7 +1648,8 @@ function moha_ui_draggable_table_process($element, &$form_state, $form) {
 }
 
 /**
- * Theme function renders draggable table.
+ * Theme function renders table layout, if weight column is in row, add draggable
+ * capability; if pid column is in row
  *
  * @param $variables
  *
@@ -1661,6 +1666,9 @@ function theme_moha_ui_draggable_table($variables) {
   $header = array();
   $rows = array();
   $draggable = FALSE;
+  $nestable = FALSE;
+  // Remember suppressible column ID, normally it's weight.
+  $suppressible = '';
 
   foreach ($element['#rows'] as $row_id => $row) {
     $header = array();
@@ -1672,6 +1680,11 @@ function theme_moha_ui_draggable_table($variables) {
 
       if (isset($element[$row_id][$column_id]['#is_weight']) && $element[$row_id][$column_id]['#is_weight']) {
         $draggable = TRUE;
+        $suppressible = $column_id;
+      }
+
+      if (isset($element[$row_id][$column_id]['#is_pid']) && $element[$row_id][$column_id]['#is_pid']) {
+        $nestable = TRUE;
       }
 
       $rows[$row_id][$column_id] = render($element[$row_id][$column_id]);
@@ -1690,7 +1703,14 @@ function theme_moha_ui_draggable_table($variables) {
     'attributes' => array('id' => $element['#id'] . '-draggable-table') + $element['#attributes']
   ));
 
+  if ($nestable) {
+    drupal_add_tabledrag($element['#id'] . '-draggable-table', 'match', 'parent', 'row-pid', 'row-pid', 'row-id');
+  }
+
   if ($draggable) {
+    /**
+     * CSS class row-weight is added through @see moha_form_element_weight().
+     */
     drupal_add_tabledrag($element['#id'] . '-draggable-table', 'order', 'sibling', 'row-weight');
   }
 
