@@ -289,7 +289,7 @@ function moha_wx_menu() {
     'Receive response from OAuth2 Server.',
     /** @see moha_wx_oauth2_back */
     array('moha_wx_oauth2_back', 4),
-    TRUE,
+    'user_is_anonymous',
     'Callback'
   );
 
