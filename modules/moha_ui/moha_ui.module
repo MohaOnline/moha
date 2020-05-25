@@ -1121,7 +1121,7 @@ ROW_HEADER_HTML;
       $previous_row[$i] = $expense;
     }
     else {
-      if (!empty($expense)) {
+      if (!empty($expense) && !empty($previous_row[$i % $column_num])) {
         $percentage = round(($expense - $previous_row[$i % $column_num]) / $previous_row[$i % $column_num] * 100, 2);
         $percentage = moha_ui_dashboard_render_percentage($percentage);
       }
