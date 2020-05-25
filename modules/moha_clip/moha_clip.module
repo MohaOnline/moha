@@ -256,7 +256,7 @@ config.templates_files = [ "' . __MOHA__PATH . '/ckeditor/moha.ckeditor.template
 config.templates = \'moha\';
 config.templates_replaceContent = false;
 config.keystrokes = [
-  [ CKEDITOR.CTRL + 83, \'moha_save\' ]
+[ 1114195, "moha_save", "Comment: CKEDITOR.CTRL + 83" ]
 ];
 config.pasteFilter = null;
 ';
