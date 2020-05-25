@@ -848,7 +848,10 @@ function moha_clip_views_pre_render(&$view) {
  * Implements hook_views_post_render().
  */
 function moha_clip_views_post_render(&$view, &$output, &$cache) {
-  //
+  // No logic to process for now
+  return;
+
+  // ??
   if ($view->name == 'moha_clip_list') {
 
     $rows = $view->result;
