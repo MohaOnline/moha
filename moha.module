@@ -1115,7 +1115,9 @@ function moha_image_default_styles() {
  *
  * @return array
  */
-function moha_menu_define($title = '', $description = '', $definition = array(), $access = array('access content'), $type = MOHA__MENU__NORMAL, $file = '', $path = '', $weight = 0) {
+function moha_menu_define($title = '', $description = '',
+                          $definition = array(), $access = array('access content'),
+                          $type = MOHA__MENU__NORMAL, $file = '', $path = '', $weight = 0) {
   $item = array(
     'title' => $title,
     'description' => $description,

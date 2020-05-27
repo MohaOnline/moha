@@ -69,7 +69,7 @@
 
     </div>
     <!-- Default to the left -->
-    <strong>Copyleft &copy; 2017-2019</strong>
+    <strong>Copyleft &copy; 2017-2020</strong>
   </footer>
   <?php endif; ?>
 
