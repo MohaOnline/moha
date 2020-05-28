@@ -3,7 +3,7 @@
     "description": "A module that is able to authenticate users based on X509 client certificates",
     "type": "simplesamlphp-module",
     "keywords": ["simplesamlphp", "X509"],
-    "license": "LGPL-3.0-or-later",
+    "license": "LGPL-2.1-or-later",
     "authors": [
         {
             "name": "Joost van Dijk",
@@ -33,12 +33,11 @@
     "require": {
         "php": ">=5.5",
         "simplesamlphp/composer-module-installer": "~1.1",
-        "simplesamlphp/simplesamlphp-module-ldap": "^0.9"
+        "simplesamlphp/simplesamlphp-module-ldap": "^0.9.5"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp": "^1.17",
-        "simplesamlphp/simplesamlphp-test-framework": "^0.0.7",
-        "phpunit/phpunit": "~4.8.36"
+        "simplesamlphp/simplesamlphp": "^1.18",
+        "simplesamlphp/simplesamlphp-test-framework": "^0.0.15"
     },
     "extra": {
         "ssp-mixedcase-module-name": "authX509"

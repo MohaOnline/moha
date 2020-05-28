@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 1.5.23 - 2020-05-22
+- Optimized global product support.
+
+## 1.5.22 - 2020-05-12
+- Updated Endpoints.
+
+## 1.5.21 - 2020-02-26
+- Improved Nonce.
+- Updated Endpoints.
+
+## 1.5.20 - 2019-12-30
+- Improved Docs.
+- Updated Endpoints.
+
+## 1.5.19 - 2019-12-17
+- Updated Endpoints.
+
 ## 1.5.18 - 2019-10-11
 - Updated Request link.
 - Updated Endpoints data.
