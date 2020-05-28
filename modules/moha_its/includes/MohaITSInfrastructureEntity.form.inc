@@ -145,7 +145,7 @@ function moha_its_infrastructure_form_submit($form, &$form_state) {
 
   $entity->oid = $entity->oid['entity_id'];
 
-  /** @see \MohaITSInfrastructureEntityController::save()*/
+  /** @see \MohaCommonEntityController::save()*/
   $entity->save();
 
   field_attach_submit(__MOHA_ITS_INFRASTRUCTURE, $entity, $form['fields']['wrapper'], $form_state);

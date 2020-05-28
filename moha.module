@@ -939,6 +939,37 @@ function moha_entity_fetch($entity_type, $properties = array('status' => MOHA__T
 }
 
 /**
+ * Returns revision IDs of certain entity.
+ *
+ * @param $entity
+ * @return mixed
+ */
+function moha_entity_fetch_revision_ids($entity) {
+  if (empty($entity) || !is_object($entity)) {
+    return array();
+  }
+
+  $table_name = $entity->entityInfo()['base table'];
+  $revision_table_name = $entity->entityInfo()['revision table'];
+  $id = $entity->entityInfo()['entity keys']['id'];
+  $vid = $entity->entityInfo()['entity keys']['revision'];
+  $admin_uri = $entity->entityInfo()['admin ui']['path'];
+
+  /** @var \PDOStatement $query */
+  $query = db_query("SELECT $vid FROM {$revision_table_name} $revision_table_name WHERE $id = :$id",
+    array(
+      ":$id" => $entity->$id,
+    ));
+
+  $vids = $query->fetchAll(PDO::FETCH_COLUMN);
+  if (is_null($vids) || !is_array($vids)) {
+    $vids = array();
+  }
+
+  return $vids;
+}
+
+/**
  * Returns permission define array.
  *
  * @param $title

@@ -998,18 +998,23 @@ function moha_its_azure_china_enrollment_ids() {
   $entities = moha_entity_fetch(__MOHA_ITS_INFRASTRUCTURE);
 
   foreach ($entities as $entity) {
-    $platform = moha_term_name_by_tid($entity->tid);
+    $vids = moha_entity_fetch_revision_ids($entity);
 
-    if ($platform == MOHA_ITS__TERM__AZURE_CHINA) {
-      $wrapper = entity_metadata_wrapper(__MOHA_ITS_INFRASTRUCTURE, $entity);
-      $enrollment_id = $wrapper->moha_its_infra_enrollment_id->value();
+    foreach ($vids as $vid){
+      $entity = entity_revision_load(__MOHA_ITS_INFRASTRUCTURE, $vid);
+      $platform = moha_term_name_by_tid($entity->tid);
 
-      $enrollment_ids[$enrollment_id] = array(
-        'enrollment_id' => $enrollment_id,
-        'from' => $wrapper->moha_its_infra_expense_from->value(),
-        'name' => $wrapper->name->value(),
-        'full_name' => $wrapper->full_name->value(),
-      );
+      if ($platform == MOHA_ITS__TERM__AZURE_CHINA) {
+        $wrapper = entity_metadata_wrapper(__MOHA_ITS_INFRASTRUCTURE, $entity);
+        $enrollment_id = $wrapper->moha_its_infra_enrollment_id->value();
+
+        $enrollment_ids[$enrollment_id] = array(
+          'enrollment_id' => $enrollment_id,
+          'from' => $wrapper->moha_its_infra_expense_from->value(),
+          'name' => $wrapper->name->value(),
+          'full_name' => $wrapper->full_name->value(),
+        );
+      }
     }
   }
 
