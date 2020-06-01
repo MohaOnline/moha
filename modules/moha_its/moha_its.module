@@ -1043,10 +1043,10 @@ function moha_its_azure_china_enrollment_ids() {
  * @throws \Exception
  */
 function moha_its_azure_china_expense_details($weeks_num = 4) {
-  $expenses = moha_cache_get(__FUNCTION__, array());
-  if (!empty($expenses) && is_array($expenses)) {
-    return $expenses;
-  }
+//  $expenses = moha_cache_get(__FUNCTION__, array());
+//  if (!empty($expenses) && is_array($expenses)) {
+//    return $expenses;
+//  }
 
   $enrollment_ids = moha_its_azure_china_enrollment_ids();
 
@@ -1086,6 +1086,40 @@ function moha_its_azure_china_expense_details($weeks_num = 4) {
 
   if (!is_array($expenses)) {
     $expenses = array();
+  }
+  else {
+    // Merge later expenses to early data.
+    $combined_expenses = array();
+    foreach ($expenses as $enrollment_id => $expense) {
+      if (empty($combined_expenses)) {
+        $combined_expenses[$enrollment_id] = $expense;
+      }
+      else {
+        foreach ($combined_expenses as $enrollment_id => $combined_expense) {
+
+          if ($combined_expense['name'] == $expense['name']) {
+
+            if ($combined_expense['from'] < $expense['from']) {
+              $source = $expense;
+              $target = $combined_expense;
+            }
+            else {
+              $source = $combined_expense;
+              $target = $expense;
+            }
+
+            foreach ($source['details'] as $date => $cost) {
+              $target['details'][$date] = $cost;
+            }
+
+            $target['last_weeks'] = $source['last_weeks'];
+
+            $combined_expenses[$enrollment_id] = $target;
+          }
+        }
+      }
+    }
+    $expenses = $combined_expenses;
   }
   moha_cache_set(__FUNCTION__, $expenses, 60*10);
 
