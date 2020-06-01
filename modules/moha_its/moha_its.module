@@ -925,29 +925,29 @@ function moha_its_azure_china_expense_sync($entity) {
     }
     else {
 
-      // Re-fetch expense in previous month if
-      $day = date('j');
-      if ($day < 6) {
-        $previous = date(MOHA__DATETIME_FORMAT__AZURE_EXPENSE, strtotime("-1 month"));
-        list($previous_year, $previous_month) = moha_its_azure_china_expense_period_expload($previous);
-
-        moha_its_azure_china_clear_expense($enrollment_id, $previous_year, $previous_month);
-        moha_its_azure_china_fetch_expense($enrollment_id, $expense_token, $previous);
-
-        watchdog( __FUNCTION__,
-          "Day $day, overwrite data of previous month.",
-          array(
-          ),
-          WATCHDOG_INFO
-        );
-      }
-
       // Overwrite expense in current month.
       moha_its_azure_china_clear_expense($enrollment_id, $current_year, $current_month);
       moha_its_azure_china_fetch_expense($enrollment_id, $expense_token, $current);
 
       watchdog( __FUNCTION__,
         "Overwrote data of $current.",
+        array(
+        ),
+        WATCHDOG_INFO
+      );
+    }
+
+    // Re-fetch expenses of previous month in first week.
+    $day = date('j');
+    if ($day < 6) {
+      $previous = date(MOHA__DATETIME_FORMAT__AZURE_EXPENSE, strtotime("-1 month"));
+      list($previous_year, $previous_month) = moha_its_azure_china_expense_period_expload($previous);
+
+      moha_its_azure_china_clear_expense($enrollment_id, $previous_year, $previous_month);
+      moha_its_azure_china_fetch_expense($enrollment_id, $expense_token, $previous);
+
+      watchdog( __FUNCTION__,
+        "Day $day, overwrite data of previous month.",
         array(
         ),
         WATCHDOG_INFO
