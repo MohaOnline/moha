@@ -13,9 +13,9 @@
         "php-http/guzzle6-adapter": "^1.1",
         "phpseclib/phpseclib": "~2.0",
         "jumbojett/openid-connect-php": "^0.8.0",
-        "facebook/webdriver": "^1.7",
         "php-ai/php-ml": "^0.4.1",
-        "mobiledetect/mobiledetectlib": "^2.8"
+        "mobiledetect/mobiledetectlib": "^2.8",
+        "php-webdriver/webdriver": "^1.8"
     },
     "repositories": {
         "packagist": {
