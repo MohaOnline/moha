@@ -1043,10 +1043,10 @@ function moha_its_azure_china_enrollment_ids() {
  * @throws \Exception
  */
 function moha_its_azure_china_expense_details($weeks_num = 4) {
-//  $expenses = moha_cache_get(__FUNCTION__, array());
-//  if (!empty($expenses) && is_array($expenses)) {
-//    return $expenses;
-//  }
+  $expenses = moha_cache_get(__FUNCTION__, array());
+  if (!empty($expenses) && is_array($expenses)) {
+    return $expenses;
+  }
 
   $enrollment_ids = moha_its_azure_china_enrollment_ids();
 

@@ -94,3 +94,9 @@ html {
   font-family: inherit;
 }
 /***/
+
+/** Supply enough space to configure CKEditor path. */
+#edit-ckeditor-path, #edit-ckeditor-local-path, #edit-ckeditor-plugins-path, #edit-ckeditor-plugins-path, #edit-ckeditor-plugins-local-path {
+  min-width: 100%;
+}
+/***/
