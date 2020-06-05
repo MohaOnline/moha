@@ -37,6 +37,9 @@ export default function () {
       swiper.slideTo(swiper.activeIndex, 0, false, true);
     }
   }
+  if (swiper.autoplay && swiper.autoplay.running && swiper.autoplay.paused) {
+    swiper.autoplay.run();
+  }
   // Return locks after resize
   swiper.allowSlidePrev = allowSlidePrev;
   swiper.allowSlideNext = allowSlideNext;

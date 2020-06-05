@@ -1,5 +1,5 @@
 /**
- * Framework7 4.4.7
+ * Framework7 4.5.2
  * Full featured mobile HTML framework for building iOS & Android apps
  * http://framework7.io/
  *
@@ -7,7 +7,7 @@
  *
  * Released under the MIT License
  *
- * Released on: July 19, 2019
+ * Released on: September 27, 2019
  */
 
 (function (global, factory) {
@@ -3052,6 +3052,12 @@
       device.electron = electron;
       device.macos = macos;
       device.windows = windows;
+      if (device.macos) {
+        device.os = 'macos';
+      }
+      if (device.windows) {
+        device.os = 'windows';
+      }
     }
 
     // Meta statusbar
@@ -3852,7 +3858,7 @@
           classNames.push('device-retina');
         }
         // OS classes
-        if (Device.os) {
+        if (Device.os && !Device.desktop) {
           classNames.push(
             ("device-" + (Device.os)),
             ("device-" + (Device.os) + "-" + (Device.osVersion.split('.')[0])),
@@ -3869,8 +3875,9 @@
           }
         } else if (Device.desktop) {
           classNames.push('device-desktop');
-          if (Device.macos) { classNames.push('device-macos'); }
-          else if (Device.windows) { classNames.push('device-windows'); }
+          if (Device.os) {
+            classNames.push(("device-" + (Device.os)));
+          }
         }
         if (Device.cordova || Device.phonegap) {
           classNames.push('device-cordova');
@@ -5037,9 +5044,14 @@
       return true;
     }
     function handleClickLight(e) {
+      var isOverswipe = e && e.detail && e.detail === 'f7Overswipe';
       var localPreventClick = preventClick;
       if (targetElement && e.target !== targetElement) {
-        localPreventClick = true;
+        if (isOverswipe) {
+          localPreventClick = false;
+        } else {
+          localPreventClick = true;
+        }
       }
       if (params.tapHold && params.tapHoldPreventClicks && tapHoldFired) {
         localPreventClick = true;
@@ -8237,12 +8249,19 @@
       }
       var forceOtherUrl = navigateOptions.force && previousRoute && navigateUrl;
       if (previousRoute && modalToClose) {
-        if (router.params.pushState && navigateOptions.pushState !== false) {
+        var isBrokenPushState = Device.ie || Device.edge || (Device.firefox && !Device.ios);
+        var needHistoryBack = router.params.pushState && navigateOptions.pushState !== false;
+        if (needHistoryBack && !isBrokenPushState) {
           History.back();
         }
         router.currentRoute = previousRoute;
         router.history.pop();
         router.saveHistory();
+
+        if (needHistoryBack && isBrokenPushState) {
+          History.back();
+        }
+
         router.modalRemove(modalToClose);
         if (forceOtherUrl) {
           router.navigate(navigateUrl, { reloadCurrent: true });
@@ -11271,7 +11290,7 @@
     if (html && typeof html === 'string') {
       html = html.trim();
       self.$vnode = vdom(html, self, app, true);
-      self.el = doc.createElement('div');
+      self.el = doc.createElement(self.$vnode.sel || 'div');
       patch(self.el, self.$vnode);
     } else if (html) {
       self.el = html;
@@ -11427,17 +11446,20 @@
     } else if (componentString.indexOf('<style scoped>') >= 0) {
       styleScoped = true;
       style = componentString.split('<style scoped>')[1].split('</style>')[0];
-      style = style.split('\n').map(function (line) {
-        var trimmedLine = line.trim();
-        if (trimmedLine.indexOf('@') === 0) { return line; }
-        if (line.indexOf('{') >= 0) {
-          if (line.indexOf('{{this}}') >= 0) {
-            return line.replace('{{this}}', ("[data-f7-" + id + "]"));
-          }
-          return ("[data-f7-" + id + "] " + (line.trim()));
-        }
-        return line;
-      }).join('\n');
+      style = style
+        .replace(/{{this}}/g, ("[data-f7-" + id + "]"))
+        .replace(/[\n]?([^{^}]*){/ig, function (string, rules) {
+          // eslint-disable-next-line
+          rules = rules
+            .split(',')
+            .map(function (rule) {
+              if (rule.indexOf(("[data-f7-" + id + "]")) >= 0) { return rule; }
+              return ("[data-f7-" + id + "] " + (rule.trim()));
+            })
+            .join(', ');
+
+          return ("\n" + rules + " {");
+        });
     }
 
     // Parse Script
@@ -12387,8 +12409,11 @@
         previousScrollTop = currentScrollTop;
       }
 
-      function handleScroll() {
+      function handleScroll(e) {
         scrollContent = this;
+        if (e && e.target && e.target !== scrollContent) {
+          return;
+        }
         currentScrollTop = scrollContent.scrollTop;
         scrollChanged = currentScrollTop;
 
@@ -12724,8 +12749,11 @@
       var reachEnd;
       var action;
       var toolbarHidden;
-      function handleScroll() {
+      function handleScroll(e) {
         var scrollContent = this;
+        if (e && e.target && e.target !== scrollContent) {
+          return;
+        }
         if ($pageEl.hasClass('page-previous')) { return; }
         currentScrollTop = scrollContent.scrollTop;
         scrollHeight = scrollContent.scrollHeight;
@@ -13104,6 +13132,9 @@
       }
 
       if (!$el || !$el.hasClass('modal-in')) {
+        if (dialogsQueue.indexOf(modal) >= 0) {
+          dialogsQueue.splice(dialogsQueue.indexOf(modal), 1);
+        }
         return modal;
       }
 

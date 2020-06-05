@@ -1,12 +1,12 @@
 {
   "name": "framework7",
   "homepage": "https://github.com/nolimits4web/Framework7",
-  "version": "4.4.7",
-  "_release": "4.4.7",
+  "version": "4.5.2",
+  "_release": "4.5.2",
   "_resolution": {
     "type": "version",
-    "tag": "v4.4.7",
-    "commit": "e694febb9d3506542a855705598f6d9ccaef4afe"
+    "tag": "v4.5.2",
+    "commit": "526b96f6de992689cbc306d2dc9eefd61129d0f2"
   },
   "_source": "https://github.com/nolimits4web/Framework7.git",
   "_target": "^4.4.6",

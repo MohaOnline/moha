@@ -31,46 +31,44 @@
     "documentation"
   ],
   "dependencies": {
-    "bootstrap-slider": "879a98d",
-    "chart.js": "1.0.*",
-    "ckeditor": "^4.7.0",
+    "chart.js": "^1.0",
+    "ckeditor": "^4.7",
     "bootstrap-colorpicker": "^2.5.1",
-    "bootstrap": "^3.4.0",
-    "jquery": "^3.2.1",
+    "bootstrap": "^3.4",
+    "jquery": "^3.4.1",
     "datatables.net": "^1.10.15",
     "datatables.net-bs": "^2.1.1",
-    "bootstrap-datepicker": "^1.7.0",
+    "bootstrap-datepicker": "^1.7",
     "bootstrap-daterangepicker": "^2.1.25",
     "moment": "^2.18.1",
     "fastclick": "^1.0.6",
     "Flot": "flot#^0.8.3",
-    "fullcalendar": "^3.4.0",
+    "fullcalendar": "^3.4",
     "inputmask": "jquery.inputmask#^3.3.7",
-    "ion.rangeSlider": "ionrangeslider#^2.2.0",
+    "ion.rangeSlider": "ionrangeslider#^2.2",
     "jvectormap": "^1.2.2",
     "jquery-knob": "^1.2.13",
     "morris.js": "^0.5.1",
     "PACE": "pace#^1.0.2",
     "select2": "^4.0.7",
     "jquery-slimscroll": "slimscroll#^1.3.8",
-    "bootstrap-timepicker": "^0.5.2",
     "jquery-sparkline": "^2.1.3",
-    "font-awesome": "^4.7.0",
+    "font-awesome": "^4.7",
     "Ionicons": "ionicons#^2.0.1",
-    "jquery-ui": "1.11.4"
+    "jquery-ui": "^1.12.1",
+    "seiyria-bootstrap-slider": "^10.6.2"
   },
   "resolutions": {
-    "jquery": "^3.2.1"
+    "jquery": "^3.4.1"
   },
-  "version": "2.4.15",
-  "_release": "2.4.15",
+  "version": "2.4.18",
+  "_release": "2.4.18",
   "_resolution": {
     "type": "version",
-    "tag": "v2.4.15",
-    "commit": "78d0c113742630fd0305bc1c8cbff94a075b5532"
+    "tag": "v2.4.18",
+    "commit": "e7ffa67a4649dc08d2018708a38604a6c0a02ab6"
   },
   "_source": "https://github.com/almasaeed2010/AdminLTE.git",
   "_target": "^2.4.15",
-  "_originalSource": "adminlte",
-  "_direct": true
+  "_originalSource": "adminlte"
 }

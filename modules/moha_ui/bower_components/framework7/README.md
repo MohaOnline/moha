@@ -21,6 +21,43 @@ Framework7 is an MIT-licensed open source project with its ongoing development m
 <table>
   <tr>
     <td align="center" valign="middle">
+      <a href="https://www.sparheld.de/" target="_blank">
+        <img width="160" src="https://cdn.framework7.io/i/sponsors/sparheld.jpg">
+      </a>
+    </td>
+    <td align="center" valign="middle">
+      <a href="https://staffaugmentation.ro" target="_blank">
+        <img width="160" src="https://cdn.framework7.io/i/sponsors/staffaugmentation.jpg">
+      </a>
+    </td>
+    <td align="center" valign="middle">
+      <a href="https://www.thoriumbuilder.com/" target="_blank">
+        <img width="160" src="https://cdn.framework7.io/i/sponsors/thorium.png">
+      </a>
+    </td>
+    <td align="center" valign="middle">
+      <a href="https://app-valley.vip/" target="_blank">
+        <img width="160" src="https://cdn.framework7.io/i/sponsors/appvalley.jpg">
+      </a>
+    </td>
+    <td align="center" valign="middle">
+      <a href="http://mytommy.com" target="_blank">
+        <img width="160" src="https://cdn.framework7.io/i/sponsors/tommy.png">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle">
+      <a href="https://www.securcom.me/" target="_blank">
+        <img width="160" src="https://cdn.framework7.io/i/sponsors/securcom.png">
+      </a>
+    </td>
+    <td align="center" valign="middle">
+      <a href="https://www.colognewebdesign.de/" target="_blank">
+        <img width="160" src="https://cdn.framework7.io/i/sponsors/colognewebdesign.png">
+      </a>
+    </td>
+    <td align="center" valign="middle">
       <a href="https://rise.co" target="_blank">
         <img width="160" src="https://cdn.framework7.io/i/sponsors/rise.png">
       </a>
@@ -31,23 +68,17 @@ Framework7 is an MIT-licensed open source project with its ongoing development m
       </a>
     </td>
     <td align="center" valign="middle">
-      <a href="https://unlikelyit.com/" target="_blank">
-        <img width="160" src="https://cdn.framework7.io/i/sponsors/unlikely-it.png">
+      <a href="https://bid4papers.com/write-my-essay.html" target="_blank">
+        <img width="160" src="https://cdn.framework7.io/i/sponsors/bid4papers.png">
       </a>
     </td>
-    <td align="center" valign="middle">
-      <a href="https://www.thoriumbuilder.com/" target="_blank">
-        <img width="160" src="https://cdn.framework7.io/i/sponsors/thorium.png">
-      </a>
-    </td>
+  </tr>
+  <tr>
     <td align="center" valign="middle">
       <a href="https://kidoverse.app" target="_blank">
         <img width="160" src="https://cdn.framework7.io/i/sponsors/kidoverse.png">
       </a>
     </td>
-
-  </tr>
-  <tr>
     <td align="center" valign="middle">
       <a href="https://www.cyberbrain.nl/" target="_blank">
         <img width="160" src="https://cdn.framework7.io/i/sponsors/cyberbrain.png">
@@ -56,11 +87,6 @@ Framework7 is an MIT-licensed open source project with its ongoing development m
     <td align="center" valign="middle">
       <a href="https://hicapps.cl/web/" target="_blank">
         <img width="160" src="https://cdn.framework7.io/i/sponsors/hicapps.png">
-      </a>
-    </td>
-    <td align="center" valign="middle">
-      <a href="https://edubirdie.com/" target="_blank">
-        <img width="160" src="https://cdn.framework7.io/i/sponsors/birdie.png">
       </a>
     </td>
     <td align="center" valign="middle">
@@ -80,22 +106,6 @@ Framework7 is an MIT-licensed open source project with its ongoing development m
         <img width="160" src="https://cdn.framework7.io/i/sponsors/wappler.png">
       </a>
     </td>
-    <td align="center" valign="middle">
-      <a href="https://app-valley.vip/" target="_blank">
-        <img width="160" src="https://cdn.framework7.io/i/sponsors/appvalley.jpg">
-      </a>
-    </td>
-    <td align="center" valign="middle">
-      <a href="https://www.securcom.me/" target="_blank">
-        <img width="160" src="https://cdn.framework7.io/i/sponsors/securcom.png">
-      </a>
-    </td>
-    <td align="center" valign="middle">
-      <a href="http://mytommy.com" target="_blank">
-        <img width="160" src="https://cdn.framework7.io/i/sponsors/tommy.png">
-      </a>
-    </td>
-    <td></td>
   </tr>
 </table>
 

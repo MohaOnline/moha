@@ -1,15 +1,14 @@
 {
   "name": "echarts",
   "homepage": "https://github.com/ecomfe/echarts",
-  "version": "4.2.1",
-  "_release": "4.2.1",
+  "version": "4.8.0",
+  "_release": "4.8.0",
   "_resolution": {
     "type": "version",
-    "tag": "4.2.1",
-    "commit": "010315e947235415b7dfc4be9aa6865e7e5d76dc"
+    "tag": "4.8.0",
+    "commit": "3b61add89d9901b1fa88aaf3b09e1314e123c599"
   },
   "_source": "https://github.com/ecomfe/echarts.git",
   "_target": "^4.2.1",
-  "_originalSource": "echarts",
-  "_direct": true
+  "_originalSource": "echarts"
 }

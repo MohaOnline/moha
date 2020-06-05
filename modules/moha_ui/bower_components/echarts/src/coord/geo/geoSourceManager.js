@@ -34,9 +34,10 @@ export default {
     /**
      * @param {string} mapName
      * @param {Object} nameMap
+     * @param {string} nameProperty
      * @return {Object} source {regions, regionsMap, nameCoordMap, boundingRect}
      */
-    load: function (mapName, nameMap) {
+    load: function (mapName, nameMap, nameProperty) {
         var regions = [];
         var regionsMap = createHashMap();
         var nameCoordMap = createHashMap();
@@ -44,7 +45,7 @@ export default {
         var mapRecords = retrieveMap(mapName);
 
         each(mapRecords, function (record) {
-            var singleSource = loaders[record.type].load(mapName, record);
+            var singleSource = loaders[record.type].load(mapName, record, nameProperty);
 
             each(singleSource.regions, function (region) {
                 var regionName = region.name;
@@ -107,7 +108,7 @@ function makeInvoker(methodName) {
 function mapNotExistsError(mapName) {
     if (__DEV__) {
         console.error(
-            'Map ' + mapName + ' not exists. You can download map file on http://echarts.baidu.com/download-map.html'
+            'Map ' + mapName + ' not exists. The GeoJSON of the map must be provided.'
         );
     }
 }

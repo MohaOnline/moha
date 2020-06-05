@@ -38,13 +38,20 @@ const InfiniteScroll = {
   create(el) {
     const $el = $(el);
     const app = this;
-    $el.on('scroll', function handle(e) {
+    function scrollHandler(e) {
       app.infiniteScroll.handle(this, e);
+    }
+    $el.each((index, element) => {
+      element.f7InfiniteScrollHandler = scrollHandler;
+      element.addEventListener('scroll', element.f7InfiniteScrollHandler);
     });
   },
   destroy(el) {
     const $el = $(el);
-    $el.off('scroll');
+    $el.each((index, element) => {
+      element.removeEventListener('scroll', element.f7InfiniteScrollHandler);
+      delete element.f7InfiniteScrollHandler;
+    });
   },
 };
 export default {
@@ -63,14 +70,18 @@ export default {
     tabMounted(tabEl) {
       const app = this;
       const $tabEl = $(tabEl);
-      $tabEl.find('.infinite-scroll-content').each((index, el) => {
+      const $isEls = $tabEl.find('.infinite-scroll-content');
+      if ($tabEl.is('.infinite-scroll-content')) $isEls.add($tabEl);
+      $isEls.each((index, el) => {
         app.infiniteScroll.create(el);
       });
     },
     tabBeforeRemove(tabEl) {
       const $tabEl = $(tabEl);
       const app = this;
-      $tabEl.find('.infinite-scroll-content').each((index, el) => {
+      const $isEls = $tabEl.find('.infinite-scroll-content');
+      if ($tabEl.is('.infinite-scroll-content')) $isEls.add($tabEl);
+      $isEls.each((index, el) => {
         app.infiniteScroll.destroy(el);
       });
     },

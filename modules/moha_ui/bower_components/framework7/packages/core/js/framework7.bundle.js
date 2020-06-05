@@ -1,5 +1,5 @@
 /**
- * Framework7 4.4.7
+ * Framework7 4.5.2
  * Full featured mobile HTML framework for building iOS & Android apps
  * http://framework7.io/
  *
@@ -7,7 +7,7 @@
  *
  * Released under the MIT License
  *
- * Released on: July 19, 2019
+ * Released on: September 27, 2019
  */
 
 (function (global, factory) {
@@ -3052,6 +3052,12 @@
       device.electron = electron;
       device.macos = macos;
       device.windows = windows;
+      if (device.macos) {
+        device.os = 'macos';
+      }
+      if (device.windows) {
+        device.os = 'windows';
+      }
     }
 
     // Meta statusbar
@@ -3852,7 +3858,7 @@
           classNames.push('device-retina');
         }
         // OS classes
-        if (Device.os) {
+        if (Device.os && !Device.desktop) {
           classNames.push(
             ("device-" + (Device.os)),
             ("device-" + (Device.os) + "-" + (Device.osVersion.split('.')[0])),
@@ -3869,8 +3875,9 @@
           }
         } else if (Device.desktop) {
           classNames.push('device-desktop');
-          if (Device.macos) { classNames.push('device-macos'); }
-          else if (Device.windows) { classNames.push('device-windows'); }
+          if (Device.os) {
+            classNames.push(("device-" + (Device.os)));
+          }
         }
         if (Device.cordova || Device.phonegap) {
           classNames.push('device-cordova');
@@ -5037,9 +5044,14 @@
       return true;
     }
     function handleClickLight(e) {
+      var isOverswipe = e && e.detail && e.detail === 'f7Overswipe';
       var localPreventClick = preventClick;
       if (targetElement && e.target !== targetElement) {
-        localPreventClick = true;
+        if (isOverswipe) {
+          localPreventClick = false;
+        } else {
+          localPreventClick = true;
+        }
       }
       if (params.tapHold && params.tapHoldPreventClicks && tapHoldFired) {
         localPreventClick = true;
@@ -8237,12 +8249,19 @@
       }
       var forceOtherUrl = navigateOptions.force && previousRoute && navigateUrl;
       if (previousRoute && modalToClose) {
-        if (router.params.pushState && navigateOptions.pushState !== false) {
+        var isBrokenPushState = Device.ie || Device.edge || (Device.firefox && !Device.ios);
+        var needHistoryBack = router.params.pushState && navigateOptions.pushState !== false;
+        if (needHistoryBack && !isBrokenPushState) {
           History.back();
         }
         router.currentRoute = previousRoute;
         router.history.pop();
         router.saveHistory();
+
+        if (needHistoryBack && isBrokenPushState) {
+          History.back();
+        }
+
         router.modalRemove(modalToClose);
         if (forceOtherUrl) {
           router.navigate(navigateUrl, { reloadCurrent: true });
@@ -11271,7 +11290,7 @@
     if (html && typeof html === 'string') {
       html = html.trim();
       self.$vnode = vdom(html, self, app, true);
-      self.el = doc.createElement('div');
+      self.el = doc.createElement(self.$vnode.sel || 'div');
       patch(self.el, self.$vnode);
     } else if (html) {
       self.el = html;
@@ -11427,17 +11446,20 @@
     } else if (componentString.indexOf('<style scoped>') >= 0) {
       styleScoped = true;
       style = componentString.split('<style scoped>')[1].split('</style>')[0];
-      style = style.split('\n').map(function (line) {
-        var trimmedLine = line.trim();
-        if (trimmedLine.indexOf('@') === 0) { return line; }
-        if (line.indexOf('{') >= 0) {
-          if (line.indexOf('{{this}}') >= 0) {
-            return line.replace('{{this}}', ("[data-f7-" + id + "]"));
-          }
-          return ("[data-f7-" + id + "] " + (line.trim()));
-        }
-        return line;
-      }).join('\n');
+      style = style
+        .replace(/{{this}}/g, ("[data-f7-" + id + "]"))
+        .replace(/[\n]?([^{^}]*){/ig, function (string, rules) {
+          // eslint-disable-next-line
+          rules = rules
+            .split(',')
+            .map(function (rule) {
+              if (rule.indexOf(("[data-f7-" + id + "]")) >= 0) { return rule; }
+              return ("[data-f7-" + id + "] " + (rule.trim()));
+            })
+            .join(', ');
+
+          return ("\n" + rules + " {");
+        });
     }
 
     // Parse Script
@@ -12387,8 +12409,11 @@
         previousScrollTop = currentScrollTop;
       }
 
-      function handleScroll() {
+      function handleScroll(e) {
         scrollContent = this;
+        if (e && e.target && e.target !== scrollContent) {
+          return;
+        }
         currentScrollTop = scrollContent.scrollTop;
         scrollChanged = currentScrollTop;
 
@@ -12724,8 +12749,11 @@
       var reachEnd;
       var action;
       var toolbarHidden;
-      function handleScroll() {
+      function handleScroll(e) {
         var scrollContent = this;
+        if (e && e.target && e.target !== scrollContent) {
+          return;
+        }
         if ($pageEl.hasClass('page-previous')) { return; }
         currentScrollTop = scrollContent.scrollTop;
         scrollHeight = scrollContent.scrollHeight;
@@ -13104,6 +13132,9 @@
       }
 
       if (!$el || !$el.hasClass('modal-in')) {
+        if (dialogsQueue.indexOf(modal) >= 0) {
+          dialogsQueue.splice(dialogsQueue.indexOf(modal), 1);
+        }
         return modal;
       }
 
@@ -14267,6 +14298,8 @@
       var targetHeight;
       var targetOffsetLeft;
       var targetOffsetTop;
+      var safeAreaTop = parseInt($('html').css('--f7-safe-area-top'), 10);
+      if (Number.isNaN(safeAreaTop)) { safeAreaTop = 0; }
       if ($targetEl && $targetEl.length > 0) {
         targetWidth = $targetEl.outerWidth();
         targetHeight = $targetEl.outerHeight();
@@ -14297,7 +14330,7 @@
           // On bottom
           position = 'bottom';
           top = targetOffsetTop + targetHeight;
-        } else if (height < targetOffsetTop) {
+        } else if (height < targetOffsetTop - safeAreaTop) {
           // On top
           top = targetOffsetTop - height;
           position = 'top';
@@ -14325,7 +14358,7 @@
         $el.addClass(("popover-on-" + position + " popover-on-" + hPosition));
       } else {
         // ios and aurora
-        if ((height + angleSize) < targetOffsetTop) {
+        if ((height + angleSize) < targetOffsetTop - safeAreaTop) {
           // On top
           top = targetOffsetTop - height - angleSize;
         } else if ((height + angleSize) < app.height - targetOffsetTop - targetHeight) {
@@ -15370,6 +15403,12 @@
           app.preloader.init(preloaderEl);
         });
       },
+      tabMounted: function tabMounted(tabEl) {
+        var app = this;
+        $(tabEl).find('.preloader').each(function (index, preloaderEl) {
+          app.preloader.init(preloaderEl);
+        });
+      },
       pageInit: function pageInit(page) {
         var app = this;
         page.$el.find('.preloader').each(function (index, preloaderEl) {
@@ -15526,6 +15565,13 @@
       });
     },
     on: {
+      tabMounted: function tabMounted(tabEl) {
+        var app = this;
+        $(tabEl).find('.progressbar').each(function (index, progressbarEl) {
+          var $progressbarEl = $(progressbarEl);
+          app.progressbar.set($progressbarEl, $progressbarEl.attr('data-progress'));
+        });
+      },
       pageInit: function pageInit(page) {
         var app = this;
         page.$el.find('.progressbar').each(function (index, progressbarEl) {
@@ -15585,7 +15631,7 @@
         if ($listGroup.length && $listGroup.parents($sortableContainer).length) {
           $sortableContainer = $listGroup;
         }
-        $sortingItems = $sortableContainer.children('ul').children('li');
+        $sortingItems = $sortableContainer.children('ul').children('li:not(.disallow-sorting):not(.no-sorting)');
         if (app.panel) { app.panel.allowOpen = false; }
         if (app.swipeout) { app.swipeout.allow = false; }
       }
@@ -15687,7 +15733,12 @@
         if ($insertAfterEl) { indexTo = $insertAfterEl.index(); }
         else if ($insertBeforeEl) { indexTo = $insertBeforeEl.index(); }
 
-        if (app.params.sortable.moveElements) {
+        var moveElements = $sortableContainer.dataset().sortableMoveElements;
+        if (typeof moveElements === 'undefined') {
+          moveElements = app.params.sortable.moveElements;
+        }
+
+        if (moveElements) {
           if ($insertAfterEl) {
             $sortingEl.insertAfter($insertAfterEl);
           }
@@ -16090,10 +16141,10 @@
             }
           }
           if (overswipeRight) {
-            $actionsRight.find('.swipeout-overswipe')[0].click();
+            $actionsRight.find('.swipeout-overswipe').trigger('click', 'f7Overswipe');
           }
           if (overswipeLeft) {
-            $actionsLeft.find('.swipeout-overswipe')[0].click();
+            $actionsLeft.find('.swipeout-overswipe').trigger('click', 'f7Overswipe');
           }
         } else {
           $swipeoutEl.trigger('swipeout:close');
@@ -18338,7 +18389,7 @@
           $viewEl.css(( obj = {}, obj[("margin-" + side)] = (($el.width()) + "px"), obj ));
           app.allowPanelOpen = true;
           if (emitEvents) {
-            app.emit('local::breakpoint panelBreakpoint');
+            panel.emit('local::breakpoint panelBreakpoint');
             panel.$el.trigger('panel:breakpoint', panel);
           }
         } else {
@@ -18350,7 +18401,7 @@
         panel.onClosed();
         $viewEl.css(( obj$2 = {}, obj$2[("margin-" + side)] = '', obj$2 ));
         if (emitEvents) {
-          app.emit('local::breakpoint panelBreakpoint');
+          panel.emit('local::breakpoint panelBreakpoint');
           panel.$el.trigger('panel:breakpoint', panel);
         }
       }
@@ -18617,7 +18668,7 @@
         var $viewEl = $(panel.getViewEl());
         panel.$el.css('display', '').removeClass('panel-visible-by-breakpoint panel-active');
         $viewEl.css(( obj = {}, obj[("margin-" + (panel.side))] = '', obj ));
-        app.emit('local::breakpoint panelBreakpoint');
+        panel.emit('local::breakpoint panelBreakpoint');
         panel.$el.trigger('panel:breakpoint', panel);
       }
 
@@ -19274,17 +19325,30 @@
       $cardEl.trigger('card:close');
       app.emit('cardClose', $cardEl[0]);
 
+      var animateWidth = $cardEl.hasClass('card-expandable-animate-width');
+
       function transitionEnd() {
+        if (!animateWidth) {
+          $cardContentEl
+            .css({
+              width: '',
+              height: '',
+            });
+        }
         $cardEl.removeClass('card-closing card-no-transition');
         $cardEl.trigger('card:closed');
         $cardEl.find('.card-expandable-size').remove();
         app.emit('cardClosed', $cardEl[0], $pageEl[0]);
       }
+      if (animateWidth) {
+        $cardContentEl
+          .css({
+            width: '',
+            height: '',
+          });
+      }
+
       $cardContentEl
-        .css({
-          width: '',
-          height: '',
-        })
         .transform('')
         .scrollTop(0, animate ? 300 : 0);
       if (animate) {
@@ -21471,13 +21535,16 @@
       var $selectEl = $el.find('select').eq(0);
       if ($selectEl.length === 0) { return ss; }
 
-      var $valueEl = $(ss.params.valueEl);
-      if ($valueEl.length === 0) {
-        $valueEl = $el.find('.item-after');
-      }
-      if ($valueEl.length === 0) {
-        $valueEl = $('<div class="item-after"></div>');
-        $valueEl.insertAfter($el.find('.item-title'));
+      var $valueEl;
+      if (ss.params.setValueText) {
+        $valueEl = $(ss.params.valueEl);
+        if ($valueEl.length === 0) {
+          $valueEl = $el.find('.item-after');
+        }
+        if ($valueEl.length === 0) {
+          $valueEl = $('<div class="item-after"></div>');
+          $valueEl.insertAfter($el.find('.item-title'));
+        }
       }
 
       // View
@@ -21501,7 +21568,7 @@
         $selectEl: $selectEl,
         selectEl: $selectEl[0],
         $valueEl: $valueEl,
-        valueEl: $valueEl[0],
+        valueEl: $valueEl && $valueEl[0],
         url: url,
         multiple: multiple,
         inputType: inputType,
@@ -21522,7 +21589,7 @@
         var value = ss.$selectEl.val();
         ss.$el.trigger('smartselect:change', ss, value);
         ss.emit('local::change smartSelectChange', ss, value);
-        ss.setTextValue();
+        ss.setValueText();
       }
       ss.attachEvents = function attachEvents() {
         $el.on('click', onClick);
@@ -21564,7 +21631,9 @@
         }
 
         ss.$selectEl.trigger('change');
-        ss.$valueEl.text(optionText.join(', '));
+        if (ss.params.setValueText) {
+          ss.$valueEl.text(ss.formatValueText(optionText));
+        }
         if (ss.params.closeOnSelect && ss.inputType === 'radio') {
           ss.close();
         }
@@ -21621,7 +21690,9 @@
         }
         ss.selectEl.value = newValue;
       }
-      ss.$valueEl.text(optionText.join(', '));
+      if (ss.params.setValueText) {
+        ss.$valueEl.text(ss.formatValueText(optionText));
+      }
       return ss;
     };
 
@@ -21659,7 +21730,18 @@
       }
     };
 
-    SmartSelect.prototype.setTextValue = function setTextValue (value) {
+    SmartSelect.prototype.formatValueText = function formatValueText (values) {
+      var ss = this;
+      var textValue;
+      if (ss.params.formatValueText) {
+        textValue = ss.params.formatValueText.call(ss, values, ss);
+      } else {
+        textValue = values.join(', ');
+      }
+      return textValue;
+    };
+
+    SmartSelect.prototype.setValueText = function setValueText (value) {
       var ss = this;
       var valueArray = [];
       if (typeof value !== 'undefined') {
@@ -21681,7 +21763,9 @@
           }
         });
       }
-      ss.$valueEl.text(valueArray.join(', '));
+      if (ss.params.setValueText) {
+        ss.$valueEl.text(ss.formatValueText(valueArray));
+      }
     };
 
     SmartSelect.prototype.getItemsData = function getItemsData () {
@@ -22097,6 +22181,15 @@
     SmartSelect.prototype.open = function open (type) {
       var ss = this;
       if (ss.opened) { return ss; }
+      var prevented = false;
+      function prevent() {
+        prevented = true;
+      }
+      if (ss.$el) {
+        ss.$el.trigger('smartselect:beforeopen', { prevent: prevent });
+      }
+      ss.emit('local::beforeOpen smartSelectBeforeOpen', ss, prevent);
+      if (prevented) { return ss; }
       var openIn = type || ss.params.openIn;
       ss[("open" + (openIn.split('').map(function (el, index) {
         if (index === 0) { return el.toUpperCase(); }
@@ -22114,6 +22207,7 @@
       } else {
         ss.modal.once('modalClosed', function () {
           Utils.nextTick(function () {
+            if (ss.destroyed) { return; }
             ss.modal.destroy();
             delete ss.modal;
           });
@@ -22126,7 +22220,7 @@
     SmartSelect.prototype.init = function init () {
       var ss = this;
       ss.attachEvents();
-      ss.setTextValue();
+      ss.setValueText();
     };
 
     SmartSelect.prototype.destroy = function destroy () {
@@ -22148,6 +22242,8 @@
       smartSelect: {
         el: undefined,
         valueEl: undefined,
+        setValueText: true,
+        formatValueText: null,
         openIn: 'page', // or 'popup' or 'sheet' or 'popover'
         pageTitle: undefined,
         pageBackLinkText: 'Back',
@@ -22735,6 +22831,7 @@
       }
       function onHtmlClick(e) {
         var $targetEl = $(e.target);
+        if (calendar.destroyed || !calendar.params) { return; }
         if (calendar.isPopover()) { return; }
         if (!calendar.opened || calendar.closing) { return; }
         if ($targetEl.closest('[class*="backdrop"]').length) { return; }
@@ -24594,6 +24691,7 @@
         e.preventDefault();
       }
       function onHtmlClick(e) {
+        if (picker.destroyed || !picker.params) { return; }
         var $targetEl = $(e.target);
         if (picker.isPopover()) { return; }
         if (!picker.opened || picker.closing) { return; }
@@ -25161,13 +25259,20 @@
     create: function create(el) {
       var $el = $(el);
       var app = this;
-      $el.on('scroll', function handle(e) {
+      function scrollHandler(e) {
         app.infiniteScroll.handle(this, e);
+      }
+      $el.each(function (index, element) {
+        element.f7InfiniteScrollHandler = scrollHandler;
+        element.addEventListener('scroll', element.f7InfiniteScrollHandler);
       });
     },
     destroy: function destroy(el) {
       var $el = $(el);
-      $el.off('scroll');
+      $el.each(function (index, element) {
+        element.removeEventListener('scroll', element.f7InfiniteScrollHandler);
+        delete element.f7InfiniteScrollHandler;
+      });
     },
   };
   var InfiniteScroll$1 = {
@@ -25186,14 +25291,18 @@
       tabMounted: function tabMounted(tabEl) {
         var app = this;
         var $tabEl = $(tabEl);
-        $tabEl.find('.infinite-scroll-content').each(function (index, el) {
+        var $isEls = $tabEl.find('.infinite-scroll-content');
+        if ($tabEl.is('.infinite-scroll-content')) { $isEls.add($tabEl); }
+        $isEls.each(function (index, el) {
           app.infiniteScroll.create(el);
         });
       },
       tabBeforeRemove: function tabBeforeRemove(tabEl) {
         var $tabEl = $(tabEl);
         var app = this;
-        $tabEl.find('.infinite-scroll-content').each(function (index, el) {
+        var $isEls = $tabEl.find('.infinite-scroll-content');
+        if ($tabEl.is('.infinite-scroll-content')) { $isEls.add($tabEl); }
+        $isEls.each(function (index, el) {
           app.infiniteScroll.destroy(el);
         });
       },
@@ -25753,14 +25862,18 @@
       tabMounted: function tabMounted(tabEl) {
         var app = this;
         var $tabEl = $(tabEl);
-        $tabEl.find('.ptr-content').each(function (index, el) {
+        var $ptrEls = $tabEl.find('.ptr-content');
+        if ($tabEl.is('.ptr-content')) { $ptrEls.add($tabEl); }
+        $ptrEls.each(function (index, el) {
           app.ptr.create(el);
         });
       },
       tabBeforeRemove: function tabBeforeRemove(tabEl) {
         var $tabEl = $(tabEl);
         var app = this;
-        $tabEl.find('.ptr-content').each(function (index, el) {
+        var $ptrEls = $tabEl.find('.ptr-content');
+        if ($tabEl.is('.ptr-content')) { $ptrEls.add($tabEl); }
+        $ptrEls.each(function (index, el) {
           app.ptr.destroy(el);
         });
       },
@@ -26816,7 +26929,7 @@
       } else {
         if (needsFocus) { sb.$inputEl.focus(); }
         if (app.theme === 'md' && sb.expandable) {
-          sb.$el.parents('.page, .view, .navbar-inner').scrollLeft(0);
+          sb.$el.parents('.page, .view, .navbar-inner').scrollLeft(app.rtl ? 100 : 0);
         }
         enable();
       }
@@ -35137,6 +35250,7 @@
       } else {
         pb.modal.once('modalClosed', function () {
           Utils.nextTick(function () {
+            if (pb.destroyed) { return; }
             pb.modal.destroy();
             delete pb.modal;
           });
@@ -35157,6 +35271,7 @@
         delete pb.$el[0].f7PhotoBrowser;
       }
       Utils.deleteProps(pb);
+      pb.destroyed = true;
       pb = null;
     };
 
@@ -36217,6 +36332,7 @@
       } else {
         ac.modal.once('modalClosed', function () {
           Utils.nextTick(function () {
+            if (ac.destroyed) { return; }
             ac.modal.destroy();
             delete ac.modal;
           });
@@ -38299,6 +38415,7 @@
         self.open();
       }
       function onHtmlClick(e) {
+        if (self.destroyed || !self.params) { return; }
         if (self.params.openIn === 'page') { return; }
         var $clickTargetEl = $(e.target);
         if (!self.opened || self.closing) { return; }
@@ -38739,7 +38856,7 @@
       self.attachEvents();
 
       params.modules.forEach(function (m) {
-        if (typeof m === 'string' && modules[m] && modules[m].render) {
+        if (typeof m === 'string' && modules[m] && modules[m].init) {
           modules[m].init(self);
         } else if (m && m.init) {
           m.init(self);
@@ -38814,7 +38931,7 @@
         self.$inputEl.trigger('blur');
       }
       params.modules.forEach(function (m) {
-        if (typeof m === 'string' && modules[m] && modules[m].update) {
+        if (typeof m === 'string' && modules[m] && modules[m].destroy) {
           modules[m].destroy(self);
         } else if (m && m.destroy) {
           m.destroy(self);

@@ -2,6 +2,86 @@
 
 # Change Log
 
+# [v4.5.2](https://github.com/framework7io/framework7/compare/v4.5.1...v4.5.2) - September 27, 2019
+  * Core
+    * Router
+      * Fixed issue in Firefox when going back from routable modal could reload the page in (#3316)
+    * Card
+      * Fixed issue with expandable card close, when it is opened in view with sidebar (#3315)
+    * Swipeout
+      * Fixed issue when overswipe didn't work with single item (#3279)
+    * SmartSelect
+      * Fixed issue when destroying it on close could throw and error
+    * Autocomplete
+      * Fixed issue when destroying it on close could throw and error
+    * Photo Browser
+      * Fixed issue when destroying it on close could throw and error
+
+# [v4.5.1](https://github.com/framework7io/framework7/compare/v4.5.0...v4.5.1) - September 19, 2019
+  * Core
+    * Router Component
+      * Improved scoped styles parsing algorithm
+    * Swiper
+      * Fixed error in swiper lazy module
+    * Color Picker
+      * Fixed error with "Current Color" module destroy
+    * Panel
+      * Fixed issue with not working `breakpoint` events
+
+# [v4.5.0](https://github.com/framework7io/framework7/compare/v4.4.10...v4.5.0) - August 21, 2019
+  * Core
+    * Router Component
+      * Fixed issue breaking rendering when root component element is not a `div`
+    * Searchbar
+      * Fixed issue with scroll for expandable Searchbar in RTL direction
+    * Sortable
+      * Now new `no-sorting` or `disallow-sorting` class can be added to specific list item to disable sorting for it
+    * Infinite Scroll
+      * Fixed issue when it may not work on routable tab if routable tab content is infinite-scroll element
+    * Pull To Refresh
+      * Fixed issue when it may not work on routable tab if routable tab content is PTR element
+    * Dialog
+      * Fixed issue when calling `.close()` on queued dialog would still open it
+    * Smart Select
+      * New `formatValueText(values)` parameter to return formatted (custom) text value that appears on list item (in `item-after`)
+      * New `setValueText` (by default is `true`) parameter to set formatted text value on list item (in `item-after`)
+      * Now it emits `beforeOpen(instance, prevent)` event that allows to prevent its opening by calling `prevent()` function
+    * Preloader
+      * Fixed issue when it didn't initialize correctly in routable tab
+    * Progressbar
+      * Fixed issue when it didn't initialize correctly in routable tab
+    * Popover
+      * Fixed issue when during positioning it didn't consider top safe area
+  * Phenome
+    * Button, FabButton, Fab, Icon, Link, ListButton, ListItem
+      * Imporved `tooltip` prop reactivity to change, set or unset tooltip correctly
+    * ListItem
+      * Now settings `sortable: false` prop on it, will prevent this specific item from sorting
+    * Navbar
+      * `nav-left` slot is also available as `left` slot
+      * `nav-right` slot is also available as `right` slot
+      * New `title-large` slot to add custom content/layout to large title text
+    * List, ListGroup
+      * New `sortableMoveElements` (boolean) prop that allow to override same `sortable.moveElements` global app parameter. That when disabled (`false`) won't move DOM elements on sort
+  * Minor fixes
+
+# [v4.4.10](https://github.com/framework7io/framework7/compare/v4.4.9...v4.4.10) - July 29, 2019
+  * Core
+    * Device
+      * Fixed `device-desktop` class
+
+# [v4.4.9](https://github.com/framework7io/framework7/compare/v4.4.7...v4.4.9) - July 29, 2019
+  * Core
+    * Infinite Scroll
+      * Fixed issue when destroying infinite scroll could detach all other `scroll` event listeners
+    * Navbar/Toolbar
+      * Fixed issue with enabled `hideNavbar/ToolbarOnScroll` could hide toolbar on nested elements scrolling
+    * Device
+      * On desktop `device.os` will contain `macos` or `windows` if it is running under these OS
+  * Phenome
+    * Card
+      * Added `backdropEl` property to specify custom card backdrop
+
 # [v4.4.7](https://github.com/framework7io/framework7/compare/v4.4.6...v4.4.7) - July 19, 2019
   * Core
     * Card
@@ -225,7 +305,7 @@
     * Button
       * New `button-round-aurora`, `button-raised-aurora`, `button-fill-aurora`, `button-small-aurora`, `button-large-aurora`, `button-outline-aurora` modifier classes for Aurora theme
     * Cards
-      * Now it is possible to specify custom expandable card backdrop element with `data-backrop-el` attribute on card
+      * Now it is possible to specify custom expandable card backdrop element with `data-backdrop-el` attribute on card
     * Device
       * New `device.electron` property which is `true` when app runs in Electron environment
     * List Index

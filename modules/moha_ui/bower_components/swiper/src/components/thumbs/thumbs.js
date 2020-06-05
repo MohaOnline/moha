@@ -88,7 +88,7 @@ const Thumbs = {
       } else {
         newThumbsIndex = swiper.realIndex;
       }
-      if (thumbsSwiper.visibleSlidesIndexes.indexOf(newThumbsIndex) < 0) {
+      if (thumbsSwiper.visibleSlidesIndexes && thumbsSwiper.visibleSlidesIndexes.indexOf(newThumbsIndex) < 0) {
         if (thumbsSwiper.params.centeredSlides) {
           if (newThumbsIndex > currentThumbsIndex) {
             newThumbsIndex = newThumbsIndex - Math.floor(slidesPerView / 2) + 1;
@@ -111,7 +111,7 @@ const Thumbs = {
     }
 
     thumbsSwiper.slides.removeClass(thumbActiveClass);
-    if (thumbsSwiper.params.loop) {
+    if (thumbsSwiper.params.loop || thumbsSwiper.params.virtual) {
       for (let i = 0; i < thumbsToActivate; i += 1) {
         thumbsSwiper.$wrapperEl.children(`[data-swiper-slide-index="${swiper.realIndex + i}"]`).addClass(thumbActiveClass);
       }

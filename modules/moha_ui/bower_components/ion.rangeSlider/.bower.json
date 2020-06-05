@@ -1,6 +1,6 @@
 {
-  "name": "ion.rangeSlider",
-  "version": "2.3.0",
+  "name": "ion-rangeslider",
+  "version": "2.3.1",
   "homepage": "https://github.com/IonDen/ion.rangeSlider",
   "authors": [
     {
@@ -38,13 +38,13 @@
     "PSD",
     "ion-rangeSlider.jquery.json"
   ],
-  "_release": "2.3.0",
+  "_release": "2.3.1",
   "_resolution": {
     "type": "version",
-    "tag": "2.3.0",
-    "commit": "c98c10d3d360aa52e997bb8e4fd371c958f78e4b"
+    "tag": "2.3.1",
+    "commit": "555e6ce9127758d860d4d900fc1dcb1c7e1d71e4"
   },
   "_source": "https://github.com/IonDen/ion.rangeSlider.git",
-  "_target": "^2.2.0",
+  "_target": "^2.2",
   "_originalSource": "ionrangeslider"
 }

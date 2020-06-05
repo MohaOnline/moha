@@ -88,6 +88,7 @@ class ColorPicker extends Framework7Class {
       self.open();
     }
     function onHtmlClick(e) {
+      if (self.destroyed || !self.params) return;
       if (self.params.openIn === 'page') return;
       const $clickTargetEl = $(e.target);
       if (!self.opened || self.closing) return;
@@ -547,7 +548,7 @@ class ColorPicker extends Framework7Class {
     self.attachEvents();
 
     params.modules.forEach((m) => {
-      if (typeof m === 'string' && modules[m] && modules[m].render) {
+      if (typeof m === 'string' && modules[m] && modules[m].init) {
         modules[m].init(self);
       } else if (m && m.init) {
         m.init(self);
@@ -620,7 +621,7 @@ class ColorPicker extends Framework7Class {
       self.$inputEl.trigger('blur');
     }
     params.modules.forEach((m) => {
-      if (typeof m === 'string' && modules[m] && modules[m].update) {
+      if (typeof m === 'string' && modules[m] && modules[m].destroy) {
         modules[m].destroy(self);
       } else if (m && m.destroy) {
         m.destroy(self);
