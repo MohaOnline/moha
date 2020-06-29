@@ -96,7 +96,7 @@ function moha_user_oauth2_admin_form_validate($form, &$form_state) {
 }
 
 /**
- *
+ * Save integration settings.
  *
  * @param $form
  *   Nested array of form elements that comprise the form.
@@ -112,7 +112,7 @@ function moha_user_oauth2_admin_form_submit($form, &$form_state) {
   $oauth2_integration = moha_sort_per_weight($oauth2_integration);
   $oauth2_integration[MOHA_USER__VARIABLE__OAUTH2_LOGIN] = $values['login'];
   $oauth2_integration[MOHA_USER__VARIABLE__OAUTH2_LOGOUT] = $values['logout'];
-  cache_clear_all(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION);
+  cache_clear_all(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, 'cache');
   moha_variable_set(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, $oauth2_integration);
   moha_cache_set(MOHA_USER__VARIABLE__OAUTH2_INTEGRATION, $oauth2_integration);
 
