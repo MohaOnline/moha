@@ -169,7 +169,7 @@ class X509userCert extends \SimpleSAML\Auth\Source
         $ldap_certs = $merged_ldapcerts;
 
         foreach ($ldap_certs as $ldap_cert) {
-            $pem = "-----BEGIN CERTIFICATE-----\n" . chunk_split($ldap_cert, 64, "\n") . "-----END CERTIFICATE-----\n";
+            $pem = \SimpleSAML\Utils\Crypto::der2pem($ldap_cert);
             $ldap_cert_data = openssl_x509_parse($pem);
             if ($ldap_cert_data === false) {
                 \SimpleSAML\Logger::error('authX509: cert in LDAP is invalid for dn='.$dn);

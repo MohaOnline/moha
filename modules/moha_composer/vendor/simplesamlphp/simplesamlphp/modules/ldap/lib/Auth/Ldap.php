@@ -379,6 +379,7 @@ class Ldap
      * @param string|array $filters Array of 'attribute' => 'values' to be combined into the filter,
      *     or a raw filter string
      * @param string|array $attributes Array of attributes requested from LDAP
+     * @param array $binaryAttributes Array of attributes that need to be base64 encoded
      * @param bool $and If multiple filters defined, then either bind them with & or |
      * @param bool $escape Weather to escape the filter values or not
      * @param string $scope The scope of the search
@@ -388,6 +389,7 @@ class Ldap
         $bases,
         $filters,
         $attributes = [],
+        $binaryAttributes = [],
         $and = true,
         $escape = true,
         $scope = 'subtree'
@@ -473,7 +475,10 @@ class Ldap
 
                 // decide whether to base64 encode or not
                 for ($k = 0; $k < $attribute['count']; $k++) {
-                    $results[$i][$name][$k] = $this->encodeIfBinary($attribute[$k]);
+                    // base64 encode binary attributes
+                    if (in_array($name, $binaryAttributes, true)) {
+                        $results[$i][$name][$k] = base64_encode($attribute[$k]);
+                    }
                 }
             }
         }
@@ -592,6 +597,8 @@ class Ldap
      * @param string|array $attributes
      * The names of the attribute(s) to retrieve. Defaults to NULL; that is,
      * all available attributes. Note that this is not very effective.
+     * @param array $binaryAttributes
+     * The names of the attribute(s) to base64 encode
      * @param int $maxsize
      * The maximum size of any attribute's value(s). If exceeded, the attribute
      * will not be returned.
@@ -599,7 +606,7 @@ class Ldap
      * The array of attributes and their values.
      * @see http://no.php.net/manual/en/function.ldap-read.php
      */
-    public function getAttributes($dn, $attributes = null, $maxsize = null)
+    public function getAttributes($dn, $attributes = null, $binaryAttributes = [], $maxsize = null)
     {
         // Preparations, including a pretty debug message...
         $description = 'all attributes';
@@ -652,7 +659,12 @@ class Ldap
                     continue;
                 }
 
-                $values[] = $this->encodeIfBinary($value);
+                // Base64 encode binary attributes
+                if (in_array($name, $binaryAttributes)) {
+                    $values[] = base64_encode($value);
+                } else {
+                    $values[] = $value;
+                }
             }
 
             // Adding
@@ -708,7 +720,7 @@ class Ldap
         /**
          * Retrieve attributes from LDAP
          */
-        $attributes = $this->getAttributes($dn, $config['attributes']);
+        $attributes = $this->getAttributes($dn, $config['attributes'], $config['attributes.binary']);
         return $attributes;
     }
 
@@ -848,24 +860,5 @@ class Ldap
         }
 
         return $dn;
-    }
-
-
-    /**
-     * Base64 encode binary attributes, or pass original content back
-     *
-     * @param string $value  Possibly binary string
-     * @return string  Value safe for use in SAML attributes (base64 encoded)
-     */
-    private function encodeIfBinary(string $value)
-    {
-        // detect binary values
-        if (
-            mb_detect_encoding($value) === false
-            || preg_match('~[^\x20-\x7E\x80-\xFF\t\r\n]~', $value) > 0
-        ) {
-            return base64_encode($value);
-        }
-        return $value;
     }
 }
