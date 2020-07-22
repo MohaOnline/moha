@@ -363,6 +363,8 @@ function moha_ui_menu_alter(&$items) {
 /**
  * Implements hook_menu_breadcrumb_alter().
  *
+ * Tune breadcrumb for system pages.
+ *
  * {@inheritDoc}
  */
 function moha_ui_menu_breadcrumb_alter(&$active_trail, $item) {
@@ -441,6 +443,7 @@ function moha_ui_page_alter(&$page) {
 
 /**
  * Generates and returns dashboard sidebar HTML.
+ * Invoked on template file: page--admin--moha--dashboard.tpl.php
  *
  * @return string rendered HTML.
  *
@@ -863,7 +866,7 @@ function moha_ui_element_info() {
  * @return array
  *   rating score and low score reason.
  */
-function moha_ui_rating_value(&$element, $input = FALSE, $form_state) {
+function moha_ui_rating_value(&$element, $input, $form_state) {
   $return = $element['#default_value'];
 
   if ($input !== FALSE) {

@@ -120,8 +120,9 @@ define('MOHA__DATETIME_FORMAT__AZURE_EXPENSE', 'Y-m');
  * Menu Type: Normal
  * @see moha_menu_define()
  */
-define('MOHA__MENU__NORMAL', 'Normal');
 define('MOHA__MENU__CALLBACK', 'Callback');
+define('MOHA__MENU__NORMAL', 'Normal');
+define('MOHA__MENU__TASK', 'Task');
 
 /**
  * Action: Access.
@@ -1162,7 +1163,7 @@ function moha_menu_define($title = '', $description = '',
     case MOHA__MENU__NORMAL:
       $item['type'] = MENU_NORMAL_ITEM;
       break;
-    case 'Task':
+    case MOHA__MENU__TASK:
       $item['type'] = MENU_LOCAL_TASK;
       break;
     case MOHA__MENU__CALLBACK:
@@ -1257,27 +1258,9 @@ function moha_menu_block_define($title = '', $description = '', $weight = 0) {
  * Implements hook_menu().
  */
 function moha_menu() {
-  $items['admin/moha'] = array(
-    'title' => 'Moha',
-    'description' => t('Moha enhancement system.'),
-    'page callback' => 'system_admin_menu_block_page',
-    'weight' => -10,
-    'file' => 'system.admin.inc',
-    'file path' => drupal_get_path('module', 'system'),
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_NORMAL_ITEM,
-  );
+  $items['admin/moha'] = moha_menu_block_define( 'Moha', t('Moha enhancement system.'), -10);
 
-  $items[MOHA__URL__ENTITIES] = array(
-    'title' => 'Moha Entities',
-    'description' => t('Entities of Moha enhancement system.'),
-    'page callback' => 'system_admin_menu_block_page',
-    'weight' => -9,
-    'file' => 'system.admin.inc',
-    'file path' => drupal_get_path('module', 'system'),
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_NORMAL_ITEM,
-  );
+  $items[MOHA__URL__ENTITIES] = moha_menu_block_define( 'Moha Entities', t('Entities of Moha enhancement system.'), -10);
 
   $items['moha/ckeditor-upload'] = array(
     'title' => t('Moha Ajax Backend - CKEditor File Uploading'),

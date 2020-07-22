@@ -280,10 +280,9 @@ function moha_user_menu() {
   $items['admin/moha/user/simulation'] = moha_menu_define(
     'User Simulation',
     'Become another user per information provided.',
-    /** @see moha_user_simulation_form */
-    array('moha_user_simulation_form'),
+    array('moha_user_simulation_form'), /** @see moha_user_simulation_form */
     array(MOHA_USER__PERMISSION__USER_SIMULATION),
-    'Normal',
+    MOHA__MENU__NORMAL,
     'moha_user.admin.inc'
   );
 
