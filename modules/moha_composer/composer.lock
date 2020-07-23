@@ -150,16 +150,16 @@
         },
         {
             "name": "clagiordano/weblibs-configmanager",
-            "version": "v1.0.7",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/clagiordano/weblibs-configmanager.git",
-                "reference": "6ef4c27354368deb2f54b39bbe06601da8c873a0"
+                "reference": "ecf584f5b3a27929175ff0abdba52f0131bef795"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/clagiordano/weblibs-configmanager/zipball/6ef4c27354368deb2f54b39bbe06601da8c873a0",
-                "reference": "6ef4c27354368deb2f54b39bbe06601da8c873a0",
+                "url": "https://api.github.com/repos/clagiordano/weblibs-configmanager/zipball/ecf584f5b3a27929175ff0abdba52f0131bef795",
+                "reference": "ecf584f5b3a27929175ff0abdba52f0131bef795",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -200,7 +200,7 @@
                 "tool",
                 "weblibs"
             ],
-            "time": "2019-09-25T22:10:10+00:00"
+            "time": "2020-07-20T20:39:25+00:00"
         },
         {
             "name": "clue/stream-filter",
