@@ -837,7 +837,8 @@ function moha_ui_element_info() {
     '#header' => array(),
     '#rows' => array(),
     '#empty' => t('No Data.'),
-    /** @see moha_ui_theme() */
+    /** @see moha_ui_theme()
+      * @see theme_moha_ui_draggable_table() */
     '#theme' => array(MOHA_UI__ELEMENT__DRAGGABLE_TABLE),
     '#process' => array('moha_ui_draggable_table_process'),
   );
@@ -968,16 +969,19 @@ RATING_CONTAINER
 /**
  * Renders moha_ui_rating element.
  *
- * @param $variables
+ * @param $variables array
+ *
+ * @return string rendered HTML.
  */
 function theme_moha_ui_rating($variables) {
   $element = $variables['element'];
   $element['reason']['#required'] = $element['#required'];
+
   $error = form_get_error($element);
   if ($error) {
     $element['rating']['#attached']['js'][0]['data'][__MOHA_UI]['mohaUIRatingElements'][0]['error'] = TRUE;
-
   }
+
   $output = drupal_render($element['rating']) . drupal_render($element['reason']);
   return $output;
 }
