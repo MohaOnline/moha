@@ -1818,6 +1818,19 @@ function moha_form_element_pid($default = 0) {
 }
 
 /**
+ * Returns HTML element,
+ *
+ * @param $html
+ *
+ * @return array
+ */
+function moha_form_element_html($html) {
+  $element['#markup'] = $html;
+
+  return $element;
+}
+
+/**
  * Returns render array for text element.
  *
  * @param $title
@@ -1856,11 +1869,12 @@ function moha_form_element_text($title = '', $description = '', $default = '', $
  *
  * @return array
  */
-function moha_form_element_textarea($title = '', $description = '', $default = '') {
+function moha_form_element_textarea($title = '', $description = '', $default = '', $required = FALSE) {
   $element['#type'] = 'textarea';
   $element['#title'] = t($title);
   $element['#description'] = t($description);
   $element['#default_value'] = $default;
+  $element['#required'] = $required;
 
   $rows = moha_count_line($default) + 1;
   if ($rows < 5) {
@@ -2353,6 +2367,8 @@ function moha_text_format_set(&$element, $text_format) {
  *
  * @param $form_element_container
  *   form element.
+ *
+ * @return
  */
 function &moha_form_set_inline_container(&$form_element_container) {
   $form_element_container['#type'] = 'container';

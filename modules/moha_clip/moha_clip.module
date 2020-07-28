@@ -372,6 +372,7 @@ function moha_clip_image_default_styles() {
  * Implements hook_node_info().
  *
  * Declares content types: moha_clip, moha_series.
+ *
  */
 function moha_clip_node_info() {
   $items[__MOHA_CLIP] = array(
@@ -400,8 +401,6 @@ function moha_clip_node_info() {
  *
  * Invoked one-time when node type is created.
  * Bind node fields for moha_clip, moha_series.
- *
- * @inheritDoc
  *
  * @throws Exception
  *
