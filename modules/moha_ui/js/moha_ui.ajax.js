@@ -15,8 +15,9 @@
 
       /**
        * Prepare the Ajax request before it is sent.
-       *
        * Replace ajax progress with weui.loading.
+       *
+       * Replace Drupal.ajax.prototype.beforeSend in ajax.js.
        *
        * @see ajax.js
        */
