@@ -1967,6 +1967,31 @@ function moha_form_element_radio_save($constant_name, $value) {
 }
 
 /**
+ * Render link buttons.
+ *
+ * @param $button_text
+ * @param $path
+ * @param string $destination
+ *
+ * @return string
+ */
+function moha_form_element_link_button($button_text, $path, $destination = '') {
+  $options = array(
+    'attributes' => array(
+      'class' => array('button'),
+    ),
+  );
+
+  if (!empty($destination)) {
+    $options['query']['destination'] = $destination;
+  }
+
+  $link = l($button_text, $path, $options);
+
+  return $link;
+}
+
+/**
  * Add default configuration for a Radio form element.
  *
  * @param $title
@@ -2970,6 +2995,8 @@ function moha_http_response_error(Exception $e = NULL, $status_code = 503) {
  * @param $url
  * @param array $options
  * @param string $return_type
+ *
+ * @return array
  *
  * @throws \Exception
  */
