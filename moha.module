@@ -1786,6 +1786,20 @@ function moha_form_element_weight($default = 0, $delta = 255) {
 }
 
 /**
+ * Returns render array for hidden field.
+ *
+ * @param $default
+ *
+ * @return mixed
+ */
+function moha_form_element_hidden($default = 0) {
+  $element['#type'] = 'hidden';
+  $element['#value'] = $default;
+
+  return $element;
+}
+
+/**
  * Returns render array for Current Item ID column in draggable table.
  *
  * @param $default
