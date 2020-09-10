@@ -329,11 +329,11 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         ),
         'SimpleSAML\\modules\\yubikey\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authyubikey/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/authYubikey/lib',
         ),
         'SimpleSAML\\modules\\discopower\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-discopower/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/discopower/lib',
         ),
         'SimpleSAML\\TwigConfigurableI18n\\' => 
         array (
@@ -341,91 +341,91 @@ class ComposerStaticInit61cadfd238da427ef5b2ee547c8c28a4
         ),
         'SimpleSAML\\Module\\statistics\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-statistics/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/statistics/lib',
         ),
         'SimpleSAML\\Module\\sqlauth\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-sqlauth/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/sqlauth/lib',
         ),
         'SimpleSAML\\Module\\smartattributes\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-smartattributes/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/smartattributes/lib',
         ),
         'SimpleSAML\\Module\\sanitycheck\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-sanitycheck/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/sanitycheck/lib',
         ),
         'SimpleSAML\\Module\\riak\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-riak/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/riak/lib',
         ),
         'SimpleSAML\\Module\\radius\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-radius/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/radius/lib',
         ),
         'SimpleSAML\\Module\\preprodwarning\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-preprodwarning/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/preprodwarning/lib',
         ),
         'SimpleSAML\\Module\\negotiate\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-negotiate/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/negotiate/lib',
         ),
         'SimpleSAML\\Module\\metarefresh\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-metarefresh/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/metarefresh/lib',
         ),
         'SimpleSAML\\Module\\ldap\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-ldap/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/ldap/lib',
         ),
         'SimpleSAML\\Module\\expirycheck\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-expirycheck/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/expirycheck/lib',
         ),
         'SimpleSAML\\Module\\exampleattributeserver\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-exampleattributeserver/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/exampleattributeserver/lib',
         ),
         'SimpleSAML\\Module\\consent\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-consent/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/consent/lib',
         ),
         'SimpleSAML\\Module\\cdc\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-cdc/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/cdc/lib',
         ),
         'SimpleSAML\\Module\\cas\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-cas/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/cas/lib',
         ),
         'SimpleSAML\\Module\\authwindowslive\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authwindowslive/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/authwindowslive/lib',
         ),
         'SimpleSAML\\Module\\authtwitter\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authtwitter/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/authtwitter/lib',
         ),
         'SimpleSAML\\Module\\authorize\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authorize/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/authorize/lib',
         ),
         'SimpleSAML\\Module\\authfacebook\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authfacebook/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/authfacebook/lib',
         ),
         'SimpleSAML\\Module\\authcrypt\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authcrypt/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/authcrypt/lib',
         ),
         'SimpleSAML\\Module\\authX509\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-authx509/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/authX509/lib',
         ),
         'SimpleSAML\\Module\\adfs\\' => 
         array (
-            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp-module-adfs/lib',
+            0 => __DIR__ . '/..' . '/simplesamlphp/simplesamlphp/modules/adfs/lib',
         ),
         'SimpleSAML\\' => 
         array (
