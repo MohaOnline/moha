@@ -24,6 +24,12 @@ define('MOHA_COMPOSER__PATH', drupal_get_path('module', __MOHA_COMPOSER));
  * Implements hook_libraries_info().
  */
 function moha_composer_libraries_info() {
+  /**
+   * Execute command drush en moha_composer -y, then use below snippet to load
+   * installed composer libraries:
+   *
+   * @example libraries_load(__MOHA_COMPOSER);
+   */
   $libraries[__MOHA_COMPOSER] = array(
     'name' => MOHA_COMPOSER,
     'library path' => MOHA_COMPOSER__PATH . '/vendor',

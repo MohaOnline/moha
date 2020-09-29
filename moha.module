@@ -3355,6 +3355,24 @@ function moha_end_with($string, $expectation)
 }
 
 /**
+ * Print or log max used memory size in MB for current request.
+ *
+ * @param bool $print
+ *   True to print peak used memory on screen.
+ *   False to db log peak used memory.
+ */
+function moha_peak_memory($print = TRUE) {
+  $used_mega_memory = memory_get_peak_usage(TRUE) / 1024 / 1024;
+  $log = " Peak memory usage: " . $used_mega_memory . " MB";
+  if ($print) {
+    echo PHP_EOL . PHP_EOL . date('H:i:s') ,  $log, PHP_EOL;
+  }
+  else {
+    watchdog(__FUNCTION__, $log);
+  }
+}
+
+/**
  * Trim last characters from passed string.
  *
  * @param $string string

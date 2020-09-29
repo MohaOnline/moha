@@ -172,7 +172,7 @@ function moha_ui_library() {
         'type' => 'file',
         'media' => 'screen',
       ),
-      MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/styles/monokai-sublime.css' => array(
+      MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.14.0-full/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css' => array(
         'type' => 'file',
         'media' => 'screen',
       ),
@@ -187,7 +187,7 @@ function moha_ui_library() {
       MOHA_UI__PATH . '/bower_components/swiper/dist/js/swiper.js' => array(),
       MOHA_UI__PATH . '/bower_components/css-element-queries/src/ResizeSensor.js' => array(),
       MOHA_UI__PATH . '/libs/jquery.rating-stars/dist/js/jquery.rating-stars.js' => array(),
-      MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.7.3-full/plugins/codesnippet/lib/highlight/highlight.pack.js' => array(),
+      MOHA_UI__PATH . '/libs/ckeditor/ckeditor-4.14.0-full/plugins/codesnippet/lib/highlight/highlight.pack.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.ajax.js' => array(),
       MOHA_UI__PATH . '/js/moha_ui.js' => array(),
     ),
