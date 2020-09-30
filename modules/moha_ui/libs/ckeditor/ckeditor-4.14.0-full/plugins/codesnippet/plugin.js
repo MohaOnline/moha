@@ -81,27 +81,43 @@
 						bash: 'Bash',
 						coffeescript: 'CoffeeScript',
 						cpp: 'C++',
-						cs: 'C#',
+            csharp: 'C#',
 						css: 'CSS',
 						diff: 'Diff',
-						html: 'HTML',
+            django: 'Django',
+            dockerfile: 'Dockerfile',
+            dos: 'DOS Batch',
+            excel: 'Excel',
 						http: 'HTTP',
 						ini: 'INI',
 						java: 'Java',
 						javascript: 'JavaScript',
 						json: 'JSON',
+            kotlin: 'Kotlin',
+            latex: 'LaTeX',
+            lua: 'Lua',
 						makefile: 'Makefile',
 						markdown: 'Markdown',
 						nginx: 'Nginx',
 						objectivec: 'Objective-C',
 						perl: 'Perl',
 						php: 'PHP',
+            pgsql: 'PostgreSQL',
+            powershell: 'PowerShell',
 						python: 'Python',
+            puppet: 'Puppet',
 						ruby: 'Ruby',
+						scss: 'SCSS',
+						shell: 'Shell',
 						sql: 'SQL',
+						swift: 'Swift',
+						tcl: 'TCL',
+						twig: 'Twig',
+            typescript: 'TypeScript',
 						vbscript: 'VBScript',
-						xhtml: 'XHTML',
-						xml: 'XML'
+            vim: 'VIM',
+						xml: 'XML',
+            yaml: 'YAML'
 					},
 
 					init: function( callback ) {
@@ -121,8 +137,9 @@
 					},
 
 					highlighter: function( code, language, callback ) {
-						var highlighted = this.hljs.highlightAuto( code,
-								this.hljs.getLanguage( language ) ? [ language ] : undefined );
+						// var highlighted = this.hljs.highlightAuto( code,
+						// 		this.hljs.getLanguage( language ) ? [ language ] : undefined );
+						var highlighted = this.hljs.getLanguage( language ) ? this.hljs.highlight( language, code, true) : this.hljs.highlightAuto( code );
 
 						if ( highlighted )
 							callback( highlighted.value );
