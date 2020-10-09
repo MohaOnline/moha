@@ -5,6 +5,8 @@ package = Moha Online
 
 dependencies[] = drupal:system (>= 7.40)
 dependencies[] = entity
+dependencies[] = entityreference_autocomplete
+dependencies[] = file_entity
 dependencies[] = ctools
 dependencies[] = token
 dependencies[] = imce
@@ -12,7 +14,6 @@ dependencies[] = profile2
 dependencies[] = field_collection
 dependencies[] = jquery_update
 dependencies[] = libraries
-dependencies[] = entityreference_autocomplete
 dependencies[] = uuid
 
 files[] = includes/MohaRACIEntity.php

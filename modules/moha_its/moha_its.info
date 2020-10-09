@@ -4,14 +4,12 @@ core = 7.x
 
 package = Moha Online
 
-dependencies[] = drupal:system (>= 7.40)
 dependencies[] = block
-dependencies[] = entity
 dependencies[] = views
 dependencies[] = views_data_export
 dependencies[] = entityreference
-dependencies[] = entityreference_autocomplete
 dependencies[] = date_popup
+dependencies[] = og
 dependencies[] = moha
 dependencies[] = moha_ui
 

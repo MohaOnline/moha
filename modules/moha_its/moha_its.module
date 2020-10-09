@@ -1139,6 +1139,136 @@ function moha_its_cron() {
 }
 
 /**
+ * Prepare check targets, if $single is false, returns all available target
+ * URLs in an array.
+ *
+ * @param bool $single
+ *
+ * @return false|mixed|string|string[]
+ *
+ */
+function moha_its_get_check_target($single = TRUE) {
+  // Sample targets which should be get from certain records.
+  $target = <<<EOF
+https://das-ee.cn/
+https://das-ee.cn/wastewater-treatment/
+https://das-ee.cn/wastewater-treatment/wastewater-emissions/
+https://das-ee.cn/waste-gas-treatment/
+https://das-ee.cn/about-the-company/
+https://das-ee.cn/about-the-company/press-events/
+https://das-ee.cn/about-the-company/press-events/exhibitions-conferences/
+EOF;
+
+  $target = explode("\n",$target);
+
+  if ($single) {
+    try {
+      $i = random_int(0, count($target) - 1);
+    }
+    catch (Exception $exception) {
+      $i = 0;
+    }
+
+    $target = $target[$i];
+  }
+
+  return $target;
+}
+
+use Facebook\WebDriver\Chrome\ChromeDriver;
+use Facebook\WebDriver\Chrome\ChromeOptions;
+use Facebook\WebDriver\Exception\WebDriverCurlException;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverDimension;
+
+/**
+ *
+ * @throws Exception
+ *   Checking can't be finished.
+ */
+function moha_its_check() {
+  // Make sure WebDriver class could be used.
+  $libraries = libraries_load(__MOHA_COMPOSER);
+  if (!$libraries) {
+    throw new Exception(__MOHA_COMPOSER . 'can not be loaded!');
+  }
+
+  // Make sure Chrome Driver is installed.
+  $driver = '/usr/local/bin/chromedriver';
+  if (!file_exists($driver)){
+    $driver = '/usr/bin/chromedriver';
+    if (!file_exists($driver)){
+      throw new Exception('Chrome driver can not be located.');
+    }
+  }
+
+  try {
+    putenv('WEBDRIVER_CHROME_DRIVER=' . $driver);
+    $options = new ChromeOptions();
+    $options->addArguments( ['--disable-gpu', '--headless'] );
+    $driver = ChromeDriver::start($options->toCapabilities()->setCapability('pageLoadStrategy', 'normal'));
+    if (!$driver) {
+      throw new Exception('Chrome driver can not be loaded.');
+    }
+
+    $size = new WebDriverDimension(1440, 10800);
+    $driver->manage()->window()->setSize($size);
+    $target = moha_its_get_check_target();
+    $driver->get($target);
+
+    $body = $driver->findElement(WebDriverBy::tagName('body'));
+
+    if (!empty($body)) {
+      $currentSize = $body->getSize();
+      //optional: scroll to bottom and back up, to trigger image lazy loading
+      $driver->executeScript('window.scrollTo(0, ' . $currentSize->getHeight() . ');');
+      sleep(10);
+      # $driver->wait(); //wait a sec
+
+      $driver->executeScript('window.scrollTo(0, 0);'); //scroll back to top of the page
+
+      //set window to full height
+      $currentSize = $body->getSize();
+      $size = new WebDriverDimension(1440, $currentSize->getHeight()); //make browser full height for complete screenshot
+      $driver->manage()->window()->setSize($size);
+
+      $image_string = $driver->takeScreenshot();
+      $image = imagecreatefromstring($image_string);
+      $bg = imagecreatetruecolor(imagesx($image), imagesy($image));
+      imagefill($bg, 0, 0, imagecolorallocate($bg, 255, 255, 255));
+      imagealphablending($bg, TRUE);
+      imagecopy($bg, $image, 0, 0, 0, 0, imagesx($image), imagesy($image));
+      imagedestroy($image);
+      $quality = 80;            // 0 = worst / smaller file, 100 = better / bigger file
+      $screenshot_file_uri = date('Y-m-d-H-i-s') . '.jpg';
+      $directory = "private://its/das-ee/" . date('Ym');
+      file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+      $screenshot_file_uri = $directory . '/' . $screenshot_file_uri;
+      imagejpeg($bg, $screenshot_file_uri, $quality); # image function supports private / public schema.
+      imagedestroy($bg);
+
+      $file = file_uri_to_object($screenshot_file_uri);
+      if (!$file) {
+        throw new Exception('Saved screenshot cannot be loaded.');
+      }
+      file_save($file);
+
+      echo file_create_url($screenshot_file_uri);
+    }
+
+  }
+  finally {
+    if (is_object($driver)) {
+      $driver->close();
+    }
+  }
+
+
+
+
+}
+
+/**
  * Implements hook_cronapi().
  *
  */
@@ -1155,6 +1285,11 @@ function moha_its_cronapi($op, $job = NULL) {
   $items['moha_its_cron'] = array(
     'description' => 'Moha ITS housekeeping and data sync.',
     'rule' => '0 2 * * *',
+  );
+
+  $items['moha_its_check'] = array(
+    'description' => 'Moha ITS Applications check and snapshots.',
+    'rule' => '0 8 * * *',
   );
 
   return $items;
